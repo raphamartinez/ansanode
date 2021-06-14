@@ -34,7 +34,7 @@ class Tables {
     const sql = `CREATE TABLE IF NOT EXISTS receive (id_receive int NOT NULL AUTO_INCREMENT, serNr double,
      SalesMan VARCHAR (250), nameSalesman VARCHAR (250), code int, client VARCHAR (250), CustomerGroup VARCHAR (50), 
      TransDate DATE, Office int, Days VARCHAR (20), rowNr int, d15 double, d30 double, d60 double, d90 double, d120 double,
-     dm120 double, Vencido double, ItemGroup int, DueDate DATE, Saldo double, total double, lastPay DATE,
+     dm120 double, Vencido double, DueDate DATE, Saldo double, total double, lastPay DATE,
      Currency varchar(8), totalCurrency double, status VARCHAR (20), totalUsd double, PRIMARY KEY (id_receive))`
 
     this.connection.query(sql, (error) => {

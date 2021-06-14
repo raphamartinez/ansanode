@@ -138,15 +138,15 @@ btnPunto.addEventListener('click', async (event) => {
     }
 })
 
-btnProcess.addEventListener('click', async (event) => {
-    event.preventDefault()
-    try {
-        const url = '../admin/index.html'
-        window.location.href = url
-    } catch (error) {
-        alert(error)
-    }
-})
+// btnProcess.addEventListener('click', async (event) => {
+//     event.preventDefault()
+//     try {
+//         const url = '../admin/index.html'
+//         window.location.href = url
+//     } catch (error) {
+//         alert(error)
+//     }
+// })
 
 btnInforme.addEventListener('click', async (event) => {
     event.preventDefault()

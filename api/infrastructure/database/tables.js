@@ -33,9 +33,11 @@ class Tables {
   createTableReceive() {
     const sql = `CREATE TABLE IF NOT EXISTS receive (id_receive int NOT NULL AUTO_INCREMENT, serNr double,
      SalesMan VARCHAR (250), nameSalesman VARCHAR (250), code int, client VARCHAR (250), CustomerGroup VARCHAR (50), 
-     TransDate DATE, Office int, Days VARCHAR (20), rowNr int, d15 double, d30 double, d60 double, d90 double, d120 double,
-     dm120 double, Vencido double, DueDate DATE, Saldo double, total double, lastPay DATE,
-     Currency varchar(8), totalCurrency double, status VARCHAR (20), totalUsd double, PRIMARY KEY (id_receive))`
+     TransDate DATE, Office int, Days VARCHAR (20), rowNr int, 
+     d15 double, d30 double, d60 double, d90 double, d120 double,dm120 double, 
+     d15USD double, d30USD double, d60USD double, d90USD double, d120USD double,dm120USD double, 
+     Vencido double, DueDate DATE, Saldo double, lastPay DATE, Currency VARCHAR (5), BaseRate double, CurrencyRate double, FromRate double, PayTerm VARCHAR (5),
+     totalCurrency double, ttcredutilizmonorig double, status VARCHAR (5), ttVencidoUsd double, ttcredutilizuSD double, PRIMARY KEY (id_receive))`
 
     this.connection.query(sql, (error) => {
       if (error) {

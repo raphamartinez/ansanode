@@ -89,7 +89,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: false,
+                headless: true,
                 args: ['--no-sandbox'],
             })
             const page = await browser.newPage()
@@ -133,7 +133,6 @@ class WebScraping {
 
             if (stop.length !== 1) {
                 stop.forEach(async line => {
-                    const lastInsertArrest = await Repositorie.listArrest(line[2])
                     const pop = line.pop()
                     const office = line[3].slice(1, 7)
 
@@ -143,11 +142,13 @@ class WebScraping {
                     var hora = line[1].split(" ")[1];
 
                     const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + hora;
+                    const lastInsertArrest = await Repositorie.listArrest(line[2])
 
                     const date1 = new Date(date);
                     const date2 = new Date(lastInsertArrest);
 
                     if (date1.getTime() > date2.getTime()) {
+                        console.log(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], office);
                         await Repositorie.insertArrest(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], office)
                     }
                 })
@@ -155,7 +156,6 @@ class WebScraping {
 
             if (onOff.length !== 1) {
                 onOff.forEach(async line => {
-                    const lastInsertPower = await Repositorie.listPower(line[2])
                     const pop = line.pop()
 
                     var dia = line[1].slice(8, 10)
@@ -164,11 +164,13 @@ class WebScraping {
                     var hora = line[1].split(" ")[1];
 
                     const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + hora;
+                    const lastInsertPower = await Repositorie.listPower(line[2])
 
                     const date1 = new Date(date);
                     const date2 = new Date(lastInsertPower);
 
                     if (date1.getTime() > date2.getTime()) {
+                        console.log(line);
                         await Repositorie.insertPower(line)
                     }
                 })
@@ -381,12 +383,19 @@ class WebScraping {
 
                         const timeFinal = await secondToTime(diff)
                         const newDate = await formatStringDate(line[2])
-                        const time = `${newDate} ${timeFinal}`
 
-                        const newdate1 = new Date(time);
-                        const newdate2 = new Date(lastInsert);
+                        var ano = newDate.split("-")[2];
+                        var mes = newDate.split("-")[1];
+                        var dia = newDate.split("-")[0];
 
-                        if (newdate1.getTime() > newdate2.getTime()) {
+                        const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2);
+                        const time = `${date} ${timeFinal}`
+
+                        const newdate1 = moment(time)
+
+                        const newdate2 = moment(lastInsert)
+
+                        if (newdate1.isAfter(newdate2)) {
                             const date = moment(time).format("YYYY-MM-DD HH:mm")
                             Repositorie.insertOffice(date, line[4], line[5], line[6])
                         }
@@ -463,12 +472,6 @@ class WebScraping {
                     "3543",
                     "911",
                     "ANSA3543"
-                ],
-                [
-                    "DC6",
-                    "3587",
-                    "232",
-                    "ANSA3587"
                 ]
             ]
 
@@ -476,20 +479,20 @@ class WebScraping {
 
                 const browser = await puppeteer.launch({
                     headless: true,
-                    args: ['--no-sandbox'],
+                    args: ['--no-sandbox']
                 })
+
                 const page = await browser.newPage()
-                await page.goto('https://webalarme.com.br/')
-                await page.setDefaultNavigationTimeout(0);
+                await page.goto('https://webalarme.com.br/', {waitUntil: 'load'})
                 await page.type('body > div.login.ng-scope > div.content > form > div.row.form-group.inline-fields.ng-scope > div.field.margin-right-10-percent > input', provider)
                 await page.type('body > div.login.ng-scope > div.content > form > div.row.form-group.inline-fields.ng-scope > div:nth-child(2) > input', login[2])
                 await page.type('body > div.login.ng-scope > div.content > form > div:nth-child(4) > div.form-group > div > input', login[3])
                 await page.click('body > div.login.ng-scope > div.content > form > div.form-actions.padding-login > button')
 
                 await page.waitForNavigation()
-                await page.waitForTimeout(1000)
 
-                await page.goto('https://webalarme.com.br/#!/events')
+                await page.goto('https://webalarme.com.br/#!/events', {waitUntil: 'load'})
+                page.setDefaultNavigationTimeout(0); 
                 await page.waitForTimeout(4000)
 
                 const data = await page.evaluate(() => {
@@ -525,19 +528,29 @@ class WebScraping {
                     await chunked.forEach(async line => {
                         const office = login[0]
                         const title = line[0].trim()
-                        const dt = moment(line[1]).format("DD-MM-YYYY HH:mm:ss")
+                        const dt = line[1].split(" ")[0]
+                        const time = line[1].split(" ")[1]
                         const lastInsert = await Repositorie.listInviolavel(office)
 
-                        const date1 = new Date(dt);
-                        const date2 = new Date(lastInsert);
+                        var dia = dt.split("/")[0];
+                        var mes = dt.split("/")[1];
+                        var ano = dt.split("/")[2];
+                    
+                        const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + " " + time;
 
-                        if (date1.getTime() > date2.getTime()) {
-                            const date = moment(dt).format("YYYY-MM-DD HH:mm")
+                        const newdate1 = moment(date);
+
+                        const newdate2 = moment(lastInsert)
+
+                        if (newdate1.isAfter(newdate2)) {
+                            const date = moment(newdate1).format("YYYY-MM-DD HH:mm:ss")
+                            console.log(date);
                             await Repositorie.insertInviolavel(title, date, line[2], login[0])
                         }
                     })
                 })
             })
+
         } catch (error) {
             throw new InternalServerError(error)
         }

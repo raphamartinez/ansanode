@@ -35,15 +35,12 @@ class Hbs {
 
     }
 
-    async dropSalary(user) {
+    dropSalary(){
         try {
-            const sql = `INSERT INTO ansa.user (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
-            await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
-
-            return true
+            const sql = `drop table ansa.salary`
+            return queryhbs(sql)
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError(error)
         }
     }
 
@@ -59,16 +56,7 @@ class Hbs {
         }
     }
 
-    updateUsers(){
-        try {
-            const sql = `drop table ansa.user`
-            return queryhbs(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-    async dropUser(user) {
+    async insertUser(user) {
         try {
             const sql = `INSERT INTO ansa.user (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
             await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
@@ -79,6 +67,16 @@ class Hbs {
             throw new InvalidArgumentError(error)
         }
     }
+
+    dropUsers(){
+        try {
+            const sql = `drop table ansa.user`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
 
     listReceive() {
         try {

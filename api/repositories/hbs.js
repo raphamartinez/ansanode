@@ -139,6 +139,116 @@ class Hbs {
             throw new InternalServerError(error)
         }
     }
+
+    listNcs() {
+        try {
+            const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, DueDate,
+            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, Invoice.SalesMan, 
+            CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office 
+            , Invoice.Comment, Customer.GroupCode as CustGroup
+            , Saldo as SaldoInv
+            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            FROM Invoice 
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
+            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            WHERE Invoice.Saldo != 0
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
+            AND Invoice.OpenFlag = 1
+            AND Invoice.DueDate < now()
+            AND Invoice.Status = 1 
+            AND (Invalid<> 1 OR Invalid IS NULL) 
+            AND InvoiceType <> 1
+            AND (Installments = 0 OR Installments IS NULL) 
+            ORDER BY Invoice.SerNr `
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listInvoices() {
+        try {
+            const sql = ` SELECT 'A' as DocType, '' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date,
+            DueDate, Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, Invoice.SalesMan, 
+            CurrencyRate, BaseRate, Total as Total, Saldo, Invoice.Office 
+            , Invoice.Comment ,Customer.GroupCode as CustGroup
+            , Saldo as SaldoInv
+            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            FROM Invoice 
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
+            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            WHERE Invoice.Saldo != 0
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
+            AND Invoice.OpenFlag = 1
+            AND Invoice.DueDate < now()
+            AND Invoice.Status = 1 
+            AND (Invalid <> 1 OR Invalid IS NULL) 
+            AND InvoiceType <> 1 
+            AND (Installments = 0 OR Installments IS NULL) 
+            ORDER BY Invoice.SerNr `
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listInstalls() {
+        try {
+            const sql = ` SELECT 'A' as DocType,"Installment" as Type, InvoiceType, SerNr,InstallNr, CONCAT(TransDate, " ", TransTime) AS date,
+            InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency,
+            CurrencyRate, BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo,
+            Invoice.Saldo as SaldoInv, Amount as Total,Invoice.SalesMan, Invoice.Office, Invoice.Comment
+            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            FROM InvoiceInstallRow 
+            INNER JOIN Invoice ON Invoice.internalId = InvoiceInstallRow.masterId
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode
+            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            WHERE Invoice.Status = 1
+            AND InvoiceInstallRow.OpenFlag = 1
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
+            AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND now()
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
+            ORDER BY SerNr `
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listPurchaseOrders() {
+        try {
+            const sql = ` SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate 
+            , ce.CustCode, ce.CustName, ce.ItemTotal as Saldo, '' as PayTerm, ce.TransDate as DueDate, ce.ItemTotal as Total, ce.Office, '' as OfficialSerNr, '' as InstallNr
+            , '' as SalesMan ,'' as SalesManName
+            , '' as Comment,'' as CustGroup
+            , 0 as SaldoInv
+            FROM CupoEntry ce 
+            INNER JOIN Office ofi ON ce.Office = ofi.Code
+            INNER JOIN Customer ON ce.CustCode = Customer.Code 
+            WHERE ce.Status = 1 AND (ce.Invalid IS NULL or ce.Invalid = 0) 
+            AND ce.CupoType = 2 
+            AND (ce.Invoiced = 0 or ce.Invoiced IS NULL) 
+            ORDER BY SerNr`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    async insertReceivable(receivable) {
+        try {
+            const sql = `INSERT INTO ansa.receivable set ?`
+            await query(sql, receivable)
+
+            return true
+        } catch (error) {
+            console.log(error);
+            throw new InvalidArgumentError(error)
+        }
+    }
 }
 
 module.exports = new Hbs()

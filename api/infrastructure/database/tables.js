@@ -30,6 +30,21 @@ class Tables {
     return true
   }
 
+  createTableReceivable() {
+    const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
+     InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double,
+     SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), 
+     OfficialSerNr VARCHAR (100), Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, 
+     Saldo double, Office int, Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
   createTableReceive() {
     const sql = `CREATE TABLE IF NOT EXISTS receive (id_receive int NOT NULL AUTO_INCREMENT, serNr double,
      SalesMan VARCHAR (250), nameSalesman VARCHAR (250), code int, client VARCHAR (250), CustomerGroup VARCHAR (50), 

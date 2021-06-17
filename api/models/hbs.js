@@ -98,6 +98,34 @@ class Hbs {
             throw new InternalServerError(error)
         }
     }
+
+    async listReceivables() {
+        try {
+            const ncs = await Repositorie.listNcs() 
+            ncs.forEach(obj => {
+                Repositorie.insertReceivable(obj)
+            });
+
+            const inv = await Repositorie.listInvoices() 
+            inv.forEach(obj => {
+                Repositorie.insertReceivable(obj)
+            });
+
+            const purchases = await Repositorie.listPurchaseOrders() 
+            purchases.forEach(obj => {
+                Repositorie.insertReceivable(obj)
+            });
+
+            const installs = await Repositorie.listInstalls() 
+            installs.forEach(obj => {
+                Repositorie.insertReceivable(obj)
+            });
+
+            return true
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
 }
 
 module.exports = new Hbs

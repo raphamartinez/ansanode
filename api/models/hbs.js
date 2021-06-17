@@ -95,7 +95,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError(error)
         }
     }
 }

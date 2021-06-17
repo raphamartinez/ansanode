@@ -66,29 +66,32 @@ class Hbs {
         try {
             const data = await Repositorie.listReceive()
             data.forEach(obj => {
-                if (obj.rowNr <= 2) {
-                    obj.rowNr = 1
-                }
 
-                if (obj.Currency === "GS") {
-                    obj.d15USD = obj.d15 / obj.BaseRate
-                    obj.d30USD = obj.d30 / obj.BaseRate
-                    obj.d60USD = obj.d60 / obj.BaseRate
-                    obj.d90USD = obj.d90 / obj.BaseRate
-                    obj.d120USD = obj.d120 / obj.BaseRate
-                    obj.dm120USD = obj.dm120 / obj.BaseRate
-                } else {
-                    if (obj.Currency === "RE") {
-                        obj.d15USD = obj.d15 * obj.FromRate / obj.BaseRate
-                        obj.d30USD = obj.d30 * obj.FromRate / obj.BaseRate
-                        obj.d60USD = obj.d60 * obj.FromRate / obj.BaseRate
-                        obj.d90USD = obj.d90 * obj.FromRate / obj.BaseRate
-                        obj.d120USD = obj.d120 * obj.FromRate / obj.BaseRate
-                        obj.dm120USD = obj.dm120 * obj.FromRate / obj.BaseRate
+                if (obj.lastPay === null) {
+                    if (obj.rowNr <= 2) {
+                        obj.rowNr = 1
                     }
-                }
 
-                Repositorie.insertReceive(obj)
+                    if (obj.Currency === "GS") {
+                        obj.d15USD = obj.d15 / obj.BaseRate
+                        obj.d30USD = obj.d30 / obj.BaseRate
+                        obj.d60USD = obj.d60 / obj.BaseRate
+                        obj.d90USD = obj.d90 / obj.BaseRate
+                        obj.d120USD = obj.d120 / obj.BaseRate
+                        obj.dm120USD = obj.dm120 / obj.BaseRate
+                    } else {
+                        if (obj.Currency === "RE") {
+                            obj.d15USD = obj.d15 * obj.FromRate / obj.BaseRate
+                            obj.d30USD = obj.d30 * obj.FromRate / obj.BaseRate
+                            obj.d60USD = obj.d60 * obj.FromRate / obj.BaseRate
+                            obj.d90USD = obj.d90 * obj.FromRate / obj.BaseRate
+                            obj.d120USD = obj.d120 * obj.FromRate / obj.BaseRate
+                            obj.dm120USD = obj.dm120 * obj.FromRate / obj.BaseRate
+                        }
+                    }
+
+                    Repositorie.insertReceive(obj)
+                }
             });
 
             return true

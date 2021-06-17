@@ -140,11 +140,12 @@ class Hbs {
         }
     }
 
-    listNcs() {
+    listNcs() { 
+        
         try {
-            const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, DueDate,
-            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, Invoice.SalesMan, 
-            CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office 
+            const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, Invoice.DueDate
+            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, Invoice.SalesMan
+            ,CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office 
             , Invoice.Comment, Customer.GroupCode as CustGroup
             , Saldo as SaldoInv
             ,concat(per.Name,' ' ,LastName) as SalesManName 

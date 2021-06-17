@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableReceivable()
     this.createTableReceive()
     this.createTableSalary()
     this.createTableWebscrapingHistory()

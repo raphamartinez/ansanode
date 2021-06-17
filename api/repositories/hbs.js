@@ -241,7 +241,6 @@ class Hbs {
     async insertReceivable(receivable) {
         try {
             const sql = `INSERT INTO ansa.receivable set ?`
-            console.log(receivable);
             await query(sql, receivable)
 
             return true

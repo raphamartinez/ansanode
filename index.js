@@ -17,7 +17,7 @@ connection.connect((error => {
         const app = customExpress()
         app.listen(3000, () => {
             tables.init(connection)
-            console.log('Server Running!');
+            console.log('Server Running!!!');
             app.use(express.static(__dirname + '/public'))
             app.use(express.static(__dirname + '/views'))
 

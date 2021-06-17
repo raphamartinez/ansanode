@@ -9,33 +9,28 @@ const express = require('express')
 const Hbs = require('./api/models/hbs')
 const CronJob = require('cron').CronJob
 
-connection.connect((error => {
-    process.setMaxListeners(100)
-    if (error) {
-        console.log(error)
-    } else {
-        const app = customExpress()
-        app.listen(3000, () => {
-            tables.init(connection)
-            console.log('Server Running!!!');
-            app.use(express.static(__dirname + '/public'))
-            app.use(express.static(__dirname + '/views'))
+process.setMaxListeners(100)
 
-            app.all('/', function (req, res) {
-                res.sendFile(__dirname + '/views/public/login.html');
-            });
+const app = customExpress()
+app.listen(3000, () => {
+    console.log('Server Running!!!');
+    app.use(express.static(__dirname + '/public'))
+    app.use(express.static(__dirname + '/views'))
 
-            Hbs.listReceive()
+    app.all('/', function (req, res) {
+        res.sendFile(__dirname + '/views/public/login.html');
+    });
 
-            const job = new CronJob('0 01 * * * *', () => {
-                try {
-                    console.log('Executed Cron sucessfuly!');
-                    WebScraping.init()
-                } catch (error) {
-                    console.log('Error cron!');
-                }
-            });
-            job.start()
-        })
-    }
-}))
+    Hbs.listReceive()
+
+    const job = new CronJob('0 01 * * * *', () => {
+        try {
+            console.log('Executed Cron sucessfuly!');
+            WebScraping.init()
+        } catch (error) {
+            console.log('Error cron!');
+        }
+    });
+    job.start()
+})
+

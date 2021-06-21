@@ -273,13 +273,13 @@ LEFT JOIN DeliveryAddress da ON da.Code = inv.DelAddressCode and da.CustCode = i
 LEFT JOIN (SELECT payInvRow.InvoiceNr, IF(ISNULL(SUM(ABS(payInvRow.InvoiceAmount))),0,SUM(ABS(payInvRow.InvoiceAmount))) AS Pagado
 FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
 WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
-AND pay.TransDate <= '1999-01-01'
+AND pay.TransDate <= '2030-01-01'
 GROUP BY payInvRow.InvoiceNr
 ) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND inv.InvoiceType <> 1)
 LEFT JOIN (SELECT pir.InvoiceNr, IF(ISNULL(SUM(ABS(pir.InvoiceAmount))),0,SUM(ABS(pir.InvoiceAmount))) AS Aplicado
 FROM ReceiptInvoiceRow AS pir INNER JOIN Receipt AS p ON p.internalid = pir.masterid
 WHERE p.Status = 1 AND (p.Invalid = 0 or p.Invalid IS NULL)
-AND p.TransDate <= '1999-01-01'
+AND p.TransDate <= '2030-01-01'
 GROUP BY pir.InvoiceNr
 ) AS Aplicaciones ON (inv.SerNr = Aplicaciones.InvoiceNr AND inv.InvoiceType = 1)
 LEFT JOIN (SELECT AppliesToInvoiceNr, IF(ISNULL(SUM(inv.Total)),0,SUM(inv.Total)) AS NCTotal
@@ -307,14 +307,14 @@ INNER JOIN PayTerm ON (PayTerm.Code = inv.PayTerm AND PayTerm.PayType IN (0,1,4)
 LEFT JOIN (SELECT payInvRow.InvoiceNr, payInvRow.InstallNr, IF(ISNULL(SUM(payInvRow.InvoiceAmount)),0,SUM(payInvRow.InvoiceAmount)) AS Pagado
 FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
 WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
-AND pay.TransDate <= '1999-01-01'
+AND pay.TransDate <= '2030-01-01'
 GROUP BY payInvRow.InvoiceNr, payInvRow.InstallNr
 ) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND invInst.InstallNr = Pagos.InstallNr)
 WHERE (Invalid=0 OR Invalid IS NULL)
 AND invInst.DueDate <= '2030-01-01'
 AND (inv.DisputedFlag = 0 OR inv.DisputedFlag IS NULL) 
 AND Status = 1
-AND (inv.AppliesToInvoiceNr IS NULL OR inv.AppliesToInvoiceNr NOT IN (SELECT SerNr FROM Invoice inc WHERE inc.TransDate <= '1999-01-01' AND inc.CustCode = inv.CustCode))
+AND (inv.AppliesToInvoiceNr IS NULL OR inv.AppliesToInvoiceNr NOT IN (SELECT SerNr FROM Invoice inc WHERE inc.TransDate <= '2030-01-01' AND inc.CustCode = inv.CustCode))
 ORDER BY SerNr`
             return queryhbs(sql)
         } catch (error) {

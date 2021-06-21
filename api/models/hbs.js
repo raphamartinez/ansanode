@@ -125,7 +125,7 @@ class Hbs {
             receipts.forEach(obj => {
                 Repositorie.insertReceivable(obj)
             });
-            console.log('finalizada a consulta');
+             console.log('finalizada a consulta')
             return true
         } catch (error) {
             throw new InternalServerError(error)

@@ -131,6 +131,21 @@ class Hbs {
             throw new InternalServerError(error)
         }
     }
+
+    async listRetroReceivables() {
+        try {
+            console.log('executando....')
+            const invoices = await Repositorie.listRetroReceivable()
+            invoices.forEach(obj => {
+                Repositorie.insertRetroReceivable(obj)
+            });
+
+             console.log('finalizada a consulta')
+            return true
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
 }
 
 module.exports = new Hbs

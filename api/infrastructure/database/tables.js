@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableRetroReceivable()
     this.createTableReceivable()
     this.createTableReceive()
     this.createTableSalary()
@@ -29,6 +30,20 @@ class Tables {
     this.createTableViewPowerBI()
 
     return true
+  }
+
+  createTableRetroReceivable() {
+    const sql = `CREATE TABLE IF NOT EXISTS retroReceivable (id_receivable int NOT NULL AUTO_INCREMENT, Type VARCHAR (15), SerNr double, BaseRate double, OfficialSerNr VARCHAR (100), 
+     date DATETIME, DueDate date, InvoiceDate date,InstallNr VARCHAR (10), PayTerm VARCHAR (5), ClientCode int, ClientName VARCHAR (150), ClientPhone VARCHAR (50),
+     Currency VARCHAR (5),  CurrencyRate double,  Total double, 
+     Saldo double, PRIMARY KEY (id_receivable))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableReceivable() {

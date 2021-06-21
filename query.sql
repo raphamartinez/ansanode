@@ -120,7 +120,46 @@ ORDER BY SerNr
 
 
 
+# retro
 
+
+
+         (SELECT SUM(nc.Total)
+         FROM [:1] AS nc  
+         WHERE (nc.AppliesToInvoiceNr IS NOT NULL OR nc.AppliesToInvoiceNr <> 0)
+         AND nc.Status = 1 AND (nc.Invalid = 0 OR nc.Invalid IS NULL)
+         AND nc.%s <= d|%s| %(self.TransDateField,record.ToDate)
+         AND nc.AppliesToInvoiceNr = [inv].SerNr
+         AND nc.InvoiceType = 1
+         )
+         
+         (SELECT SUM(-nci.Amount)
+         FROM [:1] AS nc
+         INNER JOIN  InvoiceInstallRow nci ON `nc`.`internalId` = `nci`.`masterId`
+         WHERE (nc.AppliesToInvoiceNr IS NOT NULL OR nc.AppliesToInvoiceNr <> 0)
+         AND nc.DueDate <= '2030-01-01'
+         AND nc.AppliesToInvoiceNr = [inv].SerNr AND nci.InstallNr = [invInst].InstallNr 
+         AND nc.InvoiceType = 1)
+         
+         (SELECT SUM(IF(inv.OriginType = 120,pir.InvoiceAmount,ABS(pir.InvoiceAmount)))
+         FROM [:3] AS pir INNER JOIN [:4] AS p ON p.internalid = pir.masterid
+         WHERE p.Status = 1 AND (p.Invalid = 0 or p.Invalid IS NULL)
+         AND p.TransDate <= '2030-01-01'
+         AND pir.InvoiceNr = [inv].SerNr)
+         
+         (SELECT SUM(IF(inv.OriginType = 120,payInvRow.InvoiceAmount,ABS(payInvRow.InvoiceAmount)))
+         FROM [:3] AS payInvRow INNER JOIN [:4] AS pay ON pay.internalid = payInvRow.masterid
+         WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
+         AND pay.TransDate <= '2030-01-01'
+         AND payInvRow.InvoiceNr = inv.SerNr)
+         
+         (SELECT SUM(payInvRow.InvoiceAmount)
+         FROM [:3] AS payInvRow INNER JOIN [:4] AS pay ON pay.internalid = payInvRow.masterid 
+         WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
+         AND pay.TransDate <= '2030-01-01'
+         AND payInvRow.InvoiceNr = inv.SerNr
+         AND payInvRow.InstallNr = invInst.InstallNr)
+         
 
 
 
@@ -177,3 +216,76 @@ WHERE?AND InvoiceNr = ? " invoiceNr"
 WHERE?AND vi.Status = 1 
 WHERE?AND (vi.Invalid = 0 OR vi.Invalid IS NULL) 
 GROUP BY viir.InvoiceNr 
+
+
+#retro - acc
+
+SELECT IF(InvoiceType = 1, 'Credit Note' , 'Invoice') as Type, SerNr, BaseRate, inv.OfficialSerNr, TransDate, TransTime, DueDate,InvoiceDate, 
+'' as InstallNr,inv.PayTerm,inv.CustCode as EntCode, ent.Name as EntName, ent.Phone as EntPhone,
+inv.DelAddressCode,da.Comment as DelAddressName,
+ent.PaymentManager, ent.PaymentPlace, ent.PaymentTime, ent.PaymentConsultDay, ent.PaymentDay,
+inv.Currency, CurrencyRate, IF(InvoiceType=1,-(Total-IF(Aplicado,Aplicado,0)),Total) as Total, Saldo, Pagos.Pagado, NotasCredito.NCTotal, Aplicaciones.Aplicado
+,(select NewCurRate from InvoiceCurrencyRateHistory where TransDate >= '1999-01-01' and InvoiceSerNr = inv.SerNr and OriginType = 1 limit 1) as CurRateHist
+FROM Invoice AS inv
+INNER JOIN Customer AS ent ON ent.Code = inv.CustCode 
+INNER JOIN PayTerm ON (PayTerm.Code = inv.PayTerm AND PayTerm.PayType IN (0,1,4))
+LEFT JOIN DeliveryAddress da ON da.Code = inv.DelAddressCode and da.CustCode = inv.CustCode 
+LEFT JOIN (SELECT payInvRow.InvoiceNr, IF(ISNULL(SUM(ABS(payInvRow.InvoiceAmount))),0,SUM(ABS(payInvRow.InvoiceAmount))) AS Pagado
+FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
+WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
+AND pay.TransDate <= '1999-01-01'
+GROUP BY payInvRow.InvoiceNr
+) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND inv.InvoiceType <> 1)
+LEFT JOIN (SELECT pir.InvoiceNr, IF(ISNULL(SUM(ABS(pir.InvoiceAmount))),0,SUM(ABS(pir.InvoiceAmount))) AS Aplicado
+FROM ReceiptInvoiceRow AS pir INNER JOIN Receipt AS p ON p.internalid = pir.masterid
+WHERE p.Status = 1 AND (p.Invalid = 0 or p.Invalid IS NULL)
+AND p.TransDate <= '1999-01-01'
+GROUP BY pir.InvoiceNr
+) AS Aplicaciones ON (inv.SerNr = Aplicaciones.InvoiceNr AND inv.InvoiceType = 1)
+LEFT JOIN (SELECT AppliesToInvoiceNr, IF(ISNULL(SUM(inv.Total)),0,SUM(inv.Total)) AS NCTotal
+FROM Invoice AS inv
+WHERE (inv.AppliesToInvoiceNr IS NOT NULL OR inv.AppliesToInvoiceNr <> 0)
+AND inv.Status = 1 AND (inv.Invalid = 0 OR inv.Invalid IS NULL)
+AND inv.DueDate <= '2030-01-01'
+AND inv.InvoiceType = 1
+GROUP BY AppliesToInvoiceNr ) AS NotasCredito ON inv.SerNr = NotasCredito.AppliesToInvoiceNr
+WHERE (Invalid=0 OR Invalid IS NULL) 
+AND DueDate <= '2030-01-01'
+AND (inv.DisputedFlag = 0 OR inv.DisputedFlag IS NULL) 
+AND Status = 1
+AND (inv.AppliesToInvoiceNr = 0 OR inv.AppliesToInvoiceNr IS NULL)
+AND (inv.Installments = 0 OR inv.Installments IS NULL) 
+UNION ALL
+SELECT 'Installment' as Type, SerNr, BaseRate, inv.OfficialSerNr as OfficialSerNr, TransDate, TransTime, invInst.DueDate as DueDate, InvoiceDate,
+invInst.InstallNr, inv.PayTerm, inv.CustCode as EntCode, ent.Name as EntName, ent.Phone as EntPhone,'' as DelAddressCode,'' as DelAddressName,
+ent.PaymentManager, ent.PaymentPlace, ent.PaymentTime, ent.PaymentConsultDay, ent.PaymentDay, 
+inv.Currency, CurrencyRate, Amount as Total, invInst.Saldo, Pagos.Pagado,
+
+(SELECT SUM(-nci.Amount)
+FROM Invoice AS nc
+INNER JOIN  InvoiceInstallRow nci ON `nc`.`internalId` = `nci`.`masterId`
+WHERE (nc.AppliesToInvoiceNr IS NOT NULL OR nc.AppliesToInvoiceNr <> 0)
+AND nc.Status = 1 AND (nc.Invalid = 0 OR nc.Invalid IS NULL)
+AND nc.DueDate <= '2030-01-01'
+AND nc.AppliesToInvoiceNr = inv.SerNr AND nci.InstallNr = invInst.InstallNr 
+AND nc.InvoiceType = 1)
+
+as NCTotal, 0 as Aplicado 
+,(select NewCurRate from InvoiceCurrencyRateHistory where TransDate >= '2030-01-01' and InvoiceSerNr = inv.SerNr and OriginType = 1 limit 1) as CurRateHist
+FROM InvoiceInstallRow AS invInst 
+INNER JOIN InvoiceItemRow AS invInstRw ON invInst.internalId = invInstRw.masterId
+INNER JOIN Invoice AS inv ON inv.internalId = invInst.masterId
+INNER JOIN Customer AS ent ON ent.Code = inv.CustCode
+INNER JOIN PayTerm ON (PayTerm.Code = inv.PayTerm AND PayTerm.PayType IN (0,1,4))
+LEFT JOIN (SELECT payInvRow.InvoiceNr, payInvRow.InstallNr, IF(ISNULL(SUM(payInvRow.InvoiceAmount)),0,SUM(payInvRow.InvoiceAmount)) AS Pagado
+FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
+WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
+AND pay.TransDate <= '1999-01-01'
+GROUP BY payInvRow.InvoiceNr, payInvRow.InstallNr
+) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND invInst.InstallNr = Pagos.InstallNr)
+WHERE (Invalid=0 OR Invalid IS NULL)
+AND invInst.DueDate <= '2030-01-01'
+AND (inv.DisputedFlag = 0 OR inv.DisputedFlag IS NULL) 
+AND Status = 1
+AND (inv.AppliesToInvoiceNr IS NULL OR inv.AppliesToInvoiceNr NOT IN (SELECT SerNr FROM Invoice inc WHERE inc.TransDate <= '1999-01-01' AND inc.CustCode = inv.CustCode))
+ORDER BY SerNr

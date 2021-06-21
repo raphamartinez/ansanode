@@ -239,6 +239,27 @@ class Hbs {
         }
     }
 
+    listReceipts() {
+        try {
+            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate, BaseRate,Code, Name, Comment, 
+            IF( OnAccount.Currency = 'GS', Saldo/BaseRate, IF( OnAccount.Currency = 'RE', Saldo * CurrencyRate / BaseRate , Saldo)) AS SaldoUSD
+            FROM OnAccount
+            INNER JOIN Customer on Customer.Code = Entity
+            WHERE OpenFlag = 1 
+            AND OnAccount.SerNr IN
+            (SELECT rir.OnAccNr
+            FROM ReceiptInvoiceRow rir 
+            INNER JOIN Receipt r ON r.internalId = rir.masterId 
+            WHERE r.Status = 1
+            AND (r.Invalid = 0 or r.Invalid is NULL)
+            AND rir.OnAccNr is not NULL
+            )`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     async insertReceivable(receivable) {
         try {
             const sql = `INSERT INTO ansa.receivable set ?`

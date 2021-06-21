@@ -101,34 +101,41 @@ class Hbs {
 
     async listReceivables() {
         try {
-            const ncs = await Repositorie.listNcs() 
+            const ncs = await Repositorie.listNcs()
             ncs.forEach(obj => {
                 console.log(obj);
 
                 Repositorie.insertReceivable(obj)
             });
 
-            const inv = await Repositorie.listInvoices() 
+            const inv = await Repositorie.listInvoices()
             inv.forEach(obj => {
                 console.log(obj);
 
                 Repositorie.insertReceivable(obj)
             });
 
-            const purchases = await Repositorie.listPurchaseOrders() 
+            const purchases = await Repositorie.listPurchaseOrders()
             purchases.forEach(obj => {
                 console.log(obj);
 
                 Repositorie.insertReceivable(obj)
             });
 
-            const installs = await Repositorie.listInstalls() 
+            const installs = await Repositorie.listInstalls()
             installs.forEach(obj => {
                 console.log(obj);
-                
+
                 Repositorie.insertReceivable(obj)
             });
 
+            const receipts = await Repositorie.listReceipts()
+            receipts.forEach(obj => {
+                console.log(obj);
+
+                Repositorie.insertReceivable(obj)
+            });
+            console.log('finalizada a consulta');
             return true
         } catch (error) {
             throw new InternalServerError(error)

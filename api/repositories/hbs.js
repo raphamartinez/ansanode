@@ -241,7 +241,7 @@ class Hbs {
 
     listReceipts() {
         try {
-            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate, BaseRate,Code as CustCode, Name, Comment, 
+            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate, BaseRate,Code as CustCode, Name as CustName, Comment, 
             IF( OnAccount.Currency = 'GS', Saldo/BaseRate, IF( OnAccount.Currency = 'RE', Saldo * CurrencyRate / BaseRate , Saldo)) AS SaldoInv
             FROM OnAccount
             INNER JOIN Customer on Customer.Code = Entity

@@ -221,7 +221,7 @@ class Hbs {
 
     listPurchaseOrders() {
         try {
-            const sql = ` SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate 
+            const sql = ` SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate as date
             , ce.CustCode, ce.CustName, ce.ItemTotal as Saldo, '' as PayTerm, ce.TransDate as DueDate, ce.ItemTotal as Total, ce.Office, '' as OfficialSerNr, '' as InstallNr
             , '' as SalesMan ,'' as SalesManName
             , '' as Comment,'' as CustGroup
@@ -241,7 +241,7 @@ class Hbs {
 
     listCheque() {
         try {
-            const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '' as InstallNr, Cheque.SerNr, Cheque.TransDate, Cheque.TransTime, Cheque.ExpDate DueDate, '' PayTerm, Cheque.CustCode, Cheque.CustName,
+            const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '' as InstallNr, Cheque.SerNr, CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate DueDate, '' PayTerm, Cheque.CustCode, Cheque.CustName,
             Cheque.ChequeNr OfficialSerNr, Cheque.Currency, Cheque.BankName, Cheque.OriginCurrencyRate CurrencyRate, Cheque.OriginBaseRate BaseRate, Cheque.Amount Total, 0 Saldo, Cheque.Office, if(Cheque.Reentered, 'Si', 'No') Comment
             FROM Cheque
             INNER JOIN Customer ON Customer.Code = Cheque.CustCode

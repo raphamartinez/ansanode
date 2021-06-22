@@ -21,7 +21,7 @@ app.listen(3000, () => {
         res.sendFile(__dirname + '/views/public/login.html');
     });
 
-    Hbs.listRetroReceivables()
+    Hbs.listReceivables()
 
     const job = new CronJob('0 01 * * * *', () => {
         try {

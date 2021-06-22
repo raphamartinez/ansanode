@@ -239,6 +239,26 @@ class Hbs {
         }
     }
 
+    listCheque() {
+        try {
+            const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '' as InstallNr, Cheque.SerNr, Cheque.TransDate, Cheque.TransTime, Cheque.ExpDate DueDate, '' PayTerm, Cheque.CustCode, Cheque.CustName,
+            Cheque.ChequeNr OfficialSerNr, Cheque.Currency, Cheque.BankName, Cheque.OriginCurrencyRate CurrencyRate, Cheque.OriginBaseRate BaseRate, Cheque.Amount Total, 0 Saldo, Cheque.Office, if(Cheque.Reentered, 'Si', 'No') Comment
+            FROM Cheque
+            INNER JOIN Customer ON Customer.Code = Cheque.CustCode
+            left JOIN ReceiptPayModeRow rpmr on  rpmr.ChequeNr = Cheque.SerNr 
+            left JOIN  Receipt ON  Receipt.internalId = rpmr.masterId and Receipt.Status = 1 
+            left  JOIN  PayMode ON rpmr.PayMode = PayMode.Code AND(PayMode.PayType = 2 or PayMode.PayType = 104) 
+            WHERE Cheque.Status in (1,7) 
+            AND Cheque.Type  in (0,1,2) 
+            group by  Cheque.SerNr
+            ORDER BY SerNr
+            `
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     listReceipts() {
         try {
             const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate, BaseRate,Code as CustCode, Name as CustName, Comment, 

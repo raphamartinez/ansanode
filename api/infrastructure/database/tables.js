@@ -50,7 +50,7 @@ class Tables {
     const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
      InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45),
      SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
-     Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, 
+     Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, Comment varchar (10), BankName varchar(25),
      Saldo double, Office int, Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
 
     this.connection.query(sql, (error) => {

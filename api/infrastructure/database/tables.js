@@ -48,7 +48,7 @@ class Tables {
 
   createTableReceivable() {
     const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
-     InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45),
+     InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
      SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
      Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
      Saldo double, Office int, Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`

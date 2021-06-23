@@ -145,7 +145,7 @@ class Hbs {
         try {
             const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, Invoice.DueDate
             , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, Invoice.SalesMan
-            ,CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office 
+            ,CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office , Invoice.FromRate
             , Invoice.Comment, Customer.GroupCode as CustGroup
             , Saldo as SaldoInv
             ,concat(per.Name,' ' ,LastName) as SalesManName 
@@ -162,7 +162,7 @@ class Hbs {
             AND InvoiceType = 1
             AND (AppliesToInvoiceNr = 0 OR AppliesToInvoiceNr IS NULL)
             AND (Installments = 0 OR Installments IS NULL) 
-            ORDER BY Invoice.SerNr `
+            ORDER BY Invoice.SerNr  `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -171,9 +171,9 @@ class Hbs {
 
     listInvoices() {
         try {
-            const sql = ` SELECT 'A' as DocType, '' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date,
+            const sql = `  SELECT 'A' as DocType, '' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date,
             DueDate, Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, Invoice.SalesMan, 
-            CurrencyRate, BaseRate, Total as Total, Saldo, Invoice.Office 
+            CurrencyRate, BaseRate, Total as Total, Saldo, Invoice.Office , Invoice.FromRate
             , Invoice.Comment ,Customer.GroupCode as CustGroup
             , Saldo as SaldoInv
             ,concat(per.Name,' ' ,LastName) as SalesManName 
@@ -184,8 +184,8 @@ class Hbs {
             WHERE Invoice.Saldo != 0
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
             AND Invoice.OpenFlag = 1
-            AND Invoice.DueDate < now()
             AND Invoice.Status = 1 
+            AND Invoice.DueDate < now()
             AND (Invalid <> 1 OR Invalid IS NULL) 
             AND InvoiceType <> 1 
             AND (Installments = 0 OR Installments IS NULL) 
@@ -198,10 +198,10 @@ class Hbs {
 
     listInstalls() {
         try {
-            const sql = ` SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
+            const sql = `SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
             InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency,
             Invoice.CurrencyRate, Invoice.BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo, InvoiceInstallRow.Amount as Total,
-            InvoiceInstallRow.Saldo as SaldoInv, Invoice.SalesMan, Invoice.Office, Invoice.Comment
+            InvoiceInstallRow.Saldo as SaldoInv, Invoice.SalesMan, Invoice.Office, Invoice.Comment, Invoice.FromRate
             ,concat(per.Name,' ' ,LastName) as SalesManName 
             FROM InvoiceInstallRow 
             INNER JOIN Invoice ON Invoice.internalId = InvoiceInstallRow.masterId
@@ -221,7 +221,7 @@ class Hbs {
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND '2030-01-01'
             GROUP BY Invoice.SerNr
-            ORDER BY SerNr`
+            ORDER BY SerNr  `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -250,7 +250,7 @@ class Hbs {
     listCheque() {
         try {
             const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '' as InstallNr, Cheque.SerNr, CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate DueDate, '' PayTerm, Cheque.CustCode, Cheque.CustName,
-            Cheque.ChequeNr OfficialSerNr, Cheque.Currency, Cheque.BankName, Cheque.OriginCurrencyRate CurrencyRate, Cheque.OriginBaseRate BaseRate, Cheque.Amount Total, 0 Saldo, Cheque.Office, if(Cheque.Reentered, 'Si', 'No') Comment
+            Cheque.ChequeNr OfficialSerNr, Cheque.Currency, Cheque.BankName, Cheque.OriginCurrencyRate as FromRate, Cheque.OriginBaseRate BaseRate, Cheque.Amount Total, 0 Saldo, Cheque.Office, if(Cheque.Reentered, 'Si', 'No') Comment
             FROM Cheque
             INNER JOIN Customer ON Customer.Code = Cheque.CustCode
             left JOIN ReceiptPayModeRow rpmr on  rpmr.ChequeNr = Cheque.SerNr 
@@ -269,7 +269,7 @@ class Hbs {
 
     listReceipts() {
         try {
-            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate, BaseRate,Code as CustCode, Name as CustName, Comment, 
+            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate as FromRate, BaseRate,Code as CustCode, Name as CustName, Comment, 
             IF( OnAccount.Currency = 'GS', Saldo/BaseRate, IF( OnAccount.Currency = 'RE', Saldo * CurrencyRate / BaseRate , Saldo)) AS SaldoInv
             FROM OnAccount
             INNER JOIN Customer on Customer.Code = Entity

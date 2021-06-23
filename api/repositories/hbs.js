@@ -199,7 +199,7 @@ class Hbs {
     listInstalls() {
         try {
             const sql = ` SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
-            InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency, IF(PromissoryNote.SerNr,PromissoryNote.SerNr,0) as PromissoryNoteNr,
+            InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency, IF(PromissoryNote.SerNr,
             Invoice.CurrencyRate, Invoice.BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo, InvoiceInstallRow.Amount as Total,
             InvoiceInstallRow.Saldo as SaldoInv, Invoice.SalesMan, Invoice.Office, Invoice.Comment
             ,concat(per.Name,' ' ,LastName) as SalesManName 

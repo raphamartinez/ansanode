@@ -158,8 +158,9 @@ class Hbs {
             AND Invoice.OpenFlag = 1
             AND Invoice.DueDate < now()
             AND Invoice.Status = 1 
-            AND (Invalid<> 1 OR Invalid IS NULL) 
-            AND InvoiceType <> 1
+            AND (Invalid <> 1 OR Invalid IS NULL) 
+            AND InvoiceType = 1
+            AND (AppliesToInvoiceNr = 0 OR AppliesToInvoiceNr IS NULL)
             AND (Installments = 0 OR Installments IS NULL) 
             ORDER BY Invoice.SerNr `
             return queryhbs(sql)
@@ -197,22 +198,30 @@ class Hbs {
 
     listInstalls() {
         try {
-            const sql = ` SELECT 'A' as DocType,"Installment" as Type, InvoiceType, SerNr,InstallNr, CONCAT(TransDate, " ", TransTime) AS date,
-            InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency,
-            CurrencyRate, BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo,
-            Invoice.Saldo as SaldoInv, Amount as Total,Invoice.SalesMan, Invoice.Office, Invoice.Comment
+            const sql = ` SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
+            InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency, IF(PromissoryNote.SerNr,PromissoryNote.SerNr,0) as PromissoryNoteNr,
+            Invoice.CurrencyRate, Invoice.BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo, InvoiceInstallRow.Amount as Total,
+            InvoiceInstallRow.Saldo as SaldoInv, Invoice.SalesMan, Invoice.Office, Invoice.Comment
             ,concat(per.Name,' ' ,LastName) as SalesManName 
             FROM InvoiceInstallRow 
             INNER JOIN Invoice ON Invoice.internalId = InvoiceInstallRow.masterId
             INNER JOIN Customer ON Customer.Code = Invoice.CustCode
+            LEFT JOIN PromissoryNote ON (PromissoryNote.InvoiceNr = Invoice.SerNr AND InvoiceInstallRow.InstallNr = PromissoryNote.InvoiceInstallNr and PromissoryNote.Status = 1 and (PromissoryNote.Invalid = 0 or PromissoryNote.Invalid IS NULL))
             LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode
+            LEFT JOIN (SELECT npn.OriginNr, npnr.InstallNr, npnr.SupCode, npnr.SupName
+                FROM NegociatePromissoryNote npn inner join NegociatePromissoryNoteRow npnr on npn.internalId = npnr.masterId
+                WHERE npn.Status = 1 AND (npn.Invalid = 0 OR npn.Invalid IS NULL) AND OriginType = 1) npn
+                ON (Invoice.SerNr = npn.OriginNr AND InvoiceInstallRow.InstallNr = npn.InstallNr)
+
             LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
             WHERE Invoice.Status = 1
             AND InvoiceInstallRow.OpenFlag = 1
             AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND now()
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
-            ORDER BY SerNr `
+            AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND '2030-01-01'
+            GROUP BY Invoice.SerNr
+            ORDER BY SerNr`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -221,18 +230,17 @@ class Hbs {
 
     listPurchaseOrders() {
         try {
-            const sql = ` SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate as date
+            const sql = `  SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate as date
             , ce.CustCode, ce.CustName, ce.ItemTotal as Saldo, '' as PayTerm, ce.TransDate as DueDate, ce.ItemTotal as Total, ce.Office, '' as OfficialSerNr, '' as InstallNr
             , '' as SalesMan ,'' as SalesManName
-            , '' as Comment,'' as CustGroup
-            , 0 as SaldoInv
+            , '' as Comment
             FROM CupoEntry ce 
             INNER JOIN Office ofi ON ce.Office = ofi.Code
             INNER JOIN Customer ON ce.CustCode = Customer.Code 
             WHERE ce.Status = 1 AND (ce.Invalid IS NULL or ce.Invalid = 0) 
             AND ce.CupoType = 2 
             AND (ce.Invoiced = 0 or ce.Invoiced IS NULL) 
-            ORDER BY SerNr`
+            ORDER BY SerNr  `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

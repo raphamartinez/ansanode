@@ -3,9 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
-    this.createTableRetroReceivable()
     this.createTableReceivable()
-    this.createTableReceive()
     this.createTableSalary()
     this.createTableWebscrapingHistory()
     this.createTableProsegurDistance()
@@ -32,19 +30,6 @@ class Tables {
     return true
   }
 
-  createTableRetroReceivable() {
-    const sql = `CREATE TABLE IF NOT EXISTS retroReceivable (id_receivable int NOT NULL AUTO_INCREMENT, Type VARCHAR (15), SerNr double, BaseRate double, OfficialSerNr VARCHAR (100), 
-    date DATETIME, DueDate date, InvoiceDate date,InstallNr VARCHAR (10), PayTerm VARCHAR (5), ClientCode int, ClientName VARCHAR (150), ClientPhone VARCHAR (50), Office int,
-    Currency VARCHAR (5),  CurrencyRate double,  Total double, Pagado double, NCTotal double, Aplicado double, ncAplicadoEnFact double, inv varchar (10), invInst varchar (10),
-    Saldo double, PRIMARY KEY (id_receivable))`
-
-    this.connection.query(sql, (error) => {
-      if (error) {
-        console.log(error)
-      } else {
-      }
-    })
-  }
 
   createTableReceivable() {
     const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
@@ -61,22 +46,6 @@ class Tables {
     })
   }
 
-  createTableReceive() {
-    const sql = `CREATE TABLE IF NOT EXISTS receive (id_receive int NOT NULL AUTO_INCREMENT, serNr double,
-     SalesMan VARCHAR (250), nameSalesman VARCHAR (250), code int, client VARCHAR (250), CustomerGroup VARCHAR (50), 
-     TransDate DATE, Office int, Days VARCHAR (20), rowNr int, 
-     d15 double, d30 double, d60 double, d90 double, d120 double,dm120 double, 
-     d15USD double, d30USD double, d60USD double, d90USD double, d120USD double,dm120USD double, 
-     Vencido double, DueDate DATE, Saldo double, lastPay DATE, Currency VARCHAR (5), BaseRate double, CurrencyRate double, FromRate double, PayTerm VARCHAR (5),
-     totalCurrency double, ttcredutilizmonorig double, status VARCHAR (5), ttVencidoUsd double, ttcredutilizuSD double, PRIMARY KEY (id_receive))`
-
-    this.connection.query(sql, (error) => {
-      if (error) {
-        console.log(error)
-      } else {
-      }
-    })
-  }
 
   createTableSalary() {
     const sql = `CREATE TABLE IF NOT EXISTS salary (id_salary int NOT NULL AUTO_INCREMENT, serNr double, dateTime DATETIME, 

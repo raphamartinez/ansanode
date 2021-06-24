@@ -78,58 +78,6 @@ class Hbs {
     }
 
 
-    listReceive() {
-        try {
-            const sql = ` SELECT SerNr,SalesMan,nameSalesMan,CODE AS code,NAME AS client,CustomerGroup,TransDate,Office,Days,rowNr +1 as rowNr,
-            SUM(d15) AS d15,SUM(d30) AS d30 ,SUM(d60) AS d60,SUM(d90) AS d90,SUM(d120) AS d120,SUM(dm120) AS dm120,
-            SUM(d15) AS d15USD,SUM(d30) AS d30USD,SUM(d60) AS d60USD,SUM(d90) AS d90USD,SUM(d120) AS d120USD,SUM(dm120) AS dm120USD,SUM(Vencido) AS Vencido,
-                        DueDate,Saldo,LastPayDate AS lastPay,Currency, BaseRate, CurrencyRate, FromRate, PayTerm,
-                        SUM(d15+ d30+ d60+ d90+ d120+ dm120) AS totalCurrency, Total as ttcredutilizmonorig,
-                        IF(SUM(d15+ d30+ d60+ d90+ d120+ dm120) <> 0, 'S', 'N') AS status,
-                        IF(Currency = "GS", SUM(d15+ d30+ d60+ d90+ d120+ dm120)/BaseRate, IF(Currency = "RE", SUM(d15+ d30+ d60+ d90+ d120+ dm120) * FromRate / BaseRate, SUM(d15+ d30+ d60+ d90+ d120+ dm120))) AS ttVencidoUsd,
-                        IF(Currency = "GS", Total/BaseRate, IF(Currency = "RE", Total * FromRate / BaseRate, Total)) AS ttcredutilizuSD
-                        FROM (SELECT i.SerNr,sa.SalesMan,u.name AS nameSalesMan,c.Code,c.GroupCode as CustomerGroup,i.TransDate,i.Office,c.Name,DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW()) AS Days,ir.rowNr,i.Currency,i.CurrencyRate,i.BaseRate, i.FromRate
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 0 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 15,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d15
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 15 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 30,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d30
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 30 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 60,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d60 
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 60 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 90,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d90 
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 90 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 120,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d120
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 120,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS dm120
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 0 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 15,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d15USD
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 15 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 30,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d30USD
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 30 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 60,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d60USD
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 60 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 90,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS d90USD
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 90 AND DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 <= 120,IF(ir.Saldo !=  0,ir.Saldo,i.Saldo ),0)) AS d120USD
-                        ,SUM(IF(DATEDIFF(IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate),NOW())*-1 > 120,IF(ir.Saldo != 0,ir.Saldo,i.Saldo ),0)) AS dm120USD
-                        ,SUM(IF(DATEDIFF(ir.DueDate,NOW()) < 0,ir.Saldo,0)) AS Vencido,IF(ir.DueDate IS NULL,i.DueDate,ir.DueDate) AS DueDate,i.Saldo,IF(i.PayTerm = "NC",i.Total * -1,i.Total ) as Total, i.PayTerm
-                        ,(SELECT MAX(TransDate)  FROM Receipt r INNER JOIN ReceiptInvoiceRow rr ON rr.masterId = r.internalId WHERE rr.InvoiceNr = i.SerNr AND r.Status = 1 AND  i.OpenFlag = 1 AND (r.Invalid = 0 OR r.Invalid IS NULL)) AS LastPayDate   
-                        ,it.ItemGroup 
-                        FROM  Invoice i
-                        INNER JOIN Customer c ON c.Code = i.CustCode  
-                        LEFT JOIN InvoiceItemRow AS iir ON (iir.masterId = i.internalId AND iir.rowNr = 0)  
-                        LEFT JOIN Item it ON it.Code = iir.ArtCode 
-                        LEFT JOIN InvoiceInstallRow AS ir ON (ir.masterId = i.internalId AND ir.Saldo <> 0)
-                        INNER JOIN SalesOrder AS sa ON (iir.OriginSerNr = sa.SerNr)
-                        INNER JOIN User u ON sa.SalesMan = u.Code
-                        WHERE i.Saldo != 0 AND i.STATUS = 1 AND (i.Invalid = 0 OR i.Invalid IS NULL ) AND i.OpenFlag = 1 GROUP BY i.SerNr,ir.rowNr )
-                        AS a GROUP BY SerNr `
-            return queryhbs(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-    async insertReceive(receive) {
-        try {
-            const sql = `INSERT INTO ansa.receive set ?`
-            await query(sql, receive)
-
-            return true
-        } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
-        }
-    }
 
     dropReceive(){
         try {
@@ -156,7 +104,6 @@ class Hbs {
             WHERE Invoice.Saldo != 0
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
             AND Invoice.OpenFlag = 1
-            AND Invoice.DueDate < now()
             AND Invoice.Status = 1 
             AND (Invalid <> 1 OR Invalid IS NULL) 
             AND InvoiceType = 1
@@ -185,7 +132,6 @@ class Hbs {
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
             AND Invoice.OpenFlag = 1
             AND Invoice.Status = 1 
-            AND Invoice.DueDate < now()
             AND (Invalid <> 1 OR Invalid IS NULL) 
             AND InvoiceType <> 1 
             AND (Installments = 0 OR Installments IS NULL) 
@@ -212,7 +158,6 @@ class Hbs {
                 FROM NegociatePromissoryNote npn inner join NegociatePromissoryNoteRow npnr on npn.internalId = npnr.masterId
                 WHERE npn.Status = 1 AND (npn.Invalid = 0 OR npn.Invalid IS NULL) AND OriginType = 1) npn
                 ON (Invoice.SerNr = npn.OriginNr AND InvoiceInstallRow.InstallNr = npn.InstallNr)
-
             LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
             WHERE Invoice.Status = 1
             AND InvoiceInstallRow.OpenFlag = 1
@@ -282,85 +227,6 @@ class Hbs {
             AND (r.Invalid = 0 or r.Invalid is NULL)
             AND rir.OnAccNr is not NULL
             )`
-            return queryhbs(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-    listRetroReceivable(){
-        try {
-            const sql = `
-            SELECT IF(InvoiceType = 1, 'Credit Note' , 'Invoice') as Type, SerNr, Office, BaseRate, inv.OfficialSerNr, CONCAT(TransDate, " ", TransTime) AS date, DueDate,InvoiceDate, 
-'' as InstallNr,inv.PayTerm,inv.CustCode as ClientCode, ent.Name as ClientName, ent.Phone as ClientPhone,
-inv.Currency, CurrencyRate, IF(InvoiceType=1,-(Total-IF(Aplicado,Aplicado,0)),Total) as Total, Saldo
-, 0 as PagoRetencion 
-FROM Invoice AS inv
-INNER JOIN Customer AS ent ON ent.Code = inv.CustCode 
-INNER JOIN PayTerm ON (PayTerm.Code = inv.PayTerm AND PayTerm.PayType IN (0,1,4))
-LEFT JOIN DeliveryAddress da ON da.Code = inv.DelAddressCode and da.CustCode = inv.CustCode 
-LEFT JOIN (SELECT payInvRow.InvoiceNr, IF(ISNULL(SUM(ABS(payInvRow.InvoiceAmount))),0,SUM(ABS(payInvRow.InvoiceAmount))) AS Pagado
-FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
-WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
-AND pay.TransDate <= '2030-01-01'
-GROUP BY payInvRow.InvoiceNr
-) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND inv.InvoiceType <> 1)
-LEFT JOIN (SELECT pir.InvoiceNr, IF(ISNULL(SUM(ABS(pir.InvoiceAmount))),0,SUM(ABS(pir.InvoiceAmount))) AS Aplicado
-FROM ReceiptInvoiceRow AS pir INNER JOIN Receipt AS p ON p.internalid = pir.masterid
-WHERE p.Status = 1 AND (p.Invalid = 0 or p.Invalid IS NULL)
-AND p.TransDate <= '2030-01-01'
-GROUP BY pir.InvoiceNr
-) AS Aplicaciones ON (inv.SerNr = Aplicaciones.InvoiceNr AND inv.InvoiceType = 1)
-LEFT JOIN (SELECT AppliesToInvoiceNr, IF(ISNULL(SUM(inv.Total)),0,SUM(inv.Total)) AS NCTotal
-FROM Invoice AS inv
-WHERE (inv.AppliesToInvoiceNr IS NOT NULL OR inv.AppliesToInvoiceNr <> 0)
-AND inv.Status = 1 AND (inv.Invalid = 0 OR inv.Invalid IS NULL)
-AND inv.DueDate <= '2030-01-01'
-AND inv.InvoiceType = 1
-GROUP BY AppliesToInvoiceNr ) AS NotasCredito ON inv.SerNr = NotasCredito.AppliesToInvoiceNr
-WHERE (Invalid=0 OR Invalid IS NULL) 
-AND DueDate <= '2030-01-01'
-AND (inv.DisputedFlag = 0 OR inv.DisputedFlag IS NULL) 
-AND Status = 1
-AND (inv.AppliesToInvoiceNr = 0 OR inv.AppliesToInvoiceNr IS NULL)
-AND (inv.Installments = 0 OR inv.Installments IS NULL) 
-UNION ALL
-SELECT 'Installment' as Type, SerNr, Office, BaseRate, inv.OfficialSerNr as OfficialSerNr, CONCAT(TransDate, " ", TransTime) AS date, invInst.DueDate as DueDate, InvoiceDate,
-invInst.InstallNr, inv.PayTerm, inv.CustCode as ClientCode, ent.Name as ClientName, ent.Phone as ClientPhone,
-inv.Currency, CurrencyRate, Amount as Total, invInst.Saldo, TotalBase1 AS totalUSD
-FROM InvoiceInstallRow AS invInst 
-INNER JOIN InvoiceItemRow AS invInstRw ON invInst.internalId = invInstRw.masterId
-INNER JOIN Invoice AS inv ON inv.internalId = invInst.masterId
-INNER JOIN Customer AS ent ON ent.Code = inv.CustCode
-INNER JOIN PayTerm ON (PayTerm.Code = inv.PayTerm AND PayTerm.PayType IN (0,1,4))
-LEFT JOIN (SELECT payInvRow.InvoiceNr, payInvRow.InstallNr, IF(ISNULL(SUM(payInvRow.InvoiceAmount)),0,SUM(payInvRow.InvoiceAmount)) AS Pagado
-FROM ReceiptInvoiceRow AS payInvRow INNER JOIN Receipt AS pay ON pay.internalid = payInvRow.masterid
-WHERE pay.Status = 1 AND (pay.Invalid = 0 or pay.Invalid IS NULL)
-AND pay.TransDate <= '2030-01-01'
-GROUP BY payInvRow.InvoiceNr, payInvRow.InstallNr
-) AS Pagos ON (inv.SerNr = Pagos.InvoiceNr AND invInst.InstallNr = Pagos.InstallNr)
-WHERE (Invalid=0 OR Invalid IS NULL)
-AND invInst.DueDate <= '2030-01-01'
-AND (inv.DisputedFlag = 0 OR inv.DisputedFlag IS NULL) 
-AND Status = 1
-AND (inv.AppliesToInvoiceNr IS NULL OR inv.AppliesToInvoiceNr NOT IN (SELECT SerNr FROM Invoice inc WHERE inc.TransDate <= '2030-01-01' AND inc.CustCode = inv.CustCode))
-UNION ALL
-SELECT 'Downpayment' as {Type}, oa.{SerNr}, oa.{BaseRate}, s|| as {OfficialSerNr}, p.{TransDate}, p.{TransTime}, p.{TransDate} as {DueDate}, p.{TransDate} as InvoiceDate, s|| as InstallNr, s|| as {PayTerm},
-p.{:5Code} as {EntCode}, [ent].{Name} as {EntName}, [ent].{Phone} as {EntPhone},'' as DelAddressCode,'' as DelAddressName,
-oa.{Currency}, oa.{CurrencyRate}, -pir.InvoiceAmount as Total, 0 as Saldo, 0 as Pagado, 0 as NCTotal, 0 as Aplicado
-,(select NewCurRate from InvoiceCurrencyRateHistory where TransDate >= d|%s| and OriginType = i|%s| limit 1) as CurRateHist
-, 0 as PagoRetencion 
-FROM [:3] AS pir
-INNER JOIN [:4] AS p ON p.internalId = pir.masterId
-INNER JOIN OnAccount oa ON (oa.SerNr = pir.OnAccNr and pir.OnAccNr > 0)
-INNER JOIN [:2] AS ent ON [ent].{Code} = [p].{:5Code} 
-WHERE?AND p.Status = 1
-WHERE?AND (p.Invalid = 0 or p.Invalid is null)
-WHERE?AND p.TransDate <= '2030-01-01'
-ORDER BY SerNr
-
-
-`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

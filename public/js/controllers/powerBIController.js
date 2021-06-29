@@ -20,6 +20,7 @@ window.deletePowerBi = deletePowerBi
 
 btnSucursales.addEventListener('click', async (event) => {
     event.preventDefault()
+
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
@@ -32,25 +33,56 @@ btnSucursales.addEventListener('click', async (event) => {
         const btn = event.currentTarget
         let title = document.querySelector('[data-title]')
         let type = 4
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
         title.innerHTML = "Seguridad - Sucursales"
-        table.style.display = '';
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         const data = await Service.listBiUser(type)
-
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(powerbi => {
-            body.appendChild(View.listPowerBi(powerbi))
+            const field = View.listPowerBi(powerbi)
+            dtview.push(field)
         });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
         loading.innerHTML = " "
 
     } catch (error) {
@@ -60,6 +92,7 @@ btnSucursales.addEventListener('click', async (event) => {
 
 btnVehiculos.addEventListener('click', async (event) => {
     event.preventDefault()
+
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
@@ -72,25 +105,57 @@ btnVehiculos.addEventListener('click', async (event) => {
         const btn = event.currentTarget
         let title = document.querySelector('[data-title]')
         let type = 3
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
         title.innerHTML = "Seguridad - Vehículos"
-        table.style.display = '';
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         const data = await Service.listBiUser(type)
 
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(powerbi => {
-            body.appendChild(View.listPowerBi(powerbi))
+            const field = View.listPowerBi(powerbi)
+            dtview.push(field)
         });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
         loading.innerHTML = " "
 
     } catch (error) {
@@ -100,6 +165,7 @@ btnVehiculos.addEventListener('click', async (event) => {
 
 btnPunto.addEventListener('click', async (event) => {
     event.preventDefault()
+
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
@@ -112,25 +178,58 @@ btnPunto.addEventListener('click', async (event) => {
         const btn = event.currentTarget
         let title = document.querySelector('[data-title]')
         let type = 2
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
         title.innerHTML = "Control de Punto"
-        table.style.display = '';
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
+
         const data = await Service.listBiUser(type)
 
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(powerbi => {
-            body.appendChild(View.listPowerBi(powerbi))
+            const field = View.listPowerBi(powerbi)
+            dtview.push(field)
         });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
         loading.innerHTML = " "
 
     } catch (error) {
@@ -138,18 +237,19 @@ btnPunto.addEventListener('click', async (event) => {
     }
 })
 
-// btnProcess.addEventListener('click', async (event) => {
-//     event.preventDefault()
-//     try {
-//         const url = '../admin/index.html'
-//         window.location.href = url
-//     } catch (error) {
-//         alert(error)
-//     }
-// })
+btnProcess.addEventListener('click', async (event) => {
+    event.preventDefault()
+    try {
+        const url = '../admin/index.html'
+        window.location.href = url
+    } catch (error) {
+        alert(error)
+    }
+})
 
 btnInforme.addEventListener('click', async (event) => {
     event.preventDefault()
+
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
@@ -162,25 +262,57 @@ btnInforme.addEventListener('click', async (event) => {
         const btn = event.currentTarget
         let title = document.querySelector('[data-title]')
         let type = 1
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
         title.innerHTML = "Informes"
-        table.style.display = '';
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         const data = await Service.listBiUser(type)
 
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(powerbi => {
-            body.appendChild(View.listPowerBi(powerbi))
+            const field = View.listPowerBi(powerbi)
+            dtview.push(field)
         });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
         loading.innerHTML = " "
 
     } catch (error) {
@@ -190,6 +322,8 @@ btnInforme.addEventListener('click', async (event) => {
 
 async function listBiUser(event) {
     event.preventDefault()
+
+
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
 <div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
@@ -202,24 +336,59 @@ async function listBiUser(event) {
         const id = btn.getAttribute("data-id")
         const name = btn.getAttribute("data-name")
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let head = document.querySelector('[data-table-head]')
         let body = document.querySelector('[data-table-body]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
 
         title.innerHTML = `Lista de Informes - ${name}`
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         const data = await Service.listUser(id)
 
-        head.appendChild(View.header())
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        let dtview = [];
 
         data.forEach(powerbi => {
-            body.appendChild(View.listPowerBiAdmin(powerbi))
+            const field = View.listPowerBi(powerbi)
+            dtview.push(field)
         });
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
 
         modal.appendChild(View.showModalDelete())
         modal.appendChild(View.showModalEdit())
@@ -233,28 +402,31 @@ async function listBiUser(event) {
 
 function viewBi(event) {
     event.preventDefault()
+
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
 <div class="spinner-border text-primary" role="status">
   <span class="sr-only">Loading...</span>
 </div>
 `
+
+if ($.fn.DataTable.isDataTable('#dataTable')) {
+    $('#dataTable').dataTable().fnClearTable();
+    $('#dataTable').dataTable().fnDestroy();
+    $('#dataTable').empty();
+}
+
     const btn = event.currentTarget
     const url = btn.getAttribute("data-url")
     let title = document.querySelector('[data-title]')
-    let table = document.querySelector('[data-table]')
-    let head = document.querySelector('[data-table-head]')
-    let body = document.querySelector('[data-table-body]')
     let powerbi = document.querySelector('[data-powerbi]')
     let description = btn.getAttribute("data-title")
 
     title.innerHTML = description
-    table.style.display = 'none';
-    head.innerHTML = " "
-    body.innerHTML = " "
     loading.innerHTML = " "
     powerbi.innerHTML = `   
-    <iframe width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>`
+    <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
+    <div class="col-md-12 pt-5 text-center"><a class="btn btn-primary" onclick="printPage()">Imprimir</a></div>`
 
     ServiceHistory.insertHistory(`Acceso de Informe - ${description}`)
 }

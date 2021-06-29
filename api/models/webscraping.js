@@ -275,9 +275,7 @@ class WebScraping {
 
             const dtInit = await page.$eval("#dateInit", (input) => {
                 return input.getAttribute("value")
-            });
-
-            const dtEnd = await page.$eval("#dateEnd", (input) => {
+            });            const dtEnd = await page.$eval("#dateEnd", (input) => {
                 return input.getAttribute("value")
             });
 
@@ -377,7 +375,7 @@ class WebScraping {
                         const lastInsert = await Repositorie.listOffice(line[5])
 
                         var date1 = await timeToSecond(line[3])
-                        var date2 = await timeToSecond("01:00:00")
+                        var date2 = await timeToSecond("01:00:00") // colocar -2
 
                         var diff = date1 - date2
 
@@ -472,6 +470,12 @@ class WebScraping {
                     "3543",
                     "911",
                     "ANSA3543"
+                ],
+                [
+                    "",
+                    "3587",
+                    "232",
+                    "ANSA3587"
                 ]
             ]
 

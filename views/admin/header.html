@@ -2,166 +2,44 @@
 <html lang="pt">
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=chrome">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="site">
     <meta name="author" content="raphael martinez batista">
-
-    <title>Ansa Neumáticos</title>
-
-    <!-- Custom fonts for this template-->
-    <link href="vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <title>América Neumáticos S.A.</title>
+    <link href="../vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
-
-    <!-- Favicon -->
-    <link rel="apple-touch-icon" sizes="180x180" href="img/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="img/favicon-16x16.png">
-
-    <!-- Custom styles for this template-->
-    <link href="css/sb-admin-2.min.css" rel="stylesheet">
-
+    <link rel="apple-touch-icon" sizes="180x180" href="../img/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../img/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16x16.png">
+    <link href="../css/sb-admin-2.css" rel="stylesheet">
+    <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 
-<body id="page-top">
+<body id="page-top sidebar" class="off-canvas hide-extras">
+    <div id="wrapper  ">
+        <div id="content-wrapper " class="d-flex flex-column">
+            <header>
+                <nav class="navbar navbar-expand navbar-dark bg-gradient-primary sticky-top topbar shadow mb-4"
+                    id="mainNav">
+                    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
+                        <div class="mb-2 sidebar-brand-icon">
+                            <img src="../img/ansalogowhite.min.png" alt="Ansa Logo">
+                        </div>
+                    </a>
+                    <hr class="sidebar-divider my-0">
+                    <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse"
+                        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"></a>
 
-    <!-- Page Wrapper -->
-    <div id="wrapper">
-
-        <!-- Sidebar -->
-        <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
-
-            <!-- Sidebar - Brand -->
-            <a class="sidebar-brand d-flex align-items-center justify-content-center" href="dashboard.html">
-                <div class="sidebar-brand-icon img-fluid mb-2 mx-auto">
-                    <img src="./img/ansalogomin.png" alt="Ansa Logo">
-                </div>
-            </a>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider pt-3">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Interface
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseReportes"
-                    aria-expanded="true" aria-controls="collapseReportes">
-                    <i class="fas fa-file-alt fa-cog"></i>
-                    <span>Informes</span>
-                </a>
-                <div id="collapseReportes" class="collapse" aria-labelledby="headingTwo"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="">Painel de Ventas</a>
-                        <a class="collapse-item" href="">Painel de KPI</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Nav Item - Utilities Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseArticulo"
-                    aria-expanded="true" aria-controls="collapseArticulo">
-                    <i class="fas fa-cube "></i>
-                    <span>Articulos</span>
-                </a>
-                <div id="collapseArticulo" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="">Pesquisa por Articulo</a>
-                    </div>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseProsegur"
-                    aria-expanded="true" aria-controls="collapseProsegur">
-                    <i class="fas fa-shield-alt "></i>
-                    <span>Prosegur</span>
-                </a>
-                <div id="collapseProsegur" class="collapse" aria-labelledby="headingUtilities"
-                    data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <a class="collapse-item" href="">Mirar Sucursales</a>
-                        <a class="collapse-item" href="">Mirar Vehículos</a>
-                    </div>
-                </div>
-            </li>
-
-            <!-- Divider -->
-            <hr class="sidebar-divider">
-
-            <!-- Heading -->
-            <div class="sidebar-heading">
-                Painel
-            </div>
-
-            <!-- Nav Item - Pages Collapse Menu -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
-                    aria-expanded="true" aria-controls="collapsePages">
-                    <i class="fas fa-user-cog fa-folder"></i>
-                    <span>Administración</span>
-                </a>
-                <div id="collapsePages" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-                    <div class="bg-white py-2 collapse-inner rounded">
-                        <h6 class="collapse-header">Paneles:</h6>
-                        <a class="collapse-item" href="">Panel de usuarios</a>
-                        <a class="collapse-item" href="">Panel de ventas</a>
-                        <a class="collapse-item" href="">Panel de PowerBI</a>
-                    </div>
-                </div>
-            </li>
-
-
-
-            <!-- Divider -->
-            <hr class="sidebar-divider d-none d-md-block">
-
-            <!-- Sidebar Toggler (Sidebar) -->
-            <div class="text-center d-none d-md-inline">
-                <button class="rounded-circle border-0" id="sidebarToggle"></button>
-            </div>
-
-            <!-- Sidebar Message
-            <div class="sidebar-card d-none d-lg-flex">
-                <img class="sidebar-card-illustration mb-2" src="img/undraw_rocket.svg" alt="...">
-                <p class="text-center mb-2"><strong>SB Admin Pro</strong> is packed with premium features, components, and more!</p>
-                <a class="btn btn-success btn-sm" href="https://startbootstrap.com/theme/sb-admin-pro">Upgrade to Pro!</a>
-            </div> -->
-
-        </ul>
-        <!-- End of Sidebar -->
-
-        <!-- Content Wrapper -->
-        <div id="content-wrapper" class="d-flex flex-column">
-
-            <!-- Main Content -->
-            <div id="content">
-
-                <!-- Topbar -->
-                <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-
-                    <!-- Sidebar Toggle (Topbar) -->
-                    <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
-                        <i class="fa fa-bars"></i>
-                    </button>
-
-                    <!-- Topbar Search -->
                     <form
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small"
-                                placeholder="Pesquisa por articulo..." aria-label="Search"
-                                aria-describedby="basic-addon2">
+                                placeholder="Nombre del informe..." aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" type="button">
                                     <i class="fas fa-search fa-sm"></i>
@@ -170,22 +48,19 @@
                         </div>
                     </form>
 
-                    <!-- Topbar Navbar -->
                     <ul class="navbar-nav ml-auto">
 
-                        <!-- Nav Item - Search Dropdown (Visible Only XS) -->
                         <li class="nav-item dropdown no-arrow d-sm-none">
                             <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-search fa-fw"></i>
                             </a>
-                            <!-- Dropdown - Messages -->
                             <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
                                 aria-labelledby="searchDropdown">
                                 <form class="form-inline mr-auto w-100 navbar-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control bg-light border-0 small"
-                                            placeholder="Pesquisa por articulo..." aria-label="Search"
+                                            placeholder="Nombre del informe..." aria-label="Search"
                                             aria-describedby="basic-addon2">
                                         <div class="input-group-append">
                                             <button class="btn btn-primary" type="button">
@@ -196,16 +71,11 @@
                                 </form>
                             </div>
                         </li>
-
-                        <!-- Nav Item - Alerts -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-bell fa-fw"></i>
-                                <!-- Counter - Alerts -->
-                                <!-- <span class="badge badge-danger badge-counter">3+</span> -->
                             </a>
-                            <!-- Dropdown - Alerts -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="alertsDropdown">
                                 <h6 class="dropdown-header">
@@ -218,23 +88,16 @@
                                         </div>
                                     </div>
                                     <div>
-                                        <!-- <div class="small text-gray-500"></div> -->
                                         <span class="font-weight">No hay notificaciones nuevas.</span>
                                     </div>
                                 </a>
-                                <!-- <a class="dropdown-item text-center small text-gray-500" href="#">Show All Alerts</a> -->
                             </div>
                         </li>
-
-                        <!-- Nav Item - Messages -->
                         <li class="nav-item dropdown no-arrow mx-1">
                             <a class="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="fas fa-envelope fa-fw"></i>
-                                <!-- Counter - Messages -->
-                                <!-- <span class="badge badge-danger badge-counter"></span> -->
                             </a>
-                            <!-- Dropdown - Messages -->
                             <div class="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="messagesDropdown">
                                 <h6 class="dropdown-header">
@@ -248,10 +111,8 @@
                                     </div>
                                     <div>
                                         <div class="text-truncate">No hay mensaje nuevas</div>
-                                        <!-- <div class="small text-gray-500"></div> -->
                                     </div>
                                 </a>
-                                <!-- <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a> -->
                             </div>
                         </li>
 
@@ -261,23 +122,15 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray small">Paulo Viana</span>
-                                <div class="icon-circle bg-light">
+                                <span class="mr-2 d-none d-lg-inline text-gray small" data-username></span>
+                                <div class="icon-circle ">
                                     <i class="fas fa-user"></i>
                                 </div>
                             </a>
                             <!-- Dropdown - User Information -->
                             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                                 aria-labelledby="userDropdown">
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Perfil
-                                </a>
-                                <a class="dropdown-item" href="#">
-                                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Ajustes
-                                </a>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="#" data-history>
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Historial de Acceso
                                 </a>
@@ -288,110 +141,101 @@
                                 </a>
                             </div>
                         </li>
+                        <div class="container-fluid bg-gradient-primary fixed-menu responsive">
+                            <div class="collapse text-center p-4 responsive" id="navbarResponsive">
+                                <ul class="text-uppercase ml-auto" id="accordionSidebar">
+                                    <div class="text-center">
+                                        <a class="menuPrincipal navbar-toggler-icon fixed-top-menu text-center"
+                                            type="button" data-toggle="collapse" data-target="#navbarResponsive"
+                                            aria-controls="navbarResponsive" aria-expanded="false"></a>
+                                    </div>
+                                    <li class="nav-item ">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                            data-target="#collapseReportes" aria-expanded="true"
+                                            aria-controls="collapseReportes">
+                                            <i style="padding: 10px;" class="fas fa-file-alt fa-cog"></i>
+                                            <span>Informes</span>
+                                        </a>
+                                        <div id="collapseReportes" class="collapse" aria-labelledby="headingTwo"
+                                            data-parent="#accordionSidebar">
+                                            <div class="bg-white collapse-inner rounded">
+                                                <a class="nav-link text-secondary" href="" id="btnInforme"
+                                                    data-toggle="collapse" data-target="#navbarResponsive, #collapseReportes"
+                                                    data-btninforme>Lista
+                                                    de Informes</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                            data-target="#collapsePersonas" aria-expanded="true"
+                                            aria-controls="collapsePersonas">
+                                            <i style="padding: 10px;" class="fas fa-users"></i>
+                                            <span>Personas</span>
+                                        </a>
+                                        <div id="collapsePersonas" class="collapse" aria-labelledby="headingUtilities"
+                                            data-parent="#accordionSidebar">
+                                            <div class="bg-white collapse-inner rounded">
+                                                <a class="nav-link text-secondary" href="" data-toggle="collapse"
+                                                    data-target="#navbarResponsive, #collapsePersonas" id="btnPunto">Informe de
+                                                    Personas</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                            data-target="#collapseProsegur" aria-expanded="true"
+                                            aria-controls="collapseProsegur">
+                                            <i style="padding: 10px;" class="fas fa-shield-alt "></i>
+                                            <span>Seguridad</span>
+                                        </a>
+                                        <div id="collapseProsegur" class="collapse" aria-labelledby="headingUtilities"
+                                            data-parent="#accordionSidebar">
+                                            <div class="bg-white collapse-inner rounded">
+                                                <a class="nav-link text-secondary" href="" data-toggle="collapse"
+                                                    data-target="#navbarResponsive" id="btnVehiculos">Vehículos</a>
+                                                <a class="nav-link text-secondary" href="" data-toggle="collapse"
+                                                    data-target="#navbarResponsive, #collapseProsegur" id="btnSucursales">Sucursales</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                            data-target="#collapseProcess" aria-expanded="true"
+                                            aria-controls="collapseProcess">
+                                            <i style="padding: 10px;" class="fas fa-cogs "></i>
+                                            <span>Processos</span>
+                                        </a>
+                                        <div id="collapseProcess" class="collapse" aria-labelledby="headingUtilities"
+                                            data-parent="#accordionSidebar">
+                                            <div class="bg-white collapse-inner rounded">
+                                                <a class="nav-link text-secondary" href="./index.html" data-toggle="collapse"
+                                                    data-target="#navbarResponsive" id="btnProcess">Lista de Processos</a>
+                                            </div>
+                                        </div>
+                                    </li>
+                                    <div data-adm>
+                                        <li class="nav-item">
+                                            <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                                data-target="#collapseAdmin" aria-expanded="true"
+                                                aria-controls="collapseAdmin">
+                                                <i style="padding: 10px;" class="fas fa-user-cog fa-folder"></i>
+                                                <span>Administración</span>
+                                            </a>
+                                            <div id="collapseAdmin" class="collapse" aria-labelledby="headingPages"
+                                                data-parent="#accordionSidebar">
+                                                <div class="bg-white collapse-inner rounded">
+                                                    <a class="nav-link text-secondary" href="" data-toggle="collapse"
+                                                        data-target="#navbarResponsive, #collapseAdmin" data-btn-users>Lista de usuarios</a>
+                                                    <a class="nav-link text-secondary" href="" data-toggle="collapse"
+                                                        data-target="#navbarResponsive, #collapseAdmin" data-btn-create>Registro usuario</a>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </div>
+                                </ul>
+                            </div>
+                        </div>
                     </ul>
-<<<<<<< HEAD:views/admin/header.html
                 </nav>
-=======
-                </nav>
-                <!-- End of Topbar -->
-
-                <!-- Begin Page Content -->
-                <div class="container-fluid">
-
-                    <!-- Content Row -->
-                    <div class="row">
-                        <iframe width="1000" height="500.25"
-                            src="https://app.powerbi.com/reportEmbed?reportId=fbff6304-84d4-4a5f-b615-628b06d2d411&autoAuth=true&ctid=7c233ef6-b75d-4d21-8319-f199fda36ea0&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWJyYXppbC1zb3V0aC1iLXByaW1hcnktcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQvIn0%3D"
-                            frameborder="0" allowFullScreen="true"></iframe>
-                        <div id="embedContainer"></div>
-                    </div>
-
-                </div>
-                <!-- /.container-fluid -->
-
-            </div>
-            <!-- End of Main Content -->
-
-            <!-- Footer -->
-            <footer class="sticky-footer bg-white">
-                <div class="container my-auto">
-                    <div class="copyright text-center my-auto">
-                        <span>Copyright Raphael Martinez &copy; America Neumaticos S.A 2021</span>
-                    </div>
-                </div>
-            </footer>
-            <!-- End of Footer -->
-
-        </div>
-        <!-- End of Content Wrapper -->
-
-    </div>
-    <!-- End of Page Wrapper -->
-
-    <!-- Scroll to Top Button-->
-    <a class="scroll-to-top rounded" href="#page-top">
-        <i class="fas fa-angle-up"></i>
-    </a>
-
-    <!-- Logout Modal-->
-    <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Cerrar sesión?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Seleccione salir si desea finalizar la sesión.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" href="login.html">Salir</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bootstrap core JavaScript-->
-    <script src="vendor/jquery/jquery.min.js"></script>
-    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Core plugin JavaScript-->
-    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
-
-    <!-- Custom scripts for all pages-->
-    <script src="js/sb-admin-2.min.js"></script>
-
-    <script>
-
-        powerbi.bootstrap(
-            reportContainerDivElement,
-            {
-                type: 'dashboard',
-                embedUrl: "https://app.powerbi.com/reportEmbed?reportId=658b03ef-eabc-497a-8171-5ff6a105ad47&autoAuth=true&ctid=7c233ef6-b75d-4d21-8319-f199fda36ea0&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly93YWJpLWJyYXppbC1zb3V0aC1iLXByaW1hcnktcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQvIn0%3D"
-            }
-        );
-
-        // Set up the configuration object that determines what to embed and how to embed it.
-        let embedConfiguration = {
-            accessToken: string,
-            embedUrl: string,
-            id: "powerbi",
-            permissions: 'Read',
-            tokenType: 'models.TokenType.Aad',
-            type: 'report'
-        };
-
-        // Get a reference to the HTML element that contains the embedded report.
-        let embedContainer = $('#embedContainer')[0];
-
-        // Embed the report.
-        let report = powerbi.embed(embedContainer, embedConfiguration);
-    </script>
-
-
-</body>
-
-</html>
->>>>>>> de55bacec8263a31fbb1ca3beb14ae1bbe34b238:views/dashboard.html
+            </header>

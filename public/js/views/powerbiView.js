@@ -7,7 +7,8 @@ const showSimplePowerBI = (simpleBI) => {
 
 const showPowerBI = (url) => {
     simpleBI.innerHTML = `   
-    <iframe  src="${url}" frameborder="0" allowFullScreen="true"></iframe>`
+    <iframe  src="${url}" frameborder="0" allowFullScreen="true"></iframe>
+    <div class="col-md-12 text-center"><a class="btn btn-primary" href="${url}.pdf">Imprimir</a></div>`
 }
 
 const showModalEdit = (title, type, url) => {
@@ -95,37 +96,31 @@ const showModalDelete = () => {
 
 
 const listPowerBi = (powerbi) => {
-    const line = document.createElement('tr')
 
-    const content =
-        `
-        <td><a onclick="viewBi(event)" href="" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#cbccce;"></i></a></td>
-        <td>${powerbi.title}</td>
-        <td>${powerbi.typeDesc}</td>
-        <td>${powerbi.dateReg}</td>
-      </tr>`
-    line.innerHTML = content
+    const content =[
+       `<a onclick="viewBi(event)" href="" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
+       `${powerbi.title}`,
+       `${powerbi.typedesc}`,
+       `${powerbi.dateReg}`,
+      ]
 
-    return line
+    return content
 }
 
 const listPowerBiAdmin = (powerbi) => {
-    const line = document.createElement('tr')
 
-    const content =
+    const content =  [
         `
-        <td>
         <a onclick="viewBi(event)" href="" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600;"></i></a>
         <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32;"></i></a>
         <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
-        </td>
-        <td>${powerbi.title}</td>
-        <td>${powerbi.typedesc}</td>
-        <td>${powerbi.dateReg}</td>
-      </tr>`
-    line.innerHTML = content
+        `,
+        `${powerbi.title}`,
+        `${powerbi.typeDesc}`,
+        `${powerbi.dateReg}`,
+       ]
 
-    return line
+    return content
 }
 
 const header = () => {

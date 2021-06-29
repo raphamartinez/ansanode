@@ -16,25 +16,52 @@ btn.addEventListener('click', async (event) => {
 `
     try {
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
 
 
         title.innerHTML = "Historial"
-        table.style.display = '';
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         const data = await ServiceHistory.listHistory()
+        var slag = data.map(doc => Object.values(doc));
 
-        head.appendChild(View.header())
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
 
-        data.forEach(history => {
-            body.appendChild(View.newLine(history))
-        });
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: slag,
+                columns: [
+                    { title: "Id" },
+                    { title: "Descripción" },
+                    { title: "Fecha de Registro" },
+                    { title: "Usuario" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+        "<'row'<'col-sm-12'tr>>" +
+        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+        "<'row'<'col-sm-12'B>>" ,
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        }
+        );
+
     } catch (error) {
 
     }
@@ -54,12 +81,12 @@ async function updateWebscraping(el) {
         const dateReg = await ServiceHistory.updateWebscraping()
 
         icon.classList.remove("fa-spin")
-        lastupdate.innerHTML =`Última actualización - ${dateReg}`
+        lastupdate.innerHTML = `Última actualización - ${dateReg}`
         console.log('Actualizado con éxito!')
-        el.setAttribute('ondblclick','updateWebscraping(this)')
+        el.setAttribute('ondblclick', 'updateWebscraping(this)')
     } catch (error) {
         console.log(error);
         icon.classList.remove("fa-spin");
-        el.setAttribute('ondblclick','updateWebscraping(this)')
+        el.setAttribute('ondblclick', 'updateWebscraping(this)')
     }
 }

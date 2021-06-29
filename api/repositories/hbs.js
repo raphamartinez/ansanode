@@ -165,7 +165,7 @@ class Hbs {
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND now()
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND '2030-01-01'
-            GROUP BY Invoice.SerNr
+            GROUP BY InvoiceInstallRow.internalId
             ORDER BY SerNr  `
             return queryhbs(sql)
         } catch (error) {
@@ -242,6 +242,27 @@ class Hbs {
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError(error)
+        }
+    }
+
+    listSalesMan(){
+        try {
+            const sql = `SELECT DISTINCT SalesMan FROM SalesOrder ORDER BY SalesMan`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listItems(){
+        try {
+            const sql = `SELECT Item.Code, Item.Name, Item.Price, Item.BrandCode, Item.BrandName, Label.Name AS Labels, Item.SupName, Item.SupCode 
+            FROM Item  
+            INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
+            INNER JOIN Label ON Label.Code = Item.Labels`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
         }
     }
 }

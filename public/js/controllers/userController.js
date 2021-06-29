@@ -1,5 +1,6 @@
 import { View } from "../views/userView.js"
 import { Service } from "../services/userService.js"
+import { ViewTable } from "../views/tableView.js"
 
 const btn = document.querySelector('[data-btn-users]')
 const create = document.querySelector('[data-btn-create]')
@@ -16,23 +17,17 @@ create.addEventListener('click', async (event) => {
     `
     try {
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
 
         title.innerHTML = "Crear nuevo usuario"
-        table.style.display = ''
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = " "
 
         const offices = await Service.listOffice()
 
-        head.appendChild(View.createUser())
+        title.appendChild(View.createUser())
 
         const divoffice = document.getElementById('office')
 
@@ -50,6 +45,7 @@ create.addEventListener('click', async (event) => {
 
 btn.addEventListener('click', async (event) => {
     event.preventDefault()
+
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
@@ -59,30 +55,61 @@ btn.addEventListener('click', async (event) => {
     `
     try {
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
 
         title.innerHTML = "Lista de Usuarios"
-        table.style.display = ''
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = ""
 
+
         const data = await Service.listUsers()
         const offices = await Service.listOffice()
-
-
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(user => {
-            body.appendChild(View.showTable(user))
+            const field = View.showTable(user)
+            dtview.push(field)
         });
 
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                destroy: true,
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Perfil" },
+                    { title: "Fecha de Nacimiento" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
 
         modal.appendChild(View.showModalInsert())
         modal.appendChild(View.showModalDelete())
@@ -100,6 +127,7 @@ btn.addEventListener('click', async (event) => {
             divofficeinsert.appendChild(View.listOffice(office))
         });
         loading.innerHTML = " "
+
     } catch (error) {
         loading.innerHTML = " "
         alert('Algo salió mal, informa al sector de TI!')
@@ -160,6 +188,7 @@ async function editUser(event) {
         await Service.updateUser(user, id_user)
 
         loading.innerHTML = " "
+        listUsersFunction()
         alert('Usuario actualizado con éxito!')
     } catch (error) {
         loading.innerHTML = " "
@@ -216,6 +245,7 @@ async function deleteUser(event) {
         await Service.deleteUser(id_user)
 
         loading.innerHTML = " "
+        listUsersFunction()
         alert('Usuario discapacitado con éxito!')
     } catch (error) {
         loading.innerHTML = " "
@@ -339,6 +369,57 @@ async function listUsers() {
         alert('Usuario agregado con éxito!')
     } catch (error) {
         loading.innerHTML = " "
+        alert(error)
+    }
+}
+
+
+async function listUsersFunction() {
+
+    try {
+        let title = document.querySelector('[data-title]')
+        let table = document.querySelector('[data-table]')
+        let powerbi = document.querySelector('[data-powerbi]')
+        let head = document.querySelector('[data-table-head]')
+        let body = document.querySelector('[data-table-body]')
+        let modal = document.querySelector('[data-modal]')
+
+
+        title.innerHTML = "Lista de Usuarios"
+        table.style.display = ''
+        head.innerHTML = " "
+        body.innerHTML = " "
+        powerbi.innerHTML = " "
+        modal.innerHTML = ""
+
+        const data = await Service.listUsers()
+        const offices = await Service.listOffice()
+
+
+        head.appendChild(View.header())
+
+        data.forEach(user => {
+            body.appendChild(View.showTable(user))
+        });
+
+
+        modal.appendChild(View.showModalInsert())
+        modal.appendChild(View.showModalDelete())
+        modal.appendChild(View.showModalEdit())
+        modal.appendChild(View.showModalPbiInsert())
+
+        const divofficeedit = document.getElementById('officeedit')
+        const divofficeinsert = document.getElementById('officeinsert')
+
+        offices.forEach(office => {
+            divofficeedit.appendChild(View.listOffice(office))
+        });
+
+        offices.forEach(office => {
+            divofficeinsert.appendChild(View.listOffice(office))
+        });
+
+    } catch (error) {
         alert(error)
     }
 }

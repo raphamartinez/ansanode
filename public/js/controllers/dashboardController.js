@@ -24,9 +24,6 @@ window.onload = async function () {
         lastupdate = await ServiceHistory.listWebscraping()
     }
 
-    let table = document.querySelector('[data-table]')
-    table.style.display = 'none';
-
     let title = document.querySelector('[data-title]')
 
     let cardHistory = document.querySelector('[data-card]')

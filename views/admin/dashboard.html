@@ -17,6 +17,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="../img/favicon-16x16.png">
     <link href="../css/sb-admin-2.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
+    <link href="../css/dataTables.bootstrap4.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top sidebar" class="off-canvas hide-extras">
@@ -198,7 +199,7 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <!-- <li class="nav-item">
+                                    <li class="nav-item">
                                         <a class="nav-link collapsed" href="#" data-toggle="collapse"
                                             data-target="#collapseProcess" aria-expanded="true"
                                             aria-controls="collapseProcess">
@@ -212,7 +213,7 @@
                                                     data-target="#navbarResponsive" id="btnProcess">Lista de Processos</a>
                                             </div>
                                         </div>
-                                    </li> -->
+                                    </li>
                                     <div data-adm>
                                         <li class="nav-item">
                                             <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -249,10 +250,7 @@
                         <div class="row" data-powerbi></div>
                     </div>
                     <div class="d-flex justify-content-center align-items-center" data-loading></div>
-                    <table class="table text-center" data-table>
-                        <thead data-table-head></thead>
-                        <tbody data-table-body></tbody>
-                    </table>
+                    <table  class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0"></table>
                 </div>
             </div>
 
@@ -300,7 +298,16 @@
     <script type="module" src="../js/controllers/userController.js"></script>
     <script type="module" src="../js/controllers/historyController.js"></script>
     <script type="module" src="../js/controllers/loginController.js"></script>
-
+    <script src="../js/services/printpdf.js"></script>
+    <script src="../js/libs/jquery.dataTables.min.js"></script>
+    <script src="../js/libs/dataTables.bootstrap4.min.js"></script>
+    <script src="../js/libs/dataTables.buttons.min.js"></script>
+    <script src="../js/libs/jszip.min.js"></script>
+    <script src="../js/libs/pdfmake.min.js"></script>
+    <script src="../js/libs/pdfmake_vfs_fonts.min.js"></script>
+    <script src="../js/libs/buttons.html5.min.js"></script>
+    <script src="../js/libs/buttons.print.min.js"></script>
+    <script src="../js/libs/geradorarquivo.min.js"></script>
     <div data-modal></div>
 
 </body>

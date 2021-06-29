@@ -73,9 +73,9 @@ class PowerBi {
 
             data.map(powerbi => {
                 if (powerbi.type = 1) {
-                    powerbi.typeDesc = 'Relatório'
+                    powerbi.typedesc = 'Relatório'
                 } else {
-                    powerbi.typeDesc = 'Informe Integrado'
+                    powerbi.typedesc = 'Informe Integrado'
                 }
             })
             return data

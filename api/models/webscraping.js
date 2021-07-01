@@ -375,7 +375,7 @@ class WebScraping {
                         const lastInsert = await Repositorie.listOffice(line[5])
 
                         var date1 = await timeToSecond(line[3])
-                        var date2 = await timeToSecond("01:00:00") // colocar -2
+                        var date2 = await timeToSecond("04:00:00") // gmt -4
 
                         var diff = date1 - date2
 

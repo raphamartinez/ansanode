@@ -256,10 +256,11 @@ class Hbs {
 
     listItems(){
         try {
-            const sql = `SELECT Item.Code, Item.Name, Item.Price, Item.BrandCode, Item.BrandName, Label.Name AS Labels, Item.SupName, Item.SupCode 
-            FROM Item  
-            INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
-            INNER JOIN Label ON Label.Code = Item.Labels`
+            const sql = `SELECT Label.Code AS labelCode , Label.Type,Label.Level, ItemGroup.Name AS ItemGroup, Item.Price,
+            Item.Code AS ItemCode, Item.Name AS Nombre, Label.Name AS Labels
+                        FROM Item  
+                        INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
+                        INNER JOIN Label ON Label.Code = Item.Labels`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

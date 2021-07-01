@@ -15,6 +15,14 @@ module.exports = app => {
         }
     })
 
+    app.all('/admin/*', Middleware.bearer, async (req, res, next) => {
+        try {
+            next()
+        } catch (error) {
+            next('error')
+        }
+    });
+
     app.get('/powerbisuser/:id', Middleware.bearer, async (req, res, next) => {
 
         try {

@@ -9,7 +9,6 @@ const express = require('express')
 const Hbs = require('./api/models/hbs')
 const CronJob = require('cron').CronJob
 const path = require('path')
-const fs = require('fs')
 
 process.setMaxListeners(100)
 
@@ -27,14 +26,6 @@ app.listen(3000, () => {
     app.all('/', function (req, res) {
         res.render('login');
     });
-
-    // app.all('/admin/*', function (req, res) {
-    //     const header = fs.createReadStream("index.html");
-    //     const footer = fs.createReadStream("footer.html");
-
-    //     req.header = header
-    //     req.footer = footer
-    // });
 
     const job = new CronJob('0 01 * * * *', () => {
         try {

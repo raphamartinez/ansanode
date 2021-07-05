@@ -35,6 +35,7 @@ app.listen(3000, () => {
             console.log('Error cron!');
         }
     });
+    
     job.start()
 })
 

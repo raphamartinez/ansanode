@@ -19,7 +19,6 @@ async function listItems() {
         modal.innerHTML = " "
         modal.appendChild(View.showModalSearch())
 
-
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
@@ -45,9 +44,11 @@ async function listItems() {
         });
 
         document.getElementById("stockartsi").checked = true;
-        
+
         ('#stock option:selected').remove();
         ('#itemgroup option:selected').remove();
+        title.appendChild(View.btnNewSearch())
+
     } catch (error) {
 
     }

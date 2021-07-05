@@ -159,10 +159,23 @@ const newLine = (obj) => {
 }
 
 
+
+const btnNewSearch = () => {
+    const btn = document.createElement('button')
+
+    btn.classList.add("btn btn-primary")
+
+    btn.appendChild= '<i class="fas fa-search">Nueva busca</i>'
+
+    return btn
+}
+
+
 export const View = {
     showModalSearch,
     listOption,
     listItems,
     showModalStock,
-    newLine
+    newLine,
+    btnNewSearch
 }

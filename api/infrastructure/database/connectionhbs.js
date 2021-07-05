@@ -5,7 +5,7 @@ const connectionhbs = mysql.createConnection({
   host: "45.232.214.13",
   database: "ansa",
   password: "Dblec#2020",
-  port: "63306"
+  port: 63306
 })
 
 module.exports = connectionhbs

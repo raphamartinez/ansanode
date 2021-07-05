@@ -1842,7 +1842,7 @@ select.form-control:focus::-ms-value {
 }
 
 select.form-control[size], select.form-control[multiple] {
-  height: auto;
+  height: 20rem;
 }
 
 textarea.form-control {

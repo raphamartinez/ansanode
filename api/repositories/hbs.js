@@ -35,7 +35,7 @@ class Hbs {
 
     }
 
-    dropSalary(){
+    dropSalary() {
         try {
             const sql = `drop table ansa.salary`
             return queryhbs(sql)
@@ -68,7 +68,7 @@ class Hbs {
         }
     }
 
-    dropUsers(){
+    dropUsers() {
         try {
             const sql = `drop table ansa.user`
             return queryhbs(sql)
@@ -79,7 +79,7 @@ class Hbs {
 
 
 
-    dropReceive(){
+    dropReceive() {
         try {
             const sql = `drop table ansa.receive`
             return queryhbs(sql)
@@ -88,8 +88,8 @@ class Hbs {
         }
     }
 
-    listNcs() { 
-        
+    listNcs() {
+
         try {
             const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, Invoice.DueDate
             , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, Invoice.SalesMan
@@ -173,28 +173,28 @@ class Hbs {
         }
     }
 
-    listPurchaseOrders() {
-        try {
-            const sql = `  SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate as date
-            , ce.CustCode, ce.CustName, ce.ItemTotal as Saldo, '' as PayTerm, ce.TransDate as DueDate, ce.ItemTotal as Total, ce.Office, '' as OfficialSerNr, '' as InstallNr
-            , '' as SalesMan ,'' as SalesManName
-            , '' as Comment
-            FROM CupoEntry ce 
-            INNER JOIN Office ofi ON ce.Office = ofi.Code
-            INNER JOIN Customer ON ce.CustCode = Customer.Code 
-            WHERE ce.Status = 1 AND (ce.Invalid IS NULL or ce.Invalid = 0) 
-            AND ce.CupoType = 2 
-            AND (ce.Invoiced = 0 or ce.Invoiced IS NULL) 
-            ORDER BY SerNr  `
-            return queryhbs(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
+    // listPurchaseOrders() {
+    //     try {
+    //         const sql = `  SELECT 'A' as DocType,3 as InvoiceType, SerNr,  ItemTotal, ce.Currency,ce.CurrencyRate, ce.BaseRate, ofi.Name as OfficeName, ce.TransDate as date
+    //         , ce.CustCode, ce.CustName, ce.ItemTotal as Saldo, '' as PayTerm, ce.TransDate as DueDate, ce.ItemTotal as Total, ce.Office, '' as OfficialSerNr, '' as InstallNr
+    //         , '' as SalesMan ,'' as SalesManName
+    //         , '' as Comment
+    //         FROM CupoEntry ce 
+    //         INNER JOIN Office ofi ON ce.Office = ofi.Code
+    //         INNER JOIN Customer ON ce.CustCode = Customer.Code 
+    //         WHERE ce.Status = 1 AND (ce.Invalid IS NULL or ce.Invalid = 0) 
+    //         AND ce.CupoType = 2 
+    //         AND (ce.Invoiced = 0 or ce.Invoiced IS NULL) 
+    //         ORDER BY SerNr  `
+    //         return queryhbs(sql)
+    //     } catch (error) {
+    //         throw new InternalServerError(error)
+    //     }
+    // }
 
     listCheque() {
         try {
-            const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '' as InstallNr, Cheque.SerNr, CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate DueDate, '' PayTerm, Cheque.CustCode, Cheque.CustName,
+            const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '0' as InstallNr, Cheque.SerNr, CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate DueDate, 'Cheque ' as PayTerm, Cheque.CustCode, Cheque.CustName,
             Cheque.ChequeNr OfficialSerNr, Cheque.Currency, Cheque.BankName, Cheque.OriginCurrencyRate as FromRate, Cheque.OriginBaseRate BaseRate, Cheque.Amount Total, 0 Saldo, Cheque.Office, if(Cheque.Reentered, 'Si', 'No') Comment
             FROM Cheque
             INNER JOIN Customer ON Customer.Code = Cheque.CustCode
@@ -212,26 +212,26 @@ class Hbs {
         }
     }
 
-    listReceipts() {
-        try {
-            const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate as FromRate, BaseRate,Code as CustCode, Name as CustName, Comment, 
-            IF( OnAccount.Currency = 'GS', Saldo/BaseRate, IF( OnAccount.Currency = 'RE', Saldo * CurrencyRate / BaseRate , Saldo)) AS SaldoInv
-            FROM OnAccount
-            INNER JOIN Customer on Customer.Code = Entity
-            WHERE OpenFlag = 1 
-            AND OnAccount.SerNr IN
-            (SELECT rir.OnAccNr
-            FROM ReceiptInvoiceRow rir 
-            INNER JOIN Receipt r ON r.internalId = rir.masterId 
-            WHERE r.Status = 1
-            AND (r.Invalid = 0 or r.Invalid is NULL)
-            AND rir.OnAccNr is not NULL
-            )`
-            return queryhbs(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
+    // listReceipts() {
+    //     try {
+    //         const sql = ` SELECT  SerNr, Saldo, OnAccount.Currency,CurrencyRate as FromRate, BaseRate,Code as CustCode, Name as CustName, Comment, 
+    //         IF( OnAccount.Currency = 'GS', Saldo/BaseRate, IF( OnAccount.Currency = 'RE', Saldo * CurrencyRate / BaseRate , Saldo)) AS SaldoInv
+    //         FROM OnAccount
+    //         INNER JOIN Customer on Customer.Code = Entity
+    //         WHERE OpenFlag = 1 
+    //         AND OnAccount.SerNr IN
+    //         (SELECT rir.OnAccNr
+    //         FROM ReceiptInvoiceRow rir 
+    //         INNER JOIN Receipt r ON r.internalId = rir.masterId 
+    //         WHERE r.Status = 1
+    //         AND (r.Invalid = 0 or r.Invalid is NULL)
+    //         AND rir.OnAccNr is not NULL
+    //         )`
+    //         return queryhbs(sql)
+    //     } catch (error) {
+    //         throw new InternalServerError(error)
+    //     }
+    // }
 
     async insertReceivable(invoice) {
         try {
@@ -245,7 +245,7 @@ class Hbs {
         }
     }
 
-    listSalesMan(){
+    listSalesMan() {
         try {
             const sql = `SELECT DISTINCT SalesMan FROM SalesOrder ORDER BY SalesMan`
             return queryhbs(sql)
@@ -254,13 +254,71 @@ class Hbs {
         }
     }
 
-    listItems(){
+    listItems(search) {
         try {
-            const sql = `SELECT Label.Code AS labelCode , Label.Type,Label.Level, ItemGroup.Name AS ItemGroup, Item.Price,
-            Item.Code AS ItemCode, Item.Name AS Nombre, Label.Name AS Labels
-                        FROM Item  
-                        INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
-                        INNER JOIN Label ON Label.Code = Item.Labels`
+            let sql = `SELECT PDr.PriceList, IG.Name AS ItemGroup, P.ArtCode,
+             I.Name as ItemName, P.Price, SUM(St.Qty) AS StockQty
+            FROM PriceDealRow PDr 
+            INNER JOIN Price P ON P.PriceList = PDr.PriceList 
+            INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
+            INNER JOIN PriceList PL on PL.Code = PDr.PriceList
+            INNER JOIN Item I ON P.ArtCode = I.CODE
+            LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
+            LEFT JOIN VATCode VC ON I.VATCode = VC.Code
+            LEFT JOIN Stock St ON I.Code = St.ArtCode
+             WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+
+            if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
+            if (search.artcode) sql += `AND P.ArtCode IN ('${search.artcode}') `
+            if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
+            if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
+            if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
+            if (search.stockart < 1) sql += `AND St.Qty > 0 `
+            console.log(search.stockart);
+
+            sql += ` GROUP BY PD.Code, PDr.PriceList, P.ArtCode
+            ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
+
+            console.log(sql);
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    async insertItems(item) {
+        try {
+            const sql = `INSERT INTO ansa.items set ?`
+            await query(sql, item)
+
+            return true
+        } catch (error) {
+            console.log(error);
+            throw new InvalidArgumentError(error)
+        }
+    }
+
+    listStocks() {
+        try {
+            const sql = `SELECT DISTINCT StockDepo FROM Stock`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listItemGroup() {
+        try {
+            const sql = `SELECT DISTINCT Name FROM ItemGroup`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listStockbyItem(artcode) {
+        try {
+            const sql = `SELECT StockDepo, Qty FROM Stock WHERE ArtCode = '${artcode}'`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

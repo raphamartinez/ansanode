@@ -9,7 +9,6 @@ const insertUser =  async (user) => {
     const data = await fetch(`${protocol}//${url}/user` , {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
         },
         body: JSON.stringify({

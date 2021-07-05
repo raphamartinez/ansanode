@@ -210,10 +210,29 @@
                                             data-parent="#accordionSidebar">
                                             <div class="bg-white collapse-inner rounded">
                                                 <a class="nav-link text-secondary" href="./index.html" data-toggle="collapse"
-                                                    data-target="#navbarResponsive" id="btnProcess">Lista de Processos</a>
+                                                    data-target="#navbarResponsive, #collapseProcess" id="btnProcess">Lista de Processos</a>
                                             </div>
                                         </div>
                                     </li>
+                                    <div data-item>
+                                        <li class="nav-item">
+                                            <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                                data-target="#collapseItems" aria-expanded="true"
+                                                aria-controls="collapseItems">
+                                                <i style="padding: 10px;" class="fas fa-th-large "></i>
+                                                <span>Articulos</span>
+                                            </a>
+                                            <div id="collapseItems" class="collapse" aria-labelledby="headingUtilities"
+                                                data-parent="#accordionSidebar">
+                                                <div class="bg-white collapse-inner rounded">
+                                                    <span data-toggle="modal" data-target="#search">
+                                                    <a data-item class="nav-link text-secondary" href="./index.html" data-toggle="collapse" 
+                                                        data-target="#navbarResponsive, #collapseItems" onclick="listItems()">Listar Articulos</a>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </div>
                                     <div data-adm>
                                         <li class="nav-item">
                                             <a class="nav-link collapsed" href="#" data-toggle="collapse"
@@ -294,6 +313,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
     <script src="../js/libs/sb-admin-2.min.js"></script>
     <script type="module" src="../js/controllers/dashboardController.js"></script>
+    <script type="module" src="../js/controllers/itemController.js"></script>
     <script type="module" src="../js/controllers/powerBiController.js"></script>
     <script type="module" src="../js/controllers/userController.js"></script>
     <script type="module" src="../js/controllers/historyController.js"></script>

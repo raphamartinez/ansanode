@@ -75,20 +75,20 @@ class Hbs {
                 Repositorie.insertReceivable(obj)
             });
 
-            const purchases = await Repositorie.listPurchaseOrders()
-            purchases.forEach(obj => {
-                Repositorie.insertReceivable(obj)
-            });
+            // const purchases = await Repositorie.listPurchaseOrders()
+            // purchases.forEach(obj => {
+            //     Repositorie.insertReceivable(obj)
+            // });
 
             const installs = await Repositorie.listInstalls()
             installs.forEach(obj => {
                 Repositorie.insertReceivable(obj)
             });
 
-            const receipts = await Repositorie.listReceipts()
-            receipts.forEach(obj => {
-                Repositorie.insertReceivable(obj)
-            });
+            // const receipts = await Repositorie.listReceipts()
+            // receipts.forEach(obj => {
+            //     Repositorie.insertReceivable(obj)
+            // });
 
             const cheques = await Repositorie.listCheque()
             cheques.forEach(obj => {
@@ -99,6 +99,39 @@ class Hbs {
             return true
         } catch (error) {
             throw new InternalServerError(error)
+        }
+    }
+
+    async listItems(search) {
+        try {
+            return Repositorie.listItems(search)
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
+    async listStockByItem(artcode) {
+        try {
+            return Repositorie.listStockbyItem(artcode)
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
+
+    async listStockandGroup() {
+        try {
+            const stocks = await Repositorie.listStocks()
+            const groups = await Repositorie.listItemGroup()
+
+            const fields = {
+                stocks,
+                groups
+            }
+
+            return fields
+        } catch (error) {
+            throw new InternalServerError('Error')
         }
     }
 

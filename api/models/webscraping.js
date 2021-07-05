@@ -472,7 +472,7 @@ class WebScraping {
                     "ANSA3543"
                 ],
                 [
-                    "",
+                    "DC6",
                     "3587",
                     "232",
                     "ANSA3587"

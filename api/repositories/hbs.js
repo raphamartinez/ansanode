@@ -274,12 +274,10 @@ class Hbs {
             if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
-            console.log(search.stockart);
 
             sql += ` GROUP BY PD.Code, PDr.PriceList, P.ArtCode
             ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
 
-            console.log(sql);
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

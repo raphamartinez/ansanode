@@ -44,7 +44,8 @@ async function listItems() {
             selectitemgroup.appendChild(View.listOption(obj.Name))
         });
 
-
+        document.getElementById("stockartsi").checked = true;
+        
         ('#stock option:selected').remove();
         ('#itemgroup option:selected').remove();
     } catch (error) {

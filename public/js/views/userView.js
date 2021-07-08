@@ -5,6 +5,7 @@ const showTable = (user) => {
     <a onclick="listBiUser(event)" href="" data-id="${user.id_login}" data-name="${user.name}"><i class="fas fa-file-powerpoint" style="color:#666600;"></i></a>
     <a data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)" href="" data-id_login="${user.id_login}" data-id_user="${user.id_user}" data-name="${user.name}" data-dateBirthday="${user.dateBirthdayDesc}" data-perfil="${user.perfil}" data-office="${user.id_office}" data-mail="${user.mail}" data-mail="${user.password}"><i class="fas fa-edit" style="color:#3498DB;"></i></a>
     <a data-toggle="modal" data-target="#deleteuser" onclick="modalDeleteUser(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
+    <a data-toggle="modal" data-target="#changepass" onclick="modalChangePass(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-key" style="color:#DAA520;"></i></a>
     `,
     `${user.name}`,
     `${user.perfilDesc}`,
@@ -213,6 +214,60 @@ const showModalDelete = () => {
     return div
 }
 
+const showModalChangePass= (name) => {
+    const div = document.createElement('div')
+
+    const content = `
+<div class="modal fade" id="changepass" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Editar contraseña del ${name}</h5>
+            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
+            </button>
+        </div>
+        <form>
+            <div class="modal-body">
+                <div class="form-row">
+                <div class="form-group col-md-12 text-center">
+                <h8 class="section-subheading text-muted" >Contraseña de acceso a la plataforma.</h8>
+                <ul class="list-group">
+                    <li id="min6" class="list-group-item"><small>Mínimo 6 caracteres</small></li>
+                    <li id="max15" class="list-group-item"><small>Máximo 15 caracteres</small></li>
+                    <li id="mai1" class="list-group-item"><small>Al menos 1 letra mayúscula</small></li>
+                    <li id="num1" class="list-group-item"><small>Al menos 1 número</small></li>
+                    <li id="esp1" class="list-group-item"><small>Al menos 1 personaje especial</small></li>
+                    <li id="conf1" class="list-group-item"><small>Coincidencia de contraseña y confirmación</small></li>
+                </ul>
+            </div>
+                    <div class="form-group col-md-6">          
+                        <input type="password" placeholder="Contraseña" onkeyup="Check()" class="form-control" name="password" id="password" required>
+                    </div>
+                    <div class="form-group col-md-6">          
+                    <input type="password" placeholder="Verificación de Contraseña" onkeyup="Check()" class="form-control" name="passwordconf" id="passwordconf" required>
+                </div>
+                <div class="form-group col-md-12 text-center">
+                <div id="meter" ></div>
+            </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button disabled type="submit" name="btn" onclick="changePassword(event)" class="btn btn-success" ><i class="fas fa-key"> Confirmar</i></button>   
+            </div>
+        </form>
+    </div>
+</div>
+</div>
+
+`
+    div.innerHTML = content
+
+    return div
+}
+
+
 const listOffice = (office) => {
     const line = document.createElement('option')
 
@@ -297,5 +352,6 @@ export const View = {
     showModalEdit,
     header,
     createUser,
-    listOffice
+    listOffice,
+    showModalChangePass
 }

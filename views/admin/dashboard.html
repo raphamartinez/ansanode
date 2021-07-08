@@ -160,7 +160,8 @@
                                             data-parent="#accordionSidebar">
                                             <div class="bg-white collapse-inner rounded">
                                                 <a class="nav-link text-secondary" href="" id="btnInforme"
-                                                    data-toggle="collapse" data-target="#navbarResponsive, #collapseReportes"
+                                                    data-toggle="collapse"
+                                                    data-target="#navbarResponsive, #collapseReportes"
                                                     data-btninforme>Lista
                                                     de Informes</a>
                                             </div>
@@ -177,7 +178,8 @@
                                             data-parent="#accordionSidebar">
                                             <div class="bg-white collapse-inner rounded">
                                                 <a class="nav-link text-secondary" href="" data-toggle="collapse"
-                                                    data-target="#navbarResponsive, #collapsePersonas" id="btnPunto">Informe de
+                                                    data-target="#navbarResponsive, #collapsePersonas"
+                                                    id="btnPunto">Informe de
                                                     Personas</a>
                                             </div>
                                         </div>
@@ -195,7 +197,8 @@
                                                 <a class="nav-link text-secondary" href="" data-toggle="collapse"
                                                     data-target="#navbarResponsive" id="btnVehiculos">Vehículos</a>
                                                 <a class="nav-link text-secondary" href="" data-toggle="collapse"
-                                                    data-target="#navbarResponsive, #collapseProsegur" id="btnSucursales">Sucursales</a>
+                                                    data-target="#navbarResponsive, #collapseProsegur"
+                                                    id="btnSucursales">Sucursales</a>
                                             </div>
                                         </div>
                                     </li>
@@ -209,8 +212,10 @@
                                         <div id="collapseProcess" class="collapse" aria-labelledby="headingUtilities"
                                             data-parent="#accordionSidebar">
                                             <div class="bg-white collapse-inner rounded">
-                                                <a class="nav-link text-secondary" href="./index.html" data-toggle="collapse"
-                                                    data-target="#navbarResponsive, #collapseProcess" id="btnProcess">Lista de Processos</a>
+                                                <a class="nav-link text-secondary" href="./index.html"
+                                                    data-toggle="collapse"
+                                                    data-target="#navbarResponsive, #collapseProcess"
+                                                    id="btnProcess">Lista de Processos</a>
                                             </div>
                                         </div>
                                     </li>
@@ -226,8 +231,22 @@
                                                 data-parent="#accordionSidebar">
                                                 <div class="bg-white collapse-inner rounded">
                                                     <span data-toggle="modal" data-target="#search">
-                                                    <a data-item class="nav-link text-secondary" href="./index.html" data-toggle="collapse" 
-                                                        data-target="#navbarResponsive, #collapseItems" onclick="listItems()">Listar Articulos</a>
+                                                        <a data-item class="nav-link text-secondary" href=""
+                                                            data-toggle="collapse"
+                                                            data-target="#navbarResponsive, #collapseItems"
+                                                            onclick="listItems()">Listar Articulos</a>
+                                                    </span>
+                                                    <span data-toggle="modal" data-target="#searchPrice">
+                                                        <a data-item class="nav-link text-secondary" href=""
+                                                            data-toggle="collapse"
+                                                            data-target="#navbarResponsive, #collapseItems"
+                                                            onclick="listPrice()">Lista de Precios y Saldos</a>
+                                                    </span>
+                                                    <span data-toggle="modal" data-target="#searchGoodyear">
+                                                        <a data-item class="nav-link text-secondary" href=""
+                                                            data-toggle="collapse"
+                                                            data-target="#navbarResponsive, #collapseItems"
+                                                            onclick="listGoodyear()">Informe Goodyear</a>
                                                     </span>
                                                 </div>
                                             </div>
@@ -245,9 +264,11 @@
                                                 data-parent="#accordionSidebar">
                                                 <div class="bg-white collapse-inner rounded">
                                                     <a class="nav-link text-secondary" href="" data-toggle="collapse"
-                                                        data-target="#navbarResponsive, #collapseAdmin" data-btn-users>Lista de usuarios</a>
+                                                        data-target="#navbarResponsive, #collapseAdmin"
+                                                        data-btn-users>Lista de usuarios</a>
                                                     <a class="nav-link text-secondary" href="" data-toggle="collapse"
-                                                        data-target="#navbarResponsive, #collapseAdmin" data-btn-create>Registro usuario</a>
+                                                        data-target="#navbarResponsive, #collapseAdmin"
+                                                        data-btn-create>Registro usuario</a>
                                                 </div>
                                             </div>
                                         </li>
@@ -269,7 +290,7 @@
                         <div class="row" data-powerbi></div>
                     </div>
                     <div class="d-flex justify-content-center align-items-center" data-loading></div>
-                    <table  class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0"></table>
+                    <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0"></table>
                 </div>
             </div>
 
@@ -318,6 +339,7 @@
     <script type="module" src="../js/controllers/userController.js"></script>
     <script type="module" src="../js/controllers/historyController.js"></script>
     <script type="module" src="../js/controllers/loginController.js"></script>
+    <script src="../js/services/force.js"></script>
     <script src="../js/services/printpdf.js"></script>
     <script src="../js/libs/jquery.dataTables.min.js"></script>
     <script src="../js/libs/dataTables.bootstrap4.min.js"></script>

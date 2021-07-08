@@ -3,13 +3,35 @@ const url = window.location.host;
 const split = document.URL.split("/")
 const protocol = split[0]
 
+const changePassword =  async (user) => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/changepass` , {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            user: user
+        })
+    })
+
+    if (data.ok === true) {
+        return data.json()
+    }
+    
+    throw new Error('error')
+}
+
 const insertUser =  async (user) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     const data = await fetch(`${protocol}//${url}/user` , {
         method: 'POST',
         headers: {
-            'Authorization': `Bearer ${accessToken}`
+            'Authorization': `Bearer ${accessToken}`,
+            'Content-Type': 'application/json',
         },
         body: JSON.stringify({
             user: user
@@ -124,5 +146,6 @@ export const Service = {
     deleteUser,
     viewUser,
     listUsers,
-    listOffice
+    listOffice,
+    changePassword
 }

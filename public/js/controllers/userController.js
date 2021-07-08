@@ -1,6 +1,5 @@
 import { View } from "../views/userView.js"
 import { Service } from "../services/userService.js"
-import { ViewTable } from "../views/tableView.js"
 
 const btn = document.querySelector('[data-btn-users]')
 const create = document.querySelector('[data-btn-create]')
@@ -261,11 +260,62 @@ window.modalDeleteUser = modalDeleteUser
 async function modalDeleteUser(event) {
 
     try {
+
         const btn = event.currentTarget
         const id = btn.getAttribute("data-id")
         $("#iddbtndeleteuser").attr("data-id_user", id);
 
     } catch (error) {
+    }
+}
+
+window.modalChangePass = modalChangePass
+
+async function modalChangePass(event) {
+    event.preventDefault()
+    try {
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = " "
+
+        const btn = event.currentTarget
+        const name = btn.getAttribute("data-name")
+
+        modal.appendChild(View.showModalChangePass(name))
+        $('#changepass').modal('show')
+    } catch (error) {
+    }
+}
+
+
+window.changePassword = changePassword
+
+async function changePassword(event) {
+    event.preventDefault()
+    $('#changepass').modal('hide')
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+
+    try {
+
+        const btn = event.currentTarget
+        const password = btn.form.password.value
+        const passwordconf = btn.form.passwordconf.value
+
+        const user = {
+            password: password,
+            passwordconf: passwordconf
+        }
+
+        const data = await Service.changePassword(user)
+        loading.innerHTML = " "
+        alert(data)
+    } catch (error) {
+        loading.innerHTML = " "
+        alert(error)
     }
 }
 

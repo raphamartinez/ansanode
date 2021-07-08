@@ -3,11 +3,33 @@ const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
 
+    app.post('/goodyear', Middleware.bearer, async (req, res, next) => {
+        try {
+            const search = req.body.search
+
+            const items = await Hbs.listGoodyear(search)
+            res.status(200).json(items)
+        } catch (error) {
+            next(error)
+        }
+    })
+
     app.post('/items', Middleware.bearer, async (req, res, next) => {
         try {
             const search = req.body.search
 
             const items = await Hbs.listItems(search)
+            res.status(200).json(items)
+        } catch (error) {
+            next(error)
+        }
+    })
+
+    app.post('/price', Middleware.bearer, async (req, res, next) => {
+        try {
+            const search = req.body.search
+
+            const items = await Hbs.listPrice(search)
             res.status(200).json(items)
         } catch (error) {
             next(error)

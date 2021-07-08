@@ -80,8 +80,14 @@ module.exports = app => {
         }
     });
 
-    // app.get('/login/mailVerify/:token', Middleware.verifyMail, async function (req, res, next) {
-    //     const { token } = req.params
-    //     //Chama user verify
-    // });
+    app.post('/changepass', Middleware.bearer, async (req, res, next) => {
+        try {
+            const data = req.body.user
+            const id_login = req.login.id_login
+            const result = await Login.updatePassword(data,id_login)
+            res.status(200).json(result)
+        } catch (error) {
+            next(error)
+        }
+    })
 }

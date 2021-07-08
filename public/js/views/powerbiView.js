@@ -116,7 +116,7 @@ const listPowerBiAdmin = (powerbi) => {
         <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
         `,
         `${powerbi.title}`,
-        `${powerbi.typeDesc}`,
+        `${powerbi.typedesc}`,
         `${powerbi.dateReg}`,
        ]
 

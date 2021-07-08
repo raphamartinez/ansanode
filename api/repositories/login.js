@@ -40,11 +40,11 @@ class Login {
 
     }
 
-    async updatePassword(id_login, password) {
+    async updatePassword(password, id_login) {
         try {
             const sql = 'UPDATE login SET password = ? WHERE id_login = ?'
-            const result = await query(sql, [password, id_login])
-            return result[0]
+            await query(sql, [password, id_login])
+            return 'Contraseña actualizada exitosamente'
         } catch (error) {
             throw new InvalidArgumentError(error)
         }

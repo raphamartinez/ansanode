@@ -36,7 +36,7 @@ class Tables {
      InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
      SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
      Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
-     Saldo double, Office int, Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
+     Saldo double, Office VARCHAR(5), Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
 
     this.connection.query(sql, (error) => {
       if (error) {

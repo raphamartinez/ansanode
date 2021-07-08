@@ -38,11 +38,22 @@ class Hbs {
     dropSalary() {
         try {
             const sql = `drop table ansa.salary`
-            return queryhbs(sql)
+            return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
         }
     }
+
+    createTableSalary() {
+        try {
+            const sql = `CREATE TABLE IF NOT EXISTS salary (id_salary int NOT NULL AUTO_INCREMENT, serNr double, dateTime DATETIME, 
+                comment VARCHAR (250), reference VARCHAR (250), usd double, office VARCHAR (5), name VARCHAR (250), PRIMARY KEY (id_salary))`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
 
     listUsers() {
         try {
@@ -71,7 +82,7 @@ class Hbs {
     dropUsers() {
         try {
             const sql = `drop table ansa.user`
-            return queryhbs(sql)
+            return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
         }
@@ -79,10 +90,23 @@ class Hbs {
 
 
 
-    dropReceive() {
+    dropReceivable() {
         try {
-            const sql = `drop table ansa.receive`
-            return queryhbs(sql)
+            const sql = `drop table ansa.receivable`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    createTableReceivable() {
+        try {
+            const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
+                InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
+                SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
+                Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
+                Saldo double, Office VARCHAR(5), Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
+            return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
         }
@@ -256,17 +280,45 @@ class Hbs {
 
     listItems(search) {
         try {
+            let sql = `SELECT IG.Name AS ItemGroup, P.ArtCode,
+            I.Name as ItemName, IF(St.Reserved IS NOT NULL, SUM(St.Qty) - SUM(St.Reserved), St.Qty ) AS StockQty
+           FROM PriceDealRow PDr 
+           INNER JOIN Price P ON P.PriceList = PDr.PriceList 
+           INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
+           INNER JOIN PriceList PL on PL.Code = PDr.PriceList
+           INNER JOIN Item I ON P.ArtCode = I.CODE
+           LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
+           LEFT JOIN Stock St ON I.Code = St.ArtCode
+            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+
+            if (search.artcode) sql += `AND P.ArtCode IN ('${search.artcode}') `
+            if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
+            if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
+            if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
+            if (search.stockart < 1) sql += `AND St.Qty > 0 `
+
+            sql += ` 
+            GROUP BY PD.Code, PDr.PriceList, P.ArtCode
+            ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
+
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listPrice(search) {
+        try {
             let sql = `SELECT PDr.PriceList, IG.Name AS ItemGroup, P.ArtCode,
-             I.Name as ItemName, P.Price, SUM(St.Qty) AS StockQty
-            FROM PriceDealRow PDr 
-            INNER JOIN Price P ON P.PriceList = PDr.PriceList 
-            INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
-            INNER JOIN PriceList PL on PL.Code = PDr.PriceList
-            INNER JOIN Item I ON P.ArtCode = I.CODE
-            LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
-            LEFT JOIN VATCode VC ON I.VATCode = VC.Code
-            LEFT JOIN Stock St ON I.Code = St.ArtCode
-             WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+            I.Name as ItemName, P.Price,IF(St.Reserved IS NOT NULL, SUM(St.Qty) - SUM(St.Reserved), St.Qty ) AS StockQty
+           FROM PriceDealRow PDr 
+           INNER JOIN Price P ON P.PriceList = PDr.PriceList 
+           INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
+           INNER JOIN PriceList PL on PL.Code = PDr.PriceList
+           INNER JOIN Item I ON P.ArtCode = I.CODE
+           LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
+           LEFT JOIN Stock St ON I.Code = St.ArtCode
+            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
 
             if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
             if (search.artcode) sql += `AND P.ArtCode IN ('${search.artcode}') `
@@ -275,8 +327,35 @@ class Hbs {
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
-            sql += ` GROUP BY PD.Code, PDr.PriceList, P.ArtCode
+            sql += ` 
+            GROUP BY PD.Code, PDr.PriceList, P.ArtCode
             ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
+
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listGoodyear(search) {
+        try {
+            let sql = `SELECT I.Code as ArtCode, I.Name as ItemName, 
+            IF(St.Reserved IS NOT NULL, SUM(St.Qty) - SUM(St.Reserved), St.Qty ) AS StockQty,
+            COUNT(Iv.SerNr) AS SalesCant
+            FROM Item I
+            LEFT JOIN InvoiceItemRow Ir ON Ir.ArtCode = I.Code
+            LEFT JOIN Stock St ON I.Code = St.ArtCode
+            INNER JOIN Invoice Iv ON Iv.internalId = Ir.masterId
+            WHERE (I.Closed = 0 OR I.Closed IS NULL )
+            `
+
+            if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
+            if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `
+
+            sql += ` 
+            AND I.Name LIKE '%GOODYEAR%' 
+            GROUP BY I.Code
+            ORDER BY I.Code`
 
             return queryhbs(sql)
         } catch (error) {
@@ -291,23 +370,31 @@ class Hbs {
 
             return true
         } catch (error) {
-            console.log(error);
             throw new InvalidArgumentError(error)
         }
     }
 
     listStocks() {
         try {
-            const sql = `SELECT DISTINCT StockDepo FROM Stock`
+            const sql = `SELECT StockDepo FROM Stock WHERE (Qty - Reserved) > 0 AND Qty IS NOT null  group BY StockDepo`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
         }
     }
 
-    listItemGroup() {
+    listItemGroup(stocks) {
+        var resultArray = stocks.map(v => Object.assign({}, v));
+
+        var names = resultArray.map(function (text) {
+            return `'${text['StockDepo']}'`;
+        });
         try {
-            const sql = `SELECT DISTINCT Name FROM ItemGroup`
+            const sql = `SELECT Ig.Name FROM ItemGroup Ig
+            INNER JOIN Item I ON Ig.Code = I.ItemGroup
+            INNER JOIN Stock St ON St.ArtCode = I.Code
+            WHERE St.StockDepo IN (${names})
+            GROUP BY Ig.Name`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -316,7 +403,9 @@ class Hbs {
 
     listStockbyItem(artcode) {
         try {
-            const sql = `SELECT StockDepo, Qty FROM Stock WHERE ArtCode = '${artcode}'`
+            const sql = `SELECT StockDepo, 
+            IF(Reserved IS NOT NULL, SUM(Qty) - SUM(Reserved), Qty ) AS Qty
+            FROM Stock WHERE ArtCode = '${artcode}'`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

@@ -96,13 +96,16 @@ class Login {
         }
     }
 
-    async updatePassword(password, id_login) {
+    async updatePassword(data, id_login) {
         try {
-            const passwordHash = generatePasswordHash(password)
+            const passwordHash = await Login.generatePasswordHash(data.password)
 
-            password = passwordHash
+            const passwordValid = await bcrypt.compare(data.passwordconf, passwordHash)
+            if (!passwordValid) {
+                throw new NotAuthorized()
+            }
 
-            const result = await Repositorie.updatePassword(password, id_login)
+            const result = await Repositorie.updatePassword(passwordHash, id_login)
 
             return result
         } catch (error) {

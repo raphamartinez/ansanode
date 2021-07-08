@@ -355,7 +355,7 @@ async function listBiUser(event) {
         let dtview = [];
 
         data.forEach(powerbi => {
-            const field = View.listPowerBi(powerbi)
+            const field = View.listPowerBiAdmin(powerbi)
             dtview.push(field)
         });
 

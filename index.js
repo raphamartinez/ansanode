@@ -35,7 +35,17 @@ app.listen(3000, () => {
             console.log('Error cron!');
         }
     });
-    
+
+    const jobHbs = new CronJob('0 15 1 * * *', () => {
+        try {
+            console.log('Executed Cron sucessfuly!');
+            Hbs.init()
+        } catch (error) {
+            console.log('Error cron!');
+        }
+    });
+    Hbs.init()
     job.start()
+    jobHbs.start()
 })
 

@@ -26,10 +26,36 @@ class Tables {
     this.createTableContactClient()
     this.createTablePowerBI()
     this.createTableViewPowerBI()
+    this.createTableUserHbs()
 
     return true
   }
 
+  createTableClockMachine() {
+    const sql = `CREATE TABLE IF NOT EXISTS clockmachine (id_clock int NOT NULL AUTO_INCREMENT,EmployeeCode int NOT NULL, Date VARCHAR (45), TimestampDate DATETIME,
+        Type int, Office VARCHAR (05), Name VARCHAR (100), PRIMARY KEY (id_clock))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+
+  createTableUserHbs() {
+    const sql = `CREATE TABLE IF NOT EXISTS userhbs (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
+        modalidad VARCHAR (45), startCompany DATE, document VARCHAR (45), officecode INT, officename VARCHAR(45), endCompany DATE, sex VARCHAR(10),
+        dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, id_office VARCHAR(10), PRIMARY KEY (id_user))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
 
   createTableReceivable() {
     const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,

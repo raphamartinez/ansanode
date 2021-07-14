@@ -2,20 +2,22 @@ const queryhbs = require('../infrastructure/database/querieshbs')
 const query = require('../infrastructure/database/queries')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
 
-async function formatStringDatetoCompare(data) {
-    var ano = data.split("-")[2];
-    var mes = data.split("-")[1];
-    var dia = data.split("-")[0];
-
-    return ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano;
-}
 
 class Hbs {
+
+    lastSalary() {
+        try {
+            const sql = ` SELECT SerNr FROM ansa.SalaryPayment ORDER BY SerNr DESC LIMIT 1`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
 
     listSalary() {
         try {
             const sql = ` SELECT sa.SerNr as serNr, DATE_FORMAT(sa.TransDate, '%Y-%m-%d') as date, sa.TransTime as time, sa.Office as office, sa.BaseRate as baserate, sa.CurrencyRate as currencyrate, sa.Comment as comment, 
-            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa`
+            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -35,26 +37,6 @@ class Hbs {
 
     }
 
-    dropSalary() {
-        try {
-            const sql = `drop table ansa.salary`
-            return query(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-    createTableSalary() {
-        try {
-            const sql = `CREATE TABLE IF NOT EXISTS salary (id_salary int NOT NULL AUTO_INCREMENT, serNr double, dateTime DATETIME, 
-                comment VARCHAR (250), reference VARCHAR (250), usd double, office VARCHAR (5), name VARCHAR (250), PRIMARY KEY (id_salary))`
-            return query(sql)
-        } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-
     listUsers() {
         try {
             const sql = ` SELECT wk.Name as name,wk.Phone as phone,wk.Mobile as mobile,wk.BirthDate AS dateBirthday,wk.Code AS cod,JobName AS responsibility, wk.modality as modalidad,
@@ -67,9 +49,30 @@ class Hbs {
         }
     }
 
+    lastClockMachine(code) {
+        try {
+            const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y  %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ${code} ORDER BY TimestampDate DESC LIMIT 1`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
+    listClockMachine() {
+        try {
+            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(cl.DATE, " ", cl.TIME) AS TimestampDate,cl.InOutType AS Type, cl.Office, wo.Name
+            FROM ClockMachineRecord cl
+            INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code 
+            WHERE cl.Date > '2021-06-16'`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     async insertUser(user) {
         try {
-            const sql = `INSERT INTO ansa.user (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
+            const sql = `INSERT INTO ansa.userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
             await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
 
             return true
@@ -81,7 +84,7 @@ class Hbs {
 
     dropUsers() {
         try {
-            const sql = `drop table ansa.user`
+            const sql = `drop table ansa.userhbs`
             return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -99,11 +102,22 @@ class Hbs {
         }
     }
 
+    createTableUsersHbs() {
+        try {
+            const sql = `CREATE TABLE IF NOT EXISTS userhbs (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
+            modalidad VARCHAR (45), startCompany DATE, document VARCHAR (45), officecode INT, officename VARCHAR(45), endCompany DATE, sex VARCHAR(10),
+            dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_office VARCHAR(10), PRIMARY KEY (id_user))`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     createTableReceivable() {
         try {
             const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
                 InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
-                SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
+                SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (10), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
                 Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
                 Saldo double, Office VARCHAR(5), Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
             return query(sql)
@@ -269,6 +283,18 @@ class Hbs {
         }
     }
 
+    async insertClockMachine(data) {
+        try {
+            const sql = `INSERT INTO ansa.clockmachine set ?`
+            await query(sql, data)
+
+            return true
+        } catch (error) {
+            console.log(error);
+            throw new InvalidArgumentError(error)
+        }
+    }
+
     listSalesMan() {
         try {
             const sql = `SELECT DISTINCT SalesMan FROM SalesOrder ORDER BY SalesMan`
@@ -291,7 +317,7 @@ class Hbs {
            LEFT JOIN Stock St ON I.Code = St.ArtCode
             WHERE (I.Closed = 0 OR I.Closed IS NULL )`
 
-            if (search.artcode) sql += `AND P.ArtCode IN ('${search.artcode}') `
+            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
@@ -321,7 +347,7 @@ class Hbs {
             WHERE (I.Closed = 0 OR I.Closed IS NULL )`
 
             if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
-            if (search.artcode) sql += `AND P.ArtCode IN ('${search.artcode}') `
+            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%'`
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `

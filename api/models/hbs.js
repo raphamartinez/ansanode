@@ -1,16 +1,19 @@
 const moment = require('moment')
 const Repositorie = require('../repositories/hbs')
-const tables = require('../infrastructure/database/tables')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
 class Hbs {
 
     async init() {
         try {
-            this.listReceivables()
+            await this.listReceivables()
+            await this.listSalary()
+            await this.listUsers()
+            await this.listClockMachine()
+            
             console.log('list hbs ok');
         } catch (error) {
-            console.log('list hbs error' - error);
+            console.log('list hbs error' + error);
             throw new InternalServerError(error)
         }
     }
@@ -18,33 +21,38 @@ class Hbs {
     async listUsers() {
         try {
             await Repositorie.dropUsers()
-            tables.createTableUser()
+            await Repositorie.createTableUsersHbs() 
+            
             const data = await Repositorie.listUsers()
-            data.forEach(user => {
 
-                if (user.phone) {
-                    user.phone = `${user.phone} - ${user.mobile}`
-                } else {
-                    user.phone = user.mobile
-                }
+            if(data) {
+                data.forEach(user => {
 
-                if (user.sex === 1) {
-                    user.sex = 'H'
-                } else {
-                    user.sex = 'M'
-                }
+                    if (user.phone) {
+                        user.phone = `${user.phone} - ${user.mobile}`
+                    } else {
+                        user.phone = user.mobile
+                    }
+    
+                    if (user.sex === 1) {
+                        user.sex = 'H'
+                    } else {
+                        user.sex = 'M'
+                    }
+    
+                    switch (user.modalidad) {
+                        case 1: "IPS"
+                            break
+                        case 2: "Sem Contrato"
+                            break
+                        case 3: "Contrato"
+                            break
+                    }
+    
+                    Repositorie.insertUser(user)
+                });
+            }
 
-                switch (user.modalidad) {
-                    case 1: "IPS"
-                        break
-                    case 2: "Sem Contrato"
-                        break
-                    case 3: "Contrato"
-                        break
-                }
-
-                Repositorie.insertUser(user)
-            });
             return true
         } catch (error) {
             throw new InternalServerError('Error')
@@ -53,15 +61,15 @@ class Hbs {
 
     async listSalary() {
         try {
-            await Repositorie.dropSalary()
-            await Repositorie.createTableSalary()
-
             const data = await Repositorie.listSalary()
-            data.forEach(obj => {
-                const dt = `${obj.date} ${obj.time}`
-                const date = moment(dt).format("YYYY-MM-DD HH:mm:ss")
-                Repositorie.insertSalary(obj, date)
-            });
+
+            if(data){
+                data.forEach(obj => {
+                    const dt = `${obj.date} ${obj.time}`
+                    const date = moment(dt).format("YYYY-MM-DD HH:mm:ss")
+                    Repositorie.insertSalary(obj, date)
+                });
+            }
 
             return true
         } catch (error) {
@@ -134,6 +142,21 @@ class Hbs {
             return true
         } catch (error) {
             throw new InternalServerError(error)
+        }
+    }
+
+    async listClockMachine() {
+        try {
+            const data = await Repositorie.listClockMachine()
+
+            if(data){
+                data.forEach(obj =>{
+                    Repositorie.insertClockMachine(obj)
+                })
+            }
+
+        } catch (error) {
+            throw new InternalServerError('Error')
         }
     }
 

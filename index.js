@@ -37,5 +37,27 @@ app.listen(3000, () => {
     });
 
     job.start()
+
+    const jobHbs = new CronJob('0 10 5 * * *', () => {
+        try {
+            console.log('Executed Cron Hbs sucessfuly!');
+            Hbs.init()
+        } catch (error) {
+            console.log('Error cron!');
+        }
+    });
+
+    jobHbs.start()
+
+    const jobClockMachine = new CronJob('0 0 */4 * * *', () => {
+        try {
+            console.log('Executed Clock Machine sucessfuly!');
+            Hbs.listClockMachine()
+        } catch (error) {
+            console.log('Error cron!');
+        }
+    });
+
+    jobClockMachine.start()
 })
 

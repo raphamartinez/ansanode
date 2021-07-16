@@ -2,7 +2,8 @@ const Repositorie = require('../repositories/login')
 const { InvalidArgumentError, NotFound } = require('./error')
 const bcrypt = require('bcrypt')
 const Token = require('./token')
-const Mail = require('./mail')
+const { ResetPasswordMail } = require('./mail')
+const nodemailer = require('nodemailer')
 
 class Login {
 
@@ -72,11 +73,29 @@ class Login {
         }
     }
 
-    async forgotPassword(mail) {
+    async forgotPassword(mailenterprise) {
         try {
-            const login = await Repositorie.viewMail(mail)
-            const token = await Token.resetPassword.create(login.id_login)
-            Mail.ResetPasswordMail(login, token)
+            const login = await Repositorie.viewMailEnterprise(mailenterprise)
+
+            if (login) {
+                const token = await Token.resetPassword.create(login.id_login)
+
+                const send = new ResetPasswordMail(login.mailenterprise, token)
+
+                const transport = nodemailer.createTransport({
+                    host: process.env.MAIL_HOST,
+                    port: process.env.MAIL_PORT,
+                    secure: false,
+                    auth: {
+                        user: process.env.MAIL_USER,
+                        pass: process.env.MAIL_PASSWORD
+                    }
+                })
+                
+                await transport.sendMail(send)
+            }
+
+            return true
         } catch (error) {
             throw new NotFound('Mail not found')
         }
@@ -84,13 +103,16 @@ class Login {
 
     async changePassword(token, password) {
         try {
+
             if (typeof token !== 'string' || token.lenght === 0) {
                 throw new InvalidArgumentError('O token está inválido')
             }
 
-            const id = await Token.resetPassword.verify(token)
-            await Login.viewLogin(id)
-            await Login.updatePassword(password, id)
+            const id_login = await Token.resetPassword.verify(token)
+            const passwordHash = await Login.generatePasswordHash(password)
+
+            await Repositorie.updatePassword(passwordHash, id_login)
+
         } catch (error) {
             throw new InvalidArgumentError('Error')
         }

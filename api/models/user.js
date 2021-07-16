@@ -24,11 +24,11 @@ class User {
                 }
 
                 const obj = await RepositorieLogin.insert(login)
-                console.log(obj)
 
                 const user = {
                     name: data.user.name,
                     perfil: data.user.perfil,
+                    mailenterprise: data.user.mailenterprise,
                     dateBirthday: data.user.dateBirthday,
                     status: 1,
                     office: {
@@ -61,14 +61,15 @@ class User {
     }
 
     async updateUser(data, id_user) {
-        try {
 
+        try {
             const verifyMail = await RepositorieLogin.checkMail(data.user.mail)
 
-            if (verifyMail === true) {
+            if (verifyMail !== true) {
                 const user = {
                     id_user: id_user,
                     name: data.user.name,
+                    mailenterprise: data.user.mailenterprise,
                     perfil: data.user.perfil,
                     dateBirthday: data.user.dateBirthday,
                     office: {
@@ -98,24 +99,27 @@ class User {
 
             data.forEach(obj => {
                 switch (obj.perfil) {
-                    case 1: obj.perfilDesc = "admin"
+                    case 1: obj.perfilDesc = "Admin"
                         break
 
-                    case 2: obj.perfilDesc = "vendedor"
+                    case 2: obj.perfilDesc = "Vendedor"
                         break
 
-                    case 3: obj.perfilDesc = "depositero"
+                    case 3: obj.perfilDesc = "Depositero"
                         break
 
-                    case 4: obj.perfilDesc = "gerente"
+                    case 4: obj.perfilDesc = "Gerente"
                         break
 
-                    case 5: obj.perfilDesc = "personal administrativo"
+                    case 5: obj.perfilDesc = "Personal administrativo"
                         break
 
-                    default: obj.perfilDesc = "usuario"
+                    default: obj.perfilDesc = "Usuario"
                         break
                 }
+
+                if (!obj.mailenterprise) obj.mailenterprise = "" 
+                if(obj.dateBirthday === '00/00/0000') obj.dateBirthday = ""
             })
 
             return data

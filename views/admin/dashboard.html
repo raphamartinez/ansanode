@@ -134,6 +134,10 @@
                                     <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
                                     Historial de Acceso
                                 </a>
+                                <a class="dropdown-item" href="#" data-management>
+                                    <i class="fas fa-cog fa-sm fa-fw mr-2 text-gray-400"></i>
+                                    Ajustes
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -265,9 +269,6 @@
                                                 <div class="bg-white collapse-inner rounded">
                                                     <a class="nav-link text-secondary" href="" data-toggle="collapse"
                                                         data-target="#navbarResponsive, #collapseAdmin"
-                                                        data-btn-management>Gestión de Búsquedas</a>
-                                                    <a class="nav-link text-secondary" href="" data-toggle="collapse"
-                                                        data-target="#navbarResponsive, #collapseAdmin"
                                                         data-btn-users>Lista de usuarios</a>
                                                     <a class="nav-link text-secondary" href="" data-toggle="collapse"
                                                         data-target="#navbarResponsive, #collapseAdmin"
@@ -324,7 +325,7 @@
                 <div class="modal-body">Seleccione salir si desea finalizar la sesión.</div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <a class="btn btn-primary" href="#" onclick="onLogout()">Salir</a>
+                    <a class="btn btn-danger" href="#" onclick="onLogout()">Salir</a>
                 </div>
             </div>
         </div>

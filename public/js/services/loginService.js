@@ -69,8 +69,49 @@ const logout = async () => {
     throw new Error('error')
 }
 
+const password = async (password,token) => {
+
+    const data = await fetch(`${protocol}//${url}/resetPassword`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            password: password,
+            token: token
+        })
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+
+    throw new Error('error')
+}
+
+const forgot = async (mail) => {
+
+    const data = await fetch(`${protocol}//${url}/forgotPassword`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            mail: mail
+        })
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+
+    throw new Error('error')
+}
+
 export const LoginService = {
     login,
     logout,
-    refresh
+    refresh,
+    password,
+    forgot
 }

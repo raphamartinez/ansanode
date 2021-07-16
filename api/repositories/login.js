@@ -10,7 +10,6 @@ class Login {
 
             const sqlId = 'select LAST_INSERT_ID() as id_login from ansa.login LIMIT 1'
             const id = await query(sqlId)
-            console.log(id);
             return id[0]
         } catch (error) {
             console.log(error);
@@ -76,11 +75,26 @@ class Login {
 
     async viewMail(mail) {
         try {
-            const sql = `SELECT mail, password, id_login FROM login where mail = '${mail}' and status = 1`
+            const sql = `SELECT lo.mail, lo.password, lo.id_login FROM login lo, user us where lo.mail = '${mail}' and lo.status = 1 and us.id_login = lo.id_login`
             const result = await query(sql)
 
             if (!result[0]) {
-                throw new NotFound('Mail not found')
+                return false
+            }
+
+            return result[0]
+        } catch (error) {
+            throw new NotFound(error)
+        }
+    }
+
+    async viewMailEnterprise(mailenterprise) {
+        try {
+            const sql = `SELECT lo.mail, lo.password, lo.id_login, us.mailenterprise FROM login lo, user us where us.mailenterprise = '${mailenterprise}' and lo.status = 1 and us.id_login = lo.id_login`
+            const result = await query(sql)
+
+            if (!result[0]) {
+                return false
             }
 
             return result[0]

@@ -3,12 +3,13 @@ const showTable = (user) => {
     const content = [
     `<a onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href="" data-id_login="${user.id_login}" data-name="${user.name}"><i class="fas fa-plus" style="color:#32CD32;"></i></a>
     <a onclick="listBiUser(event)" href="" data-id="${user.id_login}" data-name="${user.name}"><i class="fas fa-file-powerpoint" style="color:#666600;"></i></a>
-    <a data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)" href="" data-id_login="${user.id_login}" data-id_user="${user.id_user}" data-name="${user.name}" data-dateBirthday="${user.dateBirthdayDesc}" data-perfil="${user.perfil}" data-office="${user.id_office}" data-mail="${user.mail}" data-mail="${user.password}"><i class="fas fa-edit" style="color:#3498DB;"></i></a>
+    <a data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)" href="" data-id_login="${user.id_login}" data-id_user="${user.id_user}" data-name="${user.name}" data-dateBirthday="${user.dateBirthdayDesc}" data-perfil="${user.perfil}" data-office="${user.id_office}" data-mail="${user.mail}" data-mail="${user.password}" data-mailenterprise="${user.mailenterprise}"><i class="fas fa-edit" style="color:#3498DB;"></i></a>
     <a data-toggle="modal" data-target="#deleteuser" onclick="modalDeleteUser(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
     <a data-toggle="modal" data-target="#changepass" onclick="modalChangePass(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-key" style="color:#DAA520;"></i></a>
     `,
     `${user.name}`,
     `${user.perfilDesc}`,
+    `${user.mailenterprise}`,
     `${user.dateBirthday}`,
     `${user.dateReg}`
 ]
@@ -88,6 +89,9 @@ const showModalInsert = () => {
                     <div class="form-group col-md-6">          
                     <input type="text" placeholder="Fecha de cumpleaños" class="form-control" name="dateBirthday" id="dateBirthday">
                 </div>
+                <div class="form-group col-md-12">
+                <input placeholder="Email Organização" class="form-control" id="mailenterprise" name="mailenterprise" type="email" required>
+            </div>
                     <select class="selectpicker form-control col-md-6" name="perfil" id="perfil" required>
                     <option value="" disabled selected>Perfil</option>
                     <option value="1" >Administrador</option>
@@ -144,6 +148,9 @@ const showModalEdit= () => {
                     <div class="form-group col-md-6">          
                     <input type="date" placeholder="Fecha de cumpleaños" class="form-control" name="dateBirthday" id="dateBirthdayedit">
                 </div>
+                <div class="form-group col-md-12">
+                <input placeholder="Email Organização" class="form-control" id="mailenterpriseedit" name="mailenterprise" type="email" required>
+            </div>
                 <div class="form-group col-md-6">   
                     <select class="form-control" name="perfil" id="perfiledit" required>
                     <option value="" disabled selected>Perfil</option>
@@ -288,6 +295,7 @@ const header = () => {
         <th scope="col">Opciones</th>
         <th scope="col">Nombre</th>
         <th scope="col">Perfil</th>
+        <th scope="col">E-mail Organizacional</th>
         <th scope="col">Fecha de Nacimiento</th>
         <th scope="col">Fecha de Registro</th>
     </tr>`
@@ -311,6 +319,9 @@ const createUser = () => {
         <div class="form-group col-md-6">
             <input placeholder="Fecha de Nacimiento" class="form-control" id="dateBirthday" name="dateBirthday" type="date">
         </div>
+        <div class="form-group col-md-12">
+        <input placeholder="Email Organização" class="form-control" id="mailenterprise" name="mailenterprise" type="email" required>
+    </div>
         <div class="form-group col-md-6">
             <select name="perfil" id="perfil" class="form-control" required>
                 <option value="" disabled selected>Perfil</option>

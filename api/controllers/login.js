@@ -52,10 +52,18 @@ module.exports = app => {
 
     app.post('/forgotPassword', async function (req, res) {
         try {
-            const mail = req.body.mail
-            await Login.forgotPassword(mail)
-            res.redirect('/login');
+            const mailenterprise = req.body.mail
+            await Login.forgotPassword(mailenterprise)
+            res.status(200).json({  url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
         } catch (err) {
+            next(error)
+        }
+    });
+
+    app.get('/newPassword/:token', async function (req, res, next) {
+        try {
+            res.render('password')
+        } catch (error) {
             next(error)
         }
     });
@@ -64,8 +72,8 @@ module.exports = app => {
         try {
             const token = req.body.token
             const password = req.body.password
-            const result = await Login.changePassword(token, password)
-            res.send({ message: result })
+            await Login.changePassword(token, password)
+            res.status(200).json({  url: '../', message: 'Contraseña alterada con éxito!' })
         } catch (error) {
             next(error)
         }

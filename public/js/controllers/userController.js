@@ -15,6 +15,13 @@ create.addEventListener('click', async (event) => {
     </div>
     `
     try {
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+        
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
@@ -86,6 +93,7 @@ btn.addEventListener('click', async (event) => {
                     { title: "Opciones" },
                     { title: "Nombre" },
                     { title: "Perfil" },
+                    { title: "E-mail Organização" },
                     { title: "Fecha de Nacimiento" },
                     { title: "Fecha de Registro" }
                 ],
@@ -173,11 +181,13 @@ async function editUser(event) {
         const perfil = btn.form.perfil.value
         const office = btn.form.office.value
         const mail = btn.form.mail.value
+        const mailenterprise = btn.form.mailenterprise.value
 
         const user = {
             id_user: id_user,
             id_login: id_login,
             name: name,
+            mailenterprise: mailenterprise,
             dateBirthday: dateBirthday,
             perfil: perfil,
             id_office: office,
@@ -208,6 +218,7 @@ async function modalEditUser(event) {
         const perfil = btn.getAttribute("data-perfil")
         const office = btn.getAttribute("data-office")
         const mail = btn.getAttribute("data-mail")
+        const mailenterprise = btn.getAttribute("data-mailenterprise")
 
 
 
@@ -218,6 +229,7 @@ async function modalEditUser(event) {
         $("#perfiledit").val(perfil);
         $("#officeedit").val(office);
         $("#mailedit").val(mail);
+        $("#mailenterpriseedit").val(mailenterprise);
 
     } catch (error) {
         $('#edituser').modal('hide')
@@ -340,11 +352,13 @@ async function createUser(event) {
         const id_office = btn['office'].value
         const mail = btn['mail'].value
         const password = btn['password'].value
+        const mailenterprise = btn['mailenterprise'].value
 
         const user = {
             name: name,
             dateBirthday: dateBirthday,
             perfil: perfil,
+            mailenterprise: mailenterprise,
             office: {
                 id_office: id_office
             },
@@ -375,29 +389,63 @@ async function listUsers() {
     `
     try {
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
 
         title.innerHTML = "Lista de Usuarios"
-        table.style.display = ''
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = ""
 
+
         const data = await Service.listUsers()
         const offices = await Service.listOffice()
-
-
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(user => {
-            body.appendChild(View.showTable(user))
+            const field = View.showTable(user)
+            dtview.push(field)
         });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                destroy: true,
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Perfil" },
+                    { title: "E-mail Organização" },
+                    { title: "Fecha de Nacimiento" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
 
 
         modal.appendChild(View.showModalInsert())
@@ -428,30 +476,62 @@ async function listUsersFunction() {
 
     try {
         let title = document.querySelector('[data-title]')
-        let table = document.querySelector('[data-table]')
         let powerbi = document.querySelector('[data-powerbi]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let modal = document.querySelector('[data-modal]')
 
 
         title.innerHTML = "Lista de Usuarios"
-        table.style.display = ''
-        head.innerHTML = " "
-        body.innerHTML = " "
         powerbi.innerHTML = " "
         modal.innerHTML = ""
 
+
         const data = await Service.listUsers()
         const offices = await Service.listOffice()
-
-
-        head.appendChild(View.header())
+        let dtview = [];
 
         data.forEach(user => {
-            body.appendChild(View.showTable(user))
+            const field = View.showTable(user)
+            dtview.push(field)
         });
 
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                destroy: true,
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Perfil" },
+                    { title: "E-mail Organização" },
+                    { title: "Fecha de Nacimiento" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
 
         modal.appendChild(View.showModalInsert())
         modal.appendChild(View.showModalDelete())

@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableFile()
     this.createTableReceivable()
     this.createTableSalary()
     this.createTableWebscrapingHistory()
@@ -29,6 +30,20 @@ class Tables {
     this.createTableUserHbs()
 
     return true
+  }
+
+  createTableFile(){
+    const sql = `CREATE TABLE IF NOT EXISTS file (id_file int NOT NULL AUTO_INCREMENT, filename VARCHAR (250) NOT NULL, mimetype VARCHAR (10) NOT NULL,
+    description VARCHAR (250), title VARCHAR (90) NOT NULL,
+    type int, path VARCHAR (250) NOT NULL, size int, id_login int, datereg DATETIME, 
+    FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_file))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableClockMachine() {

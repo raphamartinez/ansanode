@@ -1,22 +1,61 @@
+const Repositorie = require('../repositories/file')
 const fs = require('fs')
-const path = require('path')
 
 class File {
-    
-    read(pathFile, fileName, callbackImage){
-        const validType = ['jpg', 'png', 'jpeg','xlsx','pdf']
-        const type = path.extname(pathFile)
-        const typeIsValid = validType.indexOf(type.substring(1)) !== -1
-    
-        if(typeIsValid){
-            const error = 'Type is not valid'
-            callbackImage(error)
-        } else {
-            const newPathFile = `../${fileName}${type}`
-    
-            fs.createReadStream(pathFile)
-              .pipe(fs.createWriteStream(newPathFile))
-              .on('finish', () => callbackImage(false, pathFile))
+
+    async save(file, details, id_login) {
+        try {
+            await Repositorie.insert(file, details, id_login)
+
+            return file.path
+        } catch (error) {
+            next(error)
+        }
+
+    }
+
+    async view(id_file) {
+        try {
+            return Repositorie.view(id_file)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async delete(id_file) {
+        try {
+
+            const { path } = await Repositorie.view(id_file)
+            fs.unlinkSync(path)
+
+            await Repositorie.delete(id_file)
+
+            return true
+
+        } catch (error) {
+            if (error && error.code == 'ENOENT') {
+                next("File doesn't exist, won't remove it.");
+            } else {
+                next("Error occurred while trying to remove file");
+            }
+        }
+    }
+
+    async list() {
+        try {
+            return Repositorie.list()
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async update(file){
+        try {
+            const result = await Repositorie.update(file)
+
+            return result
+        } catch (error) {
+            return error
         }
     }
 }

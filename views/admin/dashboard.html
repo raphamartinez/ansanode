@@ -210,13 +210,17 @@
                                         <a class="nav-link collapsed" href="#" data-toggle="collapse"
                                             data-target="#collapseProcess" aria-expanded="true"
                                             aria-controls="collapseProcess">
-                                            <i style="padding: 10px;" class="fas fa-cogs "></i>
-                                            <span>Processos</span>
+                                            <i style="padding: 10px;" class="fas fa-file"></i>
+                                            <span>Documentación</span>
                                         </a>
                                         <div id="collapseProcess" class="collapse" aria-labelledby="headingUtilities"
                                             data-parent="#accordionSidebar">
                                             <div class="bg-white collapse-inner rounded">
                                                 <a class="nav-link text-secondary" href="./index.html"
+                                                    data-toggle="collapse"
+                                                    data-target="#navbarResponsive, #collapseProcess"
+                                                    data-files>Carpeta de archivos</a>
+                                                    <a class="nav-link text-secondary" href="./index.html"
                                                     data-toggle="collapse"
                                                     data-target="#navbarResponsive, #collapseProcess"
                                                     id="btnProcess">Lista de Processos</a>
@@ -343,6 +347,7 @@
     <script type="module" src="../js/controllers/userController.js"></script>
     <script type="module" src="../js/controllers/historyController.js"></script>
     <script type="module" src="../js/controllers/loginController.js"></script>
+    <script type="module" src="../js/controllers/fileController.js"></script>
     <script src="../js/services/force.js"></script>
     <script src="../js/services/printpdf.js"></script>
     <script src="../js/libs/jquery.dataTables.min.js"></script>

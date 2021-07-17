@@ -336,8 +336,6 @@ async function listBiUser(event) {
         const id = btn.getAttribute("data-id")
         const name = btn.getAttribute("data-name")
         let title = document.querySelector('[data-title]')
-        let head = document.querySelector('[data-table-head]')
-        let body = document.querySelector('[data-table-body]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
 

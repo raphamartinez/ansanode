@@ -60,5 +60,7 @@ app.listen(3000, () => {
 
     jobClockMachine.start()
 
+    console.log(teste);
+
 })
 

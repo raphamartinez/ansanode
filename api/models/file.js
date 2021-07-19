@@ -25,7 +25,7 @@ class File {
     async delete(id_file) {
         try {
 
-            const { path } = await Repositorie.view(id_file)
+            const path = await Repositorie.view(id_file)
             fs.unlinkSync(path)
 
             await Repositorie.delete(id_file)
@@ -41,9 +41,12 @@ class File {
         }
     }
 
-    async list() {
+    async list(file) {
         try {
-            return Repositorie.list()
+            if(file.type === "ALL") delete file.type 
+            if(file.title === "ALL") delete file.title
+
+            return Repositorie.list(file)
         } catch (error) {
             next(error)
         }

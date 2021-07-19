@@ -25,7 +25,7 @@ const directory = (title, div) => {
     div.innerHTML = ` 
     <div class="col-md-12">
     <div class="card shadow mb-3 responsive" >
-        <div class="card-header"><strong>File-system</strong></div>
+        <div class="card-header"><strong>Repositorio</strong></div>
                         <div class="card-body">
                                 <div id="filecontent" class="form-row col-md-12">
                             </div>
@@ -57,10 +57,9 @@ const search = (modal) => {
                         <div class="form-group col-md-12"> 
                         <select class="selectpicker form-control" name="type" id="type" required>
                     <option value="" disabled selected>Tipo del archivo</option>
-                    <option value="1" >Informe</option>
-                    <option value="2">Personal</option>
-                    <option value="3">Seguridad - Vehículos</option>
-                    <option value="4">Seguridad - Sucursales</option>
+                    <option value="1">Manual</option>
+                    <option value="2">Documento</option>
+                    <option value="3">Imagen</option>
                 </select>
                     </div> 
                 </div>
@@ -108,6 +107,7 @@ const modal = () => {
                     <option value="" disabled selected>Tipo</option>
                     <option value="1">Manual</option>
                     <option value="2">Documento</option>
+                    <option value="3">Imagen</option>
                 </select>
                     </div> 
                     <div class="form-group col-md-12"> 
@@ -133,7 +133,7 @@ const modal = () => {
 }
 
 
-const pdf = () => {
+const pdf = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalpdf" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -147,18 +147,21 @@ const pdf = () => {
             </div>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group col-md-12">      
-                        <embed id="pdfac" src="" alt="" width="760" height="400" type='application/pdf'>
+                    <div class="form-group col-md-12"> 
+                    <h3>${file.title}</h3>     
+                        <embed data-id_file="${file.id_file}"  id="pdfac" src="https://informes.americaneumaticos.com.py/uploads/${file.src}" alt="${file.title}" width="760" height="400" type='application/pdf'>
                     </div>
                     <div class="form-group col-md-12 text-center">     
-                        <a id="deletefile" data-toggle="modal" data-target="#deletefile" data-id="" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
-                        <a download href="" id="downloadpdf" class="download" style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" onclick="downloadFile(event)" href="" id="downloadpdf" class="download" style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
                     <hr>
                     <div class="form-group col-md-12">     
-                        <div class="portfolio-caption">
-                            <p class="item-intro text-muted text-center" id="descriptionfile"></p>
-                        </div>
+                    <div class="portfolio-caption text-center">
+                    <p class="item-intro text-muted" id="descriptionfile">Descripción: ${file.description}</p>
+                    <p class="item-intro text-muted" id="dateregFile">Fecha de Registro: ${file.datereg}</p>
+                </div>
                     </div> 
                 </div> 
             </div>
@@ -174,7 +177,7 @@ const pdf = () => {
 
 }
 
-const video = () => {
+const video = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalvideo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -189,19 +192,22 @@ const video = () => {
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group col-md-12">      
-                        <video width="760" height="400" controls>
-                            <source id="videoac" src="" alt="" type="video/mp4" >
+                    <h3>${file.title}</h3> 
+                        <video data-id_file="${file.id_file}"  width="760" height="400" controls>
+                            <source id="videoac" src="https://informes.americaneumaticos.com.py/uploads/${file.src}" alt="${file.title}" type="video/mp4" >
                         </video>
                     </div>
                     <div class="form-group col-md-12 text-center">  
-                        <a id="deletefile" data-toggle="modal" data-target="#deletefile" data-id="" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
-                        <a id="downloadvideo" href="" class="download" download style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)"class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" id="downloadvideo" href="" class="download" onclick="downloadFile(event)" style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
                     <hr>
                     <div class="form-group col-md-12">    
-                        <div class="portfolio-caption">
-                            <p class="item-intro text-muted text-center" id="descriptionfile"></p>
-                        </div>
+                    <div class="portfolio-caption text-center">
+                    <p class="item-intro text-muted" id="descriptionfile">Descripción: ${file.description}</p>
+                    <p class="item-intro text-muted" id="dateregFile">Fecha de Registro: ${file.datereg}</p>
+                </div>
                     </div>
                 </div> 
             </div>
@@ -217,11 +223,11 @@ const video = () => {
 
 }
 
-const image = () => {
+const image = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalimage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Imagen</h5>
@@ -231,18 +237,21 @@ const image = () => {
             </div>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group col-md-12">      
-                        <img id="imagemAc" src="https://informes.americaneumaticos.com.py/img/background.jpg" alt="" class="img-fluid d-block mx-auto"/>
+                    <div class="form-group col-md-12 text-center">  
+                    <h3>${file.title}</h3>    
+                        <img data-id_file="${file.id_file}" id="imagealt" src="https://informes.americaneumaticos.com.py/uploads/${file.src}" alt="" class="img-fluid mx-auto d-block "/>
                     </div>
                     <hr>
                     <div class="form-group col-md-12 text-center">  
-                        <a id="deletefile" data-toggle="modal" data-target="#deletefile" data-id="" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
-                        <a id="download" href="" class="download" download style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" data-filename="${file.src}" id="download" href="" class="download" onclick="downloadFile(event)" style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a data-id_file="${file.id_file}" id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
                     <hr>
                     <div class="form-group col-md-12"> 
                         <div class="portfolio-caption text-center">
-                            <p class="item-intro text-muted" id="descriptionfile">Teste</p>
+                            <p class="item-intro text-muted" id="descriptionfile">Descripción: ${file.description}</p>
+                            <p class="item-intro text-muted" id="dateregFile">Fecha de Registro: ${file.datereg}</p>
                         </div>
                     </div>
                 </div> 
@@ -257,7 +266,7 @@ const image = () => {
 
 }
 
-const deleteFile = () => {
+const deleteFile = (id_file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="modal fade" id="deletefile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -279,7 +288,7 @@ const deleteFile = () => {
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Borrar</i></button>   
+                    <a data-id_file="${id_file}"  onclick="deleteFile(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Borrar</i></a>   
                 </div>
             </form>
         </div>
@@ -295,10 +304,13 @@ const deleteFile = () => {
 const file = (obj) => {
     const div = document.createElement('div')
 
-    const content = ` <div class="col-md-2 p-2 text-center"> 
-                          <a class="abrir" data-toggle="modal" data-target="#modalimage"><img src="https://informes.americaneumaticos.com.py/tmp/uploads/${obj.filename}" class="responsive img-fluid card mh-100"  style="width:146px; height:146px;"/></a>
-                          <div class="form-row text-center"><h5>${obj.title}</h5></div>
-                      </div>`
+    const content = ` <div class="form-row p-3">
+                          <div class="form-group col-md-12">  
+                            <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="https://informes.americaneumaticos.com.py/uploads/${obj.filename.replace(/ /g, "%20")}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
+                          <div class="form-group col-md-12">
+                          <p>${obj.title}</p>
+                          </div>
+                        </div>`
 
     div.innerHTML = content
 
@@ -310,7 +322,7 @@ const fileUpload = (filename,title) => {
     const div = document.createElement('div')
 
     const content = ` <div class="col-md-2 p-2 text-center"> 
-                          <a class="abrir" data-toggle="modal" data-target="#modalimage"><img src="https://informes.americaneumaticos.com.py/tmp/uploads/${filename}" class="responsive img-fluid card mh-100"  style="width:146px; height:146px;"/></a>
+                          <a class="abrir" data-toggle="modal" data-target="#modalimage" data-mimetype="${obj.mimetype}"  data-src="${filename}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}"><img src="https://informes.americaneumaticos.com.py/uploads/${filename.replace(/ /g, "%20")}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
                           <div class="form-row text-center"><h5>${title}</h5></div>
                       </div>`
 
@@ -318,6 +330,58 @@ const fileUpload = (filename,title) => {
 
     return div
 }
+
+const sendMail = () => {
+    const div = document.createElement('div')
+
+    const content = ` <div class="modal fade" id="modalmail" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-wrapper">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-blue">
+                    <h4 class="modal-title">Enviar correo electrónico</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+                </div>
+                <form action="" method="POST" enctype="multipart/form-data" >
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <input id="for" name="for" type="text" class="form-control" placeholder="Por">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <input name="cc" id="cc" type="text" class="form-control" placeholder="Cc">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <input name="cco" id="cco" type="text" class="form-control" placeholder="Cco">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <input name="title" id="title" type="text" class="form-control" placeholder="Título">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <textarea name="message" type="text"  id="message" class="form-control" placeholder="Mensaje" style="height: 120px;"></textarea>
+                            </div>
+                            <div class="form-group col-md-12 custom-file">
+                                <input type="file" class="custom-file-input" id="attachment" name="attachment">
+                                <label class="custom-file-label" for="attachment" name="attachmentname">Adjunto archivo</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                        <button type="submit" class="btn btn-success pull-right"><i class="fa fa-envelope"></i> Enviar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> `
+
+    div.innerHTML = content
+
+    return div
+
+}
+
 
 export const ViewFile = {
     directory,
@@ -328,5 +392,6 @@ export const ViewFile = {
     deleteFile,
     search,
     file,
-    fileUpload
+    fileUpload,
+    sendMail
 }

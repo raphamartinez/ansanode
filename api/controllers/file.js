@@ -31,9 +31,15 @@ module.exports = app => {
         }
     })
 
-    app.get('/files', Middleware.bearer, async (req, res, next) => {
+    app.get('/files/:type/:title', Middleware.bearer, async (req, res, next) => {
         try {
-            const files = await File.list()
+
+            const file = {
+                type: req.params.type,
+                title: req.params.title 
+            }
+
+            const files = await File.list(file)
 
             res.json(files)
         } catch (error) {

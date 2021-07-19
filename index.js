@@ -22,12 +22,13 @@ app.listen(3000, () => {
     console.log('Server Running!!!');
     app.use(express.static(__dirname + '/public'))
     app.use(express.static(__dirname + '/views'))
+    app.use(express.static(__dirname + '/tmp'))
 
     app.all('/', function (req, res) {
         res.render('login');
     });
 
-    const job = new CronJob('0 01 * * * *', () => {
+    const job = new CronJob('0 30 * * * *', () => {
         try {
             console.log('Executed Cron sucessfuly!');
             WebScraping.init()

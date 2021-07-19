@@ -7,7 +7,7 @@ const protocol = split[0]
 const listfile =  async (details) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
-    const data = await fetch(`${protocol}//${url}/files` , {
+    const data = await fetch(`${protocol}//${url}/files/${details.type}/${details.title}` , {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -39,7 +39,24 @@ const upload =  async (formData) => {
     throw new Error('error')
 }
 
+const deleteFile =  async (id_file) => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/file/${id_file}` , {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+    throw new Error('error')
+}
+
 export const ServiceFile = {
     listfile,
-    upload
+    upload,
+    deleteFile
 }

@@ -36,11 +36,6 @@ btnfiles.addEventListener('click', async (event) => {
 
         ViewFile.directory(title, powerbi)
 
-        modal.appendChild(ViewFile.image())
-        modal.appendChild(ViewFile.pdf())
-        modal.appendChild(ViewFile.video())
-        modal.appendChild(ViewFile.deleteFile())
-
         loading.innerHTML = ``
 
         const filecontent = document.getElementById('filecontent')
@@ -112,20 +107,22 @@ async function searchfile(event) {
     try {
         const filecontent = document.getElementById('filecontent')
         const btn = event.currentTarget
-        const name = btn.form.title.value
+        const title = btn.form.title.value
         const type = btn.form.type.value
 
         filecontent.innerHTML = ``
 
-        const details = {
-            name: name,
+        const file = {
+            title: title,
             type: type
         }
 
-        const data = await ServiceFile.listfile(details)
+        if(file.type === "") file.type = "ALL"
+        if(file.title === "") file.title = "ALL"
+
+        const data = await ServiceFile.listfile(file)
 
         data.forEach(obj => {
-            console.log(obj);
             filecontent.appendChild(ViewFile.file(obj))
         })
 
@@ -166,9 +163,162 @@ async function upload(event) {
 
         const filecontent = document.getElementById('filecontent')
 
-        filecontent.appendChild(ViewFile.fileUpload(filename,title))
+        filecontent.appendChild(ViewFile.fileUpload(filename, title))
 
         loading.innerHTML = ``
+    } catch (error) {
+
+    }
+}
+
+
+window.modaldelete = modaldelete
+
+async function modaldelete(event) {
+    try {
+        event.preventDefault()
+
+        let modal = document.querySelector('[data-modal]')
+
+        const btn = event.currentTarget
+
+        const id_file = btn.getAttribute("data-id_file")
+
+        modal.innerHTML = ''
+        modal.appendChild(ViewFile.deleteFile(id_file))
+
+        $('#deletefile').modal('show')
+
+    } catch (error) {
+
+    }
+}
+
+window.deleteFile = deleteFile
+
+async function deleteFile(event) {
+    event.preventDefault()
+
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
+        const btn = event.currentTarget
+
+        const id_file = btn.getAttribute("data-id_file")
+
+        await ServiceFile.deleteFile(id_file)
+
+        loading.innerHTML = ``
+        $('#deletefile').modal('hide')
+        alert('Archivo eliminado con éxito!')
+    } catch (error) {
+
+    }
+}
+
+window.modalmail = modalmail
+
+async function modalmail(event) {
+    try {
+        event.preventDefault()
+
+        let modal = document.querySelector('[data-modal]')
+
+        let id_file = document.querySelector('[data-id_file]').value
+
+        modal.appendChild(ViewFile.sendMail(id_file))
+
+        $('#modalmail').modal('show')
+
+    } catch (error) {
+
+    }
+}
+
+window.downloadFile = downloadFile
+
+async function downloadFile(event) {
+    try {
+        event.preventDefault()
+
+        const btn = event.currentTarget
+
+        const src = btn.getAttribute("data-src")
+        const filename = btn.getAttribute("data-filename")
+
+        let loading = document.querySelector('[data-loading]')
+        loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
+
+        var link = document.createElement("a");
+        link.download = filename;
+        link.href = src;
+        link.click();
+
+        loading.innerHTML = ``
+    } catch (error) {
+        
+    }
+}
+
+
+window.modalfile = modalfile
+
+async function modalfile(event) {
+    try {
+        event.preventDefault()
+
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ``
+
+        const btn = event.currentTarget
+
+        const mimetype = btn.getAttribute("data-mimetype")
+
+        const file = {
+            id_file: btn.getAttribute("data-id_file"),
+            src: btn.getAttribute("data-src"),
+            title: btn.getAttribute("data-title"),
+            description: btn.getAttribute("data-description"),
+            mimetype: btn.getAttribute("data-mimetype"),
+            datereg: btn.getAttribute("data-datereg")
+        }
+
+        const filetype = mimetype.substring(0, mimetype.indexOf("/"))
+
+        switch (filetype) {
+            case "image":
+                modal.appendChild(ViewFile.image(file))
+                $('#modalimage').modal('show')
+
+                break;
+            case "video":
+                modal.appendChild(ViewFile.video(file))
+                $('#modalvideo').modal('show')
+
+                break;
+            case "application":
+                alert("Aún no es posible leer archivos de este formato.!")
+
+                break;
+            case "text":
+                alert("Aún no es posible leer archivos de este formato.!")
+
+                break;
+
+        }
+
+        modal.appendChild(ViewFile.sendMail(id_file))
+
+        $('#modalmail').modal('show')
+
     } catch (error) {
 
     }

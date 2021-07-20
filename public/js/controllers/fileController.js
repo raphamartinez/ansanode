@@ -135,7 +135,7 @@ async function searchfile(event) {
                     obj.fakename = '/img/video.png'
     
                     break;
-                case "applicatio":
+                case "application":
                     obj.fakename = '/img/pdf.png'
     
                     break;
@@ -194,7 +194,7 @@ async function upload(event) {
                     obj.fakename = '/img/video.png'
     
                     break;
-                case "applicatio":
+                case "application":
                     obj.fakename = '/img/pdf.png'
     
                     break;

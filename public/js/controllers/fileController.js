@@ -306,6 +306,7 @@ async function modalfile(event) {
 
                 break;
             case "application":
+                modal.appendChild(ViewFile.pdf(file))
                 alert("Aún no es posible leer archivos de este formato.!")
 
                 break;

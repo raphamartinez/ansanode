@@ -8,7 +8,6 @@ module.exports = app => {
             const dateReg = await WebScraping.listWebscrapingHistory()
             res.status(200).json(dateReg)
         } catch (error) {
-            console.log(error)
             next(error)
         }
     })
@@ -18,7 +17,6 @@ module.exports = app => {
             const dateReg = await WebScraping.listWebscrapingHistory()
             res.status(200).json(dateReg)
         } catch (error) {
-            console.log(error)
             next(error)
         }
     })

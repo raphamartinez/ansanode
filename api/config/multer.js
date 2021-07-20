@@ -29,6 +29,8 @@ module.exports = {
             'image/png',
             'image/gif',
             'image/svg+xml',
+            'video/mp4',
+            'video/webm',
             'application/pdf',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',,
             'application/vnd.ms-excel',

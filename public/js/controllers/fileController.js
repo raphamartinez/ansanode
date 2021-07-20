@@ -159,11 +159,11 @@ async function upload(event) {
         formData.append('type', type)
         formData.append('description', description)
 
-        const filename = await ServiceFile.upload(formData)
+        const obj = await ServiceFile.upload(formData)
 
         const filecontent = document.getElementById('filecontent')
 
-        filecontent.appendChild(ViewFile.fileUpload(filename, title))
+        filecontent.appendChild(ViewFile.fileUpload(obj))
 
         loading.innerHTML = ``
     } catch (error) {
@@ -213,6 +213,7 @@ async function deleteFile(event) {
         await ServiceFile.deleteFile(id_file)
 
         loading.innerHTML = ``
+        $(`#${id_file}div`).remove();
         $('#deletefile').modal('hide')
         alert('Archivo eliminado con éxito!')
     } catch (error) {

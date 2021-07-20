@@ -11,9 +11,11 @@ module.exports = app => {
             const details = req.body
             const id_login = req.login.id_login
 
-            const path = await File.save(file, details, id_login)
+            const id_file = await File.save(file, details, id_login)
 
-            res.json(file.filename)
+            const newfile = await File.view(id_file)
+
+            res.json(newfile)
         } catch (error) {
             next(error)
         }
@@ -36,7 +38,7 @@ module.exports = app => {
 
             const file = {
                 type: req.params.type,
-                title: req.params.title 
+                title: req.params.title
             }
 
             const files = await File.list(file)
@@ -51,9 +53,9 @@ module.exports = app => {
         try {
             const id_file = req.params.id_file
 
-            const file = await File.view(id_file)
+            const { path } = await File.view(id_file)
 
-            res.json(file)
+            res.json(path)
         } catch (error) {
             next(error)
         }

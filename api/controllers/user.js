@@ -7,18 +7,20 @@ module.exports = app => {
 
         try {
             const users = await User.listUsers()
-            res.status(200).json(users)
+
+            res.json(users)
         } catch (error) {
             next(error)
         }
-    })
+    }) 
 
     app.get('/user/:id', Middleware.bearer, async (req, res, next) => {
         try {
             const id_user = req.params.id
 
             const user = await User.viewUser(id_user)
-            res.status(200).json(user)
+
+            res.json(user)
         } catch (error) {
             next(error)
         }
@@ -28,7 +30,8 @@ module.exports = app => {
         try {
             const data = req.body
             const result = await User.insertUser(data)
-            res.status(200).json(result)
+
+            res.json(result)
         } catch (error) {
             next(error)
         }
@@ -40,7 +43,8 @@ module.exports = app => {
             const data = req.body
             const id_user = req.params.id
             const user = await User.updateUser(data, id_user)
-            res.status(200).json(user)
+
+            res.json(user)
         } catch (error) {
             next(error)
         }
@@ -50,7 +54,8 @@ module.exports = app => {
         try {
             const id_user = req.params.id
             await User.deleteStatus(id_user)
-            res.status(200).json(true)
+
+            res.json(true)
         } catch (error) {
             next(error)
         }

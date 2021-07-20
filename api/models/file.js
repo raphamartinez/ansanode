@@ -5,9 +5,9 @@ class File {
 
     async save(file, details, id_login) {
         try {
-            await Repositorie.insert(file, details, id_login)
+            const id_file = await Repositorie.insert(file, details, id_login)
 
-            return file.path
+            return id_file
         } catch (error) {
             next(error)
         }
@@ -25,7 +25,7 @@ class File {
     async delete(id_file) {
         try {
 
-            const path = await Repositorie.view(id_file)
+            const {path} = await Repositorie.view(id_file)
             fs.unlinkSync(path)
 
             await Repositorie.delete(id_file)

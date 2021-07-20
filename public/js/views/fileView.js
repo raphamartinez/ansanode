@@ -152,7 +152,7 @@ const pdf = (file) => {
                         <embed data-id_file="${file.id_file}"  id="pdfac" src="https://informes.americaneumaticos.com.py/uploads/${file.src}" alt="${file.title}" width="760" height="400" type='application/pdf'>
                     </div>
                     <div class="form-group col-md-12 text-center">     
-                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-dismiss="modal" data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
                         <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" onclick="downloadFile(event)" href="" id="downloadpdf" class="download" style="color:#36b9cc"><i class="fas fa-download"></i></a>
                         <a id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
@@ -198,7 +198,7 @@ const video = (file) => {
                         </video>
                     </div>
                     <div class="form-group col-md-12 text-center">  
-                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)"class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-dismiss="modal" data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)"class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
                         <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" id="downloadvideo" href="" class="download" onclick="downloadFile(event)" style="color:#36b9cc"><i class="fas fa-download"></i></a>
                         <a id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
@@ -243,7 +243,7 @@ const image = (file) => {
                     </div>
                     <hr>
                     <div class="form-group col-md-12 text-center">  
-                        <a data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-dismiss="modal" data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
                         <a data-src="https://informes.americaneumaticos.com.py/uploads/${file.src}" data-filename="${file.src}" id="download" href="" class="download" onclick="downloadFile(event)" style="color:#36b9cc"><i class="fas fa-download"></i></a>
                         <a data-id_file="${file.id_file}" id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
                     </div>
@@ -304,7 +304,7 @@ const deleteFile = (id_file) => {
 const file = (obj) => {
     const div = document.createElement('div')
 
-    const content = ` <div class="form-row p-3">
+    const content = ` <div class="form-row p-3" id="${obj.id_file}div">
                           <div class="form-group col-md-12">  
                             <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="https://informes.americaneumaticos.com.py/uploads/${obj.filename.replace(/ /g, "%20")}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
                           <div class="form-group col-md-12">
@@ -318,13 +318,16 @@ const file = (obj) => {
 }
 
 
-const fileUpload = (filename,title) => {
+const fileUpload = (obj) => {
     const div = document.createElement('div')
 
-    const content = ` <div class="col-md-2 p-2 text-center"> 
-                          <a class="abrir" data-toggle="modal" data-target="#modalimage" data-mimetype="${obj.mimetype}"  data-src="${filename}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}"><img src="https://informes.americaneumaticos.com.py/uploads/${filename.replace(/ /g, "%20")}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
-                          <div class="form-row text-center"><h5>${title}</h5></div>
-                      </div>`
+    const content = ` <div class="form-row p-3" id="${obj.id_file}div">
+                        <div class="form-group col-md-12">  
+                          <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="https://informes.americaneumaticos.com.py/uploads/${obj.filename.replace(/ /g, "%20")}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
+                          <div class="form-group col-md-12">
+                          <p>${obj.title}</p>
+                          </div>
+                        </div>`
 
     div.innerHTML = content
 

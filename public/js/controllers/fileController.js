@@ -349,7 +349,7 @@ async function modalfile(event) {
                 $('#modalvideo').modal('show')
 
                 break;
-            case "applicatio":
+            case "application":
                 modal.appendChild(ViewFile.pdf(file))
                 alert("Aún no es posible leer archivos de este formato.!")
 

@@ -123,6 +123,28 @@ async function searchfile(event) {
         const data = await ServiceFile.listfile(file)
 
         data.forEach(obj => {
+
+            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+
+            switch (filetype) {
+                case "image":
+                    obj.fakename = obj.filename.replace(/ /g, "%20")
+    
+                    break;
+                case "video":
+                    obj.fakename = '/img/video.png'
+    
+                    break;
+                case "applicatio":
+                    obj.fakename = '/img/pdf.png'
+    
+                    break;
+                case "text":
+                    obj.fakename = '/img/doc.png'
+    
+                    break;
+    
+            }
             filecontent.appendChild(ViewFile.file(obj))
         })
 
@@ -160,6 +182,28 @@ async function upload(event) {
         formData.append('description', description)
 
         const obj = await ServiceFile.upload(formData)
+
+        const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+
+            switch (filetype) {
+                case "image":
+                    obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
+    
+                    break;
+                case "video":
+                    obj.fakename = '/img/video.png'
+    
+                    break;
+                case "applicatio":
+                    obj.fakename = '/img/pdf.png'
+    
+                    break;
+                case "text":
+                    obj.fakename = '/img/doc.png'
+    
+                    break;
+    
+            }
 
         const filecontent = document.getElementById('filecontent')
 
@@ -305,7 +349,7 @@ async function modalfile(event) {
                 $('#modalvideo').modal('show')
 
                 break;
-            case "application":
+            case "applicatio":
                 modal.appendChild(ViewFile.pdf(file))
                 alert("Aún no es posible leer archivos de este formato.!")
 

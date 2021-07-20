@@ -44,6 +44,8 @@ btnfiles.addEventListener('click', async (event) => {
 
     } catch (error) {
         alert(error)
+        loading.innerHTML = ``
+        filecontent.innerHTML = ``
     }
 })
 
@@ -68,7 +70,33 @@ async function modalAddFile(event) {
 
         loading.innerHTML = " "
     } catch (error) {
+        alert(error)
+        loading.innerHTML = ``
+    }
+}
 
+window.modalAddOffice = modalAddOffice
+
+async function modalAddOffice(event) {
+    try {
+        event.preventDefault()
+
+        let loading = document.querySelector('[data-loading]')
+        let modal = document.querySelector('[data-modal]')
+        loading.innerHTML = `
+    <div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+        modal.innerHTML = ''
+        modal.appendChild(ViewFile.addoffice())
+
+        $('#modaladdoffice').modal('show')
+
+        loading.innerHTML = " "
+    } catch (error) {
+        alert(error)
+        loading.innerHTML = ``
     }
 }
 
@@ -87,7 +115,8 @@ async function modalsearch(event) {
         $('#modalsearch').modal('show')
 
     } catch (error) {
-
+        alert(error)
+        loading.innerHTML = ``
     }
 }
 
@@ -117,8 +146,8 @@ async function searchfile(event) {
             type: type
         }
 
-        if(file.type === "") file.type = "ALL"
-        if(file.title === "") file.title = "ALL"
+        if (file.type === "") file.type = "Todas"
+        if (file.title === "") file.title = "Todas"
 
         const data = await ServiceFile.listfile(file)
 
@@ -129,29 +158,88 @@ async function searchfile(event) {
             switch (filetype) {
                 case "image":
                     obj.fakename = obj.filename.replace(/ /g, "%20")
-    
+                    filecontent.appendChild(ViewFile.file(obj))
+
                     break;
                 case "video":
                     obj.fakename = '/img/video.png'
-    
+                    filecontent.appendChild(ViewFile.file(obj))
+
                     break;
                 case "application":
-                    obj.fakename = '/img/pdf.png'
-    
+                    const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                    switch (typeapp) {
+                        case "pdf":
+                            obj.fakename = '/img/pdf.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.ms-excel":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.ms-powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "msword":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "excel":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        case "powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        case "word":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        default:
+                            obj.fakename = '/img/doc.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+                    }
+
                     break;
                 case "text":
                     obj.fakename = '/img/doc.png'
-    
+                    filecontent.appendChild(ViewFile.file(obj))
+
                     break;
-    
+
             }
-            filecontent.appendChild(ViewFile.file(obj))
         })
 
         loading.innerHTML = ``
 
     } catch (error) {
-
+        alert(error)
+        loading.innerHTML = ``
     }
 }
 
@@ -185,25 +273,71 @@ async function upload(event) {
 
         const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
 
-            switch (filetype) {
-                case "image":
-                    obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
-    
-                    break;
-                case "video":
-                    obj.fakename = '/img/video.png'
-    
-                    break;
-                case "application":
-                    obj.fakename = '/img/pdf.png'
-    
-                    break;
-                case "text":
-                    obj.fakename = '/img/doc.png'
-    
-                    break;
-    
-            }
+        switch (filetype) {
+            case "image":
+                obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
+
+                break;
+            case "video":
+                obj.fakename = '/img/video.png'
+
+                break;
+            case "application":
+                const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                switch (typeapp) {
+                    case "pdf":
+                        obj.fakename = '/img/pdf.png'
+                        break
+
+                    case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                        obj.fakename = '/img/excel.png'
+                        break
+
+                    case "vnd.ms-excel":
+                        obj.fakename = '/img/excel.png'
+                        break
+
+                    case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                        obj.fakename = '/img/powerpoint.png'
+                        break
+
+                    case "vnd.ms-powerpoint":
+                        obj.fakename = '/img/powerpoint.png'
+                        break
+
+                    case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                        obj.fakename = '/img/word.png'
+                        break
+
+                    case "msword":
+                        obj.fakename = '/img/word.png'
+                        break
+
+                    case "excel":
+                        obj.fakename = '/img/excel.png'
+                        break
+
+                    case "powerpoint":
+                        obj.fakename = '/img/powerpoint.png'
+                        break
+
+                    case "word":
+                        obj.fakename = '/img/word.png'
+                        break
+
+                    default:
+                        obj.fakename = '/img/doc.png'
+
+                        break
+                }
+
+                break;
+            case "text":
+                obj.fakename = '/img/doc.png'
+
+                break;
+
+        }
 
         const filecontent = document.getElementById('filecontent')
 
@@ -211,10 +345,67 @@ async function upload(event) {
 
         loading.innerHTML = ``
     } catch (error) {
-
+        alert(error)
+        loading.innerHTML = ``
     }
 }
 
+window.uploadoffice = uploadoffice
+
+async function uploadoffice(event) {
+    event.preventDefault()
+    $('#modaladdoffice').modal('hide')
+
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
+        const btn = event.currentTarget
+
+        const data = {
+            title: btn.form.title.value,
+            description: btn.form.description.value,
+            type: btn.form.type.value,
+            mimetype: btn.form.mimetype.value,
+            path: btn.form.link.value
+        }
+
+        const obj = await ServiceFile.uploadoffice(data)
+
+        const filetype = data.mimetype.substring(0, data.mimetype.indexOf("/"))
+
+        switch (filetype) {
+            case "powerpoint":
+                obj.fakename = '/img/powerpoint.png'
+
+                break;
+            case "excel":
+                obj.fakename = '/img/excel.png'
+
+                break;
+            case "word":
+                obj.fakename = '/img/word.png'
+
+                break;
+            default:
+                obj.fakename = '/img/doc.png'
+
+                break;
+        }
+
+        const filecontent = document.getElementById('filecontent')
+
+        filecontent.appendChild(ViewFile.fileOffice(obj))
+
+        loading.innerHTML = ``
+    } catch (error) {
+        alert(error)
+        loading.innerHTML = ``
+    }
+}
 
 window.modaldelete = modaldelete
 
@@ -309,7 +500,7 @@ async function downloadFile(event) {
 
         loading.innerHTML = ``
     } catch (error) {
-        
+
     }
 }
 
@@ -350,9 +541,25 @@ async function modalfile(event) {
 
                 break;
             case "application":
-                modal.appendChild(ViewFile.pdf(file))
-                alert("Aún no es posible leer archivos de este formato.!")
 
+                const typeapp = mimetype.substring(mimetype.indexOf("/") + 1)
+
+                switch (typeapp) {
+                    case "pdf":
+                        modal.appendChild(ViewFile.pdf(file))
+                        $('#modalpdf').modal('show')
+                        break
+
+                    case "excel":
+                        modal.appendChild(ViewFile.office(file))
+                        $('#modaloffice').modal('show')
+                        break
+
+                    default:
+                        alert("Aún no es posible leer archivos de este formato.!")
+
+                        break
+                }
                 break;
             case "text":
                 alert("Aún no es posible leer archivos de este formato.!")

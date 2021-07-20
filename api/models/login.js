@@ -95,7 +95,7 @@ class Login {
                 await transport.sendMail(send)
             }
 
-            return true
+            return login
         } catch (error) {
             throw new NotFound('Mail not found')
         }
@@ -113,6 +113,7 @@ class Login {
 
             await Repositorie.updatePassword(passwordHash, id_login)
 
+            return id_login
         } catch (error) {
             throw new InvalidArgumentError('Error')
         }

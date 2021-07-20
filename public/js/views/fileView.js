@@ -13,7 +13,8 @@ const directory = (title, div) => {
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                 <a data-toggle="modal" data-target="#modalAddFile" onclick="modalAddFile(event)" class="dropdown-item"><i class="fa fa-plus"></i> Nuevo Archivo</a>
-                <a data-toggle="modal" data-target="#janela" class="dropdown-item"><i class="fa fa-envelope"></i> Enviar por email</a>
+                <a data-toggle="modal" data-target="#modalAddOffice" onclick="modalAddOffice(event)" class="dropdown-item"><i class="fab fa-microsoft"></i> Nuevo Office</a>
+
             </div>
         </div>
         <button type="button" onclick="modalsearch(event)" class="btn btn-success">
@@ -135,6 +136,62 @@ const modal = () => {
 
 }
 
+const addoffice = () => {
+    const div = document.createElement('div')
+
+    const content = `     <div class="modal fade" id="modaladdoffice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Agregar archivo Office </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <form enctype="multipart/form-data" method="POST">
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12">          
+                            <input type="text" placeholder="Título del Office" class="form-control" name="title" id="title" required>
+                        </div>
+                        <div class="form-group col-md-12">          
+                            <input type="text" placeholder="Descripción del Office"  class="form-control" name="description" id="description" required>
+                        </div>
+                        <div class="form-group col-md-12"> 
+                        <select class="selectpicker form-control" name="mimetype" id="mimetype" required>
+                    <option value="" disabled selected>Tipo de Office</option>
+                    <option value="application/powerpoint">PowerPoint</option>
+                    <option value="application/excel">Excel</option>
+                    <option value="application/word">Word</option>
+                </select>
+                </div>
+                        <div class="form-group col-md-12"> 
+                        <select class="selectpicker form-control" name="type" id="type" required>
+                    <option value="" disabled selected>Tipo</option>
+                    <option value="10">PowerPoint</option>
+                    <option value="11">Excel</option>
+                    <option value="12">Word</option>
+                </select>
+                    </div> 
+                    <div class="form-group col-md-12"> 
+                            <input placeholder="Link del archivo - Office.com" type="text" class="form-control" id="link" name="link" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" name="btn" id="btn" onclick="uploadoffice(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
+                </div>
+            </form>
+        </div>
+    </div>
+</div>`
+
+    div.innerHTML = content
+
+    return div
+
+}
+
 
 const pdf = (file) => {
     const div = document.createElement('div')
@@ -145,7 +202,7 @@ const pdf = (file) => {
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">PDF</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">�</span>
+                    <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -269,6 +326,49 @@ const image = (file) => {
 
 }
 
+const office = (file) => {
+    const div = document.createElement('div')
+
+    const content = ` <div class="portfolio-modal modal fade" id="modaloffice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Archivo Office</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group col-md-12 text-center">  
+                    <h3>${file.title}</h3>    
+                    <iframe frameborder="0" scrolling="no" src="${file.src}"></iframe>
+                    </div>
+                    <hr>
+                    <div class="form-group col-md-12 text-center">  
+                        <a data-dismiss="modal" data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
+                        <a data-src="${file.src}" data-filename="${file.title}" id="download" href="" class="download" onclick="downloadFile(event)" style="color:#36b9cc"><i class="fas fa-download"></i></a>
+                        <a data-id_file="${file.id_file}" id="sendmail" onclick="modalmail(event)" href="" class="mail" style="color:#32CD32"><i class="fas fa-paper-plane"></i></a>
+                    </div>
+                    <hr>
+                    <div class="form-group col-md-12"> 
+                        <div class="portfolio-caption text-center">
+                            <p class="item-intro text-muted" id="descriptionfile">Descripción: ${file.description}</p>
+                            <p class="item-intro text-muted" id="dateregFile">Fecha de Registro: ${file.datereg}</p>
+                        </div>
+                    </div>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>`
+
+    div.innerHTML = content
+
+    return div
+
+}
+
 const deleteFile = (id_file) => {
     const div = document.createElement('div')
 
@@ -327,6 +427,22 @@ const fileUpload = (obj) => {
     const content = ` <div class="form-row p-3" id="${obj.id_file}div">
                         <div class="form-group col-md-12">  
                           <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${protocol}//${url}/${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
+                          <div class="form-group col-md-12">
+                          <p>${obj.title}</p>
+                          </div>
+                        </div>`
+
+    div.innerHTML = content
+
+    return div
+}
+
+const fileOffice = (obj) => {
+    const div = document.createElement('div')
+
+    const content = ` <div class="form-row p-3" id="${obj.id_file}div">
+                        <div class="form-group col-md-12">  
+                          <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.path}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
                           <div class="form-group col-md-12">
                           <p>${obj.title}</p>
                           </div>
@@ -399,5 +515,8 @@ export const ViewFile = {
     search,
     file,
     fileUpload,
-    sendMail
+    sendMail,
+    addoffice,
+    fileOffice,
+    office
 }

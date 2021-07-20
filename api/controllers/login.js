@@ -53,8 +53,11 @@ module.exports = app => {
     app.post('/forgotPassword', async function (req, res) {
         try {
             const mailenterprise = req.body.mail
-            await Login.forgotPassword(mailenterprise)
-            res.status(200).json({  url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
+            const login = await Login.forgotPassword(mailenterprise)
+
+            History.insertHistory('Solicitud de restablecimiento de contraseña', login.id_login)
+
+            res.json({  url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
         } catch (err) {
             next(error)
         }
@@ -72,8 +75,10 @@ module.exports = app => {
         try {
             const token = req.body.token
             const password = req.body.password
-            await Login.changePassword(token, password)
-            res.status(200).json({  url: '../', message: 'Contraseña alterada con éxito!' })
+            const id_login = await Login.changePassword(token, password)
+
+            History.insertHistory('Contraseña alterada.', id_login)
+            res.json({  url: '../', message: 'Contraseña alterada con éxito!' })
         } catch (error) {
             next(error)
         }
@@ -82,7 +87,7 @@ module.exports = app => {
     app.post('/refresh', Middleware.refresh, async function (req, res, next) {
         try {
             const token = await Login.generateTokens(req.login.id_login)
-            res.status(200).json({ refreshToken: token.refreshToken, accessToken: token.accessToken })
+            res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken })
         } catch (error) {
             next(error)
         }
@@ -91,9 +96,11 @@ module.exports = app => {
     app.post('/changepass', Middleware.bearer, async (req, res, next) => {
         try {
             const data = req.body.user
-            const id_login = req.login.id_login
-            const result = await Login.updatePassword(data,id_login)
-            res.status(200).json(result)
+            const result = await Login.updatePassword(data,req.login.id_login)
+
+            History.insertHistory('Contraseña alterada.', req.login.id_login)
+
+            res.json(result)
         } catch (error) {
             next(error)
         }

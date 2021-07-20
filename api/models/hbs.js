@@ -1,6 +1,7 @@
 const moment = require('moment')
 const Repositorie = require('../repositories/hbs')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
+const History = require('./history')
 
 class Hbs {
 
@@ -10,7 +11,7 @@ class Hbs {
             await this.listSalary()
             await this.listUsers()
             await this.listClockMachine()
-            
+
             console.log('list hbs ok');
         } catch (error) {
             console.log('list hbs error' + error);
@@ -21,11 +22,11 @@ class Hbs {
     async listUsers() {
         try {
             await Repositorie.dropUsers()
-            await Repositorie.createTableUsersHbs() 
-            
+            await Repositorie.createTableUsersHbs()
+
             const data = await Repositorie.listUsers()
 
-            if(data) {
+            if (data) {
                 data.forEach(user => {
 
                     if (user.phone) {
@@ -33,13 +34,13 @@ class Hbs {
                     } else {
                         user.phone = user.mobile
                     }
-    
+
                     if (user.sex === 1) {
                         user.sex = 'H'
                     } else {
                         user.sex = 'M'
                     }
-    
+
                     switch (user.modalidad) {
                         case 1: "IPS"
                             break
@@ -48,7 +49,7 @@ class Hbs {
                         case 3: "Contrato"
                             break
                     }
-    
+
                     Repositorie.insertUser(user)
                 });
             }
@@ -63,7 +64,7 @@ class Hbs {
         try {
             const data = await Repositorie.listSalary()
 
-            if(data){
+            if (data) {
                 data.forEach(obj => {
                     const dt = `${obj.date} ${obj.time}`
                     const date = moment(dt).format("YYYY-MM-DD HH:mm:ss")
@@ -86,10 +87,10 @@ class Hbs {
             const ncs = await Repositorie.listNcs()
             ncs.forEach(obj => {
 
-                if(obj.Office === "06"){
+                if (obj.Office === "06") {
                     const date1 = new Date(obj.date)
                     const date2 = new Date('01-01-2020')
-                    if(date1.getTime() < date2.getTime()){
+                    if (date1.getTime() < date2.getTime()) {
                         obj.Office = "06FDM"
                     }
                 }
@@ -99,10 +100,10 @@ class Hbs {
             const inv = await Repositorie.listInvoices()
             inv.forEach(obj => {
 
-                if(obj.Office === "06"){
+                if (obj.Office === "06") {
                     const date1 = new Date(obj.date)
                     const date2 = new Date('01-01-2020')
-                    if(date1.getTime() < date2.getTime()){
+                    if (date1.getTime() < date2.getTime()) {
                         obj.Office = "06FDM"
                     }
                 }
@@ -113,10 +114,10 @@ class Hbs {
             const installs = await Repositorie.listInstalls()
             installs.forEach(obj => {
 
-                if(obj.Office === "06"){
+                if (obj.Office === "06") {
                     const date1 = new Date(obj.date)
                     const date2 = new Date('01-01-2020')
-                    if(date1.getTime() < date2.getTime()){
+                    if (date1.getTime() < date2.getTime()) {
                         obj.Office = "06FDM"
                     }
                 }
@@ -127,10 +128,10 @@ class Hbs {
             const cheques = await Repositorie.listCheque()
             cheques.forEach(obj => {
 
-                if(obj.Office === "06"){
+                if (obj.Office === "06") {
                     const date1 = new Date(obj.date)
                     const date2 = new Date('01-01-2020')
-                    if(date1.getTime() < date2.getTime()){
+                    if (date1.getTime() < date2.getTime()) {
                         obj.Office = "06FDM"
                     }
                 }
@@ -149,8 +150,8 @@ class Hbs {
         try {
             const data = await Repositorie.listClockMachine()
 
-            if(data){
-                data.forEach(obj =>{
+            if (data) {
+                data.forEach(obj => {
                     Repositorie.insertClockMachine(obj)
                 })
             }
@@ -160,24 +161,52 @@ class Hbs {
         }
     }
 
-    async listItems(search) {
+    async listItems(search, id_login) {
         try {
+            let history = `Listado de Artículos `
+
+            if (search.artcode) history += `- Cod: ${search.artcode} `
+            if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
+            if (search.itemname) history += `- Nombre: '${search.itemname}' `
+            if (search.stock != "''") history += `- Deposito: ${search.stock}.`
+
+            History.insertHistory(history, id_login)
+
             return Repositorie.listItems(search)
         } catch (error) {
             throw new InternalServerError('Error')
         }
     }
 
-    async listGoodyear(search) {
+    async listGoodyear(search, id_login) {
         try {
+
+            let history = `Listado de Goodyear `
+
+            if (search.datestart && search.dateend) history += `- Fecha: ${search.datestart} hasta que ${search.dateend} `
+            if (search.office != "''") history += `- Sucursal: ${search.office}.`
+
+            History.insertHistory(history, id_login)
+
             return Repositorie.listGoodyear(search)
         } catch (error) {
             throw new InternalServerError('Error')
         }
     }
 
-    async listPrice(search) {
+    async listPrice(search, id_login) {
         try {
+
+            let history = `Listado de precios `
+
+            if (search.pricelist) history += `- Promocion: ${search.pricelist} `
+            if (search.artcode) history += `- Cod: ${search.artcode} `
+            if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
+            if (search.itemname) history += `- Nombre: '${search.itemname}' `
+            if (search.stock != "''") history += `- Deposito: ${search.stock}.`
+
+            History.insertHistory(history, id_login)
+
             return Repositorie.listPrice(search)
         } catch (error) {
             throw new InternalServerError('Error')

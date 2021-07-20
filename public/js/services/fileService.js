@@ -39,6 +39,26 @@ const upload =  async (formData) => {
     throw new Error('error')
 }
 
+const uploadoffice =  async (obj) => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/fileoffice` , {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({ 
+            obj: obj
+        })
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+    throw new Error('error')
+}
+
 const deleteFile =  async (id_file) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
@@ -58,5 +78,6 @@ const deleteFile =  async (id_file) => {
 export const ServiceFile = {
     listfile,
     upload,
-    deleteFile
+    deleteFile,
+    uploadoffice
 }

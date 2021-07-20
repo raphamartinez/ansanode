@@ -338,7 +338,7 @@ const createUser = () => {
     </select>
     </div>
     <div class="form-group col-md-6">
-    <input placeholder="Email" class="form-control" id="mail" name="mail" type="email" required>
+    <input placeholder="Acceso al sistema" class="form-control" id="mail" name="mail" type="text" required>
 </div>
 <div class="form-group col-md-6">          
 <input type="password" placeholder="Contraseña" class="form-control" name="password" id="password" required>

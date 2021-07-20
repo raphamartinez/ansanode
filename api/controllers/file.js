@@ -2,6 +2,7 @@ const File = require('../models/file')
 const Middleware = require('../infrastructure/auth/middleware')
 const multer = require('multer')
 const multerConfig = require('../config/multer')
+const History = require('../models/history')
 
 module.exports = app => {
 
@@ -9,10 +10,25 @@ module.exports = app => {
         try {
             const file = req.file
             const details = req.body
-            const id_login = req.login.id_login
 
-            const id_file = await File.save(file, details, id_login)
+            const id_file = await File.save(file, details, req.login.id_login)
 
+            History.insertHistory(`Carga de archivo realizada - ${details.title}.`, req.login.id_login)
+            const newfile = await File.view(id_file)
+
+            res.json(newfile)
+        } catch (error) {
+            next(error)
+        }
+    })
+
+    app.post('/fileoffice', Middleware.bearer, async (req, res, next) => {
+        try {
+            const data = req.body.obj
+
+            const id_file = await File.saveoffice(data, req.login.id_login)
+
+            History.insertHistory(`Carga de archivo realizada - ${data.title}.`, req.login.id_login)
             const newfile = await File.view(id_file)
 
             res.json(newfile)
@@ -25,9 +41,11 @@ module.exports = app => {
         try {
             const id_file = req.params.id_file
 
-            const result = await File.delete(id_file)
+            const file = await File.delete(id_file)
 
-            res.json(result)
+            History.insertHistory(`Archivo - ${file.title} eliminado!`, req.login.id_login)
+
+            res.json()
         } catch (error) {
             next(error)
         }
@@ -41,7 +59,7 @@ module.exports = app => {
                 title: req.params.title
             }
 
-            const files = await File.list(file)
+            const files = await File.list(file,req.login.id_login)
 
             res.json(files)
         } catch (error) {
@@ -53,9 +71,11 @@ module.exports = app => {
         try {
             const id_file = req.params.id_file
 
-            const { path } = await File.view(id_file)
+            const file = await File.view(id_file)
 
-            res.json(path)
+            History.insertHistory(`Vista previa del documento ${file.title}.`, req.login.id_login)
+
+            res.json(file.path)
         } catch (error) {
             next(error)
         }

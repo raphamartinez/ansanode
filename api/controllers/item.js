@@ -5,10 +5,11 @@ module.exports = app => {
 
     app.post('/goodyear', Middleware.bearer, async (req, res, next) => {
         try {
+            const id_login = req.login.id_login
             const search = req.body.search
 
-            const items = await Hbs.listGoodyear(search)
-            res.status(200).json(items)
+            const items = await Hbs.listGoodyear(search, id_login)
+            res.json(items)
         } catch (error) {
             next(error)
         }
@@ -16,10 +17,11 @@ module.exports = app => {
 
     app.post('/items', Middleware.bearer, async (req, res, next) => {
         try {
+            const id_login = req.login.id_login
             const search = req.body.search
 
-            const items = await Hbs.listItems(search)
-            res.status(200).json(items)
+            const items = await Hbs.listItems(search, id_login)
+            res.json(items)
         } catch (error) {
             next(error)
         }
@@ -27,10 +29,11 @@ module.exports = app => {
 
     app.post('/price', Middleware.bearer, async (req, res, next) => {
         try {
+            const id_login = req.login.id_login
             const search = req.body.search
 
-            const items = await Hbs.listPrice(search)
-            res.status(200).json(items)
+            const items = await Hbs.listPrice(search, id_login)
+            res.json(items)
         } catch (error) {
             next(error)
         }
@@ -39,7 +42,7 @@ module.exports = app => {
     app.get('/stockandgroup', Middleware.bearer, async (req, res, next) => {
         try {
             const fields = await Hbs.listStockandGroup()
-            res.status(200).json(fields)
+            res.json(fields)
         } catch (error) {
             next(error)
         }
@@ -50,7 +53,7 @@ module.exports = app => {
             const artcode = req.params.artcode
 
             const stocks = await Hbs.listStockByItem(artcode)
-            res.status(200).json(stocks)
+            res.json(stocks)
         } catch (error) {
             next(error)
         }

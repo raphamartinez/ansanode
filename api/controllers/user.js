@@ -1,5 +1,6 @@
 const User = require('../models/user')
 const Middleware = require('../infrastructure/auth/middleware')
+const History = require('../models/history')
 
 module.exports = app => {
 
@@ -7,6 +8,8 @@ module.exports = app => {
 
         try {
             const users = await User.listUsers()
+
+            History.insertHistory(`Listado de usuarios.`, req.login.id_login)
 
             res.json(users)
         } catch (error) {
@@ -20,6 +23,8 @@ module.exports = app => {
 
             const user = await User.viewUser(id_user)
 
+            History.insertHistory(`Visto el usuario ${user.name}.`, req.login.id_login)
+
             res.json(user)
         } catch (error) {
             next(error)
@@ -30,6 +35,8 @@ module.exports = app => {
         try {
             const data = req.body
             const result = await User.insertUser(data)
+
+            History.insertHistory(`Adición de usuario ${data.user.name}.`, req.login.id_login)
 
             res.json(result)
         } catch (error) {
@@ -43,6 +50,8 @@ module.exports = app => {
             const data = req.body
             const id_user = req.params.id
             const user = await User.updateUser(data, id_user)
+
+            History.insertHistory(`Actualización de datos - ${data.user.name}.`, req.login.id_login)
 
             res.json(user)
         } catch (error) {

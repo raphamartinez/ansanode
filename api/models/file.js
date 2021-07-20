@@ -1,11 +1,24 @@
 const Repositorie = require('../repositories/file')
 const fs = require('fs')
+const History = require('./history')
 
 class File {
 
     async save(file, details, id_login) {
         try {
             const id_file = await Repositorie.insert(file, details, id_login)
+
+            return id_file
+        } catch (error) {
+            next(error)
+        }
+
+    }
+
+    async saveoffice(data, id_login) {
+        try {
+            console.log(data);
+            const id_file = await Repositorie.insertoffice(data, id_login)
 
             return id_file
         } catch (error) {
@@ -25,12 +38,12 @@ class File {
     async delete(id_file) {
         try {
 
-            const {path} = await Repositorie.view(id_file)
-            fs.unlinkSync(path)
+            const file = await Repositorie.view(id_file)
+            fs.unlinkSync(file.path)
 
             await Repositorie.delete(id_file)
 
-            return true
+            return file
 
         } catch (error) {
             if (error && error.code == 'ENOENT') {
@@ -41,11 +54,25 @@ class File {
         }
     }
 
-    async list(file) {
+    async list(file,id_login) {
         try {
-            if(file.type === "ALL") delete file.type 
-            if(file.title === "ALL") delete file.title
 
+            let history = `Listado de archivos `
+
+            if(file.type === "Todas") {
+                delete file.type
+            } else{
+                history+= `- Tipo: ${file.type} `
+
+            }
+            if(file.title === "Todas") {
+                delete file.title; 
+            }else{
+                history+= `- Titulo: ${file.title}.`
+
+            }
+
+            History.insertHistory(history, id_login)
             return Repositorie.list(file)
         } catch (error) {
             next(error)

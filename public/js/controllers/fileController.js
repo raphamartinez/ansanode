@@ -375,7 +375,7 @@ async function uploadoffice(event) {
 
         const obj = await ServiceFile.uploadoffice(data)
 
-        const filetype = data.mimetype.substring(0, data.mimetype.indexOf("/"))
+        const filetype = data.mimetype.substring(obj.mimetype.indexOf("/") + 1)
 
         switch (filetype) {
             case "powerpoint":

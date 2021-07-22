@@ -7,7 +7,7 @@ const btnPunto = document.getElementById('btnPunto')
 const btnVehiculos = document.getElementById('btnVehiculos')
 const btnSucursales = document.getElementById('btnSucursales')
 const cardHistory = document.querySelector('[data-card]')
-const btnProcess = document.getElementById('btnProcess')
+
 
 window.modalDeleteBi = modalDeleteBi
 window.listBiUser = listBiUser
@@ -53,6 +53,34 @@ btnSucursales.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 data: dtview,
@@ -82,6 +110,7 @@ btnSucursales.addEventListener('click', async (event) => {
             }
             )
         })
+    }
 
         loading.innerHTML = " "
 
@@ -126,6 +155,34 @@ btnVehiculos.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 data: dtview,
@@ -155,6 +212,7 @@ btnVehiculos.addEventListener('click', async (event) => {
             }
             )
         })
+    }
 
         loading.innerHTML = " "
 
@@ -200,6 +258,34 @@ btnPunto.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 data: dtview,
@@ -229,6 +315,7 @@ btnPunto.addEventListener('click', async (event) => {
             }
             )
         })
+    }
 
         loading.innerHTML = " "
 
@@ -237,15 +324,6 @@ btnPunto.addEventListener('click', async (event) => {
     }
 })
 
-btnProcess.addEventListener('click', async (event) => {
-    event.preventDefault()
-    try {
-        const url = '../admin/index.html'
-        window.location.href = url
-    } catch (error) {
-        alert(error)
-    }
-})
 
 btnInforme.addEventListener('click', async (event) => {
     event.preventDefault()
@@ -283,6 +361,34 @@ btnInforme.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 data: dtview,
@@ -312,6 +418,7 @@ btnInforme.addEventListener('click', async (event) => {
             }
             )
         })
+    }
 
         loading.innerHTML = " "
 
@@ -357,6 +464,34 @@ async function listBiUser(event) {
             dtview.push(field)
         });
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 data: dtview,
@@ -386,7 +521,7 @@ async function listBiUser(event) {
             }
             )
         })
-
+    }
 
         modal.appendChild(View.showModalDelete())
         modal.appendChild(View.showModalEdit())

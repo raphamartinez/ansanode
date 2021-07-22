@@ -85,6 +85,36 @@ btn.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 destroy: true,
@@ -117,6 +147,7 @@ btn.addEventListener('click', async (event) => {
             }
             )
         })
+    }
 
         modal.appendChild(View.showModalInsert())
         modal.appendChild(View.showModalDelete())
@@ -413,6 +444,36 @@ async function listUsers() {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 destroy: true,
@@ -445,7 +506,7 @@ async function listUsers() {
             }
             )
         })
-
+    }
 
 
         modal.appendChild(View.showModalInsert())
@@ -500,6 +561,36 @@ async function listUsersFunction() {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
                 destroy: true,
@@ -532,7 +623,8 @@ async function listUsersFunction() {
             }
             )
         })
-
+    }
+    
         modal.appendChild(View.showModalInsert())
         modal.appendChild(View.showModalDelete())
         modal.appendChild(View.showModalEdit())

@@ -23,7 +23,7 @@ btn.addEventListener('click', async (event) => {
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         const data = await ServiceHistory.listHistory()
-        var slag = data.map(doc => Object.values(doc));
+        var dtview = data.map(doc => Object.values(doc));
 
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
@@ -31,9 +31,37 @@ btn.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Id" },
+                        { title: "Descripción" },
+                        { title: "Fecha de Registro" },
+                        { title: "Usuario" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
         $(document).ready(function () {
             $("#dataTable").DataTable({
-                data: slag,
+                data: dtview,
                 columns: [
                     { title: "Id" },
                     { title: "Descripción" },
@@ -61,6 +89,7 @@ btn.addEventListener('click', async (event) => {
             )
         }
         );
+    }
 
     } catch (error) {
 

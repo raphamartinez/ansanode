@@ -576,3 +576,74 @@ async function modalfile(event) {
 
     }
 }
+
+window.listline = listline
+
+async function listline(event) {
+    event.preventDefault()
+    $('#modalsearch').modal('hide')
+
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
+        const filecontent = document.getElementById('filecontent')
+        const btn = event.currentTarget
+        const title = btn.form.title.value
+        const type = btn.form.type.value
+
+        filecontent.innerHTML = ``
+
+        const file = {
+            title: title,
+            type: type
+        }
+
+        if (file.type === "") file.type = "Todas"
+        if (file.title === "") file.title = "Todas"
+
+        const data = await ServiceFile.listfile(file)
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                destroy: true,
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Perfil" },
+                    { title: "E-mail Organização" },
+                    { title: "Fecha de Nacimiento" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
+        loading.innerHTML = ``
+
+    } catch (error) {
+        alert(error)
+        loading.innerHTML = ``
+    }
+}

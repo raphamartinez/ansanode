@@ -215,7 +215,9 @@ class Hbs {
 
     async listStockByItem(artcode) {
         try {
-            return Repositorie.listStockbyItem(artcode)
+            const stocks = await Repositorie.listStockbyItem(artcode)
+
+            return stocks
         } catch (error) {
             throw new InternalServerError('Error')
         }

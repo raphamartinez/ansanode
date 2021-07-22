@@ -28,6 +28,8 @@ app.listen(3000, () => {
         res.render('login');
     });
 
+    if (process.env.NODE_ENV !== 'developer') {
+
     const job = new CronJob('0 30 * * * *', () => {
         try {
             console.log('Executed Cron sucessfuly!');
@@ -60,6 +62,6 @@ app.listen(3000, () => {
     });
 
     jobClockMachine.start()
-
+    }
 })
 

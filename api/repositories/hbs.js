@@ -84,7 +84,7 @@ class Hbs {
 
     dropUsers() {
         try {
-            const sql = `drop table ansa.userhbs`
+            const sql = `drop table IF EXISTS ansa.userhbs`
             return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -95,7 +95,7 @@ class Hbs {
 
     dropReceivable() {
         try {
-            const sql = `drop table ansa.receivable`
+            const sql = `drop table IF EXISTS ansa.receivable`
             return query(sql)
         } catch (error) {
             throw new InternalServerError(error)
@@ -319,13 +319,13 @@ class Hbs {
 
             if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
-            if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
+            if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
             sql += ` 
-            GROUP BY PD.Code, PDr.PriceList, P.ArtCode
-            ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
+            GROUP BY P.ArtCode
+            ORDER BY P.ArtCode DESC`
 
             return queryhbs(sql)
         } catch (error) {
@@ -349,13 +349,13 @@ class Hbs {
             if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
             if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%'`
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
-            if (search.itemname) sql += `AND I.Name IN ('${search.itemname}') `
+            if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
             sql += ` 
-            GROUP BY PD.Code, PDr.PriceList, P.ArtCode
-            ORDER BY PD.Code, PDr.PriceList, P.ArtCode`
+            GROUP BY P.ArtCode
+            ORDER BY P.ArtCode DESC`
 
             return queryhbs(sql)
         } catch (error) {
@@ -431,7 +431,8 @@ class Hbs {
         try {
             const sql = `SELECT StockDepo, 
             IF(Reserved IS NOT NULL, SUM(Qty) - SUM(Reserved), Qty ) AS Qty
-            FROM Stock WHERE ArtCode = '${artcode}'`
+            FROM Stock WHERE ArtCode = '${artcode}' AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
+            group BY StockDepo`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

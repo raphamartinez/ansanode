@@ -7,8 +7,7 @@ const showSimplePowerBI = (simpleBI) => {
 
 const showPowerBI = (url) => {
     simpleBI.innerHTML = `   
-    <iframe  src="${url}" frameborder="0" allowFullScreen="true"></iframe>
-    <div class="col-md-12 text-center"><a class="btn btn-primary" href="${url}.pdf">Imprimir</a></div>`
+    <iframe  src="${url}" frameborder="0" allowFullScreen="true"></iframe>`
 }
 
 const showModalEdit = (title, type, url) => {

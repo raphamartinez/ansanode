@@ -66,6 +66,17 @@ const search = (modal) => {
                     <option value="3">Imagen</option>
                 </select>
                     </div> 
+                    <div class="form-group col-md-12">
+                    <label for="antecedente">Quieres sacar artículos fuera de stock?</label>
+                    <div class="custom-control custom-radio custom-control-inline" color:black>
+                        <input type="radio" class="custom-control-input perfil" id="stockartsi" name="stockart" value="0" required>
+                        <label class="custom-control-label" for="stockartsi">Sí</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline" color:black>
+                        <input type="radio" class="custom-control-input perfil" id="stockartno" name="stockart" value="1">
+                        <label class="custom-control-label" for="stockartno">No</label>
+                    </div>  
+                </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>

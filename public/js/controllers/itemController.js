@@ -101,42 +101,73 @@ async function search(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if(stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
-        if(itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
-        if(artcode > 0) text.innerHTML += `Articulo: ${itemname} Cod: ${artcode}<br>`
+        if (stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
+        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
+        if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
+        if (itemname) text.innerHTML += `Articulo: ${itemname}`
 
         title.appendChild(text)
 
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Grupo" },
-                    { title: "Cod Articulo" },
-                    { title: "Nombre" },
-                    { title: "Cant Stock" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Grupo" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Grupo" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
     } catch (error) {
@@ -282,46 +313,78 @@ async function searchPrice(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if(stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
-        if(itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
-        if(pricelist !== " ") text.innerHTML += `Promocion: ${pricelist}<br>`
-        if(artcode > 0) text.innerHTML += `Articulo: ${itemname} Cod: ${artcode}<br>`
+        if (stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
+        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
+        if (pricelist !== " ") text.innerHTML += `Promocion: ${pricelist}<br>`
+        if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
+        if (itemname) text.innerHTML += `Articulo: ${itemname}`
 
         title.appendChild(text)
 
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Promocion" },
-                    { title: "Grupo" },
-                    { title: "Cod Articulo" },
-                    { title: "Nombre" },
-                    { title: "Precio" },
-                    { title: "Cant Stock" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
+        let user = JSON.parse(sessionStorage.getItem('user'))
 
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Promocion" },
+                        { title: "Grupo" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Precio" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Promocion" },
+                        { title: "Grupo" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Precio" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
         loading.innerHTML = " "
     } catch (error) {
         console.log(error);
@@ -361,7 +424,7 @@ async function listGoodyear() {
             $('#dataTable').empty();
         }
 
-        title.innerHTML = "Informe Goodyear"
+        title.innerHTML = "Informe Goodyear - 'En construcción'"
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
@@ -415,41 +478,71 @@ async function searchGoodyear(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if(office[0].length > 2) text.innerHTML += `<br>Sucursal: ${office}<br>`
-        if(datestart && dateend) text.innerHTML += `Curso del Tiempo ${datestart} até ${dateend}<br>`
+        if (office[0].length > 2) text.innerHTML += `<br>Sucursal: ${office}<br>`
+        if (datestart && dateend) text.innerHTML += `Curso del Tiempo ${datestart} até ${dateend}<br>`
 
         title.appendChild(text)
 
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Cod Articulo" },
-                    { title: "Nombre" },
-                    { title: "Cant Vendida" },
-                    { title: "Cant Stock" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Cant Vendida" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Cod Articulo" },
+                        { title: "Nombre" },
+                        { title: "Cant Vendida" },
+                        { title: "Cant Stock" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
     } catch (error) {

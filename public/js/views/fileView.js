@@ -218,7 +218,7 @@ const pdf = (file) => {
             </div>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group col-md-12"> 
+                    <div class="form-group col-md-12 text-center"> 
                     <h3>${file.title}</h3>     
                         <embed data-id_file="${file.id_file}"  id="pdfac" src="${protocol}//${url}/uploads/${file.src}" alt="${file.title}" width="760" height="400" type='application/pdf'>
                     </div>
@@ -262,7 +262,7 @@ const video = (file) => {
             </div>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group col-md-12">      
+                    <div class="form-group col-md-12 text-center">      
                     <h3>${file.title}</h3> 
                         <video data-id_file="${file.id_file}"  width="760" height="400" controls>
                             <source id="videoac" src="${protocol}//${url}/uploads/${file.src}" alt="${file.title}" type="video/mp4" >

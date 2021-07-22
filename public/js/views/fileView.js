@@ -208,7 +208,7 @@ const pdf = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalpdf" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">PDF</h5>
@@ -252,7 +252,7 @@ const video = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalvideo" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Video</h5>
@@ -298,7 +298,7 @@ const image = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modalimage" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Imagen</h5>
@@ -341,7 +341,7 @@ const office = (file) => {
     const div = document.createElement('div')
 
     const content = ` <div class="portfolio-modal modal fade" id="modaloffice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Archivo Office</h5>

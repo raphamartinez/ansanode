@@ -220,7 +220,7 @@ const pdf = (file) => {
                 <div class="form-row">
                     <div class="form-group col-md-12 text-center"> 
                     <h3>${file.title}</h3>     
-                        <embed data-id_file="${file.id_file}"  id="pdfac" src="${protocol}//${url}/uploads/${file.src}" alt="${file.title}" width="760" height="400" type='application/pdf'>
+                        <embed style="width: 1100px;height: 520px;" data-id_file="${file.id_file}"  id="pdfac" src="${protocol}//${url}/uploads/${file.src}" alt="${file.title}" width="760" height="400" type='application/pdf'>
                     </div>
                     <div class="form-group col-md-12 text-center">     
                         <a data-dismiss="modal" data-id_file="${file.id_file}" id="deletefile" onclick="modaldelete(event)" class="trash" style="color:#b50909"><i class="fas fa-trash-alt"></i></a>
@@ -264,7 +264,7 @@ const video = (file) => {
                 <div class="form-row">
                     <div class="form-group col-md-12 text-center">      
                     <h3>${file.title}</h3> 
-                        <video data-id_file="${file.id_file}"  width="760" height="400" controls>
+                        <video data-id_file="${file.id_file}"  width="1100" height="520" controls>
                             <source id="videoac" src="${protocol}//${url}/uploads/${file.src}" alt="${file.title}" type="video/mp4" >
                         </video>
                     </div>
@@ -353,7 +353,7 @@ const office = (file) => {
                 <div class="form-row">
                     <div class="form-group col-md-12 text-center">  
                     <h3>${file.title}</h3>    
-                    <iframe frameborder="0" scrolling="no" src="${file.src}"></iframe>
+                    <iframe style="width: 1100px;height: 520px;" frameborder="0" scrolling="no" src="${file.src}"></iframe>
                     </div>
                     <hr>
                     <div class="form-group col-md-12 text-center">  

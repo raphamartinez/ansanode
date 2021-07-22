@@ -555,6 +555,16 @@ async function modalfile(event) {
                         $('#modaloffice').modal('show')
                         break
 
+                    case "word":
+                        modal.appendChild(ViewFile.office(file))
+                        $('#modaloffice').modal('show')
+                        break
+
+                    case "powerpoint":
+                        modal.appendChild(ViewFile.office(file))
+                        $('#modaloffice').modal('show')
+                        break
+
                     default:
                         alert("Aún no es posible leer archivos de este formato.!")
 

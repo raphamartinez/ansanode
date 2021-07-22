@@ -45,7 +45,7 @@ module.exports = app => {
 
             History.insertHistory(`Archivo - ${file.title} eliminado!`, req.login.id_login)
 
-            res.json()
+            res.json(file)
         } catch (error) {
             next(error)
         }

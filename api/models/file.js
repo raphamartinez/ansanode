@@ -40,11 +40,17 @@ class File {
 
             const file = await Repositorie.view(id_file)
 
-            if(file.mimetype !== "application/excel" && file.mimetype !== "application/word" && file.mimetype !== "application/powerpint"){
-                fs.unlinkSync(file.path)
+            if(file.mimetype !== "application/excel" && file.mimetype !== "application/word" && file.mimetype !== "application/powerpoint"){
+                if (fs.existsSync(file.path)) {
+                    fs.unlinkSync(file.path)
+                    await Repositorie.delete(id_file)
+                  }else{
+                      return false
+                  }
+            }else{
+                await Repositorie.delete(id_file)
             }
 
-            await Repositorie.delete(id_file)
 
             return file
 

@@ -5,52 +5,51 @@ const path = require('path')
 
 module.exports = app => {
 
-    app.post('/login', Middleware.local, async function (req, res, next) {
+    app.post('/login', Middleware.local, async function ( req, res, next) {
         try {
             const id_login = req.login.id_login
             const token = await Login.generateTokens(id_login)
             const login = await Login.viewLogin(id_login)
 
             History.insertHistory('Acceso de usuario', id_login)
-            res.status(200).json({ refreshToken: token.refreshToken, accessToken: token.accessToken, url: '../admin/dashboard.html', user: login })
-        } catch (error) {
-            next(error)
+            res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken, url: '../admin/dashboard.html', user: login })
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.post('/logout', [Middleware.refresh, Middleware.bearer], async function (req, res, next) {
+    app.post('/logout', [Middleware.refresh, Middleware.bearer], async function ( req, res, next) {
         try {
             const token = req.token
             await Login.logout(token)
-            res.status(200).json({ url: '../public/login.html' })
-        } catch (error) {
-            next(error)
+            res.json({ url: '../public/login.html' })
+        } catch (err) {
+            next(err)
         }
 
     });
     
 
 
-    app.all('/admin/*', Middleware.bearer, async function (req, res, next) {
+    app.all('/admin/*', Middleware.bearer, async function ( req, res, next) {
         try {
             next()
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.post('/insertLogin', Middleware.bearer, async function (req, res, next) {
+    app.post('/insertLogin', Middleware.bearer, async function ( req, res, next) {
         try {
             const data = req.body
             await Login.insertLogin(data)
             res.sendFile('login.html', { root: path.join(__dirname, '../../views/public') });
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
-
     });
 
-    app.post('/forgotPassword', async function (req, res) {
+    app.post('/forgotPassword', async function ( req, res, next) {
         try {
             const mailenterprise = req.body.mail
             const login = await Login.forgotPassword(mailenterprise)
@@ -59,19 +58,19 @@ module.exports = app => {
 
             res.json({  url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
         } catch (err) {
-            next(error)
+            next(err)
         }
     });
 
-    app.get('/newPassword/:token', async function (req, res, next) {
+    app.get('/newPassword/:token', async function ( req, res, next) {
         try {
             res.render('password')
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     });
 
-    app.post('/resetPassword', async function (req, res, next) {
+    app.post('/resetPassword', async function ( req, res, next) {
         try {
             const token = req.body.token
             const password = req.body.password
@@ -79,21 +78,21 @@ module.exports = app => {
 
             History.insertHistory('Contraseña alterada.', id_login)
             res.json({  url: '../', message: 'Contraseña alterada con éxito!' })
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     });
 
-    app.post('/refresh', Middleware.refresh, async function (req, res, next) {
+    app.post('/refresh', Middleware.refresh, async function ( req, res, next) {
         try {
             const token = await Login.generateTokens(req.login.id_login)
             res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken })
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     });
 
-    app.post('/changepass', Middleware.bearer, async (req, res, next) => {
+    app.post('/changepass', Middleware.bearer, async ( req, res, next) => {
         try {
             const data = req.body.user
             const result = await Login.updatePassword(data,req.login.id_login)
@@ -101,8 +100,8 @@ module.exports = app => {
             History.insertHistory('Contraseña alterada.', req.login.id_login)
 
             res.json(result)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 }

@@ -52,8 +52,6 @@ async function onPassword(event) {
         var url = window.location.pathname
         var token = url.substring(13)
 
-        console.log(token);
-
         const pass = document.getElementById("password").value;
         const passconf = document.getElementById("passwordconf").value;
 

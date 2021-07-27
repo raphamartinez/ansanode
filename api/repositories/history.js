@@ -1,5 +1,5 @@
 const query = require('../infrastructure/database/queries')
-const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
+const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('../models/error')
 
 class History {
     async insert(history) {
@@ -8,7 +8,7 @@ class History {
             await query(sql, [history.description, history.id_login])
             return true
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el historial en la base de datos')
         }
     }
 
@@ -17,7 +17,7 @@ class History {
             const sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and HI.status = 1 ORDER BY HI.id_history DESC`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar historial')
         }
     }
 
@@ -26,7 +26,7 @@ class History {
             const sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and HI.status = 1 and HI.id_login = ${id_login} ORDER BY HI.id_history DESC`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar historial')
         }
     }
 
@@ -36,7 +36,7 @@ class History {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se puede enumerar el número de vistas')
         }
     }
 
@@ -46,7 +46,7 @@ class History {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar el último acceso')
         }
     }
 
@@ -57,7 +57,7 @@ class History {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se puede enumerar el número de vistas')
         }
     }
 
@@ -67,7 +67,7 @@ class History {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar el último acceso')
         }
     }
 }

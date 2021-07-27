@@ -4,7 +4,7 @@ const History = require('../models/history')
 
 module.exports = app => {
 
-    app.get('/users', Middleware.bearer , async (req, res, next) => {
+    app.get('/users', Middleware.bearer , async ( req, res, next) => {
 
         try {
             const users = await User.listUsers()
@@ -12,12 +12,12 @@ module.exports = app => {
             History.insertHistory(`Listado de usuarios.`, req.login.id_login)
 
             res.json(users)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     }) 
 
-    app.get('/user/:id', Middleware.bearer, async (req, res, next) => {
+    app.get('/user/:id', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_user = req.params.id
 
@@ -26,12 +26,12 @@ module.exports = app => {
             History.insertHistory(`Visto el usuario ${user.name}.`, req.login.id_login)
 
             res.json(user)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.post('/user', Middleware.bearer, async (req, res, next) => {
+    app.post('/user', Middleware.bearer, async ( req, res, next) => {
         try {
             const data = req.body
             const result = await User.insertUser(data)
@@ -39,12 +39,12 @@ module.exports = app => {
             History.insertHistory(`Adición de usuario ${data.user.name}.`, req.login.id_login)
 
             res.json(result)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.put('/user/:id', Middleware.bearer, async (req, res, next) => {
+    app.put('/user/:id', Middleware.bearer, async ( req, res, next) => {
 
         try {
             const data = req.body
@@ -54,19 +54,19 @@ module.exports = app => {
             History.insertHistory(`Actualización de datos - ${data.user.name}.`, req.login.id_login)
 
             res.json(user)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.delete('/user/:id', Middleware.bearer, async(req, res, next) => {
+    app.delete('/user/:id', Middleware.bearer, async( req, res, next) => {
         try {
             const id_user = req.params.id
             await User.deleteStatus(id_user)
 
-            res.json(true)
-        } catch (error) {
-            next(error)
+            res.json()
+        } catch (err) {
+            next(err)
         }
     })
 }

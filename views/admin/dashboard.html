@@ -32,16 +32,16 @@
                         </div>
                     </a>
                     <hr class="sidebar-divider my-0">
-                    <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse"
-                        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false"></a>
+                    <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse" data-bs-toggle="collapse"
+                        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" id="selectormenu"></a>
 
                     <form
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small"
+                        <div class="input-group" >
+                            <input type="text" class="form-control bg-light border-0 small" id="searchcomplete"
                                 placeholder="Nombre del informe..." aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
-                                <button class="btn btn-primary" type="button">
+                                <button class="btn btn-primary" type="button" onclick="autocompletesearch(event)">
                                     <i class="fas fa-search fa-sm"></i>
                                 </button>
                             </div>
@@ -345,6 +345,7 @@
     <script type="module" src="../js/controllers/historyController.js"></script>
     <script type="module" src="../js/controllers/loginController.js"></script>
     <script type="module" src="../js/controllers/fileController.js"></script>
+    <script type="module" src="../js/controllers/settingsController.js"></script>
     <script src="../js/services/force.js"></script>
     <script src="../js/services/printpdf.js"></script>
     <script src="../js/libs/jquery.dataTables.min.js"></script>

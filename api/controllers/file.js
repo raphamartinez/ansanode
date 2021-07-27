@@ -6,7 +6,7 @@ const History = require('../models/history')
 
 module.exports = app => {
 
-    app.post('/file', Middleware.bearer, multer(multerConfig).single('file'), async (req, res, next) => {
+    app.post('/file', Middleware.bearer, multer(multerConfig).single('file'), async ( req, res, next) => {
         try {
             const file = req.file
             const details = req.body
@@ -17,12 +17,12 @@ module.exports = app => {
             const newfile = await File.view(id_file)
 
             res.json(newfile)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.post('/fileoffice', Middleware.bearer, async (req, res, next) => {
+    app.post('/fileoffice', Middleware.bearer, async ( req, res, next) => {
         try {
             const data = req.body.obj
 
@@ -32,12 +32,12 @@ module.exports = app => {
             const newfile = await File.view(id_file)
 
             res.json(newfile)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.delete('/file/:id_file', Middleware.bearer, async (req, res, next) => {
+    app.delete('/file/:id_file', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_file = req.params.id_file
 
@@ -46,12 +46,12 @@ module.exports = app => {
             History.insertHistory(`Archivo - ${file.title} eliminado!`, req.login.id_login)
 
             res.json(file)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.get('/files/:type/:title', Middleware.bearer, async (req, res, next) => {
+    app.get('/files/:type/:title', Middleware.bearer, async ( req, res, next) => {
         try {
 
             const file = {
@@ -62,12 +62,12 @@ module.exports = app => {
             const files = await File.list(file,req.login.id_login)
 
             res.json(files)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 
-    app.get('/file/:id_file', Middleware.bearer, async (req, res, next) => {
+    app.get('/file/:id_file', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_file = req.params.id_file
 
@@ -76,8 +76,8 @@ module.exports = app => {
             History.insertHistory(`Vista previa del documento ${file.title}.`, req.login.id_login)
 
             res.json(file.path)
-        } catch (error) {
-            next(error)
+        } catch (err) {
+            next(err)
         }
     })
 }

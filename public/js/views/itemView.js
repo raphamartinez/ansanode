@@ -6,7 +6,7 @@ const showModalSearch = () => {
 <div class="modal-dialog" role="document">
     <div class="modal-content">
         <div class="modal-header">
-            <h5 class="modal-title">Listar Articulos</h5>
+            <h5 class="modal-title">Listado de Stock</h5>
             <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
@@ -295,7 +295,6 @@ const newLine = (obj) => {
 const btnNewSearch = () => {
     const btn = document.createElement('button')
 
-    btn.classList.add("btn btn-primary")
 
     btn.appendChild= '<i class="fas fa-search">Nueva busca</i>'
 

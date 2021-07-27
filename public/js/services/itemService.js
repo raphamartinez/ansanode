@@ -43,6 +43,22 @@ const listItems =  async (search) => {
     throw new Error('error')
 }
 
+const listItemsComplete =  async () => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/itemscomplete` , {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+    throw new Error('error')
+}
+
 const listPrice =  async (search) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
@@ -100,5 +116,6 @@ export const ServiceItem = {
     listModal,
     listStocks,
     listPrice,
-    listGoodyear
+    listGoodyear,
+    listItemsComplete
 }

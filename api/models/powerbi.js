@@ -8,7 +8,7 @@ class PowerBi {
             const result = await Repositorie.insert(powerbi)
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo crear el powerbi.')
         }
     }
 
@@ -17,7 +17,7 @@ class PowerBi {
             const result = await Repositorie.delete(id_powerbi)
             return result
         } catch (error) {
-            throw new NotFound('Error')
+            throw new InvalidArgumentError('No se pudo borrar el powerbi.')
         }
     }
 
@@ -36,7 +36,7 @@ class PowerBi {
             const result = await Repositorie.update(powerbi)
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo actualizar el powerbi.')
         }
     }
 
@@ -63,7 +63,7 @@ class PowerBi {
 
             return data
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError('No se pudo enumerar powerbi.')
         }
     }
 
@@ -81,7 +81,7 @@ class PowerBi {
             return data
 
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError('No se pudo enumerar powerbi.')
         }
     }
 
@@ -90,7 +90,7 @@ class PowerBi {
             const powerbi = await Repositorie.view(id_powerbi)
             return powerbi
         } catch (error) {
-            throw new NotFound('Error')
+            throw new InternalServerError('No se pudo ver powerbi.')
         }
     }
 }

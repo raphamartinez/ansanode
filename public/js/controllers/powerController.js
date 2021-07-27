@@ -8,7 +8,6 @@ const btnVehiculos = document.getElementById('btnVehiculos')
 const btnSucursales = document.getElementById('btnSucursales')
 const cardHistory = document.querySelector('[data-card]')
 
-
 window.modalDeleteBi = modalDeleteBi
 window.listBiUser = listBiUser
 window.viewBi = viewBi
@@ -17,6 +16,122 @@ window.addPowerBi = addPowerBi
 window.editPowerBi = editPowerBi
 window.modalEditBi = modalEditBi
 window.deletePowerBi = deletePowerBi
+window.autocompletesearch = autocompletesearch
+
+async function autocompletesearch(event) {
+    event.preventDefault()
+
+    try {
+
+        const description = document.getElementById('searchcomplete').value
+        let title = document.querySelector('[data-title]')
+        const url = document.getElementById('searchcomplete').dataset.url
+        const type = document.getElementById('searchcomplete').dataset.type
+        let powerbi = document.querySelector('[data-powerbi]')
+
+        if (url) {
+            cardHistory.style.display = 'none';
+            let loading = document.querySelector('[data-loading]')
+            loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
+
+            document.getElementById('searchcomplete').value = ''
+            document.getElementById('searchcomplete').placeholder = "Nombre del informe..."
+
+            title.innerHTML = description
+            loading.innerHTML = " "
+            powerbi.innerHTML = `   
+            <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
+            <div class="col-md-12 h3 font-weight-bold text-primary text-center p-3"> Otros informes</div>`
+
+            ServiceHistory.insertHistory(`Acceso de Informe - ${description}`)
+
+            const data = await Service.listBiUser(type)
+            let dtview = [];
+
+            data.forEach(powerbi => {
+                const field = View.listPowerBi(powerbi)
+                dtview.push(field)
+            });
+
+            if ($.fn.DataTable.isDataTable('#dataTable')) {
+                $('#dataTable').dataTable().fnClearTable();
+                $('#dataTable').dataTable().fnDestroy();
+                $('#dataTable').empty();
+            }
+
+            let user = JSON.parse(sessionStorage.getItem('user'))
+
+            let perfil = user.perfil
+
+            if (perfil !== 1) {
+                $(document).ready(function () {
+                    $("#dataTable").DataTable({
+                        data: dtview,
+                        columns: [
+                            { title: "Opciones" },
+                            { title: "Nombre" },
+                            { title: "Tipo" },
+                            { title: "Fecha de Registro" }
+                        ],
+                        paging: true,
+                        ordering: true,
+                        info: true,
+                        scrollY: false,
+                        scrollCollapse: true,
+                        scrollX: true,
+                        autoHeight: true,
+                        pagingType: "numbers",
+                        searchPanes: true,
+                        fixedHeader: false
+                    }
+                    )
+                })
+            } else {
+                $(document).ready(function () {
+                    $("#dataTable").DataTable({
+                        data: dtview,
+                        columns: [
+                            { title: "Opciones" },
+                            { title: "Nombre" },
+                            { title: "Tipo" },
+                            { title: "Fecha de Registro" }
+                        ],
+                        paging: true,
+                        ordering: true,
+                        info: true,
+                        scrollY: false,
+                        scrollCollapse: true,
+                        scrollX: true,
+                        autoHeight: true,
+                        pagingType: "numbers",
+                        searchPanes: true,
+                        fixedHeader: false,
+                        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                            "<'row'<'col-sm-12'B>>",
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
+                    }
+                    )
+                })
+                loading.innerHTML = " "
+            }
+
+        } else {
+            alert('Seleccione un informe válido!')
+        }
+
+
+    } catch (error) {
+    }
+}
+
 
 btnSucursales.addEventListener('click', async (event) => {
     event.preventDefault()
@@ -81,36 +196,36 @@ btnSucursales.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
 
@@ -183,36 +298,36 @@ btnVehiculos.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
 
@@ -286,36 +401,36 @@ btnPunto.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
 
@@ -389,36 +504,36 @@ btnInforme.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         loading.innerHTML = " "
 
@@ -492,36 +607,36 @@ async function listBiUser(event) {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Tipo" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
         modal.appendChild(View.showModalDelete())
         modal.appendChild(View.showModalEdit())
@@ -543,12 +658,6 @@ function viewBi(event) {
 </div>
 `
 
-if ($.fn.DataTable.isDataTable('#dataTable')) {
-    $('#dataTable').dataTable().fnClearTable();
-    $('#dataTable').dataTable().fnDestroy();
-    $('#dataTable').empty();
-}
-
     const btn = event.currentTarget
     const url = btn.getAttribute("data-url")
     let title = document.querySelector('[data-title]')
@@ -559,7 +668,7 @@ if ($.fn.DataTable.isDataTable('#dataTable')) {
     loading.innerHTML = " "
     powerbi.innerHTML = `   
     <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
-    <div class="col-md-12 pt-5 text-center"><a class="btn btn-primary" onclick="printPage()">Imprimir</a></div>`
+    <div class="col-md-12 h3 font-weight-bold text-primary text-center p-3"> Otros informes</div>`
 
     ServiceHistory.insertHistory(`Acceso de Informe - ${description}`)
 }

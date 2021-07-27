@@ -1,6 +1,7 @@
 const Repositorie = require('../repositories/file')
 const fs = require('fs')
 const History = require('./history')
+const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
 class File {
 
@@ -10,28 +11,26 @@ class File {
 
             return id_file
         } catch (error) {
-            next(error)
+            throw new InvalidArgumentError('No se pudo guardar el archivo.')
         }
 
     }
 
     async saveoffice(data, id_login) {
         try {
-            console.log(data);
             const id_file = await Repositorie.insertoffice(data, id_login)
 
             return id_file
         } catch (error) {
-            next(error)
+            throw new InvalidArgumentError('No se pudo guardar el archivo de Office.')
         }
-
     }
 
     async view(id_file) {
         try {
             return Repositorie.view(id_file)
         } catch (error) {
-            next(error)
+            throw new NotFound('Archivo')
         }
     }
 
@@ -45,20 +44,19 @@ class File {
                     fs.unlinkSync(file.path)
                     await Repositorie.delete(id_file)
                   }else{
-                      return false
+                    throw new InvalidArgumentError('No se encontró el archivo, por lo que se puede eliminar.')
                   }
             }else{
                 await Repositorie.delete(id_file)
             }
 
-
             return file
 
         } catch (error) {
             if (error && error.code == 'ENOENT') {
-                next("File doesn't exist, won't remove it.");
+                throw new InvalidArgumentError('No se encontró el archivo, por lo que se puede eliminar.')
             } else {
-                next("Error occurred while trying to remove file");
+                throw new InvalidArgumentError('Se produjo un error al intentar eliminar el archivo.')
             }
         }
     }
@@ -84,7 +82,7 @@ class File {
             History.insertHistory(history, id_login)
             return Repositorie.list(file)
         } catch (error) {
-            next(error)
+            throw new InternalServerError('No se pudieron enumerar los archivos.')
         }
     }
 
@@ -94,7 +92,7 @@ class File {
 
             return result
         } catch (error) {
-            return error
+            throw new InvalidArgumentError('No se pudo actualizar el archivo.')
         }
     }
 }

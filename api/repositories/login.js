@@ -12,8 +12,7 @@ class Login {
             const id = await query(sqlId)
             return id[0]
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
     }
 
@@ -23,7 +22,7 @@ class Login {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo borrar el login en la base de datos')
         }
     }
 
@@ -33,8 +32,7 @@ class Login {
             await query(sql, [login.mail, login.id_login])
             return true
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
 
     }
@@ -45,7 +43,7 @@ class Login {
             await query(sql, [password, id_login])
             return 'Contraseña actualizada exitosamente'
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
     }
 
@@ -60,7 +58,7 @@ class Login {
 
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('Error en la vista previa del login')
         }
     }
 
@@ -69,7 +67,7 @@ class Login {
             const sql = 'SELECT * FROM login'
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudieron enumerar los login')
         }
     }
 
@@ -79,12 +77,12 @@ class Login {
             const result = await query(sql)
 
             if (!result[0]) {
-                return false
+                throw new InvalidArgumentError(`El nombre de usuario o la contraseña no son válidos`)
             }
 
             return result[0]
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('El nombre de usuario o la contraseña no son válidos')
         }
     }
 
@@ -99,7 +97,7 @@ class Login {
 
             return result[0]
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('El nombre de usuario o la contraseña no son válidos')
         }
     }
 
@@ -109,7 +107,7 @@ class Login {
             const result = await query(sql, [mail, id_login])
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
     }
 
@@ -125,8 +123,7 @@ class Login {
 
             return false
         } catch (error) {
-            console.log(error)
-            throw new InternalServerError(error)
+            throw new InternalServerError('El nombre de usuario o la contraseña no son válidos')
         }
     }
 

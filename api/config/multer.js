@@ -44,7 +44,7 @@ module.exports = {
         if (allowedMimes.includes(file.mimetype)) {
             callback(null, true)
         } else {
-            callback(new Error('Invalid File Type.'))
+            callback(new Error('Tipo de archivo invalido'))
         }
     },
 }

@@ -45,6 +45,7 @@ btn.addEventListener('click', async (event) => {
                         { title: "Fecha de Registro" },
                         { title: "Usuario" }
                     ],
+                    order: [[ 0, "desc" ]],
                     paging: true,
                     ordering: true,
                     info: true,
@@ -68,6 +69,7 @@ btn.addEventListener('click', async (event) => {
                     { title: "Fecha de Registro" },
                     { title: "Usuario" }
                 ],
+                order: [[ 0, "desc" ]],
                 paging: true,
                 ordering: true,
                 info: true,

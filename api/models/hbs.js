@@ -15,7 +15,7 @@ class Hbs {
             console.log('list hbs ok');
         } catch (error) {
             console.log('list hbs error' + error);
-            throw new InternalServerError(error)
+            return error
         }
     }
 
@@ -56,7 +56,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            throw new InternalServerError('Error')
+            return error
         }
     }
 
@@ -173,6 +173,14 @@ class Hbs {
             History.insertHistory(history, id_login)
 
             return Repositorie.listItems(search)
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
+    listItemsComplete() {
+        try {
+            return Repositorie.listItemsComplete()
         } catch (error) {
             throw new InternalServerError('Error')
         }

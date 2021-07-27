@@ -43,10 +43,10 @@ class User {
 
                 return result
             } else {
-                throw new InvalidArgumentError('Error, ya existe este email!')
+                throw new InvalidArgumentError('Ya existe un usuario con este acceso, cámbielo.')
             }
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo registrar un nuevo usuario.')
         }
     }
 
@@ -56,7 +56,7 @@ class User {
             const result = await Repositorie.deleteStatus(status, id_user)
             return result
         } catch (error) {
-            throw new NotFound('Error')
+            throw new InternalServerError('No se pudo borrar el usuario.')
         }
     }
 
@@ -86,10 +86,10 @@ class User {
                 await RepositorieLogin.update(login)
                 return true
             } else {
-                throw new InvalidArgumentError('Ya existe Este email!')
+                throw new InvalidArgumentError('Ya existe un usuario con este acceso, cámbielo.')
             }
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo actualizar el usuario.')
         }
     }
 
@@ -125,7 +125,7 @@ class User {
             return data
 
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError('No se pudieron enumerar los usuarios.')
         }
     }
 
@@ -134,7 +134,7 @@ class User {
             const user = await Repositorie.view(id_user)
             return user
         } catch (error) {
-            throw new NotFound('Error')
+            throw new NotFound('Usuario.')
         }
     }
 }

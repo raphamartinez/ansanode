@@ -14,15 +14,16 @@ class InvalidArgumentError extends Error {
 
   class NotFound extends Error {
     constructor (entity) {
-      const message = `Not Found ${entity}`
+      const message = `No se ha encontrado ${entity}`
       super(message)
       this.name = 'NotFound'
+      Object.setPrototypeOf(this, NotFound.prototype);
     }
   }
 
   class NotAuthorized extends Error {
     constructor () {
-      const message = `this resource could not be accessed`
+      const message = `No se pudo acceder a este recurso`
       super(message)
       this.name = 'NotAuthorized'
     }

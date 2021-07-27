@@ -8,7 +8,7 @@ class ViewPowerBi {
             const result = query(sql, [viewpowerbi.id_powerbi, viewpowerbi.id_login])
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo powerbi el archivo office en la base de datos')
         }
     }
 
@@ -17,7 +17,7 @@ class ViewPowerBi {
             const sql = `SELECT id_viewpowerbi, id_powerbi, id_login, dateReg FROM viewpowerbi `
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudieron enumerar los powerbi')
         }
     }
 
@@ -27,7 +27,7 @@ class ViewPowerBi {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('No se pudo borrar el powerbi en la base de datos')
         }
     }
 }

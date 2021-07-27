@@ -21,7 +21,7 @@ module.exports = () => {
 
   app.use(passport.initialize())
 
-  app.use((req, res, next) => {
+  app.use(( req, res, next) => {
     if (req.headers["x-forwarded-proto"] == "http")
       res.redirect(`https://${req.headers.host}${req.url}`)
     else {
@@ -29,23 +29,14 @@ module.exports = () => {
     }
   })
 
-
-  // app.use((req, res, next) => {
-  //   res.set({
-  //     'Content-Type': 'application/json'
-  //   })
-  //   next()
-  // });
-  
   app.use(express.json())
-  app.use(express.urlencoded({ extended: false }))
   app.use(express.urlencoded({ extended: true }))
 
   app.use(express.static(__dirname + '/public'))
   app.use(express.static(__dirname + '/views'))
 
 
-  app.use((req, res, next) => {
+  app.use(( req, res, next) => {
     res.header("Access-Control-Allow-Origin", "*")
     res.header("Access-Control-Allow-Methods", 'GET,PUT,POST,DELETE')
     res.header('Access-Control-Allow-Credentials', true)
@@ -55,7 +46,7 @@ module.exports = () => {
   });
 
   // Resposta Fake para o coockie X-Powered-By
-  // app.use((req, res, next) => {
+  // app.use(( req, res, next) => {
   //   res.setHeader('X-Powered-By', 'PHP/7.1.7')
   //   next()
   // });
@@ -78,38 +69,6 @@ module.exports = () => {
     .then('controllers')
     .into(app)
 
-  app.use((error, req, res, next) => {
-    let status = 500
-    const body = {
-      message: error.message
-    }
-
-    if (error instanceof NotFound) {
-      status = 404
-      body.dateExp = error.dateExp
-    }
-
-    if (error instanceof NotAuthorized) {
-      status = 401
-      body.dateExp = error.dateExp
-    }
-
-    if (error instanceof InvalidArgumentError) {
-      status = 400
-    }
-
-    if (error instanceof jwt.JsonWebTokenError) {
-      status = 401
-    }
-
-    if (error instanceof jwt.TokenExpiredError) {
-      status = 401
-      body.dateExp = error.dateExp
-    }
-
-    res.status(status)
-    res.json(body)
-  })
 
   return app
 }

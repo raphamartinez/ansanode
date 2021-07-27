@@ -1,9 +1,9 @@
 const Repositorie = require('../repositories/login')
-const { InvalidArgumentError, NotFound } = require('./error')
 const bcrypt = require('bcrypt')
 const Token = require('./token')
 const { ResetPasswordMail } = require('./mail')
 const nodemailer = require('nodemailer')
+const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
 class Login {
 
@@ -12,7 +12,7 @@ class Login {
             const login = await Repositorie.view(id_login)
             return login
         } catch (error) {
-            throw new NotFound('Login not found')
+            throw new NotFound('Login.')
         }
     }
 
@@ -24,7 +24,7 @@ class Login {
 
             return token
         } catch (error) {
-            throw new InternalServerError('Error on generated Tokens')
+            throw new InternalServerError('Error al generar tokens.')
         }
     }
 
@@ -32,7 +32,7 @@ class Login {
         try {
             await Token.access.invalid(token)
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError('No se pudo invalidar la sesión.')
         }
     }
 
@@ -41,7 +41,7 @@ class Login {
             const login = await Repositorie.viewMail(mail)
             return login
         } catch (error) {
-            throw new NotFound('Mail not found')
+            return error
         }
     }
 
@@ -50,7 +50,7 @@ class Login {
             return Repositorie.list()
 
         } catch (error) {
-            throw new InternalServerError('Error on list')
+            throw new InternalServerError('No se pudieron enumerar los inicios de sesión.')
         }
     }
 
@@ -69,7 +69,7 @@ class Login {
 
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo registrar un nuevo inicio de sesión.')
         }
     }
 
@@ -97,7 +97,7 @@ class Login {
 
             return login
         } catch (error) {
-            throw new NotFound('Mail not found')
+            throw new InvalidArgumentError('No se pudo solicitar la recuperación de la contraseña.')
         }
     }
 
@@ -115,7 +115,7 @@ class Login {
 
             return id_login
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo actualizar la contraseña.')
         }
     }
 
@@ -132,7 +132,7 @@ class Login {
 
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo actualizar la contraseña.')
         }
 
     }
@@ -145,7 +145,7 @@ class Login {
 
             return result
         } catch (error) {
-            throw new NotFound('Not Found')
+            throw new InvalidArgumentError('No se pudo verificar el correo electrónico.')
         }
     }
 

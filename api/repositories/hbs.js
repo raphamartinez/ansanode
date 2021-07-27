@@ -10,7 +10,7 @@ class Hbs {
             const sql = ` SELECT SerNr FROM ansa.SalaryPayment ORDER BY SerNr DESC LIMIT 1`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('La última lista de salario falló')
         }
     }
 
@@ -20,7 +20,7 @@ class Hbs {
             sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('La lista de salarios falló')
         }
     }
 
@@ -31,8 +31,7 @@ class Hbs {
             await query(sql, [salary.serNr, date, salary.office, salary.comment, salary.reference, salary.usd, salary.name])
             return true
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el salario en la base de datos')
         }
 
     }
@@ -45,7 +44,7 @@ class Hbs {
             LEFT JOIN Office ofi ON wk.Office = ofi.Code `
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('La lista de usuarios falló')
         }
     }
 
@@ -54,7 +53,7 @@ class Hbs {
             const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y  %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ${code} ORDER BY TimestampDate DESC LIMIT 1`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('La última lista de control de punto falló')
         }
     }
 
@@ -66,7 +65,7 @@ class Hbs {
             WHERE cl.Date > '2021-06-16'`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('La lista de control de punto falló')
         }
     }
 
@@ -77,8 +76,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el usuario en la base de datos')
         }
     }
 
@@ -87,7 +85,7 @@ class Hbs {
             const sql = `drop table IF EXISTS ansa.userhbs`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo borrar la tabla userhbs')
         }
     }
 
@@ -98,7 +96,7 @@ class Hbs {
             const sql = `drop table IF EXISTS ansa.receivable`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo borrar la tabla receivable')
         }
     }
 
@@ -109,7 +107,7 @@ class Hbs {
             dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_office VARCHAR(10), PRIMARY KEY (id_user))`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo crear la tabla userhbs')
         }
     }
 
@@ -122,7 +120,7 @@ class Hbs {
                 Saldo double, Office VARCHAR(5), Comment VARCHAR (250), CustGroup VARCHAR (15), PRIMARY KEY (id_receivable))`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo crear la tabla receivable')
         }
     }
 
@@ -150,7 +148,7 @@ class Hbs {
             ORDER BY Invoice.SerNr  `
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar ncs')
         }
     }
 
@@ -176,7 +174,7 @@ class Hbs {
             ORDER BY Invoice.SerNr `
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar facturas')
         }
     }
 
@@ -207,7 +205,7 @@ class Hbs {
             ORDER BY SerNr  `
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar facturas c/ cotas')
         }
     }
 
@@ -246,7 +244,7 @@ class Hbs {
             `
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar cheques')
         }
     }
 
@@ -278,8 +276,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el receivable en la base de datos')
         }
     }
 
@@ -290,8 +287,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el clockmachine en la base de datos')
         }
     }
 
@@ -300,7 +296,7 @@ class Hbs {
             const sql = `SELECT DISTINCT SalesMan FROM SalesOrder ORDER BY SalesMan`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar SalesMan')
         }
     }
 
@@ -329,7 +325,23 @@ class Hbs {
 
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar articulos')
+        }
+    }
+
+    
+    listItemsComplete() {
+        try {
+            let sql = `SELECT  P.ArtCode, I.Name as ItemName
+            FROM Price P
+            INNER JOIN Item I ON P.ArtCode = I.CODE
+             WHERE (I.Closed = 0 OR I.Closed IS NULL )
+             GROUP BY P.ArtCode
+             ORDER BY P.ArtCode DESC`
+
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar articulos')
         }
     }
 
@@ -359,7 +371,7 @@ class Hbs {
 
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar precios')
         }
     }
 
@@ -385,7 +397,7 @@ class Hbs {
 
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar articulos goodyear')
         }
     }
 
@@ -396,7 +408,7 @@ class Hbs {
 
             return true
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo ingresar el items en la base de datos')
         }
     }
 
@@ -405,7 +417,7 @@ class Hbs {
             const sql = `SELECT StockDepo FROM Stock WHERE (Qty - Reserved) > 0 AND Qty IS NOT null  group BY StockDepo`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
 
@@ -423,7 +435,7 @@ class Hbs {
             GROUP BY Ig.Name`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar Grupo de Articulos')
         }
     }
 
@@ -435,7 +447,7 @@ class Hbs {
             group BY StockDepo`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
 }

@@ -20,7 +20,7 @@ const method = {
 
 module.exports = {
 
-  local(req, res, next) {
+  local( req, res, next) {
     passport.authenticate(
       'local',
       { session: false },
@@ -32,26 +32,26 @@ module.exports = {
         req.authenticated = true
         return next()
       }
-    )(req, res, next)
+    )( req, res, next)
   },
 
 
-  tryaAprove(req, res, next) {
+  tryaAprove( req, res, next) {
     if (req.authenticated === true) {
-      return tryAuthentic(req, res, next)
+      return tryAuthentic( req, res, next)
     }
     next()
   },
 
-  tryAuthentic(req, res, next) {
+  tryAuthentic( req, res, next) {
     req.authenticated = false
     if (req.get('Authorization')) {
-      return this.bearer(req, res, next)
+      return this.bearer( req, res, next)
     }
     next()
   },
 
-  perfil(req, res, next) {
+  perfil( req, res, next) {
 
     const permissionsPerfil = Controll.can(req.user.perfil)
     const actions = method[action]
@@ -78,7 +78,7 @@ module.exports = {
     next()
   },
 
-  bearer(req, res, next) {
+  bearer( req, res, next) {
     passport.authenticate(
       'bearer',
       { session: false },
@@ -95,10 +95,10 @@ module.exports = {
           return next(error)
         }
       }
-    )(req, res, next)
+    )( req, res, next)
   },
 
-  async refresh(req, res, next) {
+  async refresh( req, res, next) {
     try {
       const { refreshToken } = req.body
       const id_login = await Token.refresh.verify(refreshToken)
@@ -113,7 +113,7 @@ module.exports = {
     }
   },
 
-  async verifyMail(req, res, next) {
+  async verifyMail( req, res, next) {
     try {
       const { token } = req.params
       const id = await Token.verifyMail.verify(token)

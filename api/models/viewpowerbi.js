@@ -14,7 +14,7 @@ class ViewPowerBi {
             const result = await Repositorie.insert(id_viewpowerbi)
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo crear el powerbi.')
         }
     }
 
@@ -23,7 +23,7 @@ class ViewPowerBi {
             const result = await Repositorie.delete(id_viewpowerbi)
             return result
         } catch (error) {
-            throw new NotFound('Error')
+            throw new InternalServerError('No se pudo borrar el powerbi.')
         }
     }
 
@@ -31,7 +31,7 @@ class ViewPowerBi {
         try {
             return Repositorie.list()
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError('No se pudieron enumerar los powerbi.')
         }
     }
 

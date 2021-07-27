@@ -9,8 +9,7 @@ class User {
 
             return true
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo insertar el usuario en la base de datos')
         }
     }
 
@@ -20,7 +19,7 @@ class User {
             await query(sql)
             return true
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('No se pudo borrar el usuario en la base de datos')
         }
     }
 
@@ -30,7 +29,7 @@ class User {
             await query(sql, [status, id_user])
             return true
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('No se pudo borrar el usuario en la base de datos')
         }
     }
 
@@ -40,8 +39,7 @@ class User {
             await query(sql, [user.name, user.perfil, user.dateBirthday, user.office.id_office, user.mailenterprise, user.id_user])
             return true
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
     }
 
@@ -52,7 +50,7 @@ class User {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new NotFound('Error en la vista previa del usuario')
         }
     }
 
@@ -62,7 +60,7 @@ class User {
             FROM ansa.user US, ansa.login LO WHERE LO.id_login = US.id_login and US.status = 1 `
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudieron enumerar los usuarios')
         }
     }
 }

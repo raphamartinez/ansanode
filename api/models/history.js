@@ -1,5 +1,5 @@
 const Repositorie = require('../repositories/history')
-const { InvalidArgumentError, NotFound, InternalServerError } = require('./error')
+const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
 class History {
 
@@ -18,7 +18,7 @@ class History {
             }
 
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new NotFound('Historial.')
         }
     }
 
@@ -32,7 +32,7 @@ class History {
                 return list
             }
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new NotFound('Historial.')
         }
     }
 
@@ -42,7 +42,7 @@ class History {
 
             return new History(history)
         } catch (error) {
-            throw new NotFound('Error')
+            throw new InternalServerError('No se pudo ver el historial.')
         }
     }
 
@@ -55,7 +55,7 @@ class History {
 
             Repositorie.insert(history)
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InternalServerError('No se pudo insertar un nuevo historial.')
         }
     }
 
@@ -65,7 +65,7 @@ class History {
 
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InternalServerError('No se pudo borrar el historial.')
         }
     }
 
@@ -75,7 +75,7 @@ class History {
 
             return result
         } catch (error) {
-            throw new InvalidArgumentError('Error')
+            throw new InvalidArgumentError('No se pudo actualizar el historial.')
         }
     }
 }

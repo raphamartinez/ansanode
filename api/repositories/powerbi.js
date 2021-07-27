@@ -15,7 +15,7 @@ class PowerBi {
 
             return true
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('El powerbi no se pudo insertar en la base de datos')
         }
     }
 
@@ -24,7 +24,7 @@ class PowerBi {
             const sql = `SELECT id_powerbi, url, type, token, idreport, dateReg FROM ansa.powerbi `
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('El powerbi no pudo aparecer en la lista')
         }
     }
 
@@ -33,7 +33,7 @@ class PowerBi {
             const sql = `SELECT BI.id_powerbi, BI.title, BI.url, BI.type as typedesc, BI.type, BI.token, BI.idreport, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.powerbi BI, ansa.viewpowerbi VB WHERE VB.id_powerbi = BI.id_powerbi and VB.id_login = ${id_login} and BI.type = ${type}`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('El powerbi no pudo aparecer en la lista')
         }
     }
 
@@ -42,7 +42,7 @@ class PowerBi {
             const sql = `SELECT BI.id_powerbi, BI.title, BI.url, BI.type as typedesc, BI.type, BI.token, BI.idreport, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.powerbi BI, ansa.viewpowerbi VB WHERE VB.id_powerbi = BI.id_powerbi and VB.id_login = ${id_login}`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('El powerbi no pudo aparecer en la lista')
         }
     }
 
@@ -57,7 +57,7 @@ class PowerBi {
 
             return true
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('No se pudo borrar el powerbi en la base de datos')
         }
     }
 
@@ -68,7 +68,7 @@ class PowerBi {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se puede enumerar el número de powerbi')
         }
     }
 
@@ -78,7 +78,7 @@ class PowerBi {
             const result = await query(sql, [powerbi.url, powerbi.type, powerbi.title, powerbi.token, powerbi.idreport, powerbi.id_powerbi])
             return true
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
     }
 
@@ -88,7 +88,7 @@ class PowerBi {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new NotFound('Error en la vista previa del powerbi')
         }
     }
 }

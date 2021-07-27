@@ -114,11 +114,28 @@ const viewBi =  async (id) => {
     throw new Error('error')
 }
 
+const listComplete =  async () => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/powerbis` , {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+    throw new Error('error')
+}
+
 export const Service = {
     listBiUser,
     listUser,
     insertBi,
     updateBi,
     deleteBi,
-    viewBi
+    viewBi,
+    listComplete
 }

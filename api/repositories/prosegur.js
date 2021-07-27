@@ -9,8 +9,8 @@ class Prosegur {
             const result = await query(sql, description)
             return result[0]
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo insertar el historial en la base de datos')
+
         }
     }
 
@@ -25,7 +25,7 @@ class Prosegur {
 
             return result[0].date
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar el historial de webscraping')
         }
     }
 
@@ -35,7 +35,7 @@ class Prosegur {
             const result = await query(sql, [plate, km])
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo insertar la distancia en la base de datos')
         }
     }
 
@@ -50,7 +50,7 @@ class Prosegur {
 
             return result[0].date
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar la distancia')
         }
     }
 
@@ -61,8 +61,7 @@ class Prosegur {
             const result = await query(sql, [car, brand, kmNow, currentLocation, maintenanceDate, kmMaintenance, typeWarning, kmElapsed, remaining, work, state])
             return result[0]
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo insertar el mantenimiento en la base de datos')
         }
     }
 
@@ -76,7 +75,7 @@ class Prosegur {
 
             return result[0].maintenanceDate
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar el mantenimiento')
         }
     }
 
@@ -86,8 +85,7 @@ class Prosegur {
             const result = await query(sql, values)
             return result[0]
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('OnOff no se pudo enviar a la base de datos')
         }
     }
 
@@ -102,7 +100,7 @@ class Prosegur {
 
             return result[0].dateEnd
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar el OnOff')
         }
     }
 
@@ -113,8 +111,7 @@ class Prosegur {
             const result = await query(sql, [dateStart, dateEnd, plate, alias, stoppedTime, direction, detentionDistance, coordinates, office])
             return result[0]
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo enviar la ubicación a la base de datos')
         }
     }
 
@@ -129,7 +126,7 @@ class Prosegur {
 
             return result[0].dateEnd
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar la ubicación')
         }
     }
 
@@ -139,8 +136,7 @@ class Prosegur {
             const result = await query(sql, [title, date, desc, office])
             return result[0]
         } catch (error) {
-            console.log(error);
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo enviar el inviolavel a la base de datos')
         }
     }
 
@@ -155,7 +151,7 @@ class Prosegur {
 
             return result[0].date
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar el inviolavel')
         }
     }
 
@@ -165,8 +161,7 @@ class Prosegur {
             const result = await query(sql, [time, codconnection, contract, description])
             return result[0]
         } catch (error) {
-            console.log(error)
-            throw new InvalidArgumentError(error)
+            return error
         }
     }
 
@@ -181,10 +176,9 @@ class Prosegur {
 
             return result[0].dateTime
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InternalServerError('No se pudieron enumerar la sucursal')
         }
     }
-
 }
 
 module.exports = new Prosegur()

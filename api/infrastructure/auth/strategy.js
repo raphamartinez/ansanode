@@ -48,6 +48,7 @@ passport.use(
     try {
       const id = await Token.access.verify(token)
       const login = await Login.viewLogin(id)
+      verifyLogin(login.mail)
       done(null, login, { token })
     } catch (error) {
       done(error)

@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs')
 const moment = require('moment')
 const { getJsDateFromExcel } = require("excel-date-to-js");
-const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
+const { InternalServerError } = require('../models/error')
 
 async function readExcel(path) {
 
@@ -72,7 +72,7 @@ class WebScraping {
         } catch (error) {
             await Repositorie.insertHistory(`Error - ${error}`)
             console.log('robot error');
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot.')
         }
     }
 
@@ -81,7 +81,7 @@ class WebScraping {
             const dateReg = await Repositorie.listHistoryWebscraping()
             return dateReg
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo listar el Webscraping.')
         }
     }
 
@@ -89,7 +89,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
             const page = await browser.newPage()
@@ -148,7 +148,6 @@ class WebScraping {
                     const date2 = new Date(lastInsertArrest);
 
                     if (date1.getTime() > date2.getTime()) {
-                        console.log(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], office);
                         await Repositorie.insertArrest(line[0], line[1], line[2], line[3], line[4], line[5], line[6], line[7], office)
                     }
                 })
@@ -170,14 +169,13 @@ class WebScraping {
                     const date2 = new Date(lastInsertPower);
 
                     if (date1.getTime() > date2.getTime()) {
-                        console.log(line);
                         await Repositorie.insertPower(line)
                     }
                 })
             }
 
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot OnStopp.')
         }
     }
 
@@ -185,7 +183,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
 
@@ -246,7 +244,7 @@ class WebScraping {
 
             fs.unlinkSync(filePath)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot de mantenimiento.')
         }
     }
 
@@ -254,7 +252,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
 
@@ -308,7 +306,7 @@ class WebScraping {
 
             fs.unlinkSync(filePath)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot de distancia.')
         }
     }
 
@@ -316,7 +314,7 @@ class WebScraping {
         try {
             const browser = await puppeteer.launch({
                 args: ['--lang=pt-BR', '--no-sandbox'],
-                headless: true,
+                headless: false,
             })
             const page = await browser.newPage()
 
@@ -401,7 +399,7 @@ class WebScraping {
                 }
             })
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot de seguridad de la prosegur.')
         }
     }
 
@@ -479,11 +477,13 @@ class WebScraping {
                 ]
             ]
 
+
+
             logins.forEach(async login => {
 
                 const browser = await puppeteer.launch({
-                    headless: true,
-                    args: ['--no-sandbox']
+                    headless: false,
+                    args: ['--no-sandbox','--disable-dev-shm-usage']
                 })
 
                 const page = await browser.newPage()
@@ -507,7 +507,7 @@ class WebScraping {
                 })
                 await browser.close()
 
-                await data.forEach(async object => {
+                data.forEach(async object => {
 
                     const result = object.toString()
                     const removeSpace = result.split('\n').toString()
@@ -532,31 +532,33 @@ class WebScraping {
                     await chunked.forEach(async line => {
                         const office = login[0]
                         const title = line[0].trim()
-                        const dt = line[1].split(" ")[0]
-                        const time = line[1].split(" ")[1]
-                        const lastInsert = await Repositorie.listInviolavel(office)
 
-                        var dia = dt.split("/")[0];
-                        var mes = dt.split("/")[1];
-                        var ano = dt.split("/")[2];
-                    
-                        const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + " " + time;
-
-                        const newdate1 = moment(date);
-
-                        const newdate2 = moment(lastInsert)
-
-                        if (newdate1.isAfter(newdate2)) {
-                            const date = moment(newdate1).format("YYYY-MM-DD HH:mm:ss")
-                            console.log(date);
-                            await Repositorie.insertInviolavel(title, date, line[2], login[0])
+                        if(typeof line[1] !== "undefined"){
+                            const dt = line[1].split(" ")[0]
+                            const time = line[1].split(" ")[1]
+                            const lastInsert = await Repositorie.listInviolavel(office)
+    
+                            var dia = dt.split("/")[0];
+                            var mes = dt.split("/")[1];
+                            var ano = dt.split("/")[2];
+                        
+                            const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + " " + time;
+    
+                            const newdate1 = moment(date);
+    
+                            const newdate2 = moment(lastInsert)
+    
+                            if (newdate1.isAfter(newdate2)) {
+                                const date = moment(newdate1).format("YYYY-MM-DD HH:mm:ss")
+                                await Repositorie.insertInviolavel(title, date, line[2], login[0])
+                            }
                         }
                     })
                 })
             })
 
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudo ejecutar el robot de seguridad de la inviolavel.')
         }
     }
 }

@@ -9,7 +9,7 @@ class Office {
             const result = await query(sql, [office.name, office.status])
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
         }
     }
 
@@ -19,7 +19,7 @@ class Office {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new NotFound(error)
+            throw new InternalServerError('No se puede eliminar la sucursal en la base de datos')
         }
     }
 
@@ -29,7 +29,7 @@ class Office {
             const result = await query(sql, [office.name, office.id_office])
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new InvalidArgumentError('Error al actualizar los datos')
         }
     }
 
@@ -39,7 +39,7 @@ class Office {
             const result = await query(sql)
             return result[0]
         } catch (error) {
-            throw new InvalidArgumentError(error)
+            throw new NotFound('Error de vista previa de la sucursal')
         }
     }
 
@@ -48,7 +48,7 @@ class Office {
             const sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.office FF WHERE FF.status = 1`
             return query(sql)
         } catch (error) {
-            throw new InternalServerError(error)
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
         }
     }
 }

@@ -3,6 +3,9 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableItemGroup()
+    this.createTableStock()
+    this.createTableType()
     this.createTableFile()
     this.createTableReceivable()
     this.createTableSalary()
@@ -13,23 +16,49 @@ class Tables {
     this.createTableProsegurArrest()
     this.createTableProsegurPower()
     this.createTableProsegurMaintenance()
-    this.createTableAddress()
-    this.createTableContact()
     this.createTableOffice()
-    this.createTableClient()
     this.createTableLogin()
     this.createTableUser()
     this.createTableHistory()
-    this.createTableLabel()
     this.createTableItemGroup()
-    this.createTableItem()
-    this.createTableAddressClient()
-    this.createTableContactClient()
     this.createTablePowerBI()
     this.createTableViewPowerBI()
     this.createTableUserHbs()
 
     return true
+  }
+
+  createTableItemGroup(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.itemgroup (id_itemgroup int NOT NULL AUTO_INCREMENT, code VARCHAR (50), name VARCHAR (100), PRIMARY KEY (id_itemgroup))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableStock(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.stock (id_stock int NOT NULL AUTO_INCREMENT, name VARCHAR (100), PRIMARY KEY (id_stock))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableType(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.type (id_type int NOT NULL AUTO_INCREMENT, name VARCHAR (100), PRIMARY KEY (id_type))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableFile(){

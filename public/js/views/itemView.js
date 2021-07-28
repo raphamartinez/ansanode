@@ -1,3 +1,39 @@
+const buttonsearchstock = (title) => {
+
+    const divbtn = document.createElement('div')
+
+    const content = `    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-12 text-left">
+            <button type="button" data-toggle="modal" data-target="#search" class="btn btn-success">
+            Nueva Consulta
+            </button>
+        </div>
+    </div>`
+
+    divbtn.innerHTML = content
+    title.appendChild(divbtn)
+
+}
+
+const buttonsearchprice = (title) => {
+
+    const divbtn = document.createElement('div')
+
+    const content = `    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-12 text-left">
+            <button type="button" data-toggle="modal" data-target="#searchPrice" class="btn btn-success">
+            Nueva Consulta
+            </button>
+        </div>
+    </div>`
+
+    divbtn.innerHTML = content
+    title.appendChild(divbtn)
+
+}
+
 const showModalSearch = () => {
     const div = document.createElement('div')
 
@@ -87,26 +123,10 @@ const showModalPrice = () => {
                     <div class="form-group col-md-12">          
                     <input type="text" placeholder="Nombre do Articulo" class="form-control" name="itemname" id="itemname">
                 </div>
-                <div class="form-group col-md-6">   
+                <div class="form-group col-md-12">   
                 <select class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
                 <option value= "" disabled selected>Grupo de Articulo</option>
                 </select>        
-                </div>
-                    <div class="form-group col-md-6">          
-                    <select class="selectpicker form-control" multiple name="stock" id="stock">
-                    <option value= "" disabled selected>Deposito</option>
-                    </select> 
-                    </div>
-                    <div class="form-group col-md-12">
-                    <label for="antecedente">Quieres sacar artículos fuera de stock?</label>
-                    <div class="custom-control custom-radio custom-control-inline" color:black>
-                        <input type="radio" class="custom-control-input perfil" id="stockartsi" name="stockart" value="0" required>
-                        <label class="custom-control-label" for="stockartsi">Sí</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline" color:black>
-                        <input type="radio" class="custom-control-input perfil" id="stockartno" name="stockart" value="1">
-                        <label class="custom-control-label" for="stockartno">No</label>
-                    </div>  
                 </div>
                 </div>
             </div>
@@ -199,13 +219,11 @@ const listItems = (item) => {
 const listPrice = (item) => {
 
     const content = [
-        `<a onclick="listStocks(event)" href="" data-artcode="${item.ArtCode}" data-artname="${item.ItemName}" data-cant="${item.StockQty}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
         `${item.PriceList}`,
         `${item.ItemGroup}`,
         `${item.ArtCode}`,
         `${item.ItemName}`,
-        `${item.Price}`,
-        `${item.StockQty}`,
+        `${item.Price}`
     ]
 
     return content
@@ -296,7 +314,7 @@ const btnNewSearch = () => {
     const btn = document.createElement('button')
 
 
-    btn.appendChild= '<i class="fas fa-search">Nueva busca</i>'
+    btn.appendChild = '<i class="fas fa-search">Nueva busca</i>'
 
     return btn
 }
@@ -325,5 +343,7 @@ export const View = {
     btnNewSearch,
     listPrice,
     showModalGoodyear,
-    listGoodyear
+    listGoodyear,
+    buttonsearchstock,
+    buttonsearchprice
 }

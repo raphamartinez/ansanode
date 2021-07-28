@@ -172,7 +172,13 @@ class Hbs {
 
             History.insertHistory(history, id_login)
 
-            return Repositorie.listItems(search)
+            const data = await Repositorie.listItems(search)
+
+            data.forEach(obj => {
+                if(obj.Reserved > 0) obj.StockQty - obj.Reserved
+            })
+
+            return data
         } catch (error) {
             throw new InternalServerError('Error')
         }
@@ -210,8 +216,7 @@ class Hbs {
             if (search.pricelist) history += `- Promocion: ${search.pricelist} `
             if (search.artcode) history += `- Cod: ${search.artcode} `
             if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
-            if (search.itemname) history += `- Nombre: '${search.itemname}' `
-            if (search.stock != "''") history += `- Deposito: ${search.stock}.`
+            if (search.itemname) history += `- Nombre: '${search.itemname}'.`
 
             History.insertHistory(history, id_login)
 
@@ -224,6 +229,10 @@ class Hbs {
     async listStockByItem(artcode) {
         try {
             const stocks = await Repositorie.listStockbyItem(artcode)
+
+            stocks.forEach(obj => {
+                if(obj.Reserved > 0) obj.Qty - obj.Reserved
+            })
 
             return stocks
         } catch (error) {

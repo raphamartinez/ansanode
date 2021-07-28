@@ -302,26 +302,22 @@ class Hbs {
 
     listItems(search) {
         try {
-            let sql = `SELECT IG.Name AS ItemGroup, P.ArtCode,
-            I.Name as ItemName, IF(St.Reserved IS NOT NULL, SUM(St.Qty) - SUM(St.Reserved), St.Qty ) AS StockQty
-           FROM PriceDealRow PDr 
-           INNER JOIN Price P ON P.PriceList = PDr.PriceList 
-           INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
-           INNER JOIN PriceList PL on PL.Code = PDr.PriceList
-           INNER JOIN Item I ON P.ArtCode = I.CODE
-           LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
-           LEFT JOIN Stock St ON I.Code = St.ArtCode
-            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+            let sql = `SELECT IG.Name AS ItemGroup, I.Code as ArtCode,
+            I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
+           FROM Item I
+           INNER JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
+           INNER JOIN Stock St ON I.Code = St.ArtCode
+           WHERE (I.Closed = 0 OR I.Closed IS NULL )`
 
-            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
+            if (search.artcode) sql += `AND I.Code LIKE '%${search.artcode}%' `
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
             if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
             sql += ` 
-            GROUP BY P.ArtCode
-            ORDER BY P.ArtCode DESC`
+            GROUP BY I.Code
+            ORDER BY I.Code DESC`
 
             return queryhbs(sql)
         } catch (error) {
@@ -347,27 +343,24 @@ class Hbs {
 
     listPrice(search) {
         try {
-            let sql = `SELECT PDr.PriceList, IG.Name AS ItemGroup, P.ArtCode,
-            I.Name as ItemName, P.Price,IF(St.Reserved IS NOT NULL, SUM(St.Qty) - SUM(St.Reserved), St.Qty ) AS StockQty
-           FROM PriceDealRow PDr 
-           INNER JOIN Price P ON P.PriceList = PDr.PriceList 
-           INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
-           INNER JOIN PriceList PL on PL.Code = PDr.PriceList
-           INNER JOIN Item I ON P.ArtCode = I.CODE
-           LEFT JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
-           LEFT JOIN Stock St ON I.Code = St.ArtCode
-            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+            let sql = `SELECT PDr.PriceList, IG.Name AS ItemGroup, I.Code as ArtCode, 
+            I.Name as ItemName, P.Price
+                       FROM PriceDealRow PDr 
+                       INNER JOIN Price P ON P.PriceList = PDr.PriceList 
+                       INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
+                       INNER JOIN PriceList PL on PL.Code = PDr.PriceList
+                       INNER JOIN Item I ON P.ArtCode = I.Code
+                       INNER JOIN ItemGroup IG ON I.ItemGroup = IG.Code
+                       WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
 
             if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
-            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%'`
+            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
-            if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
-            if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
             sql += ` 
-            GROUP BY P.ArtCode
-            ORDER BY P.ArtCode DESC`
+            GROUP BY I.Code
+            ORDER BY I.Code DESC `
 
             return queryhbs(sql)
         } catch (error) {
@@ -442,7 +435,7 @@ class Hbs {
     listStockbyItem(artcode) {
         try {
             const sql = `SELECT StockDepo, 
-            IF(Reserved IS NOT NULL, SUM(Qty) - SUM(Reserved), Qty ) AS Qty
+            sum(Qty) AS Qty, SUM(Reserved) AS Reserved
             FROM Stock WHERE ArtCode = '${artcode}' AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
             group BY StockDepo`
             return queryhbs(sql)

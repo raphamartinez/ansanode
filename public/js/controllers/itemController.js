@@ -27,7 +27,7 @@ async function listItems() {
         }
 
         title.innerHTML = "Listado de Stock"
-        // title.appendChild(View.btnNewSearch())
+        View.buttonsearchstock(title)
 
         powerbi.innerHTML = " "
         loading.innerHTML = " "
@@ -82,6 +82,12 @@ async function search(event) {
         const stock = Array.from(arrstock).map(el => `'${el.value}'`);
         const stockart = document.querySelector('input[name="stockart"]:checked').value;
 
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
         const search = {
             itemgroup: itemgroup,
             artcode: artcode,
@@ -98,6 +104,11 @@ async function search(event) {
         });
 
         let title = document.querySelector('[data-title]')
+
+        title.innerHTML = ``
+        title.innerHTML = "Listado de Stock"
+        View.buttonsearchstock(title)
+
         const text = document.createElement('h5')
         text.style.color = 'gray'
         text.style.fontSize = '1rem'
@@ -244,18 +255,14 @@ async function listPrice() {
         }
 
         title.innerHTML = "Lista de Precios y Saldos"
+        View.buttonsearchprice(title)
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
 
-        const selectstock = document.getElementById('stock')
         const selectitemgroup = document.getElementById('itemgroup')
         const fields = await ServiceItem.listModal()
-
-        fields.stocks.forEach(obj => {
-            selectstock.appendChild(View.listOption(obj.StockDepo))
-        });
 
         fields.groups.forEach(obj => {
             selectitemgroup.appendChild(View.listOption(obj.Name))
@@ -298,17 +305,15 @@ async function searchPrice(event) {
 
         const artcode = btn.form.artcode.value
         const itemname = btn.form.itemname.value
-        const arrstock = document.querySelectorAll('#stock option:checked')
-        const stock = Array.from(arrstock).map(el => `'${el.value}'`);
-        const stockart = document.querySelector('input[name="stockart"]:checked').value;
+        // const arrstock = document.querySelectorAll('#stock option:checked')
+        // const stock = Array.from(arrstock).map(el => `'${el.value}'`);
+        // const stockart = document.querySelector('input[name="stockart"]:checked').value;
 
         const search = {
             pricelist: pricelist,
             itemgroup: itemgroup,
             artcode: artcode,
-            itemname: itemname,
-            stock: stock,
-            stockart: stockart
+            itemname: itemname
         }
 
         const data = await ServiceItem.listPrice(search)
@@ -319,13 +324,23 @@ async function searchPrice(event) {
         });
 
         let title = document.querySelector('[data-title]')
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        title.innerHTML = ``
+
+        title.innerHTML = "Lista de Precios y Saldos"
+        View.buttonsearchprice(title)
         const text = document.createElement('h5')
         text.style.color = 'gray'
         text.style.fontSize = '1rem'
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if (stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
         if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
         if (pricelist !== " ") text.innerHTML += `Promocion: ${pricelist}<br>`
         if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
@@ -342,13 +357,11 @@ async function searchPrice(event) {
                 $("#dataTable").DataTable({
                     data: dtview,
                     columns: [
-                        { title: "Opciones" },
                         { title: "Promocion" },
                         { title: "Grupo" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Precio" },
-                        { title: "Cant Stock" }
+                        { title: "Precio" }
                     ],
                     paging: true,
                     ordering: true,
@@ -368,13 +381,11 @@ async function searchPrice(event) {
                 $("#dataTable").DataTable({
                     data: dtview,
                     columns: [
-                        { title: "Opciones" },
                         { title: "Promocion" },
                         { title: "Grupo" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Precio" },
-                        { title: "Cant Stock" }
+                        { title: "Precio" }
                     ],
                     paging: true,
                     ordering: true,

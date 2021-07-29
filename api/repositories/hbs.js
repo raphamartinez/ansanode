@@ -48,10 +48,12 @@ class Hbs {
         }
     }
 
-    lastClockMachine(code) {
+    async lastClockMachine(code) {
         try {
-            const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y  %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ${code} ORDER BY TimestampDate DESC LIMIT 1`
-            return query(sql)
+            const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ${code} ORDER BY TimestampDate DESC LIMIT 1`
+            const data = await query(sql)
+
+            return data[0].date
         } catch (error) {
             throw new InternalServerError('La última lista de control de punto falló')
         }
@@ -59,13 +61,15 @@ class Hbs {
 
     listClockMachine() {
         try {
-            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(cl.DATE, " ", cl.TIME) AS TimestampDate,cl.InOutType AS Type, cl.Office, wo.Name
+            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(DATE_FORMAT(cl.Date, '%m-%d-%Y')," ",cl.TIME) AS DateSql, CONCAT(cl.DATE, " ", cl.TIME) AS TimestampDate,cl.InOutType AS Type, cl.Office, wo.Name
             FROM ClockMachineRecord cl
             INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code 
-            WHERE cl.Date > '2021-06-16'`
+            WHERE cl.Date > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
+            
             return queryhbs(sql)
+
         } catch (error) {
-            throw new InternalServerError('La lista de control de punto falló')
+            console.log(error);
         }
     }
 

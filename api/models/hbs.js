@@ -150,14 +150,24 @@ class Hbs {
         try {
             const data = await Repositorie.listClockMachine()
 
-            if (data) {
-                data.forEach(obj => {
-                    Repositorie.insertClockMachine(obj)
+            if (data.length > 0) {
+                data.forEach(async obj => {
+                    const lastInsert = await Repositorie.lastClockMachine(obj.EmployeeCode)
+
+                    const date1 = new Date(obj.DateSql)
+                    const date2 = new Date(lastInsert)
+
+                    if(date1.getTime() > date2.getTime()) {
+
+                        delete obj.DateSql
+
+                        Repositorie.insertClockMachine(obj)
+                    }
                 })
             }
 
         } catch (error) {
-            throw new InternalServerError('Error')
+            throw new InternalServerError(error)
         }
     }
 
@@ -175,7 +185,7 @@ class Hbs {
             const data = await Repositorie.listItems(search)
 
             data.forEach(obj => {
-                if(obj.Reserved > 0) obj.StockQty - obj.Reserved
+                if (obj.Reserved > 0) obj.StockQty - obj.Reserved
             })
 
             return data
@@ -231,7 +241,7 @@ class Hbs {
             const stocks = await Repositorie.listStockbyItem(artcode)
 
             stocks.forEach(obj => {
-                if(obj.Reserved > 0) obj.Qty - obj.Reserved
+                if (obj.Reserved > 0) obj.Qty - obj.Reserved
             })
 
             return stocks

@@ -6,20 +6,26 @@ const directory = (title, div) => {
     const divbtn = document.createElement('div')
 
     const content = `    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <div class="col-md-12 text-left">
+    <div class="col-md-10 text-left">
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Opciones
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a data-toggle="modal" data-target="#modalAddFile" onclick="modalAddFile(event)" class="dropdown-item"><i class="fa fa-plus"></i> Nuevo Archivo</a>
-                <a data-toggle="modal" data-target="#modalAddOffice" onclick="modalAddOffice(event)" class="dropdown-item"><i class="fab fa-microsoft"></i> Nuevo Office</a>
-
+                <a id="btnaddfile" data-toggle="modal" data-search="1" data-target="#modalAddFile" onclick="modalAddFile(event)" class="dropdown-item"><i class="fa fa-plus"></i> Nuevo Archivo</a>
+                <a id="btnaddoffice" data-toggle="modal" data-search="1" data-target="#modalAddOffice" onclick="modalAddOffice(event)" class="dropdown-item"><i class="fab fa-microsoft"></i> Nuevo Office</a>
             </div>
         </div>
-        <button type="button" onclick="modalsearch(event)" class="btn btn-success">
+        <button id="searchblock" data-search="1" type="button" onclick="modalsearch(event)" class="btn btn-success">
         Buscar Archivos
         </button>
+        <button id="searchline" data-search="2" type="button" onclick="modalsearch(event)" class="btn btn-success">
+        Buscar Archivos
+        </button>
+    </div>
+    <div class="col-md-2 text-right">
+    <button id="listblock" onclick="listblock(event)" class="btn btn-info"><i class="fas fa-table"></i></button>
+    <button id="listline" onclick="listLine(event)" class="btn btn-secondary"><i class="fas fa-list"></i></button>
     </div>
 </div>`
 
@@ -40,7 +46,7 @@ const directory = (title, div) => {
 
 }
 
-const search = (modal) => {
+const search = (modal, search) => {
     const div = document.createElement('div')
 
     const content = `     <div class="modal fade" id="modalsearch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -66,21 +72,10 @@ const search = (modal) => {
                     <option value="3">Imagen</option>
                 </select>
                     </div> 
-                    <div class="form-group col-md-12">
-                    <label for="antecedente">Quieres sacar artículos fuera de stock?</label>
-                    <div class="custom-control custom-radio custom-control-inline" color:black>
-                        <input type="radio" class="custom-control-input perfil" id="stockartsi" name="stockart" value="0" required>
-                        <label class="custom-control-label" for="stockartsi">Sí</label>
-                    </div>
-                    <div class="custom-control custom-radio custom-control-inline" color:black>
-                        <input type="radio" class="custom-control-input perfil" id="stockartno" name="stockart" value="1">
-                        <label class="custom-control-label" for="stockartno">No</label>
-                    </div>  
-                </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" onclick="searchfile(event)" name="btn" id="btn" class=" btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
+                    <button data-search="${search}" type="submit" onclick="searchfile(event)" name="btn" id="btnsearch" class=" btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
                 </div>
             </form>
         </div>
@@ -96,7 +91,7 @@ const search = (modal) => {
 }
 
 
-const modal = () => {
+const modal = (search) => {
     const div = document.createElement('div')
 
     const content = `     <div class="modal fade" id="modaladdfile" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -134,7 +129,7 @@ const modal = () => {
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="btn" id="btn" onclick="upload(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
+                    <button data-search="${search}" type="submit" name="btn" id="btn" onclick="upload(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
                 </div>
             </form>
         </div>
@@ -147,7 +142,7 @@ const modal = () => {
 
 }
 
-const addoffice = () => {
+const addoffice = (search) => {
     const div = document.createElement('div')
 
     const content = `     <div class="modal fade" id="modaladdoffice" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -190,7 +185,7 @@ const addoffice = () => {
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="btn" id="btn" onclick="uploadoffice(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
+                    <button  data-search="${search}" type="submit" name="btn" id="btn" onclick="uploadoffice(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
                 </div>
             </form>
         </div>
@@ -420,7 +415,7 @@ const file = (obj) => {
 
     const content = ` <div class="form-row p-3" id="${obj.id_file}div">
                           <div class="form-group col-md-12">  
-                            <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${protocol}//${url}/${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
+                            <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${protocol}//${url}/${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
                           <div class="form-group col-md-12">
                           <p>${obj.title}</p>
                           </div>
@@ -437,7 +432,7 @@ const fileUpload = (obj) => {
 
     const content = ` <div class="form-row p-3" id="${obj.id_file}div">
                         <div class="form-group col-md-12">  
-                          <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename.replace(/ /g, "%20")}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${protocol}//${url}/${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
+                          <a class="abrir" onclick="modalfile(event)" data-id_file="${obj.id_file}" data-datereg="${obj.datereg}" data-mimetype="${obj.mimetype}" data-src="${obj.filename}" data-id="${obj.id_file}" data-title="${obj.title}" data-description="${obj.description}" ><img src="${protocol}//${url}/${obj.fakename}" class="thumbnail img-responsive card" style="width:146px; height:146px;"/></a>
                           <div class="form-group col-md-12">
                           <p>${obj.title}</p>
                           </div>
@@ -515,6 +510,18 @@ const sendMail = () => {
 
 }
 
+const showTable = (file) => {
+    const content = [
+        `<a href="" onclick="modalfile(event)" data-id_file="${file.id_file}" data-datereg="${file.datereg}" data-mimetype="${file.mimetype}" data-src="${file.filename}" data-title="${file.title}" data-description="${file.description}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
+        `${file.title}`,
+        `${file.description}`,
+        `${file.mimetype}`,
+        `${file.size}`,
+        `${file.datereg}`
+    ]
+
+    return content
+}
 
 export const ViewFile = {
     directory,
@@ -529,5 +536,6 @@ export const ViewFile = {
     sendMail,
     addoffice,
     fileOffice,
-    office
+    office,
+    showTable
 }

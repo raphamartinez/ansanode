@@ -1,5 +1,6 @@
 import { ViewFile } from "../views/fileView.js"
 import { ServiceFile } from "../services/fileService.js"
+import { ServiceHistory } from "../services/historyService.js"
 
 const btnfiles = document.querySelector('[data-files]')
 const cardHistory = document.querySelector('[data-card]')
@@ -30,11 +31,23 @@ btnfiles.addEventListener('click', async (event) => {
         }
         modal.innerHTML = ''
 
-        ViewFile.search(modal)
+        let search = 1
+
+        ViewFile.search(modal, search)
 
         $('#modalsearch').modal('show')
 
         ViewFile.directory(title, powerbi)
+
+        const btnblock = document.getElementById('listblock')
+        btnblock.style.display = 'none';
+        const btnline = document.getElementById('listline')
+        btnline.style.display = 'inline-block';
+
+        const searchblock = document.getElementById('searchblock')
+        searchblock.style.display = 'inline-block';
+        const searchline = document.getElementById('searchline')
+        searchline.style.display = 'none';
 
         loading.innerHTML = ``
 
@@ -55,7 +68,8 @@ window.modalAddFile = modalAddFile
 async function modalAddFile(event) {
     try {
         event.preventDefault()
-
+        const btn = event.currentTarget
+        const search = btn.getAttribute("data-search")
         let loading = document.querySelector('[data-loading]')
         let modal = document.querySelector('[data-modal]')
         loading.innerHTML = `
@@ -64,7 +78,7 @@ async function modalAddFile(event) {
     </div>
     `
         modal.innerHTML = ''
-        modal.appendChild(ViewFile.modal())
+        modal.appendChild(ViewFile.modal(search))
 
         $('#modaladdfile').modal('show')
 
@@ -80,7 +94,8 @@ window.modalAddOffice = modalAddOffice
 async function modalAddOffice(event) {
     try {
         event.preventDefault()
-
+        const btn = event.currentTarget
+        const search = btn.getAttribute("data-search")
         let loading = document.querySelector('[data-loading]')
         let modal = document.querySelector('[data-modal]')
         loading.innerHTML = `
@@ -89,7 +104,7 @@ async function modalAddOffice(event) {
     </div>
     `
         modal.innerHTML = ''
-        modal.appendChild(ViewFile.addoffice())
+        modal.appendChild(ViewFile.addoffice(search))
 
         $('#modaladdoffice').modal('show')
 
@@ -107,10 +122,13 @@ async function modalsearch(event) {
     try {
         event.preventDefault()
 
+        const btn = event.currentTarget
+        const search = btn.getAttribute("data-search")
+
         let modal = document.querySelector('[data-modal]')
 
         modal.innerHTML = ''
-        ViewFile.search(modal)
+        ViewFile.search(modal, search)
 
         $('#modalsearch').modal('show')
 
@@ -134,106 +152,217 @@ async function searchfile(event) {
     </div>
     `
     try {
-        const filecontent = document.getElementById('filecontent')
+
         const btn = event.currentTarget
         const title = btn.form.title.value
         const type = btn.form.type.value
+        const search = btn.getAttribute("data-search")
 
-        filecontent.innerHTML = ``
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ""
 
         const file = {
             title: title,
             type: type
         }
 
+        $("#listline").attr("data-title", title);
+        $("#listline").attr("data-type", type);
+        $("#listblock").attr("data-title", title);
+        $("#listblock").attr("data-type", type);
+
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
         const data = await ServiceFile.listfile(file)
 
-        data.forEach(obj => {
+        if (search === '1') {
+            const filecontent = document.getElementById('filecontent')
+            filecontent.innerHTML = ``
 
-            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+            data.forEach(obj => {
 
-            switch (filetype) {
-                case "image":
-                    obj.fakename = obj.filename.replace(/ /g, "%20")
-                    filecontent.appendChild(ViewFile.file(obj))
+                const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
 
-                    break;
-                case "video":
-                    obj.fakename = '/img/video.png'
-                    filecontent.appendChild(ViewFile.file(obj))
+                switch (filetype) {
+                    case "image":
+                        obj.fakename = obj.filename.replace(/ /g, "%20")
+                        filecontent.appendChild(ViewFile.file(obj))
 
-                    break;
-                case "application":
-                    const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                        break;
+                    case "video":
+                        obj.fakename = '/img/video.png'
+                        filecontent.appendChild(ViewFile.file(obj))
+
+                        break;
+                    case "application":
+                        const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                        switch (typeapp) {
+                            case "pdf":
+                                obj.fakename = '/img/pdf.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                                obj.fakename = '/img/excel.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "vnd.ms-excel":
+                                obj.fakename = '/img/excel.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                                obj.fakename = '/img/powerpoint.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "vnd.ms-powerpoint":
+                                obj.fakename = '/img/powerpoint.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                                obj.fakename = '/img/word.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "msword":
+                                obj.fakename = '/img/word.png'
+                                filecontent.appendChild(ViewFile.file(obj))
+                                break
+
+                            case "excel":
+                                obj.fakename = '/img/excel.png'
+                                filecontent.appendChild(ViewFile.fileOffice(obj))
+                                break
+
+                            case "powerpoint":
+                                obj.fakename = '/img/powerpoint.png'
+                                filecontent.appendChild(ViewFile.fileOffice(obj))
+                                break
+
+                            case "word":
+                                obj.fakename = '/img/word.png'
+                                filecontent.appendChild(ViewFile.fileOffice(obj))
+                                break
+
+                            default:
+                                obj.fakename = '/img/doc.png'
+                                filecontent.appendChild(ViewFile.fileOffice(obj))
+                                break
+                        }
+
+                        break;
+                    case "text":
+                        obj.fakename = '/img/doc.png'
+                        filecontent.appendChild(ViewFile.file(obj))
+
+                        break;
+
+                }
+            })
+        } else {
+
+            let dtview = [];
+
+            data.forEach(obj => {
+
+                const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+                const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+
+                if (filetype === "application") {
                     switch (typeapp) {
-                        case "pdf":
-                            obj.fakename = '/img/pdf.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                            obj.fakename = '/img/excel.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "vnd.ms-excel":
-                            obj.fakename = '/img/excel.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "vnd.openxmlformats-officedocument.presentationml.slideshow":
-                            obj.fakename = '/img/powerpoint.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "vnd.ms-powerpoint":
-                            obj.fakename = '/img/powerpoint.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-                            obj.fakename = '/img/word.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
-                        case "msword":
-                            obj.fakename = '/img/word.png'
-                            filecontent.appendChild(ViewFile.file(obj))
-                            break
-
                         case "excel":
-                            obj.fakename = '/img/excel.png'
-                            filecontent.appendChild(ViewFile.fileOffice(obj))
-                            break
-
-                        case "powerpoint":
-                            obj.fakename = '/img/powerpoint.png'
-                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            obj.filename = obj.path
                             break
 
                         case "word":
-                            obj.fakename = '/img/word.png'
-                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            obj.filename = obj.path
                             break
 
-                        default:
-                            obj.fakename = '/img/doc.png'
-                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                        case "powerpoint":
+                            obj.filename = obj.path
                             break
                     }
+                }
 
-                    break;
-                case "text":
-                    obj.fakename = '/img/doc.png'
-                    filecontent.appendChild(ViewFile.file(obj))
+                const field = ViewFile.showTable(obj)
+                dtview.push(field)
+            });
 
-                    break;
-
+            if ($.fn.DataTable.isDataTable('#dataTable')) {
+                $('#dataTable').dataTable().fnClearTable();
+                $('#dataTable').dataTable().fnDestroy();
+                $('#dataTable').empty();
             }
-        })
+
+            let user = JSON.parse(sessionStorage.getItem('user'))
+
+            let perfil = user.perfil
+
+            if (perfil !== 1) {
+                $(document).ready(function () {
+                    $("#dataTable").DataTable({
+                        data: dtview,
+                        columns: [
+                            { title: "Opciones" },
+                            { title: "Título" },
+                            { title: "Descripción" },
+                            { title: "Tipo" },
+                            { title: "Tamaño" },
+                            { title: "Fecha de Registro" }
+                        ],
+                        paging: true,
+                        ordering: true,
+                        info: true,
+                        scrollY: false,
+                        scrollCollapse: true,
+                        scrollX: true,
+                        autoHeight: true,
+                        pagingType: "numbers",
+                        searchPanes: true,
+                        fixedHeader: false
+                    }
+                    )
+                })
+            } else {
+                $(document).ready(function () {
+                    $("#dataTable").DataTable({
+                        data: dtview,
+                        columns: [
+                            { title: "Opciones" },
+                            { title: "Título" },
+                            { title: "Descripción" },
+                            { title: "Tipo" },
+                            { title: "Tamaño" },
+                            { title: "Fecha de Registro" }
+                        ],
+                        paging: true,
+                        ordering: true,
+                        info: true,
+                        scrollY: false,
+                        scrollCollapse: true,
+                        scrollX: true,
+                        autoHeight: true,
+                        pagingType: "numbers",
+                        searchPanes: true,
+                        fixedHeader: false,
+                        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                            "<'row'<'col-sm-12'tr>>" +
+                            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                            "<'row'<'col-sm-12'B>>",
+                        buttons: [
+                            'copy', 'csv', 'excel', 'pdf', 'print'
+                        ]
+                    }
+                    )
+                })
+            }
+        }
+
+
 
         loading.innerHTML = ``
 
@@ -257,6 +386,7 @@ async function upload(event) {
     `
     try {
         const btn = event.currentTarget
+        const search = btn.getAttribute("data-search")
         const title = btn.form.title.value
         const description = btn.form.description.value
         const type = btn.form.type.value
@@ -271,77 +401,162 @@ async function upload(event) {
 
         const obj = await ServiceFile.upload(formData)
 
-        const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+        if (search === '1') {
+            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
 
-        switch (filetype) {
-            case "image":
-                obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
+            switch (filetype) {
+                case "image":
+                    obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
 
-                break;
-            case "video":
-                obj.fakename = '/img/video.png'
+                    break;
+                case "video":
+                    obj.fakename = '/img/video.png'
 
-                break;
-            case "application":
-                const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
-                switch (typeapp) {
-                    case "pdf":
-                        obj.fakename = '/img/pdf.png'
-                        break
+                    break;
+                case "application":
+                    const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                    switch (typeapp) {
+                        case "pdf":
+                            obj.fakename = '/img/pdf.png'
+                            break
 
-                    case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-                        obj.fakename = '/img/excel.png'
-                        break
+                        case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                            obj.fakename = '/img/excel.png'
+                            break
 
-                    case "vnd.ms-excel":
-                        obj.fakename = '/img/excel.png'
-                        break
+                        case "vnd.ms-excel":
+                            obj.fakename = '/img/excel.png'
+                            break
 
-                    case "vnd.openxmlformats-officedocument.presentationml.slideshow":
-                        obj.fakename = '/img/powerpoint.png'
-                        break
+                        case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                            obj.fakename = '/img/powerpoint.png'
+                            break
 
-                    case "vnd.ms-powerpoint":
-                        obj.fakename = '/img/powerpoint.png'
-                        break
+                        case "vnd.ms-powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            break
 
-                    case "vnd.openxmlformats-officedocument.wordprocessingml.document":
-                        obj.fakename = '/img/word.png'
-                        break
+                        case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                            obj.fakename = '/img/word.png'
+                            break
 
-                    case "msword":
-                        obj.fakename = '/img/word.png'
-                        break
+                        case "msword":
+                            obj.fakename = '/img/word.png'
+                            break
 
-                    case "excel":
-                        obj.fakename = '/img/excel.png'
-                        break
+                        case "excel":
+                            obj.fakename = '/img/excel.png'
+                            break
 
-                    case "powerpoint":
-                        obj.fakename = '/img/powerpoint.png'
-                        break
+                        case "powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            break
 
-                    case "word":
-                        obj.fakename = '/img/word.png'
-                        break
+                        case "word":
+                            obj.fakename = '/img/word.png'
+                            break
 
-                    default:
-                        obj.fakename = '/img/doc.png'
+                        default:
+                            obj.fakename = '/img/doc.png'
 
-                        break
-                }
+                            break
+                    }
 
-                break;
-            case "text":
-                obj.fakename = '/img/doc.png'
+                    break;
+                case "text":
+                    obj.fakename = '/img/doc.png'
 
-                break;
+                    break;
 
+            }
+
+            const filecontent = document.getElementById('filecontent')
+
+            filecontent.appendChild(ViewFile.fileUpload(obj))
+        } else {
+            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+            switch (filetype) {
+                case "image":
+                    obj.fakename = `uploads/${obj.filename.replace(/ /g, "%20")}`
+
+                    break;
+                case "video":
+                    obj.fakename = '/img/video.png'
+
+                    break;
+                case "application":
+                    const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                    switch (typeapp) {
+                        case "pdf":
+                            obj.fakename = '/img/pdf.png'
+                            break
+
+                        case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                            obj.fakename = '/img/excel.png'
+                            break
+
+                        case "vnd.ms-excel":
+                            obj.fakename = '/img/excel.png'
+                            break
+
+                        case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                            obj.fakename = '/img/powerpoint.png'
+                            break
+
+                        case "vnd.ms-powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            break
+
+                        case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                            obj.fakename = '/img/word.png'
+                            break
+
+                        case "msword":
+                            obj.filename = obj.path
+                            obj.fakename = '/img/word.png'
+                            break
+
+                        case "excel":
+                            obj.filename = obj.path
+                            obj.fakename = '/img/excel.png'
+                            break
+
+                        case "powerpoint":
+                            obj.filename = obj.path
+                            obj.fakename = '/img/powerpoint.png'
+                            break
+
+                        case "word":
+                            obj.filename = obj.path
+                            obj.fakename = '/img/word.png'
+                            break
+
+                        default:
+                            obj.fakename = '/img/doc.png'
+
+                            break
+                    }
+
+                    break;
+                case "text":
+                    obj.fakename = '/img/doc.png'
+
+                    break;
+
+            }
+
+            const row = ViewFile.showTable(obj)
+
+            const table = $('#dataTable').DataTable();
+
+            const rowNode = table.row.add(row)
+                .draw()
+                .node();
+
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
         }
-
-        const filecontent = document.getElementById('filecontent')
-
-        filecontent.appendChild(ViewFile.fileUpload(obj))
 
         loading.innerHTML = ``
     } catch (error) {
@@ -364,6 +579,7 @@ async function uploadoffice(event) {
     `
     try {
         const btn = event.currentTarget
+        const search = btn.getAttribute("data-search")
 
         const data = {
             title: btn.form.title.value,
@@ -374,32 +590,70 @@ async function uploadoffice(event) {
         }
 
         const obj = await ServiceFile.uploadoffice(data)
-
         const filetype = data.mimetype.substring(obj.mimetype.indexOf("/") + 1)
 
-        switch (filetype) {
-            case "powerpoint":
-                obj.fakename = '/img/powerpoint.png'
+        if (search === '1') {
 
-                break;
-            case "excel":
-                obj.fakename = '/img/excel.png'
+            switch (filetype) {
+                case "powerpoint":
+                    obj.fakename = '/img/powerpoint.png'
 
-                break;
-            case "word":
-                obj.fakename = '/img/word.png'
+                    break;
+                case "excel":
+                    obj.fakename = '/img/excel.png'
 
-                break;
-            default:
-                obj.fakename = '/img/doc.png'
+                    break;
+                case "word":
+                    obj.fakename = '/img/word.png'
 
-                break;
+                    break;
+                default:
+                    obj.fakename = '/img/doc.png'
+
+                    break;
+            }
+
+            const filecontent = document.getElementById('filecontent')
+
+            filecontent.appendChild(ViewFile.fileOffice(obj))
+        } else {
+
+            if (filetype === "application") {
+                switch (typeapp) {
+                    case "excel":
+                        obj.filename = obj.path
+                        obj.fakename = '/img/excel.png'
+                        break
+
+                    case "word":
+                        obj.filename = obj.path
+                        obj.fakename = '/img/word.png'
+                        break
+
+                    case "powerpoint":
+                        obj.filename = obj.path
+                        obj.fakename = '/img/powerpoint.png'
+                        break
+
+                    default:
+                        obj.fakename = '/img/doc.png'
+
+                        break;
+                }
+            }
+
+            const row = ViewFile.showTable(obj)
+
+            const table = $('#dataTable').DataTable();
+
+            const rowNode = table.row.add(row)
+                .draw()
+                .node();
+
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
         }
-
-        const filecontent = document.getElementById('filecontent')
-
-        filecontent.appendChild(ViewFile.fileOffice(obj))
-
         loading.innerHTML = ``
     } catch (error) {
         alert(error)
@@ -498,6 +752,8 @@ async function downloadFile(event) {
         link.href = src;
         link.click();
 
+        ServiceHistory.insertHistory(`Descarga del archivo - ${filename}`)
+
         loading.innerHTML = ``
     } catch (error) {
 
@@ -587,23 +843,193 @@ async function modalfile(event) {
     }
 }
 
-window.listline = listline
+window.listLine = listLine
 
-async function listline(event) {
+async function listLine(event) {
     event.preventDefault()
-    $('#modalsearch').modal('hide')
 
-    let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
     try {
-        const filecontent = document.getElementById('filecontent')
+
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ""
         const btn = event.currentTarget
-        const title = btn.form.title.value
-        const type = btn.form.type.value
+        const title = btn.getAttribute("data-title")
+        const type = btn.getAttribute("data-type")
+        let powerbi = document.querySelector('[data-powerbi]')
+
+        const btnline = document.getElementById('listline')
+        btnline.style.display = 'none';
+        const btnblock = document.getElementById('listblock')
+        btnblock.style.display = 'inline-block';
+
+        const searchline = document.getElementById('searchline')
+        searchline.style.display = 'inline-block';
+        const searchblock = document.getElementById('searchblock')
+        searchblock.style.display = 'none';
+
+        $("#btnaddfile").attr("data-search", 2);
+        $("#btnaddoffice").attr("data-search", 2);
+
+        powerbi.innerHTML = " "
+
+        const file = {
+            title: title,
+            type: type
+        }
+
+        if (file.type === "") file.type = "Todas"
+        if (file.title === "") file.title = "Todas"
+
+        const data = await ServiceFile.listfile(file)
+
+        let dtview = [];
+
+        data.forEach(obj => {
+
+            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+            const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+
+            if (filetype === "application") {
+                switch (typeapp) {
+                    case "excel":
+                        obj.filename = obj.path
+                        break
+
+                    case "word":
+                        obj.filename = obj.path
+                        break
+
+                    case "powerpoint":
+                        obj.filename = obj.path
+                        break
+                }
+            }
+
+            const field = ViewFile.showTable(obj)
+            dtview.push(field)
+        });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        let user = JSON.parse(sessionStorage.getItem('user'))
+
+        let perfil = user.perfil
+
+        if (perfil !== 1) {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Título" },
+                        { title: "Descripción" },
+                        { title: "Tipo" },
+                        { title: "Tamaño" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false
+                }
+                )
+            })
+        } else {
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Título" },
+                        { title: "Descripción" },
+                        { title: "Tipo" },
+                        { title: "Tamaño" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
+    } catch (error) {
+        alert(error)
+    }
+}
+
+
+window.listblock = listblock
+
+async function listblock(event) {
+    event.preventDefault()
+
+    try {
+
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ""
+        const btn = event.currentTarget
+        const title = btn.getAttribute("data-title")
+        const type = btn.getAttribute("data-type")
+        let powerbi = document.querySelector('[data-powerbi]')
+
+        const btnblock = document.getElementById('listblock')
+        btnblock.style.display = 'none';
+        const btnline = document.getElementById('listline')
+        btnline.style.display = 'inline-block';
+
+        const searchblock = document.getElementById('searchblock')
+        searchblock.style.display = 'inline-block';
+        const searchline = document.getElementById('searchline')
+        searchline.style.display = 'none';
+
+        $("#btnaddfile").attr("data-search", 1);
+        $("#btnaddoffice").attr("data-search", 1);
+
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        powerbi.innerHTML = ` 
+        <div class="col-md-12">
+        <div class="card shadow mb-3 responsive" >
+            <div class="card-header"><strong>Repositorio</strong></div>
+                            <div class="card-body">
+                                    <div id="filecontent" class="form-row col-md-12">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>`
+
+        const filecontent = document.getElementById('filecontent')
 
         filecontent.innerHTML = ``
 
@@ -617,43 +1043,90 @@ async function listline(event) {
 
         const data = await ServiceFile.listfile(file)
 
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                destroy: true,
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Perfil" },
-                    { title: "E-mail Organização" },
-                    { title: "Fecha de Nacimiento" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
+        data.forEach(obj => {
+
+            const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
+
+            switch (filetype) {
+                case "image":
+                    obj.fakename = obj.filename.replace(/ /g, "%20")
+                    filecontent.appendChild(ViewFile.file(obj))
+
+                    break;
+                case "video":
+                    obj.fakename = '/img/video.png'
+                    filecontent.appendChild(ViewFile.file(obj))
+
+                    break;
+                case "application":
+                    const typeapp = obj.mimetype.substring(obj.mimetype.indexOf("/") + 1)
+                    switch (typeapp) {
+                        case "pdf":
+                            obj.fakename = '/img/pdf.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.ms-excel":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.presentationml.slideshow":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.ms-powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "vnd.openxmlformats-officedocument.wordprocessingml.document":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "msword":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.file(obj))
+                            break
+
+                        case "excel":
+                            obj.fakename = '/img/excel.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        case "powerpoint":
+                            obj.fakename = '/img/powerpoint.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        case "word":
+                            obj.fakename = '/img/word.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+
+                        default:
+                            obj.fakename = '/img/doc.png'
+                            filecontent.appendChild(ViewFile.fileOffice(obj))
+                            break
+                    }
+
+                    break;
+                case "text":
+                    obj.fakename = '/img/doc.png'
+                    filecontent.appendChild(ViewFile.file(obj))
+
+                    break;
+
             }
-            )
         })
-
-        loading.innerHTML = ``
-
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
     }
 }

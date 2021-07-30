@@ -80,7 +80,21 @@ class File {
             }
 
             History.insertHistory(history, id_login)
-            return Repositorie.list(file)
+            const data = await Repositorie.list(file)
+
+            data.forEach(obj => {
+                if(/\s/.test(obj.filename)){
+                    obj.filename = obj.filename.replace(/ /g, "%20")
+                }
+
+                if(!obj.size){
+                    obj.size = 'WEB'
+                } else{
+                    obj.size = `${(obj.size / 1024 / 1024).toFixed(2)} Mb`
+                }
+            })
+            
+            return data
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los archivos.')
         }

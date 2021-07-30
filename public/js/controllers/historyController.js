@@ -21,7 +21,6 @@ btn.addEventListener('click', async (event) => {
 
         title.innerHTML = "Historial"
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
         const data = await ServiceHistory.listHistory()
         var dtview = data.map(doc => Object.values(doc));
 
@@ -92,9 +91,9 @@ btn.addEventListener('click', async (event) => {
         }
         );
     }
-
+    loading.innerHTML = ``
     } catch (error) {
-
+        loading.innerHTML = ``
     }
 })
 

@@ -79,7 +79,7 @@ const listPrice =  async (search) => {
     throw new Error('error')
 }
 
-const listModal =  async () => {
+const listModal =  async () => { 
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     const data = await fetch(`${protocol}//${url}/stockandgroup` , {
@@ -95,7 +95,23 @@ const listModal =  async () => {
     throw new Error('error')
 }
 
-const listStocks =  async (artcode) => {
+const listStockByUser =  async () => { 
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    const data = await fetch(`${protocol}//${url}/stockuser` , {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        },
+    })
+
+    if (data.ok) {
+        return data.json()
+    }
+    throw new Error('error')
+}
+
+const listStocks =  async (artcode) => { 
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     const data = await fetch(`${protocol}//${url}/stockbyitem/${artcode}` , {
@@ -111,11 +127,13 @@ const listStocks =  async (artcode) => {
     throw new Error('error')
 }
 
+
 export const ServiceItem = {
     listItems,
     listModal,
     listStocks,
     listPrice,
     listGoodyear,
-    listItemsComplete
+    listItemsComplete,
+    listStockByUser
 }

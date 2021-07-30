@@ -1,9 +1,13 @@
 import { View } from "../views/userView.js"
+import { ViewStock } from "../views/stockView.js"
 import { Service } from "../services/userService.js"
+import { ServicePowerbi } from "../services/powerbiService.js"
+import { ServiceStock } from "../services/stockService.js"
 
 const btn = document.querySelector('[data-btn-users]')
 const create = document.querySelector('[data-btn-create]')
 const cardHistory = document.querySelector('[data-card]')
+const btnperfil = document.querySelector('[data-perfil]')
 
 create.addEventListener('click', async (event) => {
     event.preventDefault()
@@ -21,7 +25,7 @@ create.addEventListener('click', async (event) => {
             $('#dataTable').dataTable().fnDestroy();
             $('#dataTable').empty();
         }
-        
+
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
@@ -71,7 +75,6 @@ btn.addEventListener('click', async (event) => {
 
 
         const data = await Service.listUsers()
-        const offices = await Service.listOffice()
         let dtview = [];
 
         data.forEach(user => {
@@ -115,55 +118,40 @@ btn.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                destroy: true,
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Perfil" },
-                    { title: "E-mail Organização" },
-                    { title: "Fecha de Nacimiento" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    destroy: true,
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
-        modal.appendChild(View.showModalInsert())
-        modal.appendChild(View.showModalDelete())
-        modal.appendChild(View.showModalEdit())
-        modal.appendChild(View.showModalPbiInsert())
-
-        const divofficeedit = document.getElementById('officeedit')
-        const divofficeinsert = document.getElementById('officeinsert')
-
-        offices.forEach(office => {
-            divofficeedit.appendChild(View.listOffice(office))
-        });
-
-        offices.forEach(office => {
-            divofficeinsert.appendChild(View.listOffice(office))
-        });
         loading.innerHTML = " "
 
     } catch (error) {
@@ -171,23 +159,6 @@ btn.addEventListener('click', async (event) => {
         alert('Algo salió mal, informa al sector de TI!')
     }
 })
-
-
-window.addModalPowerBi = addModalPowerBi
-
-async function addModalPowerBi(event) {
-    event.preventDefault()
-
-    try {
-        const btn = event.currentTarget
-        const id_login = btn.getAttribute("data-id_login")
-        $("#idinsertnewbi").attr("data-id_login", id_login)
-    } catch (error) {
-
-    }
-}
-
-
 
 
 window.editUser = editUser
@@ -228,7 +199,7 @@ async function editUser(event) {
         await Service.updateUser(user, id_user)
 
         loading.innerHTML = " "
-        listUsersFunction()
+        listUsersFunction(id_login)
         alert('Usuario actualizado con éxito!')
     } catch (error) {
         loading.innerHTML = " "
@@ -239,8 +210,13 @@ async function editUser(event) {
 window.modalEditUser = modalEditUser
 
 async function modalEditUser(event) {
-
+    event.preventDefault()
     try {
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ``
+
+        modal.appendChild(View.showModalEdit())
+
         const btn = event.currentTarget
         const id_user = btn.getAttribute("data-id_user")
         const id_login = btn.getAttribute("data-id_login")
@@ -252,7 +228,6 @@ async function modalEditUser(event) {
         const mailenterprise = btn.getAttribute("data-mailenterprise")
 
 
-
         $("#iddbtnedituser").attr("data-id_user", id_user);
         $("#iddbtnedituser").attr("data-id_login", id_login);
         $("#nameedit").val(name);
@@ -262,6 +237,13 @@ async function modalEditUser(event) {
         $("#mailedit").val(mail);
         $("#mailenterpriseedit").val(mailenterprise);
 
+        const data = await Service.listOffice()
+        const divofficeedit = document.getElementById('officeedit')
+        data.forEach(obj => {
+            divofficeedit.appendChild(View.listOffice(obj))
+        });
+
+        $('#edituser').modal('show')
     } catch (error) {
         $('#edituser').modal('hide')
     }
@@ -283,11 +265,12 @@ async function deleteUser(event) {
 
         const form = event.currentTarget
         const id_user = form.getAttribute("data-id_user")
+        const id_login = form.getAttribute("data-id_login")
 
         await Service.deleteUser(id_user)
 
         loading.innerHTML = " "
-        listUsersFunction()
+        await listUsers()
         alert('Usuario discapacitado con éxito!')
     } catch (error) {
         loading.innerHTML = " "
@@ -301,13 +284,20 @@ async function deleteUser(event) {
 window.modalDeleteUser = modalDeleteUser
 
 async function modalDeleteUser(event) {
-
+    event.preventDefault()
     try {
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = ``
+
+        modal.appendChild(View.showModalDelete())
 
         const btn = event.currentTarget
-        const id = btn.getAttribute("data-id")
-        $("#iddbtndeleteuser").attr("data-id_user", id);
+        const id_user = btn.getAttribute("data-id_user")
+        const id_login = btn.getAttribute("data-id_login")
 
+        $("#iddbtndeleteuser").attr("data-id_user", id_user);
+        $("#iddbtndeleteuser").attr("data-id_login", id_login);
+        $('#deleteuser').modal('show')
     } catch (error) {
     }
 }
@@ -322,8 +312,9 @@ async function modalChangePass(event) {
 
         const btn = event.currentTarget
         const name = btn.getAttribute("data-name")
+        const id_login = btn.getAttribute("data-id_login")
 
-        modal.appendChild(View.showModalChangePass(name))
+        modal.appendChild(View.showModalChangePass(name, id_login))
         $('#changepass').modal('show')
     } catch (error) {
     }
@@ -345,12 +336,16 @@ async function changePassword(event) {
     try {
 
         const btn = event.currentTarget
+        const id_login = btn.getAttribute("data-id_login")
+        const name = btn.getAttribute("data-name")
         const password = btn.form.password.value
         const passwordconf = btn.form.passwordconf.value
 
         const user = {
             password: password,
-            passwordconf: passwordconf
+            passwordconf: passwordconf,
+            id_login: id_login,
+            name: name
         }
 
         const data = await Service.changePassword(user)
@@ -375,7 +370,6 @@ async function createUser(event) {
     `
 
     try {
-        const body = document.querySelector('[data-table-body]')
         const btn = event.currentTarget
         const name = btn['name'].value
         const dateBirthday = btn['dateBirthday'].value
@@ -430,7 +424,6 @@ async function listUsers() {
 
 
         const data = await Service.listUsers()
-        const offices = await Service.listOffice()
         let dtview = [];
 
         data.forEach(user => {
@@ -474,56 +467,40 @@ async function listUsers() {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                destroy: true,
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Perfil" },
-                    { title: "E-mail Organização" },
-                    { title: "Fecha de Nacimiento" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    destroy: true,
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
 
-
-        modal.appendChild(View.showModalInsert())
-        modal.appendChild(View.showModalDelete())
-        modal.appendChild(View.showModalEdit())
-        modal.appendChild(View.showModalPbiInsert())
-
-        const divofficeedit = document.getElementById('officeedit')
-        const divofficeinsert = document.getElementById('officeinsert')
-
-        offices.forEach(office => {
-            divofficeedit.appendChild(View.listOffice(office))
-        });
-
-        offices.forEach(office => {
-            divofficeinsert.appendChild(View.listOffice(office))
-        });
         loading.innerHTML = " "
         alert('Usuario agregado con éxito!')
     } catch (error) {
@@ -533,8 +510,224 @@ async function listUsers() {
 }
 
 
-async function listUsersFunction() {
+async function listUsersFunction(id_login) {
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
 
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
+            $('#powerbiuserlist').dataTable().fnClearTable();
+            $('#powerbiuserlist').dataTable().fnDestroy();
+            $('#powerbiuserlist').empty();
+        }
+
+        if ($.fn.DataTable.isDataTable('#stock')) {
+            $('#stock').dataTable().fnClearTable();
+            $('#stock').dataTable().fnDestroy();
+            $('#stock').empty();
+        }
+
+        let powerbi = document.querySelector('[data-powerbi]')
+        let title = document.querySelector('[data-title]')
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = " "
+        title.innerHTML = " "
+
+        const user = await Service.viewUser(id_login)
+
+        powerbi.innerHTML = View.viewUser(user)
+
+        const powerbis = await ServicePowerbi.listUser(id_login)
+
+        let dtview = [];
+
+        powerbis.forEach(obj => {
+            const field = View.listPowerBiAdmin(obj, id_login)
+            dtview.push(field)
+        });
+
+        $(document).ready(function () {
+            $("#powerbiuserlist").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: false,
+                ordering: true,
+                info: false,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: false,
+                fixedHeader: false,
+                searching: false
+            })
+        })
+
+        const stocks = await ServiceStock.list(id_login)
+
+        let dtstock = [];
+
+        stocks.forEach(obj => {
+            const fieldstock = ViewStock.listStock(obj, id_login)
+            dtstock.push(fieldstock)
+        });
+
+        $(document).ready(function () {
+            $("#stock").DataTable({
+                data: dtstock,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Depósito" }
+                ],
+                paging: false,
+                ordering: true,
+                info: false,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: false,
+                fixedHeader: false,
+                searching: false
+            })
+        })
+        loading.innerHTML = ``
+    } catch (error) {
+        loading.innerHTML = ``
+        alert(error)
+    }
+}
+
+window.viewUser = viewUser
+
+async function viewUser(event) {
+    event.preventDefault()
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+        let cardHistory = document.querySelector('[data-card]')
+        let powerbi = document.querySelector('[data-powerbi]')
+        let title = document.querySelector('[data-title]')
+        let modal = document.querySelector('[data-modal]')
+        modal.innerHTML = " "
+        title.innerHTML = " "
+        cardHistory.style.display = 'none';
+
+        const btn = event.currentTarget
+        const id_login = btn.getAttribute("data-id_login")
+
+        const user = await Service.viewUser(id_login)
+
+        powerbi.innerHTML = View.viewUser(user)
+
+        const powerbis = await ServicePowerbi.listUser(id_login)
+
+        let dtview = [];
+
+        powerbis.forEach(obj => {
+            const field = View.listPowerBiAdmin(obj, id_login)
+            dtview.push(field)
+        });
+
+        $(document).ready(function () {
+            $("#powerbiuserlist").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: false,
+                ordering: true,
+                info: false,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: false,
+                fixedHeader: false,
+                searching: false
+            })
+        })
+
+        const stocks = await ServiceStock.list(id_login)
+
+        let dtstock = [];
+
+        stocks.forEach(obj => {
+            const fieldstock = ViewStock.listStock(obj, id_login)
+            dtstock.push(fieldstock)
+        });
+
+        $(document).ready(function () {
+            $("#stock").DataTable({
+                data: dtstock,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Depósito" }
+                ],
+                paging: false,
+                ordering: true,
+                info: false,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: false,
+                fixedHeader: false,
+                searching: false
+            })
+        })
+        loading.innerHTML = ``
+    } catch (error) {
+        loading.innerHTML = ``
+        alert(error)
+    }
+}
+
+
+window.listUser = listUser
+
+async function listUser(event) {
+    event.preventDefault()
+
+    cardHistory.style.display = 'none';
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
@@ -547,7 +740,6 @@ async function listUsersFunction() {
 
 
         const data = await Service.listUsers()
-        const offices = await Service.listOffice()
         let dtview = [];
 
         data.forEach(user => {
@@ -591,57 +783,43 @@ async function listUsersFunction() {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                destroy: true,
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Perfil" },
-                    { title: "E-mail Organização" },
-                    { title: "Fecha de Nacimiento" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                    "<'row'<'col-sm-12'tr>>" +
-                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                    "<'row'<'col-sm-12'B>>",
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
-            }
-            )
-        })
-    }
-    
-        modal.appendChild(View.showModalInsert())
-        modal.appendChild(View.showModalDelete())
-        modal.appendChild(View.showModalEdit())
-        modal.appendChild(View.showModalPbiInsert())
-
-        const divofficeedit = document.getElementById('officeedit')
-        const divofficeinsert = document.getElementById('officeinsert')
-
-        offices.forEach(office => {
-            divofficeedit.appendChild(View.listOffice(office))
-        });
-
-        offices.forEach(office => {
-            divofficeinsert.appendChild(View.listOffice(office))
-        });
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    destroy: true,
+                    data: dtview,
+                    columns: [
+                        { title: "Opciones" },
+                        { title: "Nombre" },
+                        { title: "Perfil" },
+                        { title: "E-mail Organização" },
+                        { title: "Fecha de Nacimiento" },
+                        { title: "Fecha de Registro" }
+                    ],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
+            })
+        }
+        loading.innerHTML = " "
 
     } catch (error) {
-        alert(error)
+        loading.innerHTML = " "
+        alert('Algo salió mal, informa al sector de TI!')
     }
 }

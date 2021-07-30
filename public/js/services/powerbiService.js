@@ -70,10 +70,8 @@ const updateBi =  async (powerbi, id) => {
         })
     })
 
-    const result = await data.json()
-
-    if (result === true) {
-        return result
+    if (data.ok) {
+        return data
     }
     throw new Error('error')
 }
@@ -130,7 +128,7 @@ const listComplete =  async () => {
     throw new Error('error')
 }
 
-export const Service = {
+export const ServicePowerbi = {
     listBiUser,
     listUser,
     insertBi,

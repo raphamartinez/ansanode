@@ -17,13 +17,13 @@ module.exports = app => {
         }
     }) 
 
-    app.get('/user/:id', Middleware.bearer, async ( req, res, next) => {
+    app.get('/user/:id_login', Middleware.bearer, async ( req, res, next) => {
         try {
-            const id_user = req.params.id
+            const id_login = req.params.id_login
 
-            const user = await User.viewUser(id_user)
+            const user = await User.viewUserAdm(id_login)
 
-            History.insertHistory(`Visto el usuario ${user.name}.`, req.login.id_login)
+            History.insertHistory(`Visto el usuario ${user.name}.`, id_login)
 
             res.json(user)
         } catch (err) {
@@ -59,9 +59,9 @@ module.exports = app => {
         }
     })
 
-    app.delete('/user/:id', Middleware.bearer, async( req, res, next) => {
+    app.delete('/user/:id_user', Middleware.bearer, async( req, res, next) => {
         try {
-            const id_user = req.params.id
+            const id_user = req.params.id_user
             await User.deleteStatus(id_user)
 
             res.json()

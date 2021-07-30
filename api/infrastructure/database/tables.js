@@ -40,7 +40,7 @@ class Tables {
   }
 
   createTableStock(){
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.stock (id_stock int NOT NULL AUTO_INCREMENT, name VARCHAR (100), PRIMARY KEY (id_stock))`
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.stock (id_stock int NOT NULL AUTO_INCREMENT, name VARCHAR (100), id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_stock))`
 
     this.connection.query(sql, (error) => {
       if (error) {

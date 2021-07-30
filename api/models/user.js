@@ -132,6 +132,51 @@ class User {
     async viewUser(id_user) {
         try {
             const user = await Repositorie.view(id_user)
+
+            return user
+        } catch (error) {
+            throw new NotFound('Usuario.')
+        }
+    }
+
+    async viewUserAdm(id_login) {
+        try {
+            const user = await Repositorie.viewAdm(id_login)
+
+            switch (user.perfil) {
+                case 1: user.perfilDesc = "Admin"
+                    break
+
+                case 2: user.perfilDesc = "Vendedor"
+                    break
+
+                case 3: user.perfilDesc = "Depositero"
+                    break
+
+                case 4: user.perfilDesc = "Gerente"
+                    break
+
+                case 5: user.perfilDesc = "Personal administrativo"
+                    break
+
+                default: user.perfilDesc = "Usuario"
+                    break
+            }
+
+            if (!user.mailenterprise) {
+                user.mailenterpriseDesc = "No informado" 
+                user.mailenterprise = " "
+            } else{
+                user.mailenterpriseDesc = user.mailenterprise
+            }
+            if(user.dateBirthday === '00/00/0000'){
+                user.dateBirthdayDesc = "No informado"
+                user.dateBirthday = " "
+            } else{
+                user.dateBirthdayDesc = user.dateBirthday
+            }
+
+            
             return user
         } catch (error) {
             throw new NotFound('Usuario.')

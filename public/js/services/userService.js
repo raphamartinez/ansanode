@@ -95,26 +95,22 @@ const deleteUser =  async (id_user) => {
         }
     })
 
-    const result = await data.json()
-
-    if (result === true) {
-        return result
+    if (data.ok) {
+        return true
     }
+
     throw new Error('error')
 }
 
 const viewUser =  async (id_user) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
-    const data = await fetch(`${protocol}//${url}/user` , {
+    const data = await fetch(`${protocol}//${url}/user/${id_user}` , {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
-            id_user: id_user
-        })
+        }
     })
 
     if (data.ok) {

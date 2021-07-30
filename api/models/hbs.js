@@ -157,7 +157,7 @@ class Hbs {
                     const date1 = new Date(obj.DateSql)
                     const date2 = new Date(lastInsert)
 
-                    if(date1.getTime() > date2.getTime()) {
+                    if (date1.getTime() > date2.getTime()) {
 
                         delete obj.DateSql
 
@@ -175,10 +175,36 @@ class Hbs {
         try {
             let history = `Listado de Artículos `
 
-            if (search.artcode) history += `- Cod: ${search.artcode} `
+            if (search.stock[0].length <= 2) {
+                const data = await Repositorie.listStocks(id_login)
+                let resultArray = data.map(v => Object.assign({}, v));
+     
+                let stocks = resultArray.map(function (text) {
+                    return `'${text['StockDepo']}'`;
+                });
+                
+                search.stock = stocks
+            }
+            history += `- Deposito: ${search.stock}.`
+
+            if (!search.artcode) {
+
+                const dataitem = await Repositorie.listItemsComplete(search.stock)
+
+                let resultArrayitem = dataitem.map(v => Object.assign({}, v));
+     
+                let items = resultArrayitem.map(function (text) {
+                    return `'${text['ArtCode']}'`;
+                });
+
+                search.artcode = items
+
+            }
+            history += `- Cod: ${search.artcode} `
+
             if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
             if (search.itemname) history += `- Nombre: '${search.itemname}' `
-            if (search.stock != "''") history += `- Deposito: ${search.stock}.`
+
 
             History.insertHistory(history, id_login)
 
@@ -194,9 +220,17 @@ class Hbs {
         }
     }
 
-    listItemsComplete() {
+    async listItemsComplete(id_login) {
         try {
-            return Repositorie.listItemsComplete()
+            const data = await Repositorie.listStocks(id_login)
+
+            var resultArray = data.map(v => Object.assign({}, v));
+
+            var stocks = resultArray.map(function (text) {
+                return `'${text['StockDepo']}'`;
+            });
+
+            return Repositorie.listItemsComplete(stocks)
         } catch (error) {
             throw new InternalServerError('Error')
         }
@@ -253,14 +287,47 @@ class Hbs {
 
     async listStockandGroup() {
         try {
-            const stocks = await Repositorie.listStocks()
+            const data = await Repositorie.listStocksHbs()
+
+            var resultArray = data.map(v => Object.assign({}, v));
+
+            var stocks = resultArray.map(function (text) {
+                return `'${text['StockDepo']}'`;
+            });
+
             const groups = await Repositorie.listItemGroup(stocks)
             const fields = {
-                stocks,
+                stocks: data,
                 groups
             }
 
             return fields
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
+    async listStockbyUser(id_login) {
+        try {
+            const data = await Repositorie.listStocks(id_login)
+
+            var resultArray = data.map(v => Object.assign({}, v));
+
+            var stocks = resultArray.map(function (text) {
+                return `'${text['StockDepo']}'`;
+            });
+
+            if (stocks.length > 0) {
+                const groups = await Repositorie.listItemGroup(stocks)
+                const fields = {
+                    stocks: data,
+                    groups
+                }
+
+                return fields
+            }
+
+            return false
         } catch (error) {
             throw new InternalServerError('Error')
         }

@@ -54,6 +54,17 @@ class User {
         }
     }
 
+    async viewAdm(id_login) {
+        try {
+            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, US.id_office, OFI.name as office, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US, ansa.office OFI WHERE 
+            US.id_login = LO.id_login and OFI.id_office = US.id_office and LO.id_login = ${id_login}`
+            const result = await query(sql)
+            return result[0]
+        } catch (error) {
+            throw new NotFound('Error en la vista previa del usuario')
+        }
+    }
+
     list() {
         try {
             const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, US.id_office, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg 

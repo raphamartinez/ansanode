@@ -1,70 +1,16 @@
 
 const showTable = (user) => {
     const content = [
-    `<a onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href="" data-id_login="${user.id_login}" data-name="${user.name}"><i class="fas fa-plus" style="color:#32CD32;"></i></a>
-    <a onclick="listBiUser(event)" href="" data-id="${user.id_login}" data-name="${user.name}"><i class="fas fa-file-powerpoint" style="color:#666600;"></i></a>
-    <a data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)" href="" data-id_login="${user.id_login}" data-id_user="${user.id_user}" data-name="${user.name}" data-dateBirthday="${user.dateBirthdayDesc}" data-perfil="${user.perfil}" data-office="${user.id_office}" data-mail="${user.mail}" data-mail="${user.password}" data-mailenterprise="${user.mailenterprise}"><i class="fas fa-edit" style="color:#3498DB;"></i></a>
-    <a data-toggle="modal" data-target="#deleteuser" onclick="modalDeleteUser(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
-    <a data-toggle="modal" data-target="#changepass" onclick="modalChangePass(event)" href="" data-id="${user.id_user}" data-name="${user.name}"><i class="fas fa-key" style="color:#DAA520;"></i></a>
-    `,
-    `${user.name}`,
-    `${user.perfilDesc}`,
-    `${user.mailenterprise}`,
-    `${user.dateBirthday}`,
-    `${user.dateReg}`
-]
+        `<a onclick="viewUser(event)" href="" data-id_login="${user.id_login}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
+        `${user.name}`,
+        `${user.perfilDesc}`,
+        `${user.mailenterprise}`,
+        `${user.dateBirthday}`,
+        `${user.dateReg}`
+    ]
 
     return content
 }
-
-const showModalPbiInsert = () => {
-    const div = document.createElement('div')
-
-    const content = `
-<div class="modal fade" id="addpowerbi" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Agregar informe</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-            </button>
-        </div>
-        <form>
-            <div class="modal-body">
-                <div class="form-row">      
-                <div class="form-group col-md-6">
-                        <input type="text" placeholder="Título" class="form-control" name="title" id="title" required>
-                        </div>  
-                        <div class="form-group col-md-6">
-                    <select class="selectpicker form-control" name="type" id="type" required>
-                    <option value="" disabled selected>Tipo</option>
-                    <option value="1" >Informe</option>
-                    <option value="2">Personal</option>
-                    <option value="3">Seguridad - Vehículos</option>
-                    <option value="4">Seguridad - Sucursales</option>
-                </select>
-                </div>  
-                <div class="form-group col-md-12">
-                <input type="text" placeholder="Url" class="form-control" name="url" id="url" required>
-                </div> 
-                </div> 
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                <button type="submit" name="btn" id="idinsertnewbi" class="btn btn-success" onclick="addPowerBi(event)"><i class="fas fa-check"> Confirmar</i></button>   
-            </div>
-        </form>
-    </div>
-</div>
-</div>
-
-`
-    div.innerHTML = content
-
-    return div
-}
-
-
 
 
 const showModalInsert = () => {
@@ -126,7 +72,7 @@ const showModalInsert = () => {
     return div
 }
 
-const showModalEdit= () => {
+const showModalEdit = () => {
     const div = document.createElement('div')
 
     const content = `
@@ -221,7 +167,7 @@ const showModalDelete = () => {
     return div
 }
 
-const showModalChangePass= (name) => {
+const showModalChangePass = (name, id_login) => {
     const div = document.createElement('div')
 
     const content = `
@@ -261,7 +207,7 @@ const showModalChangePass= (name) => {
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                <button disabled type="submit" name="btn" onclick="changePassword(event)" class="btn btn-success" ><i class="fas fa-key"> Confirmar</i></button>   
+                <button disabled type="submit" data-name="${name}" data-id_login="${id_login}" name="btn" onclick="changePassword(event)" class="btn btn-success" ><i class="fas fa-key"> Confirmar</i></button>   
             </div>
         </form>
     </div>
@@ -355,14 +301,148 @@ const createUser = () => {
     return line
 }
 
+
+const viewUser = (user) => {
+
+
+    const content =
+        `
+        <div class="container col-md-12 text-center">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-6 text-left">
+            <button onclick="listUser(event)" type="button" class="btn btn-secondary">
+                <i class="fas fa-chevron-left"></i> Volver a la lista
+            </button>
+
+        </div>
+        <div class="col-md-6 text-right">
+            <div class="btn-group" role="group">
+                <button id="btnGroupDrop1" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    Opções
+                </button>
+                <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+                    <a class="dropdown-item" data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)"
+                        href="" data-id_login="${user.id_login}" data-id_user="${user.id_user}" data-name="${user.name}"
+                        data-dateBirthday="${user.dateBirthdayDesc}" data-perfil="${user.perfil}"
+                        data-office="${user.id_office}" data-mail="${user.mail}"
+                        data-mailenterprise="${user.mailenterprise}"> <i class="fas fa-edit" style="color:#3498DB;"></i>
+                        Editar usuario</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#deleteuser"
+                        onclick="modalDeleteUser(event)" href="" data-id_user="${user.id_user}" data-id_login="${user.id_login}" data-name="${user.name}"><i
+                            class="fas fa-trash" style="color:#CC0000;"></i> Deshabilitar usuario</a>
+                    <a class="dropdown-item" data-toggle="modal" data-target="#changepass"
+                        onclick="modalChangePass(event)" href="" data-id_user="${user.id_user}" data-id_login="${user.id_login}" data-name="${user.name}"><i
+                            class="fas fa-key" style="color:#DAA520;"></i> Editar contraseña</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 p-4 text-center">
+            <div class="picture-container p-4">
+                <div class="picture">
+                    <a data-toggle="modal" data-target="#janelaImagem">
+                        <i class="fas fa-user fa-4x text-gray-400 float-center"></i>
+                    </a>
+                </div>
+            </div>
+            <h4>${user.name}</h4>
+        </div>
+
+        <div class="col-md-12 p-3">
+            <div class="card shadow mb-2">
+                <div class="card-header text-white bg-secondary"><strong>Dados:</strong></div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label for="tel"><strong>Acceso: </strong>${user.mail}</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="dtnascimento"><strong>E-mail Organização:
+                                </strong>${user.mailenterpriseDesc}</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="Sexo"><strong>Fecha de Nacimiento: </strong>${user.dateBirthdayDesc}</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="Sexo"><strong>Fecha de Registro: </strong>${user.dateReg}</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="tel"><strong>Sucursal: </strong>${user.office}</label>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="tel"><strong>Perfil: </strong>${user.perfilDesc}</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 p-3 text-left">
+            <div class="card">
+                <div class="card-header text-white bg-secondary"><strong>Acceso a PowerBi:</strong></div>
+                <div class="form-row p-3">
+                    <div class="form-group col-md-1.5">
+                        <button onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
+                            data-id_login="${user.id_login}" data-name="${user.name}" type="button"
+                            class="btn btn-success">
+                            <i class="fas fa-plus"></i> Nuevo Informe
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-bordered text-center" id="powerbiuserlist" width="100%" cellspacing="0"></table>
+        </div>
+        <div class="col-md-6 p-3 text-right">
+            <div class="card">
+                <div class="card-header text-white text-left bg-secondary"><strong>Acceso a Depósito:</strong></div>
+                <div class="form-row p-3">
+                    <div class="form-group col-md-1.5">
+                        <button onclick="addModalStock(event)" data-toggle="modal" data-target="#addstock" href=""
+                            data-id_login="${user.id_login}" data-name="${user.name}" type="button"
+                            class="btn btn-success">
+                            <i class="fas fa-plus"></i> Nuevo Depósito
+                        </button>
+                    </div>
+                </div>
+                <table class="table table-bordered text-center" id="stock" width="100%" cellspacing="0"></table>
+            </div>
+        </div>
+    </div>
+</div>
+    `
+
+    return content
+}
+
+const listPowerBiAdmin = (powerbi, id_login) => {
+
+    const content = [
+        `
+        <a onclick="viewBi(event)" href="" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600;"></i></a>
+        <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32;"></i></a>
+        <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
+        `,
+        `${powerbi.title}`,
+        `${powerbi.typedesc}`,
+        `${powerbi.dateReg}`,
+    ]
+
+    return content
+}
+
+
 export const View = {
     showTable,
-    showModalPbiInsert,
     showModalInsert,
     showModalDelete,
     showModalEdit,
     header,
     createUser,
     listOffice,
-    showModalChangePass
+    showModalChangePass,
+    viewUser,
+    listPowerBiAdmin
 }

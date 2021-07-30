@@ -95,9 +95,9 @@ module.exports = app => {
     app.post('/changepass', Middleware.bearer, async ( req, res, next) => {
         try {
             const data = req.body.user
-            const result = await Login.updatePassword(data,req.login.id_login)
+            const result = await Login.updatePassword(data,data.id_login)
 
-            History.insertHistory('Contraseña alterada.', req.login.id_login)
+            History.insertHistory(`Contraseña alterada del usuario ${data.name}`, req.login.id_login)
 
             res.json(result)
         } catch (err) {

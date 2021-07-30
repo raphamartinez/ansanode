@@ -1,5 +1,5 @@
 import { ViewDashboard } from "../views/dashboardView.js"
-import { Service } from "../services/powerbiService.js"
+import { ServicePowerbi } from "../services/powerbiService.js"
 import { ServiceHistory } from "../services/historyService.js"
 
 window.onload = async function () {
@@ -12,6 +12,7 @@ window.onload = async function () {
 
     let divadmin = document.querySelector('[data-adm]')
     let divitem = document.querySelector('[data-item]')
+    let divadm = document.getElementById('perfiladm')
 
 
     let user = JSON.parse(sessionStorage.getItem('user'))
@@ -22,11 +23,14 @@ window.onload = async function () {
     if (perfil !== 1) {
         divadmin.innerHTML = " "
         divitem.innerHTML = " "
+        divadm.innerHTML = " "
         history = await ServiceHistory.historyDashboard()
         lastupdate = await ServiceHistory.listWebscraping()
     } else {
         history = await ServiceHistory.historyDashboard()
         lastupdate = await ServiceHistory.listWebscraping()
+        $("#perfiladm").attr("data-id_login", user.id_login);
+        
     }
 
     let title = document.querySelector('[data-title]')
@@ -135,6 +139,6 @@ function autocomplete(inp, arr) {
     });
 }
 
-const powerbis = await Service.listComplete()
+const powerbis = await ServicePowerbi.listComplete()
 
 autocomplete(document.getElementById("searchcomplete"), powerbis);

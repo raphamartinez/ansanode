@@ -18,7 +18,7 @@ module.exports = app => {
     app.post('/items', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_login = req.login.id_login
-            const search = req.body.search
+            let search = req.body.search
 
             const items = await Hbs.listItems(search, id_login)
             res.json(items)
@@ -29,7 +29,9 @@ module.exports = app => {
 
     app.get('/itemscomplete', Middleware.bearer, async ( req, res, next) => {
         try {
-            const items = await Hbs.listItemsComplete()
+            const id_login = req.login.id_login
+
+            const items = await Hbs.listItemsComplete(id_login)
             res.json(items)
         } catch (err) {
             next(err)
@@ -51,6 +53,17 @@ module.exports = app => {
     app.get('/stockandgroup', Middleware.bearer, async ( req, res, next) => {
         try {
             const fields = await Hbs.listStockandGroup()
+            res.json(fields)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/stockuser', Middleware.bearer, async ( req, res, next) => {
+        try {
+            const id_login = req.login.id_login
+
+            const fields = await Hbs.listStockbyUser(id_login)
             res.json(fields)
         } catch (err) {
             next(err)

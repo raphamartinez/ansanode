@@ -65,7 +65,7 @@ class Hbs {
             FROM ClockMachineRecord cl
             INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code 
             WHERE cl.Date > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
-            
+
             return queryhbs(sql)
 
         } catch (error) {
@@ -313,10 +313,10 @@ class Hbs {
            INNER JOIN Stock St ON I.Code = St.ArtCode
            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
 
-            if (search.artcode) sql += `AND I.Code LIKE '%${search.artcode}%' `
+            sql += `AND St.StockDepo IN (${search.stock}) `
+            sql += `AND I.Code IN (${search.artcode}) `
             if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
-            if (search.stock != "''") sql += `AND St.StockDepo IN (${search.stock}) `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
             sql += ` 
@@ -329,13 +329,15 @@ class Hbs {
         }
     }
 
-    
-    listItemsComplete() {
+
+    listItemsComplete(stocks) {
         try {
             let sql = `SELECT  P.ArtCode, I.Name as ItemName
             FROM Price P
             INNER JOIN Item I ON P.ArtCode = I.CODE
+            INNER JOIN Stock St ON St.ArtCode = I.Code
              WHERE (I.Closed = 0 OR I.Closed IS NULL )
+             and St.StockDepo IN (${stocks})
              GROUP BY P.ArtCode
              ORDER BY P.ArtCode DESC`
 
@@ -409,7 +411,16 @@ class Hbs {
         }
     }
 
-    listStocks() {
+    listStocks(id_login) {
+        try {
+            const sql = `SELECT name as StockDepo FROM ansa.stock WHERE id_login = ${id_login}`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listStocksHbs() {
         try {
             const sql = `SELECT StockDepo FROM Stock WHERE (Qty - Reserved) > 0 AND Qty IS NOT null  group BY StockDepo`
             return queryhbs(sql)
@@ -419,16 +430,12 @@ class Hbs {
     }
 
     listItemGroup(stocks) {
-        var resultArray = stocks.map(v => Object.assign({}, v));
 
-        var names = resultArray.map(function (text) {
-            return `'${text['StockDepo']}'`;
-        });
         try {
             const sql = `SELECT Ig.Name FROM ItemGroup Ig
             INNER JOIN Item I ON Ig.Code = I.ItemGroup
             INNER JOIN Stock St ON St.ArtCode = I.Code
-            WHERE St.StockDepo IN (${names})
+            WHERE St.StockDepo IN (${stocks})
             GROUP BY Ig.Name`
             return queryhbs(sql)
         } catch (error) {

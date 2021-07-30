@@ -36,7 +36,7 @@ async function listItems() {
 
         const selectstock = document.getElementById('stock')
         const selectitemgroup = document.getElementById('itemgroup')
-        const fields = await ServiceItem.listModal()
+        const fields = await ServiceItem.listStockByUser()
 
         fields.stocks.forEach(obj => {
             selectstock.appendChild(View.listOption(obj.StockDepo))
@@ -102,6 +102,7 @@ async function search(event) {
             const field = View.listItems(obj)
             dtview.push(field)
         });
+        
 
         let title = document.querySelector('[data-title]')
 
@@ -182,6 +183,11 @@ async function search(event) {
                 )
             })
         }
+
+        $('#itemgroup').val('')
+        $('#stock').val('')
+        $('#artcode').val('')
+        $('#itemname').val('')
 
         loading.innerHTML = " "
     } catch (error) {
@@ -268,12 +274,6 @@ async function listPrice() {
             selectitemgroup.appendChild(View.listOption(obj.Name))
         });
 
-        document.getElementById("stockartsi").checked = true;
-
-
-        // ('#stock option:selected').remove();
-        // ('#itemgroup option:selected').remove();
-        // title.appendChild(View.btnNewSearch())
 
         let items = await ServiceItem.listItemsComplete()
         autocompletecod(document.getElementById("artcode"), items);
@@ -407,6 +407,10 @@ async function searchPrice(event) {
                 }
                 )
             })
+
+            $('#itemgroup').val('')
+            $('#artcode').val('')
+            $('#itemname').val('')
         }
         loading.innerHTML = " "
     } catch (error) {

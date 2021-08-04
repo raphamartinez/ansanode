@@ -34,7 +34,7 @@ app.listen(3000, () => {
 
     if (process.env.NODE_ENV !== 'developer') {
 
-    const job = new CronJob('0 30 * * * *', () => {
+    const job = new CronJob('0 0 * * * *', () => {
         try {
             console.log('Executed Cron sucessfuly!');
             WebScraping.init()
@@ -45,7 +45,7 @@ app.listen(3000, () => {
 
     job.start()
 
-    const jobHbs = new CronJob('0 10 5 * * *', () => {
+    const jobHbs = new CronJob('0 30 5 * * *', () => {
         try {
             console.log('Executed Cron Hbs sucessfuly!');
             Hbs.init()
@@ -56,20 +56,9 @@ app.listen(3000, () => {
 
     jobHbs.start()
 
-    const jobClockMachine = new CronJob('0 0 */4 * * *', () => {
-        try {
-            console.log('Executed Clock Machine sucessfuly!');
-            Hbs.listClockMachine()
-        } catch (error) {
-            console.log('Error cron!');
-        }
-    });
+}
 
-    jobClockMachine.start()
-    }
-
-})
-
+Hbs.init()
 
 app.use((err, req, res, next) => {
   

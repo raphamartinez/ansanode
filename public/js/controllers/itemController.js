@@ -456,9 +456,6 @@ async function listGoodyear() {
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
-
-        title.appendChild(View.btnNewSearch())
-
     } catch (error) {
 
     }

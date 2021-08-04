@@ -2,7 +2,6 @@ const moment = require('moment')
 const Repositorie = require('../repositories/hbs')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const History = require('./history')
-const ZKLib = require('zklib');
 
 class Hbs {
 
@@ -142,58 +141,6 @@ class Hbs {
             console.log('finalizada a consulta')
             return true
         } catch (error) {
-            throw new InternalServerError(error)
-        }
-    }
-
-    async listClockMachine() {
-        try {
-
-            const clocks = await Repositorie.listClocksOffice()
-            clocks.forEach(clock => {
-
-                const ZK = new ZKLib({
-                    ip: clock.IPAddress,
-                    inport: clock.PortNr,
-                    timeout: 5000,
-                    connectionType: 'tcp'
-                  });
-                   
-                  // connect to access control device
-                  ZK.connect(function(err) {
-                    if (err) throw err;
-                   
-                    ZK.getTime(function(err, t) {
-                   
-                      if (err) throw err;
-                   
-                      console.log("Device clock's time is " + t.toString());
-
-                      ZK.disconnect();
-                    });
-                  });
-
-                // if (data.length > 0) {
-                //     data.forEach(async obj => {
-                //         const lastInsert = await Repositorie.lastClockMachine(obj.EmployeeCode)
-
-                //         const date1 = new Date(obj.DateSql)
-                //         const date2 = new Date(lastInsert)
-
-                //         if (date1.getTime() > date2.getTime()) {
-
-                //             delete obj.DateSql
-
-                //             Repositorie.insertClockMachine(obj)
-                //         }
-                //     })
-                // }
-            })
-
-            // const data = await Repositorie.listClockMachine()
-
-        } catch (error) {
-            console.log(error);
             throw new InternalServerError(error)
         }
     }

@@ -11,7 +11,6 @@ class Hbs {
             await this.listReceivables()
             await this.listSalary()
             await this.listUsers()
-            await this.listClockMachine()
 
             console.log('list hbs ok');
         } catch (error) {

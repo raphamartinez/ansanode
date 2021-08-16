@@ -25,7 +25,7 @@ class Hbs {
 
             const data = await Repositorie.listUsers()
 
-            if (data) {
+            if (data.length !== 0) {
                 data.forEach(user => {
 
                     if (user.phone) {
@@ -55,7 +55,8 @@ class Hbs {
 
             return true
         } catch (error) {
-            return error
+            console.log('consulta de usuario deu erro');
+            return false
         }
     }
 
@@ -63,7 +64,7 @@ class Hbs {
         try {
             const data = await Repositorie.listSalary()
 
-            if (data) {
+            if (data.length !== 0) {
                 data.forEach(obj => {
                     const dt = `${obj.date} ${obj.time}`
                     const date = moment(dt).format("YYYY-MM-DD HH:mm:ss")
@@ -73,7 +74,8 @@ class Hbs {
 
             return true
         } catch (error) {
-            throw new InternalServerError('Error')
+            console.log('consulta de salario deu erro');
+            return false
         }
     }
 
@@ -84,64 +86,74 @@ class Hbs {
             await Repositorie.createTableReceivable()
 
             const ncs = await Repositorie.listNcs()
-            ncs.forEach(obj => {
 
-                if (obj.Office === "06") {
-                    const date1 = new Date(obj.date)
-                    const date2 = new Date('01-01-2020')
-                    if (date1.getTime() < date2.getTime()) {
-                        obj.Office = "06FDM"
+            if (ncs.length !== 0) {
+                await ncs.forEach(obj => {
+
+                    if (obj.Office === "06") {
+                        const date1 = new Date(obj.date)
+                        const date2 = new Date('01-01-2020')
+                        if (date1.getTime() < date2.getTime()) {
+                            obj.Office = "06FDM"
+                        }
                     }
-                }
-                Repositorie.insertReceivable(obj)
-            });
+                    Repositorie.insertReceivable(obj)
+                });
+            }
 
             const inv = await Repositorie.listInvoices()
-            inv.forEach(obj => {
+            if (inv.length !== 0) {
+                await inv.forEach(obj => {
 
-                if (obj.Office === "06") {
-                    const date1 = new Date(obj.date)
-                    const date2 = new Date('01-01-2020')
-                    if (date1.getTime() < date2.getTime()) {
-                        obj.Office = "06FDM"
+                    if (obj.Office === "06") {
+                        const date1 = new Date(obj.date)
+                        const date2 = new Date('01-01-2020')
+                        if (date1.getTime() < date2.getTime()) {
+                            obj.Office = "06FDM"
+                        }
                     }
-                }
 
-                Repositorie.insertReceivable(obj)
-            });
+                    Repositorie.insertReceivable(obj)
+                });
+            }
 
             const installs = await Repositorie.listInstalls()
-            installs.forEach(obj => {
+            if (installs.length !== 0) {
+                await installs.forEach(obj => {
 
-                if (obj.Office === "06") {
-                    const date1 = new Date(obj.date)
-                    const date2 = new Date('01-01-2020')
-                    if (date1.getTime() < date2.getTime()) {
-                        obj.Office = "06FDM"
+                    if (obj.Office === "06") {
+                        const date1 = new Date(obj.date)
+                        const date2 = new Date('01-01-2020')
+                        if (date1.getTime() < date2.getTime()) {
+                            obj.Office = "06FDM"
+                        }
                     }
-                }
 
-                Repositorie.insertReceivable(obj)
-            });
+                    Repositorie.insertReceivable(obj)
+                });
+            }
 
             const cheques = await Repositorie.listCheque()
-            cheques.forEach(obj => {
+            if (cheques.length !== 0) {
+                await cheques.forEach(obj => {
 
-                if (obj.Office === "06") {
-                    const date1 = new Date(obj.date)
-                    const date2 = new Date('01-01-2020')
-                    if (date1.getTime() < date2.getTime()) {
-                        obj.Office = "06FDM"
+                    if (obj.Office === "06") {
+                        const date1 = new Date(obj.date)
+                        const date2 = new Date('01-01-2020')
+                        if (date1.getTime() < date2.getTime()) {
+                            obj.Office = "06FDM"
+                        }
                     }
-                }
 
-                Repositorie.insertReceivable(obj)
-            });
+                    Repositorie.insertReceivable(obj)
+                });
+            }
 
             console.log('finalizada a consulta')
             return true
         } catch (error) {
-            throw new InternalServerError(error)
+            console.log('consulta de inadimplencia deu erro');
+            return false
         }
     }
 
@@ -220,7 +232,13 @@ class Hbs {
 
             History.insertHistory(history, id_login)
 
-            return Repositorie.listGoodyear(search)
+            const data = await Repositorie.listGoodyear(search)
+
+            data.forEach(obj => {
+                if (obj.Reserved > 0) obj.StockQty - obj.Reserved
+            })
+            return data
+
         } catch (error) {
             throw new InternalServerError('Error')
         }

@@ -3,6 +3,10 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableCompanyAssets()
+    this.createTablemailattachment()
+    this.createTableMailScheduling()
+    this.createTableMailUser()
     this.createTableItemGroup()
     this.createTableStock()
     this.createTableType()
@@ -26,6 +30,55 @@ class Tables {
     this.createTableUserHbs()
 
     return true
+  }
+
+  createTableCompanyAssets(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.companyassets (id_companyassets int NOT NULL AUTO_INCREMENT, plate VARCHAR(50), responseId int,
+    name VARCHAR (250), url VARCHAR (250), PRIMARY KEY (id_companyassets))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+
+  createTablemailattachment(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailattachment (id_mailattachment int NOT NULL AUTO_INCREMENT,
+      url VARCHAR (250), id_mailpowerbi int,FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id_mailattachment))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableMailScheduling(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailscheduling (id_mailscheduling int NOT NULL AUTO_INCREMENT, date DATETIME
+      , id_mailpowerbi int,FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id_mailscheduling))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableMailUser(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailpowerbi (id_mailpowerbi int NOT NULL AUTO_INCREMENT, recipients VARCHAR(250), cc VARCHAR(250), cco VARCHAR(250), title VARCHAR (100), body VARCHAR (250),
+    type int, datereg DATETIME, PRIMARY KEY (id_mailpowerbi))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableItemGroup(){

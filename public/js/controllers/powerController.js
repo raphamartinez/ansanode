@@ -9,7 +9,6 @@ const btnSucursales = document.getElementById('btnSucursales')
 const cardHistory = document.querySelector('[data-card]')
 
 window.modalDeleteBi = modalDeleteBi
-// window.listBiUser = listBiUser
 window.viewBi = viewBi
 window.addPowerBi = addPowerBi
 window.editPowerBi = editPowerBi

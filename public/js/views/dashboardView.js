@@ -11,7 +11,7 @@ const showCardHistory = (cardHistory, history) => {
                 <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
                 Historial de Acceso
                 </div>
-                <div class="h5 mb-0 font-weight-bold text-gray-800">En las ultimas 24 horas houve ${history.count.count} accesos</div>
+                <div class="h5 mb-0 font-weight-bold text-gray-800">En las ultimas 24 horas hubo ${history.count.count} accesos</div>
                 <div class="h8 mb-0 font-weight-bold text-gray-600">El último acceso fue ${history.lastAccess.name} a ${history.lastAccess.time}</div>
             </div>
             <div class="col-auto">

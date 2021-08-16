@@ -117,7 +117,7 @@ class Hbs {
 
     createTableReceivable() {
         try {
-            const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
+            const sql = `CREATE TABLE IF NOT EXISTS ansa.receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
                 InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
                 SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (10), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
                 Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
@@ -377,23 +377,18 @@ class Hbs {
     listGoodyear(search) {
         try {
             let sql = `
-            SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS Qty, SUM(St.Reserved) AS Reserved
+            SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
             FROM Item I
             INNER JOIN Stock St ON I.Code = St.ArtCode
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
-
-            if (search.itemgroup != "''") {
-                sql += `AND Ig.Name IN (${search.itemgroup})`
-            } else {
-                sql += `AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
-            }
+            WHERE (I.Closed = 0 OR I.Closed IS NULL )
+            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
 
             if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
             if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `
 
             sql += ` 
-            AND I.Code IN ('10553' , '10997' , '12110' , '12602' , '13' , '13037' , '13038' , '13295' , '13848' , '16020' , '17009' , '17033' , '17076' , '17081' , '17106' , '17418' , '17420' , '17484' , '17491' , '17582' , '17591' , '17592' , '17615' , '17622' , '17623' , '17624' , '17670' , '17673' , '17678' , '17707' , '17735' , '17761' , '17780' , '17787' , '17789' , '17804' , '17805' , '17823' , '17825' , '17831' , '17984' , '17987' , '18013' , '18246' , '18248' , '18249' , '18266' , '18267' , '18269' , '18310' , '18341' , '18348' , '18349' , '18351' , '18352' , '18357' , '18398' , '18401' , '18402' , '18403' , '18406' , '18407' , '18408' , '18445' , '18446' , '18447' , '18448' , '18449' , '18450' , '18451' , '18452' , '18453' , '18454' , '18486' , '18489' , '18507' , '18516' , '18517' , '18518' , '18522' , '18523' , '18524' , '18528' , '18530' , '18531' , '18726' , '18811' , '18857' , '18862' , '18871' , '18872' , '18873' , '19066' , '19219' , '20036' , '20089' , '20110' , '20221' , '20238' , '20253' , '20254' , '20255' , '20256' , '20257' , '20258' , '20259' , '20278' , '20279' , '20280' , '20285' , '20358' , '20359' , '20375' , '2669' , '2670' , '2967' , '2968' , '2978' , '2979' , '3022' , '3050' , '3226' , '3580' , '3940' , '4121' , '4122' , '5227' , '6004' , '6007' , '6008' , '6972' , '9261' , '9275' , '9466' , '9506')
+            AND I.SupCode = '331'             
             GROUP BY I.Code
             ORDER BY I.Code`
 
@@ -406,23 +401,17 @@ class Hbs {
     listGoodyearSales(search) {
         try {
             let sql = `
-            SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS Qty, SUM(St.Reserved) AS Reserved
+            SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
             FROM Item I
             INNER JOIN Stock St ON I.Code = St.ArtCode
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE (I.Closed = 0 OR I.Closed IS NULL )`
-
-            if (search.itemgroup != "''") {
-                sql += `AND Ig.Name IN (${search.itemgroup})`
-            } else {
-                sql += `AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
-            }
+            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
 
             if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
             if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `
 
             sql += ` 
-            AND I.Code IN ('10553' , '10997' , '12110' , '12602' , '13' , '13037' , '13038' , '13295' , '13848' , '16020' , '17009' , '17033' , '17076' , '17081' , '17106' , '17418' , '17420' , '17484' , '17491' , '17582' , '17591' , '17592' , '17615' , '17622' , '17623' , '17624' , '17670' , '17673' , '17678' , '17707' , '17735' , '17761' , '17780' , '17787' , '17789' , '17804' , '17805' , '17823' , '17825' , '17831' , '17984' , '17987' , '18013' , '18246' , '18248' , '18249' , '18266' , '18267' , '18269' , '18310' , '18341' , '18348' , '18349' , '18351' , '18352' , '18357' , '18398' , '18401' , '18402' , '18403' , '18406' , '18407' , '18408' , '18445' , '18446' , '18447' , '18448' , '18449' , '18450' , '18451' , '18452' , '18453' , '18454' , '18486' , '18489' , '18507' , '18516' , '18517' , '18518' , '18522' , '18523' , '18524' , '18528' , '18530' , '18531' , '18726' , '18811' , '18857' , '18862' , '18871' , '18872' , '18873' , '19066' , '19219' , '20036' , '20089' , '20110' , '20221' , '20238' , '20253' , '20254' , '20255' , '20256' , '20257' , '20258' , '20259' , '20278' , '20279' , '20280' , '20285' , '20358' , '20359' , '20375' , '2669' , '2670' , '2967' , '2968' , '2978' , '2979' , '3022' , '3050' , '3226' , '3580' , '3940' , '4121' , '4122' , '5227' , '6004' , '6007' , '6008' , '6972' , '9261' , '9275' , '9466' , '9506')
+            AND I.SupCode = '331'         
             GROUP BY I.Code
             ORDER BY I.Code`
 
@@ -471,7 +460,7 @@ class Hbs {
             GROUP BY Ig.Name`
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError('No se pudo enumerar Grupo de Articulos')
+            throw new InternalServerError('No se pudo enumerar Grupo de Artículos')
         }
     }
 

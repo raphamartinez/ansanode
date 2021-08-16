@@ -117,7 +117,7 @@ async function search(event) {
 
         text.innerHTML += `<br>Filtros<br>`
         if (stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
-        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
+        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
         if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
         if (itemname) text.innerHTML += `Articulo: ${itemname}`
 
@@ -341,7 +341,7 @@ async function searchPrice(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Articulo: ${itemgroup}<br>`
+        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
         if (pricelist !== " ") text.innerHTML += `Promocion: ${pricelist}<br>`
         if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
         if (itemname) text.innerHTML += `Articulo: ${itemname}`
@@ -425,12 +425,6 @@ window.listGoodyear = listGoodyear
 
 async function listGoodyear() {
 
-    let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
@@ -451,13 +445,10 @@ async function listGoodyear() {
             $('#dataTable').empty();
         }
 
-        title.innerHTML = "Informe Goodyear - 'En construcción'"
+        title.innerHTML = "Informe Goodyear"
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
         cardHistory.style.display = 'none';
-
     } catch (error) {
-
     }
 }
 
@@ -519,7 +510,6 @@ async function searchGoodyear(event) {
                         { title: "Opciones" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Cant Vendida" },
                         { title: "Cant Stock" }
                     ],
                     paging: true,
@@ -543,7 +533,6 @@ async function searchGoodyear(event) {
                         { title: "Opciones" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Cant Vendida" },
                         { title: "Cant Stock" }
                     ],
                     paging: true,

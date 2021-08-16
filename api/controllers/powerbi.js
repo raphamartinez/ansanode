@@ -26,6 +26,17 @@ module.exports = app => {
         }
     })
 
+    app.get('/powerbisadmin', Middleware.bearer, async ( req, res, next) => {
+
+        try {
+            const powerbis = await PowerBi.listBis()
+
+            res.json(powerbis)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.all('/admin/*', Middleware.bearer, async ( req, res, next) => {
         try {
             next()

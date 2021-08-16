@@ -51,14 +51,14 @@ const showModalSearch = () => {
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                        <input type="text" placeholder="Código do Articulo" class="form-control" name="artcode" id="artcode">
+                        <input type="text" placeholder="Codigo del Articulo" class="form-control" name="artcode" id="artcode">
                     </div> 
                     <div class="form-group col-md-6">          
-                    <input type="text" placeholder="Nombre do Articulo" class="form-control" name="itemname" id="itemname">
+                    <input type="text" placeholder="Nombre del Artículo" class="form-control" name="itemname" id="itemname">
                 </div>
                 <div class="form-group col-md-6">   
                 <select class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
-                <option value= "" disabled selected>Grupo de Articulo</option>
+                <option value= "" disabled selected>Grupo de Artículo</option>
                 </select>        
                 </div>
                     <div class="form-group col-md-6">          
@@ -67,7 +67,7 @@ const showModalSearch = () => {
                     </select> 
                     </div>
                     <div class="form-group col-md-12">
-                    <label for="antecedente">Quieres sacar artículos fuera de stock?</label>
+                    <label for="antecedente">¿Artículos con Stock 0?</label>
                     <div class="custom-control custom-radio custom-control-inline" color:black>
                         <input type="radio" class="custom-control-input perfil" id="stockartsi" name="stockart" value="0" required>
                         <label class="custom-control-label" for="stockartsi">Sí</label>
@@ -118,14 +118,14 @@ const showModalPrice = () => {
                 </select>
             </div> 
                     <div class="form-group col-md-6">
-                        <input type="text" placeholder="Código do Articulo" class="form-control" name="artcode" id="artcode">
+                        <input type="text" placeholder="Codigo del Articulo" class="form-control" name="artcode" id="artcode">
                     </div> 
                     <div class="form-group col-md-12">          
-                    <input type="text" placeholder="Nombre do Articulo" class="form-control" name="itemname" id="itemname">
+                    <input type="text" placeholder="Nombre del Artículo" class="form-control" name="itemname" id="itemname">
                 </div>
                 <div class="form-group col-md-12">   
                 <select class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
-                <option value= "" disabled selected>Grupo de Articulo</option>
+                <option value= "" disabled selected>Grupo de Artículo</option>
                 </select>        
                 </div>
                 </div>
@@ -235,8 +235,7 @@ const listGoodyear = (item) => {
         `<a onclick="listStocks(event)" href="" data-artcode="${item.ArtCode}" data-artname="${item.ItemName}" data-cant="${item.StockQty}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
         `${item.ArtCode}`,
         `${item.ItemName}`,
-        `${item.StockQty}`,
-        `${item.SalesCant}`,
+        `${item.StockQty}`
     ]
 
     return content

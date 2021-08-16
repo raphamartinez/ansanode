@@ -319,7 +319,7 @@ const viewUser = (user) => {
             <div class="btn-group" role="group">
                 <button id="btnGroupDrop1" type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
-                    Opções
+                    Opciones
                 </button>
                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                     <a class="dropdown-item" data-toggle="modal" data-target="#edituser" onclick="modalEditUser(event)"

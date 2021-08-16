@@ -5,8 +5,10 @@ const excelToJson = require('convert-excel-to-json')
 const path = require('path')
 const fs = require('fs')
 const moment = require('moment')
+const scissors = require('scissors')
 const { getJsDateFromExcel } = require("excel-date-to-js");
 const { InternalServerError } = require('../models/error')
+
 
 async function readExcel(path) {
 
@@ -93,17 +95,13 @@ class WebScraping {
                 args: ['--no-sandbox'],
             })
             const page = await browser.newPage()
-            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3')
+            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3', {waitUntil: 'networkidle0'})
             await page.type('#nombre', process.env.PROSEGUR_MAIL)
             await page.type('#pass', process.env.PROSEGUR_PASSWORD)
             await page.click('#btn-submit')
-
             await page.waitForNavigation()
-            await page.waitForTimeout(2000)
 
-            await page.goto('https://localizacion.prosegur.com/informes/detenciones')
-            await page.waitForTimeout(4000)
-
+            await page.goto('https://localizacion.prosegur.com/informes/detenciones', {waitUntil: 'networkidle0'})
             await page.click(`select [value="ALL"]`)
             await page.waitForTimeout(1000)
 
@@ -188,19 +186,16 @@ class WebScraping {
             })
 
             const page = await browser.newPage()
-            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3')
+            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3', {waitUntil: 'networkidle0'})
 
             let reqPath = path.join(__dirname, '../../')
             await page._client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: reqPath });
             await page.type('#nombre', process.env.PROSEGUR_MAIL)
             await page.type('#pass', process.env.PROSEGUR_PASSWORD)
             await page.click('#btn-submit')
-
             await page.waitForNavigation()
-            await page.waitForTimeout(3000)
 
-            await page.goto('https://localizacion.prosegur.com/informes/mantenimientos')
-            await page.waitForTimeout(4000)
+            await page.goto('https://localizacion.prosegur.com/informes/mantenimientos', {waitUntil: 'networkidle0'})
 
             const dtInit = await page.$eval("#dateInit", (input) => {
                 return input.getAttribute("value")
@@ -214,7 +209,7 @@ class WebScraping {
             await page.waitForTimeout(3000)
 
             await page.click('#button_generar_excel')
-            await page.waitForTimeout(5000)
+            await page.waitForTimeout(10000)
             await browser.close()
 
             const filePath = `${reqPath}Mantenimientos_${dtInit}_${dtEnd}.xlsx`
@@ -257,23 +252,20 @@ class WebScraping {
             })
 
             const page = await browser.newPage()
-            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3')
+            await page.goto('https://localizacion.prosegur.com/login?origin=subdomain&timezone=3', {waitUntil: 'networkidle0'})
 
             let reqPath = path.join(__dirname, '../../')
             await page._client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: reqPath });
             await page.type('#nombre', process.env.PROSEGUR_MAIL)
             await page.type('#pass', process.env.PROSEGUR_PASSWORD)
             await page.click('#btn-submit')
-
             await page.waitForNavigation()
-            await page.waitForTimeout(3000)
 
-            await page.goto('https://localizacion.prosegur.com/informes/distancias-recorridas')
-            await page.waitForTimeout(3000)
+            await page.goto('https://localizacion.prosegur.com/informes/distancias-recorridas', {waitUntil: 'networkidle0'})
 
             const dtInit = await page.$eval("#dateInit", (input) => {
                 return input.getAttribute("value")
-            });            const dtEnd = await page.$eval("#dateEnd", (input) => {
+            }); const dtEnd = await page.$eval("#dateEnd", (input) => {
                 return input.getAttribute("value")
             });
 
@@ -281,10 +273,13 @@ class WebScraping {
             await page.waitForTimeout(2000)
 
             await page.click('#button_generar')
-            await page.waitForTimeout(10000)
+            await page.waitForTimeout(30000)
+
+            await page.waitForNavigation()
+
 
             await page.click(`#DataTables_Table_0_wrapper > div.top > div.dt-buttons > button`)
-            await page.waitForTimeout(9000)
+            await page.waitForTimeout(10000)
             await browser.close()
 
             const filePath = `prosegur.xlsx`
@@ -306,7 +301,8 @@ class WebScraping {
 
             fs.unlinkSync(filePath)
         } catch (error) {
-            throw new InternalServerError('No se pudo ejecutar el robot de distancia.')
+            console.log(error);
+            return false
         }
     }
 
@@ -335,17 +331,14 @@ class WebScraping {
                 });
             });
 
-            await page.goto('https://smart.prosegur.com/smart-web-min/smart-login/#/negocios')
-            await page.waitForTimeout(4000)
-
+            await page.goto('https://smart.prosegur.com/smart-web-min/smart-login/#/negocios', {waitUntil: 'networkidle0'})
             await page.type('#txt_user_name', process.env.PROSEGUR_MAIL)
             await page.type('#txt_user_pass', process.env.PROSEGUR_PASSWORD)
             await page.click('#btn_enter')
 
             await page.waitForNavigation()
 
-            await page.goto('https://smart.prosegur.com/smart-web-min/smart-multisede/#/event-console')
-            await page.waitForTimeout(4000)
+            await page.goto('https://smart.prosegur.com/smart-web-min/smart-multisede/#/event-console', {waitUntil: 'networkidle0'})
 
             const data = await page.evaluate(() => {
                 const tdsNeumaticos = Array.from(document.querySelectorAll('body > div.container > div > div.main-content.ng-scope > div.table-responsive.ng-scope > div'),
@@ -479,24 +472,23 @@ class WebScraping {
 
 
 
-            logins.forEach(async login => {
+            for (const login of logins){
 
                 const browser = await puppeteer.launch({
                     headless: false,
-                    args: ['--no-sandbox','--disable-dev-shm-usage']
+                    args: ['--no-sandbox', '--disable-dev-shm-usage']
                 })
 
                 const page = await browser.newPage()
-                await page.goto('https://webalarme.com.br/', {waitUntil: 'load'})
+                await page.goto('https://webalarme.com.br/', {waitUntil: 'networkidle0'})
                 await page.type('body > div.login.ng-scope > div.content > form > div.row.form-group.inline-fields.ng-scope > div.field.margin-right-10-percent > input', provider)
                 await page.type('body > div.login.ng-scope > div.content > form > div.row.form-group.inline-fields.ng-scope > div:nth-child(2) > input', login[2])
                 await page.type('body > div.login.ng-scope > div.content > form > div:nth-child(4) > div.form-group > div > input', login[3])
                 await page.click('body > div.login.ng-scope > div.content > form > div.form-actions.padding-login > button')
-
                 await page.waitForNavigation()
 
-                await page.goto('https://webalarme.com.br/#!/events', {waitUntil: 'load'})
-                page.setDefaultNavigationTimeout(0); 
+                await page.goto('https://webalarme.com.br/#!/events', {waitUntil: 'networkidle0'})
+                page.setDefaultNavigationTimeout(0);
                 await page.waitForTimeout(4000)
 
                 const data = await page.evaluate(() => {
@@ -507,7 +499,7 @@ class WebScraping {
                 })
                 await browser.close()
 
-                data.forEach(async object => {
+                for(const object of data){
 
                     const result = object.toString()
                     const removeSpace = result.split('\n').toString()
@@ -533,32 +525,64 @@ class WebScraping {
                         const office = login[0]
                         const title = line[0].trim()
 
-                        if(typeof line[1] !== "undefined"){
+                        if (typeof line[1] !== "undefined") {
                             const dt = line[1].split(" ")[0]
                             const time = line[1].split(" ")[1]
                             const lastInsert = await Repositorie.listInviolavel(office)
-    
+
                             var dia = dt.split("/")[0];
                             var mes = dt.split("/")[1];
                             var ano = dt.split("/")[2];
-                        
+
                             const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + " " + time;
-    
+
                             const newdate1 = moment(date);
-    
+
                             const newdate2 = moment(lastInsert)
-    
+
                             if (newdate1.isAfter(newdate2)) {
                                 const date = moment(newdate1).format("YYYY-MM-DD HH:mm:ss")
                                 await Repositorie.insertInviolavel(title, date, line[2], login[0])
                             }
                         }
                     })
-                })
-            })
+                }
+            }
 
         } catch (error) {
             throw new InternalServerError('No se pudo ejecutar el robot de seguridad de la inviolavel.')
+        }
+    }
+
+
+    async printPowerBi(url, path) {
+        try {
+
+            const browser = await puppeteer.launch({
+                headless: true,
+                slowMo: 2000,
+                args: ['--no-sandbox', '--disable-setuid-sandbox']
+            })
+
+            const page = await browser.newPage()
+     
+            await page.goto(url, {waitUntil: 'networkidle0', timeout: 0})
+            await page.setDefaultNavigationTimeout(0); 
+
+            await page.setViewport({height: 1080, width: 1920});
+
+            await page.waitForSelector('#pvExplorationHost > div > div > exploration > div > explore-canvas > div > div.canvasFlexBox > div > div.displayArea.disableAnimations.fitToPage'); //um seletor de uma celula da tabela
+            await page.click('#fullScreenIcon')
+
+            await page.pdf({ path: `${path}.pdf`, format: "letter" });
+
+            await scissors(`${path}.pdf`).crop(2000,2000,2000,2000)
+
+            await browser.close();
+
+            return true
+        } catch (error) {
+            throw new InternalServerError(error)
         }
     }
 }

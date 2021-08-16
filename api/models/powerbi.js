@@ -45,7 +45,7 @@ class PowerBi {
             const data = await Repositorie.listLogin(id_login)
 
             data.forEach(powerbi => {
-                
+
                 switch (powerbi.type) {
                     case 1: powerbi.typedesc = 'Informe'
                         break
@@ -73,7 +73,7 @@ class PowerBi {
 
             data.map(powerbi => {
                 if (powerbi.type = 1) {
-                    powerbi.typedesc = 'Relatório'
+                    powerbi.typedesc = 'Informe'
                 } else {
                     powerbi.typedesc = 'Informe Integrado'
                 }
@@ -89,6 +89,14 @@ class PowerBi {
         try {
             const powerbi = await Repositorie.view(id_powerbi)
             return powerbi
+        } catch (error) {
+            throw new InternalServerError('No se pudo ver powerbi.')
+        }
+    }
+
+    async listBis() {
+        try {
+            return Repositorie.listBis()
         } catch (error) {
             throw new InternalServerError('No se pudo ver powerbi.')
         }

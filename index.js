@@ -11,6 +11,9 @@ const CronJob = require('cron').CronJob
 const path = require('path')
 const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('./api/models/error');
 const jwt = require('jsonwebtoken');
+const Mail = require('./api/models/mail');
+const Mailpowerbi = require('./api/models/mailpowerbi');
+const Surveymonkey = require('./api/models/surveymonkey')
 
 process.setMaxListeners(100)
 
@@ -19,8 +22,6 @@ const app = customExpress()
 app.set('views', [path.join(__dirname, 'views/public'), path.join(__dirname, 'views/admin')])
 app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
-
-
 
 app.listen(3000, () => {
   console.log('Server Running!!!');
@@ -34,12 +35,12 @@ app.listen(3000, () => {
 
   if (process.env.NODE_ENV !== 'developer') {
 
-    const job = new CronJob('0 0 * * * *', () => {
+    const job = new CronJob('0 15 * * * *', () => {
       try {
         console.log('Executed Cron sucessfuly!');
         WebScraping.init()
       } catch (error) {
-        console.log('Error cron!');
+        console.log('Error cron!' + error);
       }
     });
 
@@ -50,15 +51,26 @@ app.listen(3000, () => {
         console.log('Executed Cron Hbs sucessfuly!');
         Hbs.init()
       } catch (error) {
-        console.log('Error cron!');
+        console.log('Error cron!' + error);
       }
     });
 
     jobHbs.start()
 
+    const jobMail = new CronJob('0 0 * * * *', () => {
+      try {
+        Mailpowerbi.listMailtoSend()
+        console.log("executed Mail");
+      } catch (error) {
+        console.log('Error Mail!' + error);
+      }
+    });
+  
+    jobMail.start()
+
   }
 })
-Hbs.init()
+
 
 app.use((err, req, res, next) => {
 
@@ -93,3 +105,9 @@ app.use((err, req, res, next) => {
   res.status(status)
   res.json(body)
 })
+
+// Surveymonkey.ListResponse()
+
+// Mailpowerbi.listMailtoSend()
+// WebScraping.init()
+// Hbs.init()

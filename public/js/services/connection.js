@@ -1,15 +1,14 @@
-const context = window.location.pathname.substring(0, window.location.pathname.indexOf("/", 2));
 const host = window.location.host;
 const split = document.URL.split("/")
 const protocol = split[0]
 
-const noBody = async (url) => {
+const noBody = async (method, url) => {
     let count = 1
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     try {
         const result = await fetch(`${protocol}//${host}/${url}`, {
-            method: 'GET',
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${accessToken}`

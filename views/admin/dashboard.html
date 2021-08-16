@@ -18,6 +18,9 @@
     <link href="../css/sb-admin-2.css" rel="stylesheet">
     <link href="../css/style.css" rel="stylesheet">
     <link href="../css/dataTables.bootstrap4.min.css" rel="stylesheet">
+    <link href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1581152092/smartwizard/smart_wizard.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1581152092/smartwizard/smart_wizard_theme_dots.min.css" rel="stylesheet" type="text/css" />
+    <link href="../css/modal_wizard.min.css" rel="stylesheet">
 </head>
 
 <body id="page-top sidebar" class="off-canvas hide-extras">
@@ -32,12 +35,13 @@
                         </div>
                     </a>
                     <hr class="sidebar-divider my-0">
-                    <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse" data-bs-toggle="collapse"
-                        data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" id="selectormenu"></a>
+                    <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse"
+                        data-bs-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
+                        aria-expanded="false" id="selectormenu"></a>
 
                     <form
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
-                        <div class="input-group" >
+                        <div class="input-group">
                             <input type="text" class="form-control bg-light border-0 small" id="searchcomplete"
                                 placeholder="Nombre del informe..." aria-label="Search" aria-describedby="basic-addon2">
                             <div class="input-group-append">
@@ -222,8 +226,8 @@
                                             <div class="bg-white collapse-inner rounded">
                                                 <a class="nav-link text-secondary" href="./index.html"
                                                     data-toggle="collapse"
-                                                    data-target="#navbarResponsive, #collapseProcess"
-                                                    data-files>Carpeta de archivos</a>
+                                                    data-target="#navbarResponsive, #collapseProcess" data-files>Carpeta
+                                                    de archivos</a>
                                             </div>
                                         </div>
                                     </li>
@@ -254,7 +258,7 @@
                                                         <a data-item class="nav-link text-secondary" href=""
                                                             data-toggle="collapse"
                                                             data-target="#navbarResponsive, #collapseItems"
-                                                            onclick="listGoodyear()">Informe Goodyear - 'En construcción'
+                                                            onclick="listGoodyear()">Informe Goodyear
                                                         </a>
                                                     </span>
                                                 </div>
@@ -339,7 +343,9 @@
     <script src="../vendor/jquery/jquery.min.js"></script>
     <script src="../vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="../vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.2/dist/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+    <script type="text/javascript" src="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1581152197/smartwizard/jquery.smartWizard.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.nicescroll/3.6.8-fix/jquery.nicescroll.min.js"></script>
     <script src="../js/libs/sb-admin-2.min.js"></script>
     <script type="module" src="../js/controllers/dashboardController.js"></script>
@@ -351,6 +357,7 @@
     <script type="module" src="../js/controllers/fileController.js"></script>
     <script type="module" src="../js/controllers/settingsController.js"></script>
     <script type="module" src="../js/controllers/stockController.js"></script>
+    <script type="module" src="../js/controllers/mailController.js"></script>
     <script src="../js/services/force.js"></script>
     <script src="../js/services/printpdf.js"></script>
     <script src="../js/libs/jquery.dataTables.min.js"></script>
@@ -362,6 +369,10 @@
     <script src="../js/libs/buttons.html5.min.js"></script>
     <script src="../js/libs/buttons.print.min.js"></script>
     <script src="../js/libs/geradorarquivo.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
+    <script src="../js/libs/modal_wizard.js"></script>
+
     <div data-modal></div>
 
 </body>

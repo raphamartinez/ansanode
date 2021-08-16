@@ -46,6 +46,15 @@ class PowerBi {
         }
     }
 
+    listBis() {
+        try {
+            const sql = `SELECT US.name, BI.id_powerbi, BI.title, BI.url FROM ansa.powerbi BI, ansa.viewpowerbi VB, ansa.login LO, ansa.user US WHERE VB.id_powerbi = BI.id_powerbi and LO.id_login = VB.id_login and US.id_login = LO.id_login`
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('El powerbi no pudo aparecer en la lista')
+        }
+    }
+
     async delete(id_powerbi) {
         try {
 

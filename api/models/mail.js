@@ -140,4 +140,23 @@ class ResetPasswordMail extends Mail {
 }
 
 
-module.exports = { VerifyMail, ResetPasswordMail }
+class AttachmentBi extends Mail {
+
+    constructor(title, body, recipients, cc, bcc, attachment) {
+        super()
+        this.from = '"Informes ANSA" informes.adm@americaneumaticos.com'
+        this.to = recipients
+        this.cc = cc
+        this.bcc = bcc
+        this.subject = title
+        this.text = body
+        this.attachments = attachment
+        //{
+          //filename: 'image1.jpg',
+          //  path: __dirname + '/image1.jpg'
+        //}
+    }
+}
+
+
+module.exports = { VerifyMail, ResetPasswordMail, AttachmentBi }

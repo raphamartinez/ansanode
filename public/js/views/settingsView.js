@@ -132,7 +132,7 @@ const sidebar = () => {
         </div>
       </div>
     </div>
-
+    <div class="d-flex justify-content-center align-items-center" data-loading></div>
   </div>
 `
     div.innerHTML = content

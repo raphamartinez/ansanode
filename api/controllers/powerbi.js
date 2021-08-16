@@ -71,7 +71,7 @@ module.exports = app => {
         try {
             const powerbi = req.body.powerbi
             const result = await PowerBi.insertPowerBi(powerbi)
-            res.status(201).send(result)
+            res.status(201).json(result)
         } catch (err) {
             next(err)
         }
@@ -83,7 +83,7 @@ module.exports = app => {
             const id_powerbi = req.params.id
             const data = req.body
             await PowerBi.updatePowerBi(data, id_powerbi)
-            res.json()
+            res.json(id_powerbi)
         } catch (err) {
             next(err)
         }

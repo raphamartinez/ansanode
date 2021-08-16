@@ -1,14 +1,15 @@
-import { ServiceStock } from "../services/stockService.js"
 import { ViewStock } from "../views/stockView.js"
-import { ServiceItem } from "../services/itemService.js"
+import { Connection } from '../services/connection.js'
 
 window.addModalStock = addModalStock
 
 async function addModalStock(event) {
     try {
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
         modal.innerHTML = ``
-        
+        settings.innerHTML = " "
         const btn = event.currentTarget
         const id_login = btn.getAttribute("data-id_login")
 
@@ -16,7 +17,7 @@ async function addModalStock(event) {
 
         const selectstock = document.getElementById('stockselect')
 
-        const fields = await ServiceItem.listModal()
+        const fields = await Connection.noBody('stockandgroup','GET')
 
         fields.stocks.forEach(obj => {
             selectstock.appendChild(ViewStock.listOption(obj.StockDepo))
@@ -48,12 +49,12 @@ async function addstock(event) {
         const arrstock = document.querySelectorAll('#stockselect option:checked')
         const stock = Array.from(arrstock).map(el => `${el.value}`);
 
-        await ServiceStock.add(stock, id_login)
-
-        const stocks = await ServiceStock.list(id_login)
+        await Connection.body('stock', { stock, id_login }, 'POST')
+       
+        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
 
         let dtstock = [];
-    
+
         stocks.forEach(obj => {
             const fieldstock = ViewStock.listStock(obj, id_login)
             dtstock.push(fieldstock)
@@ -64,7 +65,7 @@ async function addstock(event) {
             $('#stock').dataTable().fnDestroy();
             $('#stock').empty();
         }
-    
+
         $(document).ready(function () {
             $("#stock").DataTable({
                 data: dtstock,
@@ -86,7 +87,7 @@ async function addstock(event) {
             })
         })
 
-        
+
         loading.innerHTML = " "
         alert('Acceso al depósito agregado con éxito!')
     } catch (error) {
@@ -137,14 +138,14 @@ async function deletestock(event) {
         const id_stock = form.getAttribute("data-id_stock")
         const id_login = form.getAttribute("data-id_login")
 
-        await ServiceStock.deleteStock(id_stock)
+        await Connection.noBody(`stock/${id_stock}`, 'DELETE')
 
-        const stocks = await ServiceStock.list(id_login)
+        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
 
         let dtstock = [];
-    
+
         stocks.forEach(obj => {
-            const fieldstock = ViewStock.listStock(obj,id_login)
+            const fieldstock = ViewStock.listStock(obj, id_login)
             dtstock.push(fieldstock)
         });
 
@@ -154,7 +155,7 @@ async function deletestock(event) {
             $('#stock').empty();
         }
 
-    
+
         $(document).ready(function () {
             $("#stock").DataTable({
                 data: dtstock,

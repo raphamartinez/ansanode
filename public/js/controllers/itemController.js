@@ -1,6 +1,5 @@
 import { View } from "../views/itemView.js"
-import { ServiceItem } from "../services/itemService.js"
-import { Service } from "../services/userService.js"
+import { Connection } from '../services/connection.js'
 
 window.listItems = listItems
 
@@ -17,6 +16,9 @@ async function listItems() {
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
+        settings.innerHTML = ''
         modal.innerHTML = " "
         modal.appendChild(View.showModalSearch())
 
@@ -36,7 +38,7 @@ async function listItems() {
 
         const selectstock = document.getElementById('stock')
         const selectitemgroup = document.getElementById('itemgroup')
-        const fields = await ServiceItem.listStockByUser()
+        const fields = await Connection.noBody('stockuser', 'GET')
 
         fields.stocks.forEach(obj => {
             selectstock.appendChild(View.listOption(obj.StockDepo))
@@ -48,8 +50,8 @@ async function listItems() {
 
         document.getElementById("stockartsi").checked = true;
 
+        const items = await Connection.noBody('itemscomplete', 'GET')
 
-        let items = await ServiceItem.listItemsComplete()
         autocompletecod(document.getElementById("artcode"), items);
         autocompletename(document.getElementById("itemname"), items);
 
@@ -96,13 +98,13 @@ async function search(event) {
             stockart: stockart
         }
 
-        const data = await ServiceItem.listItems(search)
+        const data = await Connection.body('items', { search: search }, 'POST')
         let dtview = [];
         data.forEach(obj => {
             const field = View.listItems(obj)
             dtview.push(field)
         });
-        
+
 
         let title = document.querySelector('[data-title]')
 
@@ -217,7 +219,8 @@ async function listStocks(event) {
     modal.innerHTML = ''
     modal.appendChild(View.showModalStock(artname, artcode, cant))
 
-    const data = await ServiceItem.listStocks(artcode)
+    const data = await Connection.noBody(`stockbyitem/${artcode}`, 'GET')
+
     let tbodystock = document.getElementById('tbodystock')
 
     tbodystock.innerHTML = ''
@@ -230,7 +233,7 @@ async function listStocks(event) {
 
     loading.innerHTML = " "
 
-    let items = await ServiceItem.listItemsComplete()
+    const items = await Connection.noBody('itemscomplete', 'GET')
     autocompletecod(document.getElementById("artcode"), items);
     autocompletename(document.getElementById("itemname"), items);
 }
@@ -251,6 +254,8 @@ async function listPrice() {
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
         modal.innerHTML = " "
         modal.appendChild(View.showModalPrice())
 
@@ -265,17 +270,19 @@ async function listPrice() {
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
+        settings.innerHTML = " "
 
 
         const selectitemgroup = document.getElementById('itemgroup')
-        const fields = await ServiceItem.listModal()
+        const fields = await Connection.noBody('stockandgroup', 'GET')
+
 
         fields.groups.forEach(obj => {
             selectitemgroup.appendChild(View.listOption(obj.Name))
         });
 
+        const items = await Connection.noBody('itemscomplete', 'GET')
 
-        let items = await ServiceItem.listItemsComplete()
         autocompletecod(document.getElementById("artcode"), items);
         autocompletename(document.getElementById("itemname"), items);
 
@@ -291,6 +298,7 @@ async function searchPrice(event) {
     $('#searchPrice').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
+
     loading.innerHTML = `
     <div class="spinner-border text-primary" role="status">
       <span class="sr-only">Loading...</span>
@@ -316,7 +324,8 @@ async function searchPrice(event) {
             itemname: itemname
         }
 
-        const data = await ServiceItem.listPrice(search)
+        const data = await Connection.body('price', { search: search }, 'POST')
+
         let dtview = [];
         data.forEach(obj => {
             const field = View.listPrice(obj)
@@ -430,10 +439,13 @@ async function listGoodyear() {
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
+        settings.innerHTML = " "
         modal.innerHTML = " "
         modal.appendChild(View.showModalGoodyear())
 
-        const offices = await Service.listOffice()
+        const offices = await Connection.noBody('offices', 'GET')
         const divoffice = document.getElementById('office')
         offices.forEach(office => {
             divoffice.appendChild(View.listOffice(office))
@@ -479,7 +491,7 @@ async function searchGoodyear(event) {
             office: office
         }
 
-        const data = await ServiceItem.listGoodyear(search)
+        const data = await Connection.body('goodyear', { search: search }, 'POST')
         let dtview = [];
         data.forEach(obj => {
             const field = View.listGoodyear(obj)

@@ -34,7 +34,7 @@ module.exports = app => {
 
             const stock = await Stock.delete(id_stock)
 
-            res.json(stock)
+            res.json(id_stock)
         } catch (err) {
             next(err)
         }

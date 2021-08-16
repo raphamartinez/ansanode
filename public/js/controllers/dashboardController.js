@@ -1,6 +1,5 @@
 import { ViewDashboard } from "../views/dashboardView.js"
-import { ServicePowerbi } from "../services/powerbiService.js"
-import { ServiceHistory } from "../services/historyService.js"
+import { Connection } from '../services/connection.js'
 
 window.onload = async function () {
     let loading = document.querySelector('[data-loading]')
@@ -18,19 +17,15 @@ window.onload = async function () {
     let user = JSON.parse(sessionStorage.getItem('user'))
 
     let perfil = user.perfil
-    let history
-    let lastupdate
+    let history = await Connection.noBody('history', 'GET')
+    let lastupdate = await Connection.noBody('seguridadhistory', 'GET')
+
     if (perfil !== 1) {
         divadmin.innerHTML = " "
         divitem.innerHTML = " "
         divadm.innerHTML = " "
-        history = await ServiceHistory.historyDashboard()
-        lastupdate = await ServiceHistory.listWebscraping()
     } else {
-        history = await ServiceHistory.historyDashboard()
-        lastupdate = await ServiceHistory.listWebscraping()
         $("#perfiladm").attr("data-id_login", user.id_login);
-        
     }
 
     let title = document.querySelector('[data-title]')
@@ -52,21 +47,30 @@ window.onload = async function () {
 
 $("#selectormenu").hover(
     function () {
-        $('#navbarResponsive').collapse('show');
-        $(".nav-item ").hover(
-            function() {
-              $(this).children('.collapse').collapse('show');
-            }, function() {
-              $(this).children('.collapse').collapse('hide');
-            }
-          );
-        }, function () {
-        $("#mainNav").hover(function () {
-            $('#navbarResponsive').collapse('hide');
-            $('.nav-link ').parent('.nav-item ').collapse('hide');
-        })
+        if ($('#userDropdown').attr('aria-expanded') === "true") {
+            $("#userDropdown").attr("aria-expanded", "false")
+            $('#mainNav > ul > li.nav-item.dropdown.no-arrow.collapse > div').hide();
+        } else {
+            $('#navbarResponsive').collapse('show');
+
+        }
+    }, function () {
+
     }
 );
+
+$(".nav-item ").hover(
+    function () {
+        $(this).children('.collapse').collapse('show');
+    }, function () {
+        $(this).children('.collapse').collapse('hide');
+    }
+);
+
+$("#mainNav").hover(function () {
+    $('#navbarResponsive').collapse('hide');
+    // $('.nav-link ').parent('.nav-item ').collapse('hide');
+})
 
 
 function autocomplete(inp, arr) {
@@ -139,6 +143,6 @@ function autocomplete(inp, arr) {
     });
 }
 
-const powerbis = await ServicePowerbi.listComplete()
+const powerbis = await Connection.noBody('powerbis', 'GET')
 
 autocomplete(document.getElementById("searchcomplete"), powerbis);

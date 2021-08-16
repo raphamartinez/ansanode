@@ -1,6 +1,5 @@
 import { ViewMail } from "../views/mailView.js"
-import { ServiceMail } from "../services/mailService.js"
-import { ServicePowerbi } from "../services/powerbiService.js"
+import { Connection } from '../services/connection.js'
 
 window.mailList = mailList
 
@@ -21,7 +20,7 @@ async function mailList(event) {
             $('#tablemail').empty();
         }
 
-        const data = await ServiceMail.listMails()
+        const data = await Connection.noBody('mails', 'GET')
 
         let dtview = [];
         data.forEach(obj => {
@@ -153,7 +152,7 @@ async function modaladdmail(event) {
         })
     })
 
-    const powerbis = await ServicePowerbi.listAll()
+    const powerbis = await Connection.noBody('powerbisadmin', 'GET')
     const bisselect = document.getElementById('bis')
 
     powerbis.forEach(obj => {
@@ -250,7 +249,7 @@ async function newmail(event) {
             attachment: attachment
         }
 
-        const result = await ServiceMail.insertMailSchedule(mailschedule)
+        const result = await Connection.body('mail', { mailschedule }, 'POST')
         $('#modalmailschedule').modal('hide')
         let modal = document.querySelector('[data-modal]')
         modal.innerHTML = ``
@@ -261,7 +260,7 @@ async function newmail(event) {
             $('#tablemail').empty();
         }
 
-        const data = await ServiceMail.listMails()
+        const data = await Connection.noBody('mails', 'GET')
 
         let dtview = [];
         data.forEach(obj => {
@@ -352,7 +351,7 @@ async function ViewMailPowerbi(event) {
         const btn = event.currentTarget
         const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
 
-        const mail = await ServiceMail.viewMail(id_mailpowerbi)
+        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
 
         modal.appendChild(ViewMail.viewMail(mail))
 
@@ -466,7 +465,7 @@ async function deleteMailSchedule(event) {
 
         const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
 
-        await ServiceMail.deleteMailSchedule(id_mailpowerbi)
+        await Connection.noBody(`mail/${id_mailpowerbi}`, 'DELETE')
 
         if ($.fn.DataTable.isDataTable('#tablemail')) {
             $('#tablemail').dataTable().fnClearTable();
@@ -474,7 +473,7 @@ async function deleteMailSchedule(event) {
             $('#tablemail').empty();
         }
 
-        const data = await ServiceMail.listMails()
+        const data = await Connection.noBody('mails', 'GET')
 
         let dtview = [];
         data.forEach(obj => {
@@ -591,9 +590,9 @@ async function deleteSchedule(event) {
         const id_mailscheduling = btn.getAttribute("data-id_mailscheduling")
         const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
 
-        await ServiceMail.deleteMailSchedule(id_mailscheduling)
+        await Connection.noBody(`scheduling/${id_mailscheduling}`, 'DELETE')
 
-        const mail = await ServiceMail.viewMail(id_mailpowerbi)
+        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
 
         let dtscheduling = [];
 
@@ -677,9 +676,9 @@ async function deleteAttachment(event) {
         const id_mailattachment = btn.getAttribute("data-id_mailattachment")
         const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
 
-        await ServiceMail.deleteAttachment(id_mailattachment)
+        await Connection.noBody(`attachment/${id_mailattachment}`, 'DELETE')
 
-        const mail = await ServiceMail.viewMail(id_mailpowerbi)
+        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
 
         let dt = [];
 
@@ -739,7 +738,7 @@ async function modaladdattachment(event) {
         modal.innerHTML = ``
         modal.appendChild(ViewMail.addattachment(id_mailpowerbi))
 
-        const powerbis = await ServicePowerbi.listAll()
+        const powerbis = await Connection.noBody('powerbisadmin', 'GET')
         const bisselect = document.getElementById('bis')
 
         powerbis.forEach(obj => {
@@ -770,7 +769,7 @@ async function addattachment(event) {
             id_mailpowerbi: id_mailpowerbi
         }
 
-        await ServiceMail.insertAttachment(attachment)
+        await Connection.body('attachment', { attachment }, 'POST')
 
         $('#addattachment').modal('hide')
         alert('Archivo adjunto agregado con éxito!')
@@ -824,7 +823,7 @@ async function addschedule(event) {
             id_mailpowerbi: id_mailpowerbi
         }
 
-        await ServiceMail.insertSchedule(scheduling)
+        await Connection.body('scheduling', { scheduling }, 'POST')
 
         $('#addschedule').modal('hide')
         alert('Correo electrónico programado con éxito!')

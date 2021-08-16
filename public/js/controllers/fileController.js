@@ -1,6 +1,5 @@
 import { ViewFile } from "../views/fileView.js"
-import { ServiceFile } from "../services/fileService.js"
-import { ServiceHistory } from "../services/historyService.js"
+import { Connection } from '../services/connection.js'
 
 const btnfiles = document.querySelector('[data-files]')
 const cardHistory = document.querySelector('[data-card]')
@@ -21,6 +20,8 @@ btnfiles.addEventListener('click', async (event) => {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
         title.innerHTML = "Carpeta de archivos"
 
@@ -30,7 +31,7 @@ btnfiles.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
         modal.innerHTML = ''
-
+        settings.innerHTML = ''
         let search = 1
 
         ViewFile.search(modal, search)
@@ -174,7 +175,7 @@ async function searchfile(event) {
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
-        const data = await ServiceFile.listfile(file)
+        const data = await Connection.noBody(`files/${file.type}/${file.title}`, 'GET')
 
         if (search === '1') {
             const filecontent = document.getElementById('filecontent')
@@ -399,7 +400,7 @@ async function upload(event) {
         formData.append('type', type)
         formData.append('description', description)
 
-        const obj = await ServiceFile.upload(formData)
+        const obj = await Connection.bodyMultipart('file', formData, 'POST')
 
         if (search === '1') {
             const filetype = obj.mimetype.substring(0, obj.mimetype.indexOf("/"))
@@ -589,7 +590,7 @@ async function uploadoffice(event) {
             path: btn.form.link.value
         }
 
-        const obj = await ServiceFile.uploadoffice(data)
+        const obj = await Connection.body('fileoffice', { obj: data }, 'POST')
         const filetype = data.mimetype.substring(obj.mimetype.indexOf("/") + 1)
 
         if (search === '1') {
@@ -699,7 +700,7 @@ async function deleteFile(event) {
 
         const id_file = btn.getAttribute("data-id_file")
 
-        await ServiceFile.deleteFile(id_file)
+        await Connection.noBody(`file/${id_file}`, 'DELETE')
 
         loading.innerHTML = ``
         $(`#${id_file}div`).remove();
@@ -752,7 +753,7 @@ async function downloadFile(event) {
         link.href = src;
         link.click();
 
-        ServiceHistory.insertHistory(`Descarga del archivo - ${filename}`)
+        Connection.body('history', { description: `Descarga del archivo - ${filename}` }, 'POST')
 
         loading.innerHTML = ``
     } catch (error) {
@@ -880,7 +881,7 @@ async function listLine(event) {
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
-        const data = await ServiceFile.listfile(file)
+        const data = await Connection.noBody(`files/${details.type}/${details.title}`, 'GET')
 
         let dtview = [];
 
@@ -1041,7 +1042,7 @@ async function listblock(event) {
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
-        const data = await ServiceFile.listfile(file)
+        const data = await Connection.noBody(`files/${details.type}/${details.title}`, 'GET')
 
         data.forEach(obj => {
 

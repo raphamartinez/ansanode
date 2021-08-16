@@ -1,13 +1,10 @@
 import { View } from "../views/userView.js"
 import { ViewStock } from "../views/stockView.js"
-import { Service } from "../services/userService.js"
-import { ServicePowerbi } from "../services/powerbiService.js"
-import { ServiceStock } from "../services/stockService.js"
+import { Connection } from '../services/connection.js'
 
 const btn = document.querySelector('[data-btn-users]')
 const create = document.querySelector('[data-btn-create]')
 const cardHistory = document.querySelector('[data-card]')
-const btnperfil = document.querySelector('[data-perfil]')
 
 create.addEventListener('click', async (event) => {
     event.preventDefault()
@@ -29,13 +26,16 @@ create.addEventListener('click', async (event) => {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
 
         title.innerHTML = "Crear nuevo usuario"
         powerbi.innerHTML = " "
         modal.innerHTML = " "
+        settings.innerHTML = " "
 
-        const offices = await Service.listOffice()
+        const offices = await Connection.noBody('offices', 'GET')
 
         title.appendChild(View.createUser())
 
@@ -67,14 +67,15 @@ btn.addEventListener('click', async (event) => {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
 
 
         title.innerHTML = "Lista de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
+        settings.innerHTML = " "
 
-
-        const data = await Service.listUsers()
+        const data = await Connection.noBody('users', 'GET')
         let dtview = [];
 
         data.forEach(user => {
@@ -196,7 +197,7 @@ async function editUser(event) {
             mail: mail
         }
 
-        await Service.updateUser(user, id_user)
+        await Connection.body(`user/${id_user}`, { user }, 'PUT')
 
         loading.innerHTML = " "
         listUsersFunction(id_login)
@@ -237,7 +238,7 @@ async function modalEditUser(event) {
         $("#mailedit").val(mail);
         $("#mailenterpriseedit").val(mailenterprise);
 
-        const data = await Service.listOffice()
+        const data = await Connection.noBody('offices', 'GET')
         const divofficeedit = document.getElementById('officeedit')
         data.forEach(obj => {
             divofficeedit.appendChild(View.listOffice(obj))
@@ -267,7 +268,7 @@ async function deleteUser(event) {
         const id_user = form.getAttribute("data-id_user")
         const id_login = form.getAttribute("data-id_login")
 
-        await Service.deleteUser(id_user)
+        await Connection.noBody(`user/${id_user}`, 'DELETE')
 
         loading.innerHTML = " "
         await listUsers()
@@ -348,7 +349,7 @@ async function changePassword(event) {
             name: name
         }
 
-        const data = await Service.changePassword(user)
+        const data = await Connection.body('changepass', { user }, 'POST')
         loading.innerHTML = " "
         alert(data)
     } catch (error) {
@@ -394,7 +395,7 @@ async function createUser(event) {
             dateReg: Date.now()
         }
 
-        await Service.insertUser(user)
+        await Connection.body('user', { user }, 'POST')
         loading.innerHTML = " "
 
         await listUsers()
@@ -416,14 +417,15 @@ async function listUsers() {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
 
 
         title.innerHTML = "Lista de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
+        settings.innerHTML = " "
 
-
-        const data = await Service.listUsers()
+        const data = await Connection.noBody('users', 'GET')
         let dtview = [];
 
         data.forEach(user => {
@@ -540,14 +542,17 @@ async function listUsersFunction(id_login) {
         let powerbi = document.querySelector('[data-powerbi]')
         let title = document.querySelector('[data-title]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
         modal.innerHTML = " "
         title.innerHTML = " "
+        settings.innerHTML = " "
 
-        const user = await Service.viewUser(id_login)
+        const user = await Connection.noBody(`user/${id_login}`, 'GET')
 
         powerbi.innerHTML = View.viewUser(user)
 
-        const powerbis = await ServicePowerbi.listUser(id_login)
+        const powerbis = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         let dtview = [];
 
@@ -579,7 +584,7 @@ async function listUsersFunction(id_login) {
             })
         })
 
-        const stocks = await ServiceStock.list(id_login)
+        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
 
         let dtstock = [];
 
@@ -636,18 +641,21 @@ async function viewUser(event) {
         let powerbi = document.querySelector('[data-powerbi]')
         let title = document.querySelector('[data-title]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
         modal.innerHTML = " "
+        settings.innerHTML = " "
         title.innerHTML = " "
         cardHistory.style.display = 'none';
 
         const btn = event.currentTarget
         const id_login = btn.getAttribute("data-id_login")
 
-        const user = await Service.viewUser(id_login)
+        const user = await Connection.noBody(`user/${id_login}`, 'GET')
 
         powerbi.innerHTML = View.viewUser(user)
 
-        const powerbis = await ServicePowerbi.listUser(id_login)
+        const powerbis = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         let dtview = [];
 
@@ -679,7 +687,7 @@ async function viewUser(event) {
             })
         })
 
-        const stocks = await ServiceStock.list(id_login)
+        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
 
         let dtstock = [];
 
@@ -732,14 +740,15 @@ async function listUser(event) {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
 
 
         title.innerHTML = "Lista de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
+        settings.innerHTML = " "
 
-
-        const data = await Service.listUsers()
+        const data = await Connection.noBody('users', 'GET')
         let dtview = [];
 
         data.forEach(user => {

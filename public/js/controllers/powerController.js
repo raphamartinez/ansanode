@@ -1,6 +1,5 @@
 import { ViewPowerBi } from "../views/powerbiView.js"
-import { ServicePowerbi } from "../services/powerbiService.js"
-import { ServiceHistory } from "../services/historyService.js"
+import { Connection } from '../services/connection.js'
 
 const btnInforme = document.getElementById('btnInforme')
 const btnPunto = document.getElementById('btnPunto')
@@ -45,9 +44,9 @@ async function autocompletesearch(event) {
             <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
             <div class="col-md-12 h3 font-weight-bold text-primary text-center p-3"> Otros informes</div>`
 
-            ServiceHistory.insertHistory(`Acceso de Informe - ${description}`)
+            Connection.body('history', { description: `Acceso de Informe - ${description}` }, 'POST')
 
-            const data = await ServicePowerbi.listBiUser(type)
+            const data = await Connection.noBody(`powerbis/${type}`, 'GET')
             let dtview = [];
 
             data.forEach(powerbi => {
@@ -148,11 +147,14 @@ btnSucursales.addEventListener('click', async (event) => {
         let type = 4
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
         title.innerHTML = "Seguridad - Sucursales"
         powerbi.innerHTML = " "
         modal.innerHTML = " "
-        const data = await ServicePowerbi.listBiUser(type)
+        settings.innerHTML = " "
+        const data = await Connection.noBody(`powerbis/${type}`, 'GET')
         let dtview = [];
 
         data.forEach(powerbi => {
@@ -249,11 +251,14 @@ btnVehiculos.addEventListener('click', async (event) => {
         let type = 3
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
         title.innerHTML = "Seguridad - Vehículos"
         powerbi.innerHTML = " "
+        settings.innerHTML = ""
         modal.innerHTML = " "
-        const data = await ServicePowerbi.listBiUser(type)
+        const data = await Connection.noBody(`powerbis/${type}`, 'GET')
 
         let dtview = [];
 
@@ -351,12 +356,15 @@ btnPunto.addEventListener('click', async (event) => {
         let type = 2
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
         title.innerHTML = "Control de Punto"
         powerbi.innerHTML = " "
         modal.innerHTML = " "
+        settings.innerHTML = ""
 
-        const data = await ServicePowerbi.listBiUser(type)
+        const data = await Connection.noBody(`powerbis/${type}`, 'GET')
 
         let dtview = [];
 
@@ -455,11 +463,14 @@ btnInforme.addEventListener('click', async (event) => {
         let type = 1
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
 
         title.innerHTML = "Informes"
         powerbi.innerHTML = " "
         modal.innerHTML = " "
-        const data = await ServicePowerbi.listBiUser(type)
+        settings.innerHTML = " "
+        const data = await Connection.noBody(`powerbis/${type}`, 'GET')
 
         let dtview = [];
 
@@ -556,14 +567,17 @@ function viewBi(event) {
     let title = document.querySelector('[data-title]')
     let powerbi = document.querySelector('[data-powerbi]')
     let description = btn.getAttribute("data-title")
+    let settings = document.querySelector('[data-settings]');
+
 
     title.innerHTML = description
     loading.innerHTML = " "
+    settings.innerHTML = " "
     powerbi.innerHTML = `   
     <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
     <div class="col-md-12 h3 font-weight-bold text-primary text-center p-3"> Otros informes</div>`
 
-    ServiceHistory.insertHistory(`Acceso de Informe - ${description}`)
+    Connection.body('history', { description: `Acceso de Informe - ${description}` }, 'POST')
 }
 
 window.addModalPowerBi = addModalPowerBi
@@ -611,9 +625,9 @@ async function addPowerBi(event) {
             id_login: id_login
         }
 
-        await ServicePowerbi.insertBi(powerbi)
+        await Connection.body('powerbi', { powerbi }, 'POST')
 
-        const data = await ServicePowerbi.listUser(id_login)
+        const data = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
             $('#powerbiuserlist').dataTable().fnClearTable();
@@ -665,7 +679,7 @@ async function modalEditBi(event) {
         let modal = document.querySelector('[data-modal]')
         modal.innerHTML = ``
         modal.appendChild(ViewPowerBi.showModalEdit())
-        
+
         const btn = event.currentTarget
         const id_powerbi = btn.getAttribute("data-id_powerbi")
         const url = btn.getAttribute("data-url")
@@ -709,9 +723,9 @@ async function editPowerBi(event) {
             type: type
         }
 
-        await ServicePowerbi.updateBi(powerbi, id_powerbi)
+        await Connection.body(`powerbi/${id_powerbi}`, { powerbi }, 'PUT')
 
-        const data = await ServicePowerbi.listUser(id_login)
+        const data = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
             $('#powerbiuserlist').dataTable().fnClearTable();
@@ -789,9 +803,9 @@ async function deletePowerBi(event) {
         const id_powerbi = btn.getAttribute("data-id_powerbi")
         const id_login = btn.getAttribute("data-id_login")
 
-        await ServicePowerbi.deleteBi(id_powerbi)
+        await Connection.noBody(`powerbi/${id_powerbi}`, 'DELETE')
 
-        const data = await ServicePowerbi.listUser(id_login)
+        const data = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
             $('#powerbiuserlist').dataTable().fnClearTable();

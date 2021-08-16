@@ -1,5 +1,4 @@
-import { View } from "../views/historyView.js"
-import { ServiceHistory } from "../services/historyService.js"
+import { Connection } from '../services/connection.js'
 
 const btn = document.querySelector('[data-history]')
 const cardHistory = document.querySelector('[data-card]')
@@ -17,11 +16,12 @@ btn.addEventListener('click', async (event) => {
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
+        let settings = document.querySelector('[data-settings]');
 
-
+        settings.innerHTML = ''
         title.innerHTML = "Historial"
         powerbi.innerHTML = " "
-        const data = await ServiceHistory.listHistory()
+        const data = await await Connection.noBody('historys','GET')
         var dtview = data.map(doc => Object.values(doc));
 
         if ($.fn.DataTable.isDataTable('#dataTable')) {
@@ -44,7 +44,7 @@ btn.addEventListener('click', async (event) => {
                         { title: "Fecha de Registro" },
                         { title: "Usuario" }
                     ],
-                    order: [[ 0, "desc" ]],
+                    order: [[0, "desc"]],
                     paging: true,
                     ordering: true,
                     info: true,
@@ -59,39 +59,39 @@ btn.addEventListener('click', async (event) => {
                 )
             })
         } else {
-        $(document).ready(function () {
-            $("#dataTable").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Id" },
-                    { title: "Descripción" },
-                    { title: "Fecha de Registro" },
-                    { title: "Usuario" }
-                ],
-                order: [[ 0, "desc" ]],
-                paging: true,
-                ordering: true,
-                info: true,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
-                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-        "<'row'<'col-sm-12'tr>>" +
-        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-        "<'row'<'col-sm-12'B>>" ,
-                buttons: [
-                    'copy', 'csv', 'excel', 'pdf', 'print'
-                ]
+            $(document).ready(function () {
+                $("#dataTable").DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Id" },
+                        { title: "Descripción" },
+                        { title: "Fecha de Registro" },
+                        { title: "Usuario" }
+                    ],
+                    order: [[0, "desc"]],
+                    paging: true,
+                    ordering: true,
+                    info: true,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: true,
+                    fixedHeader: false,
+                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                        "<'row'<'col-sm-12'B>>",
+                    buttons: [
+                        'copy', 'csv', 'excel', 'pdf', 'print'
+                    ]
+                }
+                )
             }
-            )
+            );
         }
-        );
-    }
-    loading.innerHTML = ``
+        loading.innerHTML = ``
     } catch (error) {
         loading.innerHTML = ``
     }
@@ -108,7 +108,7 @@ async function updateWebscraping(el) {
     try {
         icon.classList.add("fa-spin")
 
-        const dateReg = await ServiceHistory.updateWebscraping()
+        const dateReg = await Connection.noBody('seguridad','GET')
 
         icon.classList.remove("fa-spin")
         lastupdate.innerHTML = `Última actualización - ${dateReg}`

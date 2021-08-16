@@ -1,4 +1,4 @@
-import { LoginService } from '../services/loginService.js'
+import { Connection } from '../services/connection.js'
 
 window.onSubmit = onSubmit
 
@@ -9,7 +9,7 @@ async function onSubmit() {
 
     try {
 
-        const data = await LoginService.login(mail, password)
+        const data = await Connection.noBearer('login', { mail, password }, 'POST')
 
         const accessToken = data.accessToken
         const refreshToken = data.refreshToken
@@ -32,7 +32,9 @@ window.onLogout = onLogout
 async function onLogout() {
 
     try {
-        const data = await LoginService.logout()
+        const refreshToken = JSON.parse(localStorage.getItem('refreshToken'))
+
+        const data = await Connection.body('logout', { refreshToken: refreshToken }, 'POST')
 
         sessionStorage.clear()
         localStorage.clear()
@@ -56,7 +58,8 @@ async function onPassword(event) {
         const passconf = document.getElementById("passwordconf").value;
 
         if (pass === passconf) {
-            const data = await LoginService.password(pass, token)
+            const data = await Connection.noBearer('resetPassword', { pass, token }, 'POST')
+
             alert(data.message)
             window.location.href = data.url
         }
@@ -73,7 +76,8 @@ async function onForgot(event) {
 
         const mail = document.querySelector('[data-mail]').value
 
-        const data = await LoginService.forgot(mail)
+        const data = await Connection.noBearer('forgotPassword', { mail }, 'POST')
+
         alert(data.message)
         window.location.href = data.url
     } catch (error) {

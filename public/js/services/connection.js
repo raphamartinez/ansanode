@@ -2,8 +2,7 @@ const host = window.location.host;
 const split = document.URL.split("/")
 const protocol = split[0]
 
-const noBody = async (method, url) => {
-    let count = 1
+const noBody = async (url, method) => {
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     try {
@@ -15,22 +14,56 @@ const noBody = async (method, url) => {
             }
         })
 
-        if (result.status === 401) {
-            do {
-                count = 0
-                refresh()
-                noBody(url)
-            } while (count)
+        if (result.ok) {
+            return result.json()
+        } else {
+            if (result.status === 401) {
+                const valid = await refresh()
+
+                if (valid === true) {
+                    try {
+                        const newAccessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+                        const newresult = await fetch(`${protocol}//${host}/${url}`, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${newAccessToken}`
+                            }
+                        })
+
+                        if (newresult.ok) {
+                            return newresult.json()
+                        } else {
+                            alert('Error del Servidor.')
+                            return result.json()
+                        }
+                    } catch (error) {
+                        throw new Error(error)
+                    }
+                } else {
+                    return false
+                }
+            }
+
+            if (result.status === 404) {
+                alert('No se ha encontrado.')
+                return result.json()
+            }
+
+            if (result.status === 500) {
+                alert('Error del Servidor.')
+                return result.json()
+            }
         }
 
-        return result.json()
     } catch (error) {
         return error
     }
 }
 
 const body = async (url, data, method) => {
-    let count = 1
+
     const accessToken = JSON.parse(localStorage.getItem('accessToken'))
 
     try {
@@ -43,20 +76,113 @@ const body = async (url, data, method) => {
             body: JSON.stringify(data)
         })
 
-        if (result.status === 401) {
-            do {
-                count = 0
-                refresh()
-                noBody(url, data, method)
-            } while (count)
+        if (result.ok) {
+            return result.json()
+        } else {
+            if (result.status === 401) {
+                const valid = await refresh()
+
+                if (valid === true) {
+                    try {
+                        const newAccessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+                        const newresult = await fetch(`${protocol}//${host}/${url}`, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${newAccessToken}`
+                            }
+                        })
+
+                        if (newresult.ok) {
+                            return newresult.json()
+                        } else {
+                            alert('Error del Servidor.')
+                            return result.json()
+                        }
+                    } catch (error) {
+                        throw new Error(error)
+                    }
+                } else {
+                    return false
+                }
+            }
+
+            if (result.status === 404) {
+                alert('No se ha encontrado.')
+                return result.json()
+            }
+
+            if (result.status === 500) {
+                alert('Error del Servidor.')
+                return result.json()
+            }
         }
-
-        return result.json()
-
     } catch (error) {
         return error
     }
 }
+
+const bodyMultipart = async (url, data, method) => {
+
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    try {
+        const result = await fetch(`${protocol}//${host}/${url}`, {
+            method: method,
+            headers: {
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: data
+        })
+
+        if (result.ok) {
+            return result.json()
+        } else {
+            if (result.status === 401) {
+                const valid = await refresh()
+
+                if (valid === true) {
+                    try {
+                        const newAccessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+                        const newresult = await fetch(`${protocol}//${host}/${url}`, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${newAccessToken}`
+                            }
+                        })
+
+                        if (newresult.ok) {
+                            return newresult.json()
+                        } else {
+                            alert('Error del Servidor.')
+                            return result.json()
+                        }
+                    } catch (error) {
+                        throw new Error(error)
+                    }
+                } else {
+                    return false
+                }
+            }
+
+            if (result.status === 404) {
+                alert('No se ha encontrado.')
+                return result.json()
+            }
+
+            if (result.status === 500) {
+                alert('Error del Servidor.')
+                return result.json()
+            }
+        }
+    } catch (error) {
+        return error
+    }
+}
+
 
 const noBearer = async (url, data, method) => {
     const result = await fetch(`${protocol}//${host}/${url}`, {
@@ -69,9 +195,48 @@ const noBearer = async (url, data, method) => {
 
     if (result.ok) {
         return result.json()
+    } else {
+        if (result.status === 401) {
+            const valid = await refresh()
+
+            if (valid === true) {
+                try {
+                    const newAccessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+                    const newresult = await fetch(`${protocol}//${host}/${url}`, {
+                        method: method,
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${newAccessToken}`
+                        }
+                    })
+
+                    if (newresult.ok) {
+                        return newresult.json()
+                    } else {
+                        alert('Error del Servidor.')
+                        return result.json()
+                    }
+                } catch (error) {
+                    throw new Error(error)
+                }
+            } else {
+                return false
+            }
+        }
+
+        if (result.status === 404) {
+            alert('No se ha encontrado.')
+            return result.json()
+        }
+
+        if (result.status === 500) {
+            alert('Error del Servidor.')
+            return result.json()
+        }
     }
 
-    throw new Error('Usuario o la contraseña no son válidos')
+    throw new Error('¡Nombre de usuario y / o contraseña inválido!')
 }
 
 
@@ -96,11 +261,11 @@ const refresh = async () => {
 
         window.location.href = '../public/login.html'
 
-        alert('Acceso Caducado')
+        alert('¡Su sesión ha sido cancelada por inactividad!')
     }
 
     if (data.ok) {
-        const token = data.json()
+        const token = await data.json()
 
         localStorage.setItem('accessToken', JSON.stringify(token.accessToken))
         localStorage.setItem('refreshToken', JSON.stringify(token.refreshToken))
@@ -115,7 +280,8 @@ export const Connection = {
     noBody,
     body,
     noBearer,
-    refresh
+    refresh,
+    bodyMultipart
 }
 
 

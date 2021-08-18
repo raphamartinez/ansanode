@@ -881,7 +881,7 @@ async function listLine(event) {
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
-        const data = await Connection.noBody(`files/${details.type}/${details.title}`, 'GET')
+        const data = await Connection.noBody(`files/${file.type}/${file.title}`, 'GET')
 
         let dtview = [];
 
@@ -1042,7 +1042,7 @@ async function listblock(event) {
         if (file.type === "") file.type = "Todas"
         if (file.title === "") file.title = "Todas"
 
-        const data = await Connection.noBody(`files/${details.type}/${details.title}`, 'GET')
+        const data = await Connection.noBody(`files/${file.type}/${file.title}`, 'GET')
 
         data.forEach(obj => {
 

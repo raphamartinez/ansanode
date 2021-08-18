@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableSalesman()
     this.createTableCompanyAssets()
     this.createTablemailattachment()
     this.createTableMailScheduling()
@@ -31,6 +32,20 @@ class Tables {
 
     return true
   }
+
+  createTableSalesman(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.salesman (id_salesman int NOT NULL AUTO_INCREMENT,
+    name VARCHAR (250), code VARCHAR (100), dateReg DATETIME, id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login),
+    PRIMARY KEY (id_salesman))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
 
   createTableCompanyAssets(){
     const sql = `CREATE TABLE IF NOT EXISTS ansa.companyassets (id_companyassets int NOT NULL AUTO_INCREMENT, plate VARCHAR(50), responseId int,

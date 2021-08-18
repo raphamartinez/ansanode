@@ -15,6 +15,7 @@ const Mail = require('./api/models/mail');
 const Mailpowerbi = require('./api/models/mailpowerbi');
 const Surveymonkey = require('./api/models/surveymonkey')
 
+
 process.setMaxListeners(100)
 
 const app = customExpress()
@@ -32,6 +33,8 @@ app.listen(3000, () => {
   app.all('/', function (req, res) {
     res.render('login');
   });
+
+  Mailpowerbi.listMailtoSend()
 
   if (process.env.NODE_ENV !== 'developer') {
 
@@ -111,3 +114,4 @@ app.use((err, req, res, next) => {
 // Mailpowerbi.listMailtoSend()
 // WebScraping.init()
 // Hbs.init()
+

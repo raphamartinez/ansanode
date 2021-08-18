@@ -18,6 +18,14 @@ class Hbs {
         }
     }
 
+    listSalesman(){
+        try {
+            return Repositorie.listSalesMan()
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
     async listUsers() {
         try {
             await Repositorie.dropUsers()

@@ -286,7 +286,7 @@ const deleteMailSchedule = (id_mailpowerbi) => {
                 <div class="modal-body">
                     <div class="form-row">
                         <div class=" col-md-12">
-                            <h8>El correo electrónico se eliminará y no se podrá volver a ver..</h8>
+                            <h8>El correo electrónico se eliminará y no se podrá volver a ver.</h8>
                         </div>
                     </div>
                 </div>

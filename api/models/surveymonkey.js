@@ -34,11 +34,21 @@ class Surveymonkey {
                             url: response.pages[20].questions[0].answers[0].download_url,
                             responseId: obj.id
                         }
-
-                        Repositorie.insert(asset)
+                        console.log(asset.url);
+                        // Repositorie.insert(asset)
                     }
                 }
             }
+
+            // var request = require('request');
+            // request.get(`https://www.surveymonkey.com/analyze/files/download/?survey_id=285770536&files=l759jSqikCVolRAzgamMinGIU_2F1sJlxghtpV2TASuOar5odnRKisIcicT47DqzKO5Kdr215IP5sU0crOJBBt7Q0eTbhjcxjzpwwQ2bP3rRl6m4wzlPJtvMn8s59sKv0qbEp_2FCLH_2FRQCQtSvsgkxYXvHC_2BwQb9O9u_2F_2FOZMDK80yI_3D`, function (error, response, body) {
+            //     if (!error && response.statusCode == 200) {
+            //         fs.writeFile('teste.jpg', body, , (err) => {
+            //             console.log(err)
+            //         })
+            //     }
+            // });
+            
 
 
             //const response = await api.getSurvayResponseDetails('285770536','11727504523')

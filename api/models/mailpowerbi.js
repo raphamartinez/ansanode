@@ -114,7 +114,6 @@ class MailPowerBi {
             const nowLater = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:59:00`
 
             const mails = await Repositorie.listMailtoSend(now, nowLater)
-console.log(mails);
 
             for (const mail of mails) {
                 const objects = await Repositorie.listAttachment(mail.id_mailpowerbi)
@@ -131,15 +130,23 @@ console.log(mails);
                     }
                     attachments.push(attachment)
                 }
-                const merger = new PDFMerger();
 
-                for (const attachment of attachments) {
-                    merger.add(attachment.path)
+                let send
+
+                if (mail.type === 1) {
+                    const merger = new PDFMerger();
+
+                    for (const attachment of attachments) {
+                        merger.add(attachment.path)
+                    }
+
+                    await merger.save(attachments[0].path);
+
+                    send = new Mail.AttachmentBi(mail.title, mail.body, mail.recipients, mail.cc, mail.cco, attachments[0])
+
+                }else{
+                    send = new Mail.AttachmentBi(mail.title, mail.body, mail.recipients, mail.cc, mail.cco, attachments)
                 }
-
-                await merger.save(attachments[0].path);
-
-                const send = new Mail.AttachmentBi(mail.title, mail.body, mail.recipients, mail.cc, mail.cco, attachments[0])
 
                 const transport = nodemailer.createTransport({
                     host: process.env.MAIL_HOST,
@@ -156,6 +163,7 @@ console.log(mails);
                 for (const obj of objects) {
                     fs.unlinkSync(`./file${obj.id_mailattachment}.pdf`)
                 }
+                console.log("enviado com sucesso");
             }
 
         } catch (error) {

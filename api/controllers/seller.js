@@ -1,0 +1,54 @@
+const Hbs = require('../models/hbs')
+const Seller = require('../models/seller')
+const Middleware = require('../infrastructure/auth/middleware')
+
+module.exports = app => {
+
+    app.get('/sellershbs', Middleware.bearer, async (req, res, next) => {
+        try {
+            const sellers = await Hbs.listSalesman()
+            res.json(sellers)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/sellers', Middleware.bearer, async (req, res, next) => {
+        try {
+            const sellers = await Seller.list()
+            res.json(sellers)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/salesman', Middleware.bearer, async (req, res, next) => {
+        try {
+            const data = req.body.sellers
+            const result = await Seller.insert(data)
+            res.status(201).json(result)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.put('/salesman/:id_salesman', Middleware.bearer, async (req, res, next) => {
+        try {
+            const manager = req.body.manager
+            const result = await Seller.update(manager)
+            res.status(201).json(manager)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.delete('/salesman/:id_salesman', Middleware.bearer, async (req, res, next) => {
+        try {
+            const id_salesman = req.params.id_salesman
+            const result = await Seller.delete(id_salesman)
+            res.json(id_salesman)
+        } catch (err) {
+            next(err)
+        }
+    })
+}

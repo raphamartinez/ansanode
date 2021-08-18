@@ -297,7 +297,7 @@ class Hbs {
 
     listSalesMan() {
         try {
-            const sql = `SELECT DISTINCT SalesMan FROM SalesOrder ORDER BY SalesMan`
+            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name FROM SalesOrder Sa INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Closed = 0 ORDER BY SalesMan`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar SalesMan')
@@ -405,7 +405,7 @@ class Hbs {
             FROM Item I
             INNER JOIN Stock St ON I.Code = St.ArtCode
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
+            WHERE Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
 
             if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
             if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `

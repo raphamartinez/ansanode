@@ -561,11 +561,13 @@ class WebScraping {
             const browser = await puppeteer.launch({
                 headless: true,
                 slowMo: 2000,
-                args: ['--no-sandbox']
+                args: ['--no-sandbox'],
+                defaultViewport: null
             })
 
             const page = await browser.newPage()
-            await page.setDefaultNavigationTimeout(0);
+            page.setDefaultNavigationTimeout(0)
+            page.setDefaultTimeout(0)
 
             await page.goto(url, { waitUntil: 'load', timeout: 0 }) //networkidle0
 

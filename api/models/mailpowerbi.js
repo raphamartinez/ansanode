@@ -110,8 +110,8 @@ class MailPowerBi {
 
             const date = new Date()
 
-            const now = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:00:00`
-            const nowLater = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:59:00`
+            const now = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours() - 4}:00:00`
+            const nowLater = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours() - 4}:59:00`
 
             const mails = await Repositorie.listMailtoSend(now, nowLater)
 

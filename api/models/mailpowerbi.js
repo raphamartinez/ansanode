@@ -125,7 +125,7 @@ class MailPowerBi {
                     await Webscraping.printPowerBi(obj.url, path)
 
                     const attachment = {
-                        filename: `${path}.pdf`,
+                        filename: `att${obj.id_mailattachment}.pdf`,
                         path: `${path}.pdf`
                     }
                     attachments.push(attachment)
@@ -134,6 +134,7 @@ class MailPowerBi {
                 let send
 
                 if (mail.type === 1) {
+
                     const merger = new PDFMerger();
 
                     for (const attachment of attachments) {
@@ -144,7 +145,7 @@ class MailPowerBi {
 
                     send = new Mail.AttachmentBi(mail.title, mail.body, mail.recipients, mail.cc, mail.cco, attachments[0])
 
-                }else{
+                } else {
                     send = new Mail.AttachmentBi(mail.title, mail.body, mail.recipients, mail.cc, mail.cco, attachments)
                 }
 
@@ -163,6 +164,7 @@ class MailPowerBi {
                 for (const obj of objects) {
                     fs.unlinkSync(`./file${obj.id_mailattachment}.pdf`)
                 }
+
                 console.log("enviado com sucesso");
             }
 
@@ -177,9 +179,9 @@ class MailPowerBi {
 
             details.forEach(obj => {
                 if (obj.type === 1) {
-                    obj.type = "jpg"
+                    obj.type = "Reunir"
                 } else {
-                    obj.type = "pdf"
+                    obj.type = "Manténgase separado"
                 }
             })
             const attachment = await Repositorie.listAttachment(id_mailpowerbi)

@@ -592,9 +592,11 @@ class WebScraping {
                 await page.click('#fullScreenIcon')
             }
 
-            await page.pdf({ path: `${path}.pdf`, format: "letter" });
+            await page.pdf({
+                path: `${path}.pdf`, format: "A1", height: 1080, width: 1920, landscape: true
+            });
 
-            await scissors(`${path}.pdf`).crop(2000, 2000, 2000, 2000)
+            await scissors(`${path}.pdf`).crop({ b: 500, t:500})
 
             await browser.close();
 

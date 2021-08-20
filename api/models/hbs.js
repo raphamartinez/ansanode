@@ -18,6 +18,18 @@ class Hbs {
         }
     }
 
+    async listClockMachine(){
+        try {
+            const data = await Repositorie.listClockMachine()
+
+            data.forEach(obj => {
+                Repositorie.insertClockMachine(obj)
+            })
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     listSalesman(){
         try {
             return Repositorie.listSalesMan()
@@ -251,10 +263,16 @@ class Hbs {
             History.insertHistory(history, id_login)
 
             const data = await Repositorie.listGoodyear(search)
+            const sales = await Repositorie.listGoodyearSales(search)
 
             data.forEach(obj => {
+                let sale = sales.find(sale => sale.ArtCode === obj.ArtCode)
+
                 if (obj.Reserved > 0) obj.StockQty - obj.Reserved
+                obj.SalesQty = sale.SalesQty
             })
+
+
             return data
 
         } catch (error) {

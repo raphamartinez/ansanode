@@ -104,7 +104,7 @@ class Mail {
 
     async listMailtoSend(now, nowLater) {
         try {
-            let sql = `SELECT MA.id_mailpowerbi, MA.recipients, MA.cc, MA.cco, MA.title, MA.body, DATE_FORMAT(MA.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(MT.id_mailattachment) as countatt
+            let sql = `SELECT MA.id_mailpowerbi, MA.type, MA.recipients, MA.cc, MA.cco, MA.title, MA.body, DATE_FORMAT(MA.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(MT.id_mailattachment) as countatt
             FROM ansa.mailpowerbi MA
             LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
             LEFT JOIN ansa.mailscheduling MS ON MA.id_mailpowerbi = MS.id_mailpowerbi

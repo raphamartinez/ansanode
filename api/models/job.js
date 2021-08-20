@@ -21,7 +21,7 @@ const jobHbs = new CronJob('0 30 5 * * *', () => {
     }
 });
 
-const jobMail = new CronJob('0 0 * * * *', () => {
+const jobMail = new CronJob('0 1 * * * *', () => {
     try {
         console.log("Executed Mail!");
         Mailpowerbi.listMailtoSend()

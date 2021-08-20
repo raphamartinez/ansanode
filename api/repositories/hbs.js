@@ -61,10 +61,9 @@ class Hbs {
 
     listClockMachine() {
         try {
-            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(DATE_FORMAT(cl.Date, '%m-%d-%Y')," ",cl.TIME) AS DateSql, CONCAT(cl.DATE, " ", cl.TIME) AS TimestampDate,cl.InOutType AS Type, cl.Office, wo.Name
+            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(cl.Date," ",cl.TIME) AS TimestampDate, cl.InOutType AS Type, cl.Office, wo.Name
             FROM ClockMachineRecord cl
-            INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code 
-            WHERE cl.Date > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
+            INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code`
 
             return queryhbs(sql)
 
@@ -418,9 +417,10 @@ class Hbs {
     listGoodyearSales(search) {
         try {
             let sql = `
-            SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
+            SELECT I.Code as ArtCode, I.Name as ItemName, sum(It.Qty) AS SalesQty
             FROM Item I
-            INNER JOIN Stock St ON I.Code = St.ArtCode
+            LEFT JOIN InvoiceItemRow It ON I.Code = It.ArtCode
+            LEFT JOIN Invoice Iv ON Iv.internalId = It.masterId
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
             WHERE Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
 

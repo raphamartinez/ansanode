@@ -1,9 +1,11 @@
-RewriteEngine On
-RewriteBase /
-RewriteRule ^login\.html$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /login.html [L]
+RewriteEngine on
+
+
+RewriteCond %{THE_REQUEST} /([^.]+)\.html [NC]
+RewriteRule ^ /%1 [NC,L,R]
+
+RewriteCond %{REQUEST_FILENAME}.html -f
+RewriteRule ^ %{REQUEST_URI}.html [NC,L]
 
 <files ~ "^.*\.([Hh][Tt][Aa])">
 order allow,deny

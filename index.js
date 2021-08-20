@@ -10,7 +10,7 @@ const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = r
 
 const connection = require('./api/infrastructure/database/connection')
 const tables = require('./api/infrastructure/database/tables')
-const Goal = require('./api/models/goalline');
+const Hbs = require('./api/models/hbs');
 const Surveymonkey = require('./api/models/surveymonkey')
 
 
@@ -31,11 +31,11 @@ app.listen(3000, () => {
   app.get('/', function (req, res) {
     res.render('login');
   });
+  jobMail.start()
 
   if (process.env.NODE_ENV !== 'developer') {
     job.start()
     jobHbs.start()
-    jobMail.start()
     jobGoalLine.start()
   }
 })
@@ -96,4 +96,3 @@ app.use((err, req, res, next) => {
 //   const date = dates[index];
 //   Goal.create(date)
 // }
-

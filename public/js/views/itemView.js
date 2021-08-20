@@ -235,7 +235,8 @@ const listGoodyear = (item) => {
         `<a onclick="listStocks(event)" href="" data-artcode="${item.ArtCode}" data-artname="${item.ItemName}" data-cant="${item.StockQty}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
         `${item.ArtCode}`,
         `${item.ItemName}`,
-        `${item.StockQty}`
+        `${item.StockQty}`,
+        `${item.SalesQty}`
     ]
 
     return content

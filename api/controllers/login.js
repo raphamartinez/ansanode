@@ -28,8 +28,6 @@ module.exports = app => {
         }
 
     });
-    
-
 
     app.all('/admin/*', Middleware.bearer, async function ( req, res, next) {
         try {

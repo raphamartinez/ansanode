@@ -522,7 +522,8 @@ async function searchGoodyear(event) {
                         { title: "Opciones" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Cant Stock" }
+                        { title: "Cant Stock" },
+                        { title: "Cant Vendido" }
                     ],
                     paging: true,
                     ordering: true,
@@ -545,7 +546,8 @@ async function searchGoodyear(event) {
                         { title: "Opciones" },
                         { title: "Cod Articulo" },
                         { title: "Nombre" },
-                        { title: "Cant Stock" }
+                        { title: "Cant Stock" },
+                        { title: "Cant Vendido" }
                     ],
                     paging: true,
                     ordering: true,

@@ -5,15 +5,14 @@ const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const { InvalidArgumentError, NotFound, NotAuthorized } = require('./api/models/error');
-const CronJob = require('cron').CronJob
-const Hbs = require('./api/models/hbs')
-const WebScraping = require('./api/models/webscraping')
-const Mailpowerbi = require('./api/models/mailpowerbi')
-// const connection = require('./api/infrastructure/database/connection')
-// const tables = require('./api/infrastructure/database/tables')
-// const Goal = require('./api/models/goalline');
-// const Surveymonkey = require('./api/models/surveymonkey')
+const Job = require('./api/models/job')
+const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('./api/models/error');
+
+const connection = require('./api/infrastructure/database/connection')
+const tables = require('./api/infrastructure/database/tables')
+const Goal = require('./api/models/goalline');
+const Surveymonkey = require('./api/models/surveymonkey')
+
 
 
 process.setMaxListeners(100)
@@ -34,55 +33,13 @@ app.listen(3000, () => {
   });
 
   if (process.env.NODE_ENV !== 'developer') {
-    const job = new CronJob('0 15 * * * *', () => {
-      try {
-          console.log('Executed Cron sucessfuly!');
-          WebScraping.init()
-      } catch (error) {
-          console.log('Error cron!' + error);
-      }
-  });
-
-  job.start()
-
-  const jobHbs = new CronJob('0 30 5 * * *', () => {
-      try {
-          console.log('Executed Cron Hbs sucessfuly!');
-          Hbs.init()
-      } catch (error) {
-          console.log('Error cron!' + error);
-      }
-  });
-
-  jobHbs.start()
-
-  const jobMail = new CronJob('0 0 * * * *', () => {
-      try {
-          console.log("Executed Mail!");
-          Mailpowerbi.listMailtoSend()
-      } catch (error) {
-          console.log('Error Mail!' + error);
-      }
-  });
-
-  jobMail.start()
-
-  const jobGoalLine = new CronJob('0 0 5 1 * *', () => {
-      try {
-          // console.log("Executed Mail!");
-          // Mailpowerbi.listMailtoSend()
-      } catch (error) {
-          // console.log('Error Mail!' + error);
-      }
-  });
-
-  jobGoalLine.start()
+    Job.execute()
   }
 
 })
 
 
-app.use((err, res) => {
+app.use((err, req, res, next) => {
 
   let status = 500
   const body = {
@@ -137,3 +94,4 @@ app.use((err, res) => {
 //   const date = dates[index];
 //   Goal.create(date)
 // }
+

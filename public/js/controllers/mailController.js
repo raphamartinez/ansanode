@@ -36,7 +36,7 @@ async function mailList(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -63,7 +63,7 @@ async function mailList(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -133,10 +133,7 @@ async function modaladdmail(event) {
             data: [],
             columns: [
                 { title: "Opciones" },
-                { title: "Hora" },
-                { title: "Dia de la semana" },
-                { title: "Semana del mes" },
-                { title: "Mes" }
+                { title: "Fecha de Envío" }
             ],
             paging: false,
             ordering: true,
@@ -276,7 +273,7 @@ async function newmail(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -303,7 +300,7 @@ async function newmail(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -402,7 +399,8 @@ async function ViewMailPowerbi(event) {
                 pagingType: "numbers",
                 searchPanes: false,
                 fixedHeader: false,
-                searching: false
+                searching: false,
+                responsive: true
             })
 
             $("#tablescheduling").DataTable({
@@ -421,16 +419,22 @@ async function ViewMailPowerbi(event) {
                 pagingType: "numbers",
                 searchPanes: false,
                 fixedHeader: false,
-                searching: false
+                searching: false,
+                responsive: true
             })
         })
 
-        $($.fn.dataTable.tables(true)).DataTable()
-            .columns.adjust();
+        adjustModalDatatable()
 
     } catch (error) {
         alert(error)
     }
+}
+
+function adjustModalDatatable() {
+    $('#viewmail').on('shown.bs.modal', function () {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    })
 }
 
 window.modaldeleteMailSchedule = modaldeleteMailSchedule
@@ -489,7 +493,7 @@ async function deleteMailSchedule(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -516,7 +520,7 @@ async function deleteMailSchedule(event) {
                     data: dtview,
                     columns: [
                         { title: "Opciones" },
-                        { title: "Por" },
+                        { title: "Para" },
                         { title: "Cc" },
                         { title: "Cco" },
                         { title: "Título" },
@@ -613,11 +617,7 @@ async function deleteSchedule(event) {
                 data: dtscheduling,
                 columns: [
                     { title: "Opciones" },
-                    { title: "Hora" },
-                    { title: "Dia" },
-                    { title: "Dia de la semana" },
-                    { title: "Semana del mes" },
-                    { title: "Mes" }
+                    { title: "Fecha de Envío" }
                 ],
                 paging: false,
                 ordering: true,

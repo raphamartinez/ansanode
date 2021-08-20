@@ -22,6 +22,17 @@ module.exports = app => {
         }
     })
 
+    app.get('/sellersgoalline', Middleware.bearer, async (req, res, next) => {
+        try {
+            const id_login = req.login.id_login
+
+            const sellers = await Seller.list(id_login)
+            res.json(sellers)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.post('/salesman', Middleware.bearer, async (req, res, next) => {
         try {
             const data = req.body.sellers

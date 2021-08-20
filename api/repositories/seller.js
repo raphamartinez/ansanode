@@ -34,11 +34,14 @@ class Seller {
         }
     }
 
-    list() {
+    list(id_login) {
         try {
-            const sql = `SELECT US.name as manager, SA.id_salesman, SA.code, SA.name, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.salesman SA
+            let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, SA.name, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.salesman SA
             LEFT JOIN ansa.login LO ON SA.id_login = LO.id_login 
             LEFT JOIN ansa.user US ON LO.id_login = US.id_login `
+
+            if(id_login) sql += `WHERE LO.id_login = ${id_login}`
+
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')

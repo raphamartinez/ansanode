@@ -9,7 +9,6 @@ const scissors = require('scissors')
 const { getJsDateFromExcel } = require("excel-date-to-js");
 const { InternalServerError } = require('../models/error')
 
-
 async function readExcel(path) {
 
     const data = xlsx(path).then((rows) => {
@@ -139,7 +138,14 @@ class WebScraping {
                     var ano = line[1].split("-")[0];
                     var hora = line[1].split(" ")[1];
 
-                    const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + hora;
+                    var time1 = await timeToSecond(hora)
+                    var time2 = await timeToSecond("04:00:00") // gmt -4
+
+                    var diff = time1 - time2
+
+                    const timeFinal = await secondToTime(diff)
+
+                    const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + timeFinal;
                     const lastInsertArrest = await Repositorie.listArrest(line[2])
 
                     const date1 = new Date(date);
@@ -160,7 +166,14 @@ class WebScraping {
                     var ano = line[1].split("-")[0];
                     var hora = line[1].split(" ")[1];
 
-                    const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + hora;
+                    var time1 = await timeToSecond(hora)
+                    var time2 = await timeToSecond("04:00:00") // gmt -4
+
+                    var diff = time1 - time2
+
+                    const timeFinal = await secondToTime(diff)
+
+                    const date = ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano + " " + timeFinal;
                     const lastInsertPower = await Repositorie.listPower(line[2])
 
                     const date1 = new Date(date);
@@ -574,7 +587,8 @@ class WebScraping {
             await page.setViewport({ height: 1080, width: 1920 });
 
             if (url.includes('app.powerbi.com')) {
-                await page.waitForSelector('#pvExplorationHost > div > div > exploration > div > explore-canvas > div > div.canvasFlexBox > div > div.displayArea.disableAnimations.fitToPage'); //um seletor de uma celula da tabela
+                await page.waitForTimeout(15000)
+                // await page.waitForSelector('#pvExplorationHost > div > div > exploration > div > explore-canvas > div > div.canvasFlexBox > div > div.displayArea.disableAnimations.fitToPage'); //um seletor de uma celula da tabela
                 await page.click('#fullScreenIcon')
             }
 

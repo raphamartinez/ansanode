@@ -22,5 +22,26 @@ btn.addEventListener('click', async (event) => {
     modal.innerHTML = ""
     settings.prepend(ViewSettings.sidebar())
     cardHistory.style.display = 'none';
+
+    if ($.fn.DataTable.isDataTable('#tabletypearchive')) {
+        $('#tabletypearchive').dataTable().fnClearTable();
+        $('#tabletypearchive').dataTable().fnDestroy();
+        $('#tabletypearchive').empty();
+    }
+
+    $("#tabletypearchive").DataTable({
+        data: null,
+        columns: [
+            { title: "Tipo" }
+        ],
+        info: false,
+        paging: false,
+        searchPanes: false,
+        pagingType: "numbers",
+        fixedHeader: true,
+        orderCellsTop: true,
+        responsive: true,
+        searching: false
+    })
     
 })

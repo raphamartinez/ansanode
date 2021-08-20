@@ -27,6 +27,17 @@ module.exports = app => {
         }
     })
 
+    app.get('/itemslabel/:label', Middleware.bearer, async ( req, res, next) => {
+        try {
+            let label = req.params.label
+
+            const items = await Hbs.listItemsLabel(label)
+            res.json(items)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get('/itemscomplete', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_login = req.login.id_login

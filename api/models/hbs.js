@@ -230,6 +230,16 @@ class Hbs {
         }
     }
 
+    async listItemsLabel(label) {
+        try {
+            const data = await Repositorie.listItemsLabel(label)
+
+            return data
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
     async listGoodyear(search, id_login) {
         try {
 

@@ -44,7 +44,7 @@ const modaladdmail = () => {
                                         <div class="form-row">
                                             <div class="form-group col-md-12">
                                                 <input id="for" name="for" type="text" class="form-control"
-                                                    placeholder="Por" required>
+                                                    placeholder="Para" required>
                                             </div>
                                             <div class="form-group col-md-12">
                                                 <input name="cc" id="cc" type="text" class="form-control"
@@ -205,17 +205,20 @@ const viewMail = (mail) => {
         <form>
             <div class="modal-body">
                 <div class="form-row">
-                <div class="form-group col-md-4 text-center">
-                    <h8><strong>Por:</strong> ${mail.details[0].recipients}</h8>
+                <div class="form-group col-md-12 text-left">
+                    <h5 class="text-center"><strong>Suscribirse</strong></h5>
+                    <h8><strong>Para:</strong> ${mail.details[0].recipients}</h8>
                     </div> 
-                    <div class="form-group col-md-4 text-center">
+                    <div class="form-group col-md-12 text-left">
                     <h8><strong>Cc:</strong> ${mail.details[0].cc}</h8>
                     </div> 
-                    <div class="form-group col-md-4 text-center">
+                    <div class="form-group col-md-12 text-left">
                     <h8><strong>Cco:</strong> ${mail.details[0].cco}</h8>
+                    <hr>
                     </div> 
                     <div class="form-group col-md-12 text-center">
-                    <h8><strong>Título:</strong> ${mail.details[0].title}</h8>
+                    <h5><strong>Título del E-mail:</strong> ${mail.details[0].title}</h5>
+                    <hr>
                     </div> 
                     <div class="form-group col-md-12 text-center">  
                     <h5><strong>Cuerpo del correo electronico</strong></h5>        
@@ -223,11 +226,12 @@ const viewMail = (mail) => {
                     </div>
                 <div class="form-group col-md-12 text-center">   
                 <h5><strong>Archivos Adjuntos:</strong></h5>
-                <p>Tipo del Archivo: ${mail.details[0].type}</p>
+                <p>Se envían archivos adjuntos: ${mail.details[0].type}</p>
                 <div class="form-group col-md-12 text-left">
                 <button onclick="modaladdattachment(event)" data-id_mailpowerbi="${mail.details[0].id_mailpowerbi}" class="btn btn-success">Agregar adjunto</button>
                 </div>
-                <table class="table table-bordered text-center" id="tableattachment" width="100%" cellspacing="0"></table> 
+                <table class="table table-bordered text-center" id="tableattachment" width="100%" cellspacing="0"></table>
+                <hr> 
                 </div>
                 <div class="form-group col-md-12 text-center">
                     <h5><strong>Calendario de envío: </strong></h5>

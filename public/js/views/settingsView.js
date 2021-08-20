@@ -76,6 +76,14 @@ const sidebar = () => {
                 </div>
                 <button type="button" class="btn btn-primary">Actualizar URL</button>
                 <button type="reset" class="btn btn-secondary">Restablecer modificaciones</button>
+                <hr>
+                <h6>Tipos de Archivo del Repositorio</h6>
+                <div class="form-group">
+                <button onclick="modaladdtypearchive(event)" type="button" class="btn btn-success">Nuevo Tipo de Archivo</button>
+                </div>
+                <div class="form-group">
+                <table class="table table-bordered" id="tabletypearchive"></table>
+                </div>
               </form>
             </div>
             <div class="tab-pane" id="account">

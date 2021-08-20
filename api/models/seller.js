@@ -16,9 +16,9 @@ class Seller {
         }
     }
 
-    list() {
+    list(id_login) {
         try {
-            return Repositorie.list()
+            return Repositorie.list(id_login)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }

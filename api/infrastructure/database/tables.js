@@ -3,6 +3,8 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableGoal()
+    this.createTableGoalLines()
     this.createTableSalesman()
     this.createTableCompanyAssets()
     this.createTablemailattachment()
@@ -31,6 +33,43 @@ class Tables {
     this.createTableUserHbs()
 
     return true
+  }
+
+  createTableGoal(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.goal (id_goal int NOT NULL AUTO_INCREMENT,
+      id_goalline int, amount int, id_salesman INT, FOREIGN KEY (id_salesman) REFERENCES salesman (id_salesman), 
+      FOREIGN KEY (id_goalline) REFERENCES goalline (id_goalline), PRIMARY KEY (id_goal))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableGoalLines(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.goalline (id_goalline int NOT NULL AUTO_INCREMENT, itemgroup VARCHAR(250), provider VARCHAR (250),
+    date DATE, application VARCHAR (250), labelname VARCHAR (250), labelcode VARCHAR (50), PRIMARY KEY (id_goalline))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableLabel(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.label (id_label int NOT NULL AUTO_INCREMENT, label VARCHAR(100), 
+    provider VARCHAR (250), product VARCHAR (250), PRIMARY KEY (id_label))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableSalesman(){

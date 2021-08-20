@@ -71,7 +71,7 @@ module.exports = {
     access: {
         name: 'access token',
         list: blocklist,
-        dateExp: [15, 'm'],
+        dateExp: [45, 'm'],
         create(id) {
             return createTokenJWT(id, this.dateExp)
         },
@@ -85,7 +85,7 @@ module.exports = {
     refresh: {
         name: 'refresh token',
         list: allowlist,
-        dateExp: [3, 'h'],
+        dateExp: [4, 'h'],
         create(id) {
             return createTokenOpaco(id, this.dateExp, this.list)
         },

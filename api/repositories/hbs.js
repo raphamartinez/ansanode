@@ -1,5 +1,5 @@
-const queryhbs = require('../infrastructure/database/querieshbs')
 const query = require('../infrastructure/database/queries')
+const queryhbs = require('../infrastructure/database/querieshbs')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
 
 
@@ -343,6 +343,23 @@ class Hbs {
 
             return queryhbs(sql)
         } catch (error) {
+            throw new InternalServerError('No se pudo enumerar articulos')
+        }
+    }
+
+    async listItemsLabel(label) {
+        try {
+            let sql = `SELECT I.Code as artcode, I.Name
+            FROM Item I
+            INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+            INNER JOIN Label La ON I.Labels = La.Code
+            WHERE La.Name = "${label}"
+            Group BY I.Code
+            ORDER BY I.Code`
+
+            return queryhbs(sql)
+        } catch (error) {
+            console.log(error);
             throw new InternalServerError('No se pudo enumerar articulos')
         }
     }

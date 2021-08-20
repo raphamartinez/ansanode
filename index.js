@@ -5,7 +5,7 @@ const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const Job = require('./api/models/job')
+const { job, jobHbs, jobMail, jobGoalLine } = require('./api/models/job')
 const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('./api/models/error');
 
 const connection = require('./api/infrastructure/database/connection')
@@ -33,9 +33,11 @@ app.listen(3000, () => {
   });
 
   if (process.env.NODE_ENV !== 'developer') {
-    Job.execute()
+    job.start()
+    jobHbs.start()
+    jobMail.start()
+    jobGoalLine.start()
   }
-
 })
 
 
@@ -71,7 +73,7 @@ app.use((err, req, res, next) => {
 
   res.status(status)
   res.json(body)
-  
+
 })
 
 // Surveymonkey.ListResponse()

@@ -5,8 +5,8 @@ const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const Job = require('./api/models/job')
 const { InvalidArgumentError, NotFound, NotAuthorized } = require('./api/models/error');
+const CronJob = require('cron').CronJob
 
 // const connection = require('./api/infrastructure/database/connection')
 // const tables = require('./api/infrastructure/database/tables')

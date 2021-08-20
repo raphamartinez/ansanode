@@ -69,10 +69,10 @@ app.listen(3000, () => {
 
   const jobGoalLine = new CronJob('0 0 5 1 * *', () => {
       try {
-          console.log("Executed Mail!");
-          Mailpowerbi.listMailtoSend()
+          // console.log("Executed Mail!");
+          // Mailpowerbi.listMailtoSend()
       } catch (error) {
-          console.log('Error Mail!' + error);
+          // console.log('Error Mail!' + error);
       }
   });
 

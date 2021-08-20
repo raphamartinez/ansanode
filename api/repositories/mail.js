@@ -102,15 +102,15 @@ class Mail {
         }
     }
 
-    async listMailtoSend(now, nowLater) {
+    async listMailtoSend() {
         try {
             let sql = `SELECT MA.id_mailpowerbi, MA.type, MA.recipients, MA.cc, MA.cco, MA.title, MA.body, DATE_FORMAT(MA.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(MT.id_mailattachment) as countatt
             FROM ansa.mailpowerbi MA
             LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
             LEFT JOIN ansa.mailscheduling MS ON MA.id_mailpowerbi = MS.id_mailpowerbi
-            WHERE MS.date between ? AND ?
+            WHERE MS.date between now() - interval 4 hour AND now() - interval 59 minute
             GROUP BY MA.id_mailpowerbi`
-            const result = await query(sql, [now, nowLater])
+            const result = await query(sql)
 
             return result
         } catch (error) {

@@ -108,12 +108,7 @@ class MailPowerBi {
     async listMailtoSend() {
         try {
 
-            const date = new Date()
-
-            const now = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours() - 4}:00:00`
-            const nowLater = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours() - 4}:59:00`
-
-            const mails = await Repositorie.listMailtoSend(now, nowLater)
+            const mails = await Repositorie.listMailtoSend()
 
             for (const mail of mails) {
                 const objects = await Repositorie.listAttachment(mail.id_mailpowerbi)

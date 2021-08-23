@@ -49,7 +49,7 @@ const modalAddSalesman = () => {
 const optionSellers = (salesman) => {
     const line = document.createElement('option')
 
-    line.value = `{"name":"${salesman.name}", "code":"${salesman.code}"}`
+    line.value = `{"name":"${salesman.name}", "code":"${salesman.code}", "office":"${salesman.office}"}`
 
     const content = ` ${salesman.name}</option>`
 

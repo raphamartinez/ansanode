@@ -32,7 +32,7 @@ class Goal {
 
             return result[0]
         } catch (error) {
-
+            return false
         }
     }
 

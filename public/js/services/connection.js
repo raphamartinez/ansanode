@@ -91,13 +91,13 @@ const body = async (url, data, method) => {
                             headers: {
                                 'Content-Type': 'application/json',
                                 'Authorization': `Bearer ${newAccessToken}`
-                            }
+                            },
+                            body: JSON.stringify(data)
                         })
 
                         if (newresult.ok) {
                             return newresult.json()
                         } else {
-                            alert('Error del Servidor.')
                             return result.json()
                         }
                     } catch (error) {

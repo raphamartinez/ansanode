@@ -3,7 +3,7 @@ const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
 
-    app.post('/goodyear', Middleware.bearer, async ( req, res, next) => {
+    app.post('/goodyear', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             const search = req.body.search
@@ -15,7 +15,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/items', Middleware.bearer, async ( req, res, next) => {
+    app.post('/items', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             let search = req.body.search
@@ -27,18 +27,19 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemslabel/:label', Middleware.bearer, async ( req, res, next) => {
+    app.get('/itemslabel/:label/:office', Middleware.bearer, async (req, res, next) => {
         try {
             let label = req.params.label
+            let office = req.params.office
 
-            const items = await Hbs.listItemsLabel(label)
+            const items = await Hbs.listItemsLabel(label, office)
             res.json(items)
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/itemscomplete', Middleware.bearer, async ( req, res, next) => {
+    app.get('/itemscomplete', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -49,7 +50,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/price', Middleware.bearer, async ( req, res, next) => {
+    app.post('/price', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             const search = req.body.search
@@ -61,7 +62,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockandgroup', Middleware.bearer, async ( req, res, next) => {
+    app.get('/stockandgroup', Middleware.bearer, async (req, res, next) => {
         try {
             const fields = await Hbs.listStockandGroup()
             res.json(fields)
@@ -70,7 +71,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockuser', Middleware.bearer, async ( req, res, next) => {
+    app.get('/stockuser', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -81,7 +82,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockbyitem/:artcode', Middleware.bearer, async ( req, res, next) => {
+    app.get('/stockbyitem/:artcode', Middleware.bearer, async (req, res, next) => {
         try {
             const artcode = req.params.artcode
 

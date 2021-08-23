@@ -296,7 +296,7 @@ class Hbs {
 
     listSalesMan() {
         try {
-            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name FROM SalesOrder Sa INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Closed = 0 ORDER BY SalesMan`
+            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office FROM SalesOrder Sa INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Closed = 0 ORDER BY SalesMan`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar SalesMan')
@@ -348,15 +348,36 @@ class Hbs {
 
     async listItemsLabel(label) {
         try {
-            let sql = `SELECT I.Code as artcode, I.Name
-            FROM Item I
-            INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
-            INNER JOIN Label La ON I.Labels = La.Code
+            let sql = `SELECT I.Code as artcode, I.Name, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
+                        FROM Item I
+                        INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+                        INNER JOIN Label La ON I.Labels = La.Code
+                        INNER JOIN Stock St ON I.Code = St.ArtCode
             WHERE La.Name = "${label}"
-            Group BY I.Code
-            ORDER BY I.Code`
+                        Group BY I.Code
+                        ORDER BY I.Code`
 
             return queryhbs(sql)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudo enumerar articulos')
+        }
+    }
+
+    async listItemsCity(code, arrstock) {
+        try {
+            let sql = `SELECT sum(St.Qty) AS CityQty, sum(St.Reserved) AS CityReserved, I.Code
+                        FROM Item I
+                        INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+                        INNER JOIN Label La ON I.Labels = La.Code
+                        INNER JOIN Stock St ON I.Code = St.ArtCode
+                        WHERE St.StockDepo IN (${arrstock})
+                        AND I.Code = "${code}"
+                        Group BY I.Code
+                        ORDER BY I.Code`
+            const data = await queryhbs(sql)
+
+            return data[0]
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudo enumerar articulos')

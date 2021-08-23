@@ -48,6 +48,38 @@ class GoalLine {
         }
     }
 
+    async countLineGoal(){
+        try {
+            let sql = `SELECT count(GL.id_goalline) as goalline, DATE_FORMAT(GL.date, '%m/%y') as date
+            FROM ansa.goalline GL
+            WHERE GL.application <> "DESCONSIDERAR"
+            GROUP BY date
+            ORDER BY date DESC`
+
+            const result = await query(sql)
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async countSellersGoal(){
+        try {
+            let sql = `SELECT SA.name, DATE_FORMAT(GL.date, '%m/%y') as date, COUNT(GO.amount) as amount
+            FROM ansa.salesman SA
+            LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
+            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            WHERE GL.application <> "DESCONSIDERAR"
+            group by SA.name
+            ORDER BY SA.name`
+
+            const result = await query(sql)
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
 }
 
 module.exports = new GoalLine()

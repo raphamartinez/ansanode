@@ -18,7 +18,7 @@ class Hbs {
         }
     }
 
-    async listClockMachine(){
+    async listClockMachine() {
         try {
             const data = await Repositorie.listClockMachine()
 
@@ -30,7 +30,7 @@ class Hbs {
         }
     }
 
-    listSalesman(){
+    listSalesman() {
         try {
             return Repositorie.listSalesMan()
         } catch (error) {
@@ -242,9 +242,60 @@ class Hbs {
         }
     }
 
-    async listItemsLabel(label) {
+    async listItemsLabel(label, office) {
         try {
-            const data = await Repositorie.listItemsLabel(label)
+
+            const stocks = [
+                ["01AUTOPJC", "1"],
+                ["01CAFE", "11"],
+                ["01DOSRUED", "11"],
+                ["01IMPPJC", "1"],
+                ["02AUTOCDE", "2"],
+                ["03AUTOBVIS", "3"],
+                ["04AUTOENC", "4"],
+                ["05AUTOSAL", "5"],
+                ["06AUTOFDO", "11"],
+                ["06AUTOSHCH", "6"],
+                ["07AUTOBADO", "7"],
+                ["10TRUCK", "10"],
+                ["12AUTORITA", "12"],
+                ["13AUTOMRA", "13"],
+                ["DCCDE", "2"],
+                ["DEPTRANIMP", "11"],
+                ["MATRIZ", "11"],
+            ]
+
+            let arrstock = " "
+
+            stocks.forEach(stock => {
+                if (stock[1] === office) {
+                    const st = stock[0]
+
+                    if (arrstock.length > 1) {
+                        arrstock += ` ,'${st}' `
+                    } else {
+                        arrstock += `'${st}' `
+                    }
+
+                }
+            })
+
+            let data = await Repositorie.listItemsLabel(label)
+
+            for (let obj of data) {
+
+                if (obj.Reserved > 0) obj.StockQty - obj.Reserved
+                let city = await Repositorie.listItemsCity(obj.artcode, arrstock)
+                if(city){
+                    if (city.CityReserved > 0) {
+                        obj.CityQty = city.CityQty - city.CityReserved
+                    } else {
+                        obj.CityQty = city.CityQty
+                    }
+                }else{
+                    obj.CityQty = 0
+                }
+            }
 
             return data
         } catch (error) {

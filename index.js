@@ -31,9 +31,9 @@ app.listen(3000, () => {
   app.get('/', function (req, res) {
     res.render('login');
   });
-  jobMail.start()
 
   if (process.env.NODE_ENV !== 'developer') {
+    jobMail.start()
     job.start()
     jobHbs.start()
     jobGoalLine.start()

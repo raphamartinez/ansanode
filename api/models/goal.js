@@ -7,10 +7,11 @@ class Goal {
         try {
             const obj = await Repositorie.validate(goal)
 
-            if (obj.amount && obj.amount !== goal.amount) {
+            if (obj && obj.amount && obj.amount !== goal.amount) {
                 goal.id_goal = obj.id_goal
                 await Repositorie.update(goal)
             }else {
+                console.log(goal);
                 await Repositorie.insert(goal)
             }
 

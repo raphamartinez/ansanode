@@ -73,7 +73,7 @@ class Tables {
   }
 
   createTableSalesman(){
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.salesman (id_salesman int NOT NULL AUTO_INCREMENT,
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.salesman (id_salesman int NOT NULL AUTO_INCREMENT, office int,
     name VARCHAR (250), code VARCHAR (100), dateReg DATETIME, id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login),
     PRIMARY KEY (id_salesman))`
 

@@ -14,6 +14,7 @@ async function listGoals() {
 
         settings.innerHTML = ''
         modal.innerHTML = " "
+        powerbi.innerHTML = " "
         cardHistory.style.display = 'none';
 
         if ($.fn.DataTable.isDataTable('#dataTable')) {
@@ -117,7 +118,6 @@ async function listGoalsLine(id_salesman) {
             dtview.push(field)
         });
 
-
         const table = $("#tablegoals").DataTable({
             data: dtview,
             columns: [
@@ -187,7 +187,11 @@ async function listGoalsLine(id_salesman) {
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                const items = await Connection.noBody(`itemslabel/${label}`)
+                const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
+
+                const office = seller[0].getAttribute("data-office")
+
+                const items = await Connection.noBody(`itemslabel/${label}/${office}`)
 
                 row.child(listItemsbyGroup(items)).show();
                 tr.addClass('shown');
@@ -216,6 +220,7 @@ $(document).on('keypress', '.goal', function (e) {
             id_goalline: btn.getAttribute("data-id_goalline"),
             amount: btn.value
         }
+    
         Connection.body(`goal`, { goal }, 'POST')
 
     }
@@ -223,10 +228,10 @@ $(document).on('keypress', '.goal', function (e) {
 
 function listItemsbyGroup(items) {
 
-    let table = `<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">`
+    let table = `<table cellpadding="0" cellspacing="0" border="0" style="">`
 
     items.forEach(item => {
-        let field = `<tr><td>Cod: ${item.artcode}</td><td>Nombre: ${item.Name}</td></tr>`
+        let field = `<tr><td>Cod: ${item.artcode}</td><td>Nombre: ${item.Name}</td><td>Stock de la Ciudad: ${item.CityQty}<td>Stock Total: ${item.StockQty}</td></tr>`
 
         table += field
     })

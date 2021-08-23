@@ -83,7 +83,7 @@ const lineaddgoal = (goal, index, id_salesman) => {
 const listSalesman = (salesman) => {
   const div = document.createElement('div')
 
-  const content = `<a href="#" data-toggle="tab" onclick="listGoalsSalesman(event)" data-id_salesman="${salesman.id_salesman}" class="nav-item nav-link has-icon nav-link-faded listersaleman">
+  const content = `<a href="#" data-toggle="tab" onclick="listGoalsSalesman(event)" data-id_salesman="${salesman.id_salesman}" data-office="${salesman.office}" class="nav-item nav-link has-icon nav-link-faded listersaleman">
   ${salesman.name}
   </a>`
 

@@ -513,8 +513,8 @@ class Hbs {
         }
     }
 
-    listSaleByItem(artcode, salesman) {
-        console.log(salesman);
+    async listSaleByItem(artcode, salesman) {
+
         try {
             const sql = `SELECT 
             SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-1),Sr.Qty,0)) AS goal1, DATE_FORMAT(NOW() - INTERVAL 1 month, '%m/%Y') AS month1,
@@ -525,7 +525,8 @@ class Hbs {
             WHERE Sr.ArtCode = '${artcode}'
             AND Sa.SalesMan = '${salesman.code}'`
 
-            return queryhbs(sql)
+            const data = await queryhbs(sql)
+            return data
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

@@ -364,7 +364,21 @@ class Hbs {
         try {
             const salesman = await RepositorieSeller.view(id_salesman)
 
-            return Repositorie.listSaleByItem(artcode, salesman)
+            const data = await Repositorie.listSaleByItem(artcode, salesman)
+
+            if (data[0].goal1 === null) {
+                data[0].goal1 = 0
+            }
+
+            if (data[0].goal2 === null) {
+                data[0].goal2 = 0
+            }
+
+            if (data[0].goal3 === null) {
+                data[0].goal3 = 0
+            }
+
+            return data
 
         } catch (error) {
             throw new listSaleByItem('Error')

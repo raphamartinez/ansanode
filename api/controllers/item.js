@@ -27,12 +27,12 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemslabel/:label/:office', Middleware.bearer, async (req, res, next) => {
+    app.post('/itemslabel/:office', Middleware.bearer, async (req, res, next) => {
         try {
-            let label = req.params.label
+            let code = req.body.code
             let office = req.params.office
 
-            const items = await Hbs.listItemsLabel(label, office)
+            const items = await Hbs.listItemsLabel(code, office)
             res.json(items)
         } catch (err) {
             next(err)

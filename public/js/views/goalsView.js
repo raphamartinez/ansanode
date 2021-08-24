@@ -25,7 +25,10 @@ const addGoals = () => {
     <div class="card">
         <div class="tab-pane">
           <div class="form-group">
-          <table class="table table-bordered" id="tablegoals" style="display: block !important; padding: 0 !important; margin: 0 !important; border: 0 !important; width: 100% !important; border-radius: 0 !important; line-height: 1 !important;"></table>
+          <div class="col-md-12 text-center">
+          <div id="loadinggoals"></div>
+          </div>
+          <table style="max-width: 785px !important;" class="table table-sm table-bordered" id="tablegoals"></table>
           </div>
         </div> 
       </div>
@@ -70,9 +73,7 @@ const lineaddgoal = (goal, index, id_salesman) => {
     `${goal.provider}`,
     `${goal.application}`,
     `${goal.itemcode}`,
-    `${goal.itemname}`,
-    `${goal.stockcity}`,
-    `${goal.StockQty}`,
+    `<a>${goal.itemname}<i style="text-align: right; float: right; color: #8FBC8F	;" class="fas fa-angle-down"></i></a>`,
     `<input data-id_goalline="${goal.id_goalline}" data-id_salesman="${id_salesman}" name="goal" tabindex="${index}" value="${goal.amount}" type="number" class="form-control goal text-center">`
   ]
 

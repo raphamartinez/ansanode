@@ -45,71 +45,7 @@ class GoalLine {
 
     async list(id_salesman) {
         try {
-            const data = await RepositorieGoal.list(id_salesman)
-
-            const stocks = [
-                ["01AUTOPJC", 1],
-                ["01CAFE", 11],
-                ["01DOSRUED", 11],
-                ["01IMPPJC", 1],
-                ["02AUTOCDE", 2],
-                ["03AUTOBVIS", 3],
-                ["04AUTOENC", 4],
-                ["05AUTOSAL", 5],
-                ["06AUTOFDO", 11],
-                ["06AUTOSHCH", 6],
-                ["07AUTOBADO", 7],
-                ["10TRUCK", 10],
-                ["12AUTORITA", 12],
-                ["13AUTOMRA", 13],
-                ["DCCDE", 2],
-                ["DEPTRANIMP", 11],
-                ["MATRIZ", 11],
-            ]
-
-            const salesman = await RepositorieSeller.view(id_salesman)
-            let arrstock = " "
-
-            await stocks.forEach(stock => {
-                if (stock[1] === salesman.office) {
-                    const st = stock[0]
-
-                    if (arrstock.length > 1) {
-                        arrstock += ` ,'${st}' `
-                    } else {
-                        arrstock += `'${st}' `
-                    }
-                }
-            })
-
-            await data.forEach(async obj => {
-                let stocksCity = await RepositorieHbs.listItemsCity(obj.itemcode, arrstock)
-
-                if(stocksCity.length > 2){
-                    await stocksCity.forEach(stock => {
-                        if (stock.CityReserved > 0) {
-                            obj.CityQty = stock.CityQty - stock.CityReserved
-                        } else {
-                            obj.CityQty = stock.CityQty
-                        }
-                    })
-                }
-            })
-
-            await data.forEach(async obj => {
-
-                let stocksLabel = await RepositorieHbs.listItemsLabel(obj.itemcode)
-
-                await stocksLabel.forEach(stock => {
-                    if (stock.Reserved > 0) {
-                        obj.StockQty = stock.StockQty - stock.Reserved
-                    } else {
-                        obj.StockQty = stock.StockQty
-                    }
-                })
-            })
-
-            return data
+            return RepositorieGoal.list(id_salesman)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }

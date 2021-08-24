@@ -242,7 +242,7 @@ class Hbs {
         }
     }
 
-    async listItemsLabel(label, office) {
+    async listItemsLabel(code, office) {
         try {
 
             const stocks = [
@@ -279,26 +279,23 @@ class Hbs {
                 }
             })
 
-            let data = await Repositorie.listItemsLabel(label)
+            let data = await Repositorie.listItemsLabel(code)
+            let city = await Repositorie.listItemsCity(code, arrstock)
 
-            for (let obj of data) {
-
+            data.forEach(obj => {
                 if (obj.Reserved > 0) obj.StockQty - obj.Reserved
-                let city = await Repositorie.listItemsCity(obj.artcode, arrstock)
-                if(city){
-                    if (city.CityReserved > 0) {
-                        obj.CityQty = city.CityQty - city.CityReserved
-                    } else {
-                        obj.CityQty = city.CityQty
-                    }
-                }else{
-                    obj.CityQty = 0
+
+                if (city.CityReserved > 0) {
+                    obj.CityQty = city.CityQty - city.CityReserved
+                } else {
+                    obj.CityQty = city.CityQty
                 }
-            }
+            })
 
             return data
+
         } catch (error) {
-            throw new InternalServerError('Error')
+            return [{ CityQty: 0, StockQty: 0 }]
         }
     }
 

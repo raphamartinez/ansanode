@@ -348,25 +348,25 @@ class Hbs {
 
     async listItemsLabel(code) {
         try {
-            let sql = `SELECT I.Code as artcode, I.Name, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
+            let sql = `SELECT sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
                         FROM Item I
                         INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
                         INNER JOIN Label La ON I.Labels = La.Code
                         INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE I.Code = "${code}"
-                        Group BY I.Code
-                        ORDER BY I.Code`
+            WHERE I.Code = "${code}"`
 
-            return queryhbs(sql)
+            const data = await queryhbs(sql)
+
+            if (data[0].StockQty > 0) return data
+
         } catch (error) {
-            console.log(error);
-            throw new InternalServerError('No se pudo enumerar articulos')
+            return { StockQty: 0, Reserved: 0}
         }
     }
 
     async listItemsCity(code, arrstock) {
         try {
-            let sql = `SELECT sum(St.Qty) AS CityQty, sum(St.Reserved) AS CityReserved, I.Code
+            let sql = `SELECT sum(St.Qty) AS CityQty, sum(St.Reserved) AS CityReserved
                         FROM Item I
                         INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
                         INNER JOIN Label La ON I.Labels = La.Code
@@ -375,10 +375,11 @@ class Hbs {
                         AND I.Code = "${code}"`
             const data = await queryhbs(sql)
 
-            return data[0]
+            if (data[0].CityQty > 0) return data[0]
+
+            return { CityQty: 0, CityReserved: 0}
         } catch (error) {
-            console.log(error);
-            throw new InternalServerError('No se pudo enumerar articulos')
+            return { CityQty: 0, CityReserved: 0}
         }
     }
 

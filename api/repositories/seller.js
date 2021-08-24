@@ -47,6 +47,21 @@ class Seller {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }
     }
+
+    async view(id_salesman) {
+        try {
+            let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, SA.name, SA.office, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.salesman SA
+            LEFT JOIN ansa.login LO ON SA.id_login = LO.id_login 
+            LEFT JOIN ansa.user US ON LO.id_login = US.id_login `
+
+            if (id_salesman) sql += `WHERE SA.id_salesman = ${id_salesman}`
+
+            const data = await query(sql)
+            return data[0]
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
+        }
+    }
 }
 
 module.exports = new Seller()

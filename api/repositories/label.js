@@ -28,12 +28,12 @@ class Label {
 
     listItemLabel() {
         try {
-            const sql = `SELECT I.Code as artcode,I.Labels AS labelcode, Ig.Name AS itemgroup, La.Name AS labelname
+            const sql = `SELECT I.Code as itemcode, I.Name AS itemname, I.Labels AS labelcode, Ig.Name AS itemgroup, La.Name AS labelname
             FROM Item I
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
-            Group BY I.Labels
-            ORDER BY I.Labels`
+            Group BY I.Code
+            ORDER BY I.Code`
 
             return queryhbs(sql)
         } catch (error) {

@@ -346,14 +346,14 @@ class Hbs {
         }
     }
 
-    async listItemsLabel(label) {
+    async listItemsLabel(code) {
         try {
             let sql = `SELECT I.Code as artcode, I.Name, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
                         FROM Item I
                         INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
                         INNER JOIN Label La ON I.Labels = La.Code
                         INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE La.Name = "${label}"
+            WHERE I.Code = "${code}"
                         Group BY I.Code
                         ORDER BY I.Code`
 
@@ -372,9 +372,7 @@ class Hbs {
                         INNER JOIN Label La ON I.Labels = La.Code
                         INNER JOIN Stock St ON I.Code = St.ArtCode
                         WHERE St.StockDepo IN (${arrstock})
-                        AND I.Code = "${code}"
-                        Group BY I.Code
-                        ORDER BY I.Code`
+                        AND I.Code = "${code}"`
             const data = await queryhbs(sql)
 
             return data[0]

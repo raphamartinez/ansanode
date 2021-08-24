@@ -12,7 +12,7 @@ const connection = require('./api/infrastructure/database/connection')
 const tables = require('./api/infrastructure/database/tables')
 const Hbs = require('./api/models/hbs');
 const Surveymonkey = require('./api/models/surveymonkey')
-
+const GoalLine = require('./api/models/goalline')
 
 
 process.setMaxListeners(100)
@@ -94,5 +94,5 @@ app.use((err, req, res, next) => {
 
 // for (let index = 0; index < dates.length; index++) {
 //   const date = dates[index];
-//   Goal.create(date)
+//   GoalLine.create(date)
 // }

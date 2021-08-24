@@ -69,8 +69,10 @@ const lineaddgoal = (goal, index, id_salesman) => {
     `${goal.itemgroup}`,
     `${goal.provider}`,
     `${goal.application}`,
-    `${goal.labelcode}`,
-    `${goal.labelname}`,
+    `${goal.itemcode}`,
+    `${goal.itemname}`,
+    `${goal.stockcity}`,
+    `${goal.StockQty}`,
     `<input data-id_goalline="${goal.id_goalline}" data-id_salesman="${id_salesman}" name="goal" tabindex="${index}" value="${goal.amount}" type="number" class="form-control goal text-center">`
   ]
 

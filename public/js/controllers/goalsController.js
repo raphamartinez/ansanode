@@ -125,11 +125,13 @@ async function listGoalsLine(id_salesman) {
                 { title: "Grupo" },
                 { title: "Linea de Productos" },
                 { title: "Aplicacion" },
-                { title: "Etiqueta" },
+                { title: "Cod Articulo" },
                 {
-                    title: "Nombre",
-                    class: "details-control",
+                    title: "Nombre"
+                    // class: "details-control",
                 },
+                { title: "Stock Ciud" },
+                { title: "Stock TT" },
                 { title: "Cant" }
             ],
 
@@ -220,7 +222,7 @@ $(document).on('keypress', '.goal', function (e) {
             id_goalline: btn.getAttribute("data-id_goalline"),
             amount: btn.value
         }
-    
+
         Connection.body(`goal`, { goal }, 'POST')
 
     }
@@ -236,7 +238,7 @@ function listItemsbyGroup(items) {
         table += field
     })
 
-    table+= `</table>`
+    table += `</table>`
 
     return table
 }

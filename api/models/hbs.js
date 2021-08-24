@@ -276,7 +276,6 @@ class Hbs {
                     } else {
                         arrstock += `'${st}' `
                     }
-
                 }
             })
 

@@ -5,19 +5,20 @@ class GoalLine {
 
     async insert(goal) {
         try {
-            const sql = 'INSERT INTO ansa.goalline (itemgroup, labelname, labelcode, application, provider, date) values (?, ?, ?, ?, ?, ?)'
-            const result = await query(sql, [goal.itemgroup, goal.labelname, goal.labelcode, goal.application, goal.provider, goal.date])
+            const sql = 'INSERT INTO ansa.goalline (itemname, itemcode, itemgroup, labelname, labelcode, application, provider, date) values (?, ?, ?, ?, ?, ?, ?, ?)'
+            const result = await query(sql, [goal.itemname, goal.itemcode, goal.itemgroup, goal.labelname, goal.labelcode, goal.application, goal.provider, goal.date])
 
             return result
         } catch (error) {
+            console.log(error);
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
     }
 
-
+ 
     list(id_salesman) {
         try {
-            let sql = `SELECT GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelname, GL.labelcode, DATE_FORMAT(GL.date, '%m/%y') as date, GO.amount
+            let sql = `SELECT GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelname, GL.labelcode, GL.itemcode, GL.itemname, DATE_FORMAT(GL.date, '%m/%y') as date, GO.amount
             FROM ansa.goalline GL
             `
 

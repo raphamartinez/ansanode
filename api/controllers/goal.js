@@ -22,11 +22,12 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline/:id_salesman', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalsline/:id_salesman/:date', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
+            const date = req.params.date
             
-            const goalsline = await GoalLine.list(id_salesman)
+            const goalsline = await GoalLine.list(id_salesman, date)
             res.json(goalsline)
         } catch (err) {
             next(err)

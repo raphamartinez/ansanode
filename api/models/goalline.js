@@ -43,9 +43,9 @@ class GoalLine {
         }
     }
 
-    async list(id_salesman) {
+    async list(id_salesman, date) {
         try {
-            return RepositorieGoal.list(id_salesman)
+            return RepositorieGoal.list(id_salesman, date)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }

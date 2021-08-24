@@ -55,6 +55,7 @@ async function addGoalsList() {
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         settings.appendChild(View.addGoals())
+
         const listsellers = document.getElementById('listsellers')
 
         const sellers = await Connection.noBody('sellersgoalline', 'GET')
@@ -74,6 +75,35 @@ async function addGoalsList() {
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
+
+        const dates = [
+            2,
+            3,
+            4,
+            5,
+            6
+        ]
+        const listdate = document.getElementById('listdate')
+
+        dates.forEach(date => {
+            const today = new Date()
+
+            let month = today.getMonth() + date
+            let year = today.getFullYear()
+
+            if (month > 12) {
+                month -= 12
+                year += 1
+            }
+
+            if (month <= 9) {
+                month = `0${month}`
+            }
+
+            const now = `${month}/${year}`
+            const datesql = `${year}-${month}`
+            listdate.appendChild(View.listDate(datesql, now))
+        })
     } catch (error) {
 
     }
@@ -89,9 +119,38 @@ async function listGoalsSalesman(event) {
 
         const btn = event.currentTarget
         const id_salesman = btn.getAttribute("data-id_salesman")
+        const datediv = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded datesaleman active");
+        const date = datediv[0].getAttribute("data-date")
 
-        listGoalsLine(id_salesman)
+        if (date) {
+            listGoalsLine(id_salesman, date)
+        } else {
+            alert('Seleccione una fecha válida!')
+        }
 
+    } catch (error) {
+
+    }
+}
+
+window.listDateSalesman = listDateSalesman
+
+async function listDateSalesman(event) {
+    event.preventDefault()
+
+    try {
+        $(".datesaleman").removeClass("active");
+
+        const btn = event.currentTarget
+        const date = btn.getAttribute("data-date")
+        const salesdiv = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
+        if (salesdiv[0]) {
+            const id_salesman = salesdiv[0].getAttribute("data-id_salesman")
+
+            listGoalsLine(id_salesman, date)
+        } else {
+            alert('Seleccione un vendedor!')
+        }
     } catch (error) {
 
     }
@@ -99,7 +158,7 @@ async function listGoalsSalesman(event) {
 
 window.listGoalsLine = listGoalsLine
 
-async function listGoalsLine(id_salesman) {
+async function listGoalsLine(id_salesman, date) {
 
     if ($.fn.DataTable.isDataTable('#tablegoals')) {
         $('#tablegoals').dataTable().fnClearTable();
@@ -113,7 +172,14 @@ async function listGoalsLine(id_salesman) {
   </div>`
     try {
 
-        const goalsline = await Connection.noBody(`goalsline/${id_salesman}`, 'GET')
+        const goalsline = await Connection.noBody(`goalsline/${id_salesman}/${date}`, 'GET')
+
+        if ($.fn.DataTable.isDataTable('#tablegoals')) {
+            $('#tablegoals').dataTable().fnClearTable();
+            $('#tablegoals').dataTable().fnDestroy();
+            $('#tablegoals').empty();
+        }
+
         let dtview = [];
         let index = 1
         goalsline.forEach(goal => {
@@ -192,6 +258,11 @@ async function listGoalsLine(id_salesman) {
                 const code = tr[0].childNodes[4].textContent
                 let row = table.row(tr);
 
+                const i = event.currentTarget.children[0].children[0]
+                i.classList.remove('fas','fa-boxes');
+                i.classList.add('spinner-border');
+
+
                 if (row.child.isShown()) {
                     row.child.hide();
                     tr.removeClass('shown');
@@ -205,10 +276,17 @@ async function listGoalsLine(id_salesman) {
                     row.child(listItemsbyGroup(items)).show();
                     tr.addClass('shown');
                 }
+                i.classList.add('fas', 'fa-boxes');
+                i.classList.remove('spinner-border');
             } else {
                 const artcode = event.currentTarget.textContent
                 let tr = $(this).closest('tr');
                 let row = table.row(tr);
+
+                const i = event.currentTarget.children[0].children[0]
+
+                i.classList.remove('fas', 'fa-shopping-cart');
+                i.classList.add('spinner-border');
 
                 if (row.child.isShown()) {
                     row.child.hide();
@@ -223,9 +301,12 @@ async function listGoalsLine(id_salesman) {
                     row.child(listSales(sales)).show();
                     tr.addClass('shown');
                 }
+                i.classList.add('fas', 'fa-shopping-cart');
+                i.classList.remove('spinner-border');
             }
 
         });
+
         loadinggoals.innerHTML = ``
     } catch (error) {
         loadinggoals.innerHTML = ``
@@ -258,7 +339,7 @@ $(document).on('keypress', '.goal', function (e) {
 
 function listItemsbyGroup(items) {
 
-    let table = `<table cellpadding="0" cellspacing="0" border="0" style="">`
+    let table = `<h5>Stock</h5><table cellpadding="0" cellspacing="0" border="0" style="">`
 
     items.forEach(item => {
         let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Stock de la Ciudad:<strong> ${item.CityQty}</strong></td><td>Stock Total: <strong>${item.StockQty}</strong></td></tr>`
@@ -273,7 +354,7 @@ function listItemsbyGroup(items) {
 
 function listSales(sales) {
 
-    let table = `<table cellpadding="0" cellspacing="0" border="0" style="">`
+    let table = `<h5>Ventas</h5><table cellpadding="0" cellspacing="0" border="0" style="">`
     sales.forEach(sale => {
         let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month1}</strong></td><td>Cant Ventas: <strong>${sale.goal1}</strong></td></tr>
         <tr style="color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month2}</strong></td><td>Cant de Ventas: <strong>${sale.goal2}</strong></td></tr>

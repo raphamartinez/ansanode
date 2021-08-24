@@ -19,7 +19,18 @@ const addGoals = () => {
     </div>
   </div >
     <div class="row gutters-sm">
-      <div class="col-md-2 d-none d-md-block">
+    <div class="col-md-2">
+    <div class="col-md-12 d-none d-md-block">
+      <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
+      <div class="card-header">Fecha</div>
+        <div class="card-body">
+          <nav id="listdate" class="nav flex-column text-left nav-pills nav-gap-y-1">
+            <a onclick="listDateSalesman(event)" data-date="${year}-${month}" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded datesaleman active">${month}/${year}</a>
+          </nav>
+        </div>
+      </div>
+      </div>
+      <div class="col-md-12 d-none d-md-block">
         <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
         <div class="card-header">Vendedores</div>
           <div class="card-body">
@@ -27,6 +38,7 @@ const addGoals = () => {
             </nav>
           </div>
         </div>
+      </div>
       </div>
       <div class="col-md-8">
         <div class="card">
@@ -39,18 +51,6 @@ const addGoals = () => {
             </div>
           </div>
         </div>
-      </div>
-    </div>
-    <div class="row gutters-sm">
-    <div class="col-md-2 d-none d-md-block">
-      <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
-      <div class="card-header">Fecha</div>
-        <div class="card-body">
-          <nav id="listdate" class="nav flex-column text-left nav-pills nav-gap-y-1">
-            <a data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">${month}/${year}</a>
-          </nav>
-        </div>
-      </div>
       </div>
     </div>
   </div>
@@ -92,7 +92,7 @@ const lineaddgoal = (goal, index, id_salesman) => {
     `${goal.provider}`,
     `${goal.application}`,
     `<a data-button="1" >${goal.itemcode}<i style="text-align: right; float: right; color: #8FBC8F;" class="fas fa-shopping-cart"></i></a>`,
-    `<a data-button="2" >${goal.itemname}<i style="text-align: right; float: right; color: #6495ED;" class="fas fa-angle-down"></i></a>`,
+    `<a data-button="2" >${goal.itemname}<i style="text-align: right; float: right; color: #6495ED;" class="fas fa-boxes"></i></a>`,
     `<input data-id_goalline="${goal.id_goalline}" data-id_salesman="${id_salesman}" name="goal" tabindex="${index}" value="${goal.amount}" type="number" class="form-control goal text-center">`
   ]
 
@@ -114,12 +114,25 @@ const listSalesman = (salesman) => {
   return div
 }
 
+const listDate = (datesql, date) => {
+  const div = document.createElement('div')
+
+  const content = `
+  <a onclick="listDateSalesman(event)" data-date="${datesql}" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded datesaleman">${date}</a>
+  `
+
+  div.innerHTML = content
+
+  return div
+}
+
 
 export const View = {
   addGoals,
   opcionesGoals,
   lineaddgoal,
-  listSalesman
+  listSalesman,
+  listDate
 }
 
 

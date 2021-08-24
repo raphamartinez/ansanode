@@ -2,10 +2,10 @@ const mysql = require('mysql2');
 
   connectionhbs = mysql.createConnection({
     user: 'dblectura',
-    host: '10.0.0.21',
+    host: '45.232.214.13',
     database: 'ansa',
     password: 'Dblec#2020',
-    port: 3306
+    port: 63306
   })
   
 module.exports = connectionhbs

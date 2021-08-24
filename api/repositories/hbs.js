@@ -360,7 +360,7 @@ class Hbs {
             if (data[0].StockQty > 0) return data
 
         } catch (error) {
-            return { StockQty: 0, Reserved: 0}
+            return { StockQty: 0, Reserved: 0 }
         }
     }
 
@@ -377,9 +377,9 @@ class Hbs {
 
             if (data[0].CityQty > 0) return data[0]
 
-            return { CityQty: 0, CityReserved: 0}
+            return { CityQty: 0, CityReserved: 0 }
         } catch (error) {
-            return { CityQty: 0, CityReserved: 0}
+            return { CityQty: 0, CityReserved: 0 }
         }
     }
 
@@ -507,6 +507,24 @@ class Hbs {
             sum(Qty) AS Qty, SUM(Reserved) AS Reserved
             FROM Stock WHERE ArtCode = '${artcode}' AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
             group BY StockDepo`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listSaleByItem(artcode, salesman) {
+        console.log(salesman);
+        try {
+            const sql = `SELECT 
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-1),Sr.Qty,0)) AS goal1, DATE_FORMAT(NOW() - INTERVAL 1 month, '%m/%Y') AS month1,
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-2),Sr.Qty,0)) AS goal2, DATE_FORMAT(NOW() - INTERVAL 2 month, '%m/%Y') AS month2,
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-3),Sr.Qty,0)) AS goal3, DATE_FORMAT(NOW() - INTERVAL 3 month, '%m/%Y') AS month3
+            FROM SalesOrder Sa
+            INNER JOIN SalesOrderItemRow Sr ON Sa.internalId = Sr.masterId 
+            WHERE Sr.ArtCode = '${artcode}'
+            AND Sa.SalesMan = '${salesman.code}'`
+
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

@@ -92,4 +92,16 @@ module.exports = app => {
             next(err)
         }
     })
+
+    app.get('/sale/:id_salesman/:artcode', Middleware.bearer, async (req, res, next) => {
+        try {
+            const artcode = req.params.artcode
+            const id_salesman = req.params.id_salesman
+
+            const sale = await Hbs.listSaleByItem(id_salesman, artcode)
+            res.json(sale)
+        } catch (err) {
+            next(err)
+        }
+    })
 }

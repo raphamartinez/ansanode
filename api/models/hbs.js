@@ -1,5 +1,6 @@
 const moment = require('moment')
 const Repositorie = require('../repositories/hbs')
+const RepositorieSeller = require('../repositories/seller')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const History = require('./history')
 
@@ -356,6 +357,17 @@ class Hbs {
             return stocks
         } catch (error) {
             throw new InternalServerError('Error')
+        }
+    }
+
+    async listSaleByItem(id_salesman, artcode) {
+        try {
+            const salesman = await RepositorieSeller.view(id_salesman)
+
+            return Repositorie.listSaleByItem(artcode, salesman)
+
+        } catch (error) {
+            throw new listSaleByItem('Error')
         }
     }
 

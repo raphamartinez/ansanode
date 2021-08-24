@@ -129,7 +129,10 @@ async function listGoalsLine(id_salesman) {
                 { title: "Grupo" },
                 { title: "Linea de Productos" },
                 { title: "Aplicacion" },
-                { title: "Cod Articulo" },
+                {
+                    title: "Cod Articulo",
+                    class: "details-control"
+                },
                 {
                     title: "Nombre",
                     class: "details-control"
@@ -138,7 +141,7 @@ async function listGoalsLine(id_salesman) {
             ],
             autoHeight: true,
             responsive: true,
-            lengthMenu: [[25, 50, 100, 200], [25, 50, 100, 200]],
+            lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
             pagingType: "numbers",
             fixedHeader: true,
             orderCellsTop: true,
@@ -182,23 +185,46 @@ async function listGoalsLine(id_salesman) {
 
         $('#tablegoals tbody').on('click', 'td.details-control', async function (event) {
 
-            let tr = $(this).closest('tr');
-            const code = tr[0].childNodes[4].textContent
-            let row = table.row(tr);
+            const button = event.currentTarget.children[0].attributes[0].value
 
-            if (row.child.isShown()) {
-                row.child.hide();
-                tr.removeClass('shown');
+            if (button === "2") {
+                let tr = $(this).closest('tr');
+                const code = tr[0].childNodes[4].textContent
+                let row = table.row(tr);
+
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
+
+                    const office = seller[0].getAttribute("data-office")
+
+                    const items = await Connection.body(`itemslabel/${office}`, { code }, "POST")
+
+                    row.child(listItemsbyGroup(items)).show();
+                    tr.addClass('shown');
+                }
             } else {
-                const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
+                const artcode = event.currentTarget.textContent
+                let tr = $(this).closest('tr');
+                let row = table.row(tr);
 
-                const office = seller[0].getAttribute("data-office")
+                if (row.child.isShown()) {
+                    row.child.hide();
+                    tr.removeClass('shown');
+                } else {
+                    const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
 
-                const items = await Connection.body(`itemslabel/${office}`, { code }, "POST")
+                    const id_salesman = seller[0].getAttribute("data-id_salesman")
 
-                row.child(listItemsbyGroup(items)).show();
-                tr.addClass('shown');
+                    const sales = await Connection.noBody(`sale/${id_salesman}/${artcode}`, "GET")
+
+                    row.child(listSales(sales)).show();
+                    tr.addClass('shown');
+                }
             }
+
         });
         loadinggoals.innerHTML = ``
     } catch (error) {
@@ -235,7 +261,23 @@ function listItemsbyGroup(items) {
     let table = `<table cellpadding="0" cellspacing="0" border="0" style="">`
 
     items.forEach(item => {
-        let field = `<tr><td>Stock de la Ciudad:<strong> ${item.CityQty}</strong></td><td>Stock Total: <strong>${item.StockQty}</strong></td></tr>`
+        let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Stock de la Ciudad:<strong> ${item.CityQty}</strong></td><td>Stock Total: <strong>${item.StockQty}</strong></td></tr>`
+
+        table += field
+    })
+
+    table += `</table>`
+
+    return table
+}
+
+function listSales(sales) {
+
+    let table = `<table cellpadding="0" cellspacing="0" border="0" style="">`
+    sales.forEach(sale => {
+        let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month1}</strong></td><td>Cant Ventas: <strong>${sale.goal1}</strong></td></tr>
+        <tr style="color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month2}</strong></td><td>Cant de Ventas: <strong>${sale.goal2}</strong></td></tr>
+        <tr style="color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month3}</strong></td><td>Cant Ventas: <strong>${sale.goal3}</strong></td></tr>`
 
         table += field
     })

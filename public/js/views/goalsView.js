@@ -1,40 +1,59 @@
 const addGoals = () => {
   const div = document.createElement('div')
+  let today = new Date()
+
+  let month = today.getMonth() + 1
+  let year = today.getFullYear()
+
+  if (month <= 9) {
+    month = `0${month}`
+  }
 
   const content = `
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+  <div class="container-fluid">
+  <div class="d-sm-flex align-items-center justify-content-between mb-4" >
     <div class="col-md-12 text-left">
-    <button onclick="listGoals(event)" type="button" class="btn btn-secondary">
-    <i class="fas fa-chevron-left"></i> Volver a la lista
-</button>
+      <button onclick="listGoals(event)" type="button" class="btn btn-secondary">
+        <i class="fas fa-chevron-left"></i> Volver a la lista
+      </button>
     </div>
-</div>
-
-<div class="container-fluid">
-<div class="row gutters-sm">
-  <div class="col-md-2 d-none d-md-block">
-    <div class="card">
-      <div class="card-body">
-        <nav id="listsellers" class="nav flex-column text-left nav-pills nav-gap-y-1">
-        <a data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">Vendedores</a>
-        </nav>
+  </div >
+    <div class="row gutters-sm">
+      <div class="col-md-2 d-none d-md-block">
+        <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
+        <div class="card-header">Vendedores</div>
+          <div class="card-body">
+            <nav id="listsellers" class="nav flex-column text-left nav-pills nav-gap-y-1">
+            </nav>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="card">
+          <div class="tab-pane">
+            <div class="form-group">
+              <div class="col-md-12 text-center">
+                <div id="loadinggoals"></div>
+              </div>
+              <table style="max-width: 785px !important;" class="table table-sm table-bordered" id="tablegoals"></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row gutters-sm">
+    <div class="col-md-2 d-none d-md-block">
+      <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
+      <div class="card-header">Fecha</div>
+        <div class="card-body">
+          <nav id="listdate" class="nav flex-column text-left nav-pills nav-gap-y-1">
+            <a data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">${month}/${year}</a>
+          </nav>
+        </div>
+      </div>
       </div>
     </div>
   </div>
-  <div class="col-md-8">
-    <div class="card">
-        <div class="tab-pane">
-          <div class="form-group">
-          <div class="col-md-12 text-center">
-          <div id="loadinggoals"></div>
-          </div>
-          <table style="max-width: 785px !important;" class="table table-sm table-bordered" id="tablegoals"></table>
-          </div>
-        </div> 
-      </div>
-    </div>
-  </div>
-</div>
 </div>
 
   `
@@ -48,7 +67,7 @@ const opcionesGoals = () => {
 
   const content = `
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <div class="col-md-12 text-left">
+    <div class="col-md-6 text-left">
         <div class="btn-group" role="group">
             <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Opciones
@@ -72,8 +91,8 @@ const lineaddgoal = (goal, index, id_salesman) => {
     `${goal.itemgroup}`,
     `${goal.provider}`,
     `${goal.application}`,
-    `${goal.itemcode}`,
-    `<a>${goal.itemname}<i style="text-align: right; float: right; color: #8FBC8F	;" class="fas fa-angle-down"></i></a>`,
+    `<a data-button="1" >${goal.itemcode}<i style="text-align: right; float: right; color: #8FBC8F;" class="fas fa-shopping-cart"></i></a>`,
+    `<a data-button="2" >${goal.itemname}<i style="text-align: right; float: right; color: #6495ED;" class="fas fa-angle-down"></i></a>`,
     `<input data-id_goalline="${goal.id_goalline}" data-id_salesman="${id_salesman}" name="goal" tabindex="${index}" value="${goal.amount}" type="number" class="form-control goal text-center">`
   ]
 
@@ -102,3 +121,5 @@ export const View = {
   lineaddgoal,
   listSalesman
 }
+
+

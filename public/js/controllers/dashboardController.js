@@ -8,6 +8,8 @@ window.onload = async function () {
   <span class="sr-only">Loading...</span>
 </div>
 `
+    let title = document.querySelector('[data-title]')
+    let cardHistory = document.querySelector('[data-card]')
 
     let divadmin = document.querySelector('[data-adm]')
     let divitem = document.querySelector('[data-item]')
@@ -20,22 +22,26 @@ window.onload = async function () {
     let history = await Connection.noBody('history', 'GET')
     let lastupdate = await Connection.noBody('seguridadhistory', 'GET')
 
+    ViewDashboard.showCardHistory(cardHistory, history)
+    ViewDashboard.showCardBd(cardHistory, lastupdate)
+
     if (perfil !== 1) {
         divadmin.innerHTML = " "
         divitem.innerHTML = " "
         divadm.innerHTML = " "
     } else {
         $("#perfiladm").attr("data-id_login", user.id_login);
+
+        let goals = await Connection.noBody('sellersdashboard', 'GET')
+
+        cardHistory.appendChild(ViewDashboard.showGoals())
+
+        let goaldashboard = document.getElementById('goaldashboard')
+
+        goals.forEach(goal => {
+            goaldashboard.appendChild(ViewDashboard.sellers(goal))
+        })
     }
-
-    let title = document.querySelector('[data-title]')
-
-    let cardHistory = document.querySelector('[data-card]')
-
-
-    ViewDashboard.showCardHistory(cardHistory, history)
-    ViewDashboard.showCardBd(cardHistory, lastupdate)
-
 
     let name = user.name.substring(0, (user.name + " ").indexOf(" "))
     let username = document.querySelector('[data-username]')
@@ -146,3 +152,36 @@ function autocomplete(inp, arr) {
 const powerbis = await Connection.noBody('powerbis', 'GET')
 
 autocomplete(document.getElementById("searchcomplete"), powerbis);
+
+
+
+window.listGoalSalesmanId = listGoalSalesmanId
+
+async function listGoalSalesmanId(event) {
+
+    let isExpanded = event.currentTarget.children
+
+    if (isExpanded.length === 1) {
+
+        const card = event.currentTarget
+        const id_salesman = card.getAttribute("data-id_salesman")
+
+        let goals = await Connection.noBody(`sellergoal/${id_salesman}`, 'GET')
+
+        let div = document.createElement('div');
+        div.className = "collapse col-md-12 sellergoal"
+        div.nam
+
+        await goals.forEach(goal => {
+            div.appendChild(ViewDashboard.progress(goal))
+        })
+
+        card.appendChild(div)
+
+        $('.sellergoal').collapse()
+    } else {
+        $('.sellergoal').collapse('hide')
+
+        event.currentTarget.children[1].remove()
+    }
+}

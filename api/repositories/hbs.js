@@ -296,7 +296,7 @@ class Hbs {
 
     listSalesMan() {
         try {
-            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office FROM SalesOrder Sa INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Closed = 0 ORDER BY SalesMan`
+            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office FROM SalesOrder Sa LEFT JOIN User Us ON Sa.SalesMan = Us.Code WHERE ( Us.Closed = 0 OR Us.Closed IS NULL) AND Us.Office IS NOT NULL GROUP BY Us.Code ORDER BY SalesMan `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar SalesMan')
@@ -364,22 +364,23 @@ class Hbs {
         }
     }
 
-    async listItemsCity(code, arrstock) {
+    async listItemsStock(code, arrstock) {
         try {
-            let sql = `SELECT sum(St.Qty) AS CityQty, sum(St.Reserved) AS CityReserved
-                        FROM Item I
-                        INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
-                        INNER JOIN Label La ON I.Labels = La.Code
-                        INNER JOIN Stock St ON I.Code = St.ArtCode
-                        WHERE St.StockDepo IN (${arrstock})
-                        AND I.Code = "${code}"`
+            let sql = `SELECT sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved,
+            (SELECT sum(St.Qty) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (${arrstock}) AND I.Code = "${code}") AS CityQty,
+            (SELECT sum(St.Reserved) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (${arrstock}) AND I.Code = "${code}") AS CityReserved
+            FROM Item I
+            INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+            INNER JOIN Label La ON I.Labels = La.Code
+            INNER JOIN Stock St ON I.Code = St.ArtCode
+            WHERE I.Code = "${code}"`
             const data = await queryhbs(sql)
 
-            if (data[0].CityQty > 0) return data[0]
+            if (data[0].Qty > 0) return data[0]
 
-            return { CityQty: 0, CityReserved: 0 }
+            return {  Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
         } catch (error) {
-            return { CityQty: 0, CityReserved: 0 }
+            return {  Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
         }
     }
 
@@ -507,6 +508,20 @@ class Hbs {
             sum(Qty) AS Qty, SUM(Reserved) AS Reserved
             FROM Stock WHERE ArtCode = '${artcode}' AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
             group BY StockDepo`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listItemsGroups() {
+        try {
+            const sql = `SELECT distinct ig.Code, ig.Name
+            FROM ItemGroup ig
+            INNER JOIN Item i ON ig.Code = i.ItemGroup
+            INNER JOIN Stock st ON st.ArtCode = i.Code
+            WHERE st.Qty > 0
+            GROUP BY ig.Name`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

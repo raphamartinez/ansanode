@@ -6,7 +6,9 @@ module.exports = app => {
 
     app.get('/goals', Middleware.bearer, async ( req, res, next) => {
         try {
-            const goals = await Goal.list()
+            const id_login = req.login.id_login
+
+            const goals = await Goal.listGoalsByManager(id_login)
             res.json(goals)
         } catch (err) {
             next(err)
@@ -22,12 +24,14 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline/:id_salesman/:date', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalsline/:id_salesman/:date/:group/:stock', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const date = req.params.date
+            const group = req.params.group
+            const checkstock = req.params.stock
             
-            const goalsline = await GoalLine.list(id_salesman, date)
+            const goalsline = await GoalLine.list(id_salesman, date, group, checkstock)
             res.json(goalsline)
         } catch (err) {
             next(err)

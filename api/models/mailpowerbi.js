@@ -116,11 +116,11 @@ class MailPowerBi {
 
                 for (const obj of objects) {
 
-                    let path = `./file${obj.id_mailattachment}`
+                    let path = `./informes${obj.id_mailattachment}`
                     await Webscraping.printPowerBi(obj.url, path)
 
                     const attachment = {
-                        filename: `att${obj.id_mailattachment}.pdf`,
+                        filename: `informes-${obj.id_mailattachment}.pdf`,
                         path: `${path}.pdf`
                     }
                     attachments.push(attachment)
@@ -157,7 +157,7 @@ class MailPowerBi {
                 await transport.sendMail(send)
 
                 for (const obj of objects) {
-                    fs.unlinkSync(`./file${obj.id_mailattachment}.pdf`)
+                    fs.unlinkSync(`./informes${obj.id_mailattachment}.pdf`)
                 }
 
                 console.log("enviado com sucesso");

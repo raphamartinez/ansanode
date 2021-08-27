@@ -48,16 +48,31 @@ class Seller {
         }
     }
 
-    async view(id_salesman) {
+    async view(id_login, id_salesman) {
         try {
-            let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, SA.name, SA.office, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.salesman SA
-            LEFT JOIN ansa.login LO ON SA.id_login = LO.id_login 
-            LEFT JOIN ansa.user US ON LO.id_login = US.id_login `
+            let sql
 
-            if (id_salesman) sql += `WHERE SA.id_salesman = ${id_salesman}`
+            if (id_salesman) {
+                sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
+                FROM ansa.salesman sa
+                CROSS JOIN ansa.goalline gl
+                LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+                WHERE sa.id_salesman = ${id_salesman}
+                group by sa.code, gl.date
+                order by gl.date asc`
+
+            } else{
+                sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
+                FROM ansa.salesman sa
+                CROSS JOIN ansa.goalline gl
+                LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+                WHERE sa.id_login = ${id_login}
+                group by sa.code
+                order by sa.code asc `
+            }
 
             const data = await query(sql)
-            return data[0]
+            return data
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }

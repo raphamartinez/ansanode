@@ -16,7 +16,7 @@ class GoalLine {
     }
 
  
-    list(id_salesman, date) {
+    list(id_salesman, date, group) {
         try {
             let sql = `SELECT GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelname, GL.labelcode, GL.itemcode, GL.itemname, DATE_FORMAT(GL.date, '%m/%y') as date, GO.amount
             FROM ansa.goalline GL
@@ -26,12 +26,15 @@ class GoalLine {
                 sql+= `LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ${id_salesman}
                 WHERE GL.application <> "DESCONSIDERAR"
                 AND GL.date = '${date}-01'
-                ORDER BY GL.date`
+                AND GL.itemgroup = '${group}'
+                ORDER BY GL.date
+                `
             } else{
                 sql+= `LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
                 WHERE GL.application <> "DESCONSIDERAR"
                 AND GL.date = '${date}-01'
-                ORDER BY GL.date`
+                ORDER BY GL.date
+                `
             }
             
 

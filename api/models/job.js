@@ -2,6 +2,7 @@ const CronJob = require('cron').CronJob
 const Hbs = require('./hbs')
 const WebScraping = require('./webscraping')
 const Mailpowerbi = require('./mailpowerbi')
+const GoalLine = require('./goalline')
 
 const job = new CronJob('0 15 * * * *', () => {
     try {
@@ -32,8 +33,17 @@ const jobMail = new CronJob('0 1 * * * *', () => {
 
 const jobGoalLine = new CronJob('0 0 5 1 * *', () => {
     try {
-        console.log("Executed Mail!");
-        Mailpowerbi.listMailtoSend()
+        console.log("Executed GoalLine!");
+
+        const date = new Date()
+
+        const year = date.getFullYear()
+        const month = date.getMonth() + 1
+        const day = date.getDate()
+
+        const now = `${year}-${month}-${day}`
+            
+        GoalLine.create(now)
     } catch (error) {
         console.log('Error Mail!' + error);
     }

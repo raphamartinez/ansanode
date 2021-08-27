@@ -20,34 +20,63 @@ const addGoals = () => {
   </div >
     <div class="row gutters-sm">
     <div class="col-md-2">
-    <div class="col-md-12 d-none d-md-block">
-      <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
-      <div class="card-header">Fecha</div>
-        <div class="card-body">
-          <nav id="listdate" class="nav flex-column text-left nav-pills nav-gap-y-1">
-            <a onclick="listDateSalesman(event)" data-date="${year}-${month}" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded datesaleman active">${month}/${year}</a>
-          </nav>
-        </div>
-      </div>
-      </div>
-      <div class="col-md-12 d-none d-md-block">
-        <div style="border: 2px solid #4e73df;" class="card border-info mb-3">
-        <div class="card-header">Vendedores</div>
-          <div class="card-body">
-            <nav id="listsellers" class="nav flex-column text-left nav-pills nav-gap-y-1">
-            </nav>
-          </div>
-        </div>
-      </div>
-      </div>
-      <div class="col-md-8">
+    <hr>
+    <div class="form-group text-center col-md-12 d-none d-md-block">
+    <h8>Buscar Articulos sin stock?</h8>
+    <div class="form-check">
+    <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1" checked>
+    <label class="form-check-label" for="stocksi">
+    Sí
+    </label>
+  </div>
+  <div class="form-check">
+    <input class="form-check-input" type="radio" name="stock" id="stockno" value="2">
+    <label class="form-check-label" for="stockno">
+    No
+    </label>
+  </div>
+</div>
+<hr>
+    <div class="form-group text-center col-md-12 d-none d-md-block">
+    <h8>Fecha de la Meta</h8>
+    <select id="listdate" class="form-control">
+    <option disabled selected></option>
+</select>
+</div>
+<div class="form-group text-center col-md-12 d-none d-md-block">
+<h8>Vendedor</h8>
+<select id="listsellers" class="form-control">
+<option disabled selected></option>
+
+</select>
+</div>
+<div class="form-group text-center col-md-12 d-none d-md-block">
+<h8>Grupo del Articulo</h8>
+<select id="listgroups" class="form-control">
+<option disabled selected></option>
+</select>
+</div>
+<hr>
+<div class="form-group text-center col-md-12 d-none d-md-block">
+<button onclick="listGoalsSalesman(event)" type="button" class="btn btn-info btn-lg btn-block">Buscar</button>
+</div>
+</div>
+      <div class="col-md-10">
         <div class="card">
           <div class="tab-pane">
             <div class="form-group">
-              <div class="col-md-12 text-center">
-                <div id="loadinggoals"></div>
+              <div class="col-md-12 text-left">
+                <div class="text-center" id="loadinggoals"></div>
+                <div id="info" text-left">
+                <h5><strong>Información de la meta</strong></h5>
+                <ul class="list-group">
+  <li>La meta debe ingresarse en la última columna llamada "cant".</li>
+  <li>Para guardar la meta, presione la tecla "Enter", después de lo cual el sistema lo dirigirá a la siguiente línea.</li>
+  <li>Use filtros de columna para ayudar con la tarea.</li>
+</ul>
+</div>
+                <table style="font-family: Calibri; font-size: 0.75em; letter-spacing: .1em;" class="table table-bordered text-left" id="tablegoals"  width="100%" cellspacing="0"></table>
               </div>
-              <table style="max-width: 785px !important;" class="table table-sm table-bordered" id="tablegoals"></table>
             </div>
           </div>
         </div>
@@ -87,43 +116,55 @@ const opcionesGoals = () => {
 
 const lineaddgoal = (goal, index, id_salesman) => {
   const content = [
-    `${goal.date}`,
-    `${goal.itemgroup}`,
     `${goal.provider}`,
     `${goal.application}`,
-    `<a data-button="1" >${goal.itemcode}<i style="text-align: right; float: right; color: #8FBC8F;" class="fas fa-shopping-cart"></i></a>`,
-    `<a data-button="2" >${goal.itemname}<i style="text-align: right; float: right; color: #6495ED;" class="fas fa-boxes"></i></a>`,
+    `${goal.itemcode}<a data-button="1" ><i style="text-align: right; float: right; color: #8FBC8F;" class="fas fa-shopping-cart"></i></a>`,
+    `${goal.itemname}`,
+    `${goal.CityQty}`,
+    `${goal.Qty}`,
     `<input data-id_goalline="${goal.id_goalline}" data-id_salesman="${id_salesman}" name="goal" tabindex="${index}" value="${goal.amount}" type="number" class="form-control goal text-center">`
   ]
 
   return content
 }
 
+const listGroups = (group) => {
 
+  const option = document.createElement('option')
+
+  const content = `${group.Name}</option>`
+
+  option.value = group.Name
+
+  option.innerHTML = content
+
+  return option
+}
 
 
 const listSalesman = (salesman) => {
-  const div = document.createElement('div')
 
-  const content = `<a href="#" data-toggle="tab" onclick="listGoalsSalesman(event)" data-id_salesman="${salesman.id_salesman}" data-office="${salesman.office}" class="nav-item nav-link has-icon nav-link-faded listersaleman">
-  ${salesman.name}
-  </a>`
+  const option = document.createElement('option')
 
-  div.innerHTML = content
+  const content = `${salesman.name}</option>`
 
-  return div
+  option.value = salesman.id_salesman
+
+  option.innerHTML = content
+
+  return option
 }
 
 const listDate = (datesql, date) => {
-  const div = document.createElement('div')
+  const option = document.createElement('option')
 
-  const content = `
-  <a onclick="listDateSalesman(event)" data-date="${datesql}" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded datesaleman">${date}</a>
-  `
+  const content = `${date}</option>`
 
-  div.innerHTML = content
+  option.value = datesql
 
-  return div
+  option.innerHTML = content
+
+  return option
 }
 
 
@@ -132,7 +173,8 @@ export const View = {
   opcionesGoals,
   lineaddgoal,
   listSalesman,
-  listDate
+  listDate,
+  listGroups
 }
 
 

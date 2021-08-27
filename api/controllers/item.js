@@ -39,6 +39,15 @@ module.exports = app => {
         }
     })
 
+    app.get('/itemsgroups', Middleware.bearer, async (req, res, next) => {
+        try {
+            const itemsgroups = await Hbs.listItemsGroups()
+            res.json(itemsgroups)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get('/itemscomplete', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login

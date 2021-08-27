@@ -1,5 +1,6 @@
 import { View } from "../views/goalsView.js"
 import { Connection } from '../services/connection.js'
+import { ViewDashboard } from "../views/dashboardView.js"
 
 window.listGoals = listGoals
 
@@ -27,6 +28,13 @@ async function listGoals() {
 
         settings.appendChild(View.opcionesGoals())
 
+        let goals = await Connection.noBody('sellersdashboard', 'GET')
+
+        settings.appendChild(ViewDashboard.showGoals())
+
+        goals.forEach(goal => {
+            settings.appendChild(ViewDashboard.sellers(goal))
+        })
 
     } catch (error) {
 
@@ -57,11 +65,18 @@ async function addGoalsList() {
         settings.appendChild(View.addGoals())
 
         const listsellers = document.getElementById('listsellers')
+        const listgroups = document.getElementById('listgroups')
 
         const sellers = await Connection.noBody('sellersgoalline', 'GET')
 
+        const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
+
         sellers.forEach(obj => {
             listsellers.appendChild(View.listSalesman(obj))
+        })
+
+        itemsgroups.forEach(obj => {
+            listgroups.appendChild(View.listGroups(obj))
         })
 
 
@@ -77,11 +92,18 @@ async function addGoalsList() {
         cardHistory.style.display = 'none';
 
         const dates = [
+            1,
             2,
             3,
             4,
             5,
-            6
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
         ]
         const listdate = document.getElementById('listdate')
 
@@ -113,43 +135,27 @@ window.listGoalsSalesman = listGoalsSalesman
 
 async function listGoalsSalesman(event) {
     event.preventDefault()
+    const info = document.getElementById('info')
 
     try {
-        $(".listersaleman").removeClass("active");
 
-        const btn = event.currentTarget
-        const id_salesman = btn.getAttribute("data-id_salesman")
-        const datediv = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded datesaleman active");
-        const date = datediv[0].getAttribute("data-date")
 
-        if (date) {
-            listGoalsLine(id_salesman, date)
+        const listgroups = document.getElementById('listgroups')
+        const group = listgroups.options[listgroups.selectedIndex].value;
+
+        const listdate = document.getElementById('listdate')
+        const date = listdate.options[listdate.selectedIndex].value;
+
+        const listsellers = document.getElementById('listsellers')
+        const id_salesman = listsellers.options[listsellers.selectedIndex].value;
+
+        const stock = document.querySelector('input[name="stock"]:checked').value;
+
+        if (id_salesman && date && group && stock) {
+            info.innerHTML = ``
+            listGoalsLine(id_salesman, date, group, stock)
         } else {
-            alert('Seleccione una fecha válida!')
-        }
-
-    } catch (error) {
-
-    }
-}
-
-window.listDateSalesman = listDateSalesman
-
-async function listDateSalesman(event) {
-    event.preventDefault()
-
-    try {
-        $(".datesaleman").removeClass("active");
-
-        const btn = event.currentTarget
-        const date = btn.getAttribute("data-date")
-        const salesdiv = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
-        if (salesdiv[0]) {
-            const id_salesman = salesdiv[0].getAttribute("data-id_salesman")
-
-            listGoalsLine(id_salesman, date)
-        } else {
-            alert('Seleccione un vendedor!')
+            alert('Seleccione todos los campos!')
         }
     } catch (error) {
 
@@ -158,7 +164,7 @@ async function listDateSalesman(event) {
 
 window.listGoalsLine = listGoalsLine
 
-async function listGoalsLine(id_salesman, date) {
+async function listGoalsLine(id_salesman, date, group, stock) {
 
     if ($.fn.DataTable.isDataTable('#tablegoals')) {
         $('#tablegoals').dataTable().fnClearTable();
@@ -172,7 +178,7 @@ async function listGoalsLine(id_salesman, date) {
   </div>`
     try {
 
-        const goalsline = await Connection.noBody(`goalsline/${id_salesman}/${date}`, 'GET')
+        const goalsline = await Connection.noBody(`goalsline/${id_salesman}/${date}/${group}/${stock}`, 'GET')
 
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
             $('#tablegoals').dataTable().fnClearTable();
@@ -191,119 +197,86 @@ async function listGoalsLine(id_salesman, date) {
         const table = $("#tablegoals").DataTable({
             data: dtview,
             columns: [
-                { title: "Fecha" },
-                { title: "Grupo" },
                 { title: "Linea de Productos" },
                 { title: "Aplicacion" },
                 {
                     title: "Cod Articulo",
-                    class: "details-control"
+                    className: "details-control",
                 },
-                {
-                    title: "Nombre",
-                    class: "details-control"
-                },
+                { title: "Nombre" },
+                { title: "Stock Ciudad" },
+                { title: "Stock TT" },
                 { title: "Cant" }
             ],
-            autoHeight: true,
-            responsive: true,
+            paging: true,
+            ordering: false,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoWidth: true,
             lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
             pagingType: "numbers",
-            fixedHeader: true,
-            orderCellsTop: true,
-            responsive: true,
+            fixedHeader: false,
+            order: false
         })
 
-        $('#tablegoals thead tr').clone(true).appendTo('#tablegoals thead');
-        $('#tablegoals thead tr:eq(1) th').each(function (i) {
-            var title = $(this).text();
-            if (title !== "Cant") {
-                if (title === "Fecha de la Meta") {
-                    $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Fecha"/>');
-                } else {
-                    $(this).html('<input type="text" class="form-control form-control-sm" placeholder="Filtrar"/>');
-                }
-            } else {
-                $(this).html('');
-            }
-
-            $('input', this).on('keyup change', function () {
-                if (table.column(i).search() !== this.value) {
-                    var regExSearch = '\\b' + this.value;
-
-                    table
-                        .column(i)
-                        .search(regExSearch, true, false)
-                        .draw();
-                }
-            });
-        });
-
-        $('#tablegoals tbody').on('click', 'tr', function () {
-            if ($(this).hasClass('selected')) {
-                $(this).removeClass('selected');
-            }
-            else {
-                table.$('tr.selected').removeClass('selected');
-                $(this).addClass('selected');
-            }
-        });
+        $('#tablegoals').excelTableFilter();
 
         $('#tablegoals tbody').on('click', 'td.details-control', async function (event) {
 
-            const button = event.currentTarget.children[0].attributes[0].value
+            // const button = event.currentTarget.children[0].attributes[0].value
 
-            if (button === "2") {
-                let tr = $(this).closest('tr');
-                const code = tr[0].childNodes[4].textContent
-                let row = table.row(tr);
+            // if (button === "2") {
+            //     let tr = $(this).closest('tr');
+            //     const code = tr[0].childNodes[4].textContent
+            //     let row = table.row(tr);
 
-                const i = event.currentTarget.children[0].children[0]
-                i.classList.remove('fas','fa-boxes');
-                i.classList.add('spinner-border');
+            //     const i = event.currentTarget.children[0].children[0]
+            //     i.classList.remove('fas', 'fa-boxes');
+            //     i.classList.add('spinner-border');
 
 
-                if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
-                } else {
-                    const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
+            //     if (row.child.isShown()) {
+            //         row.child.hide();
+            //         tr.removeClass('shown');
+            //     } else {
+            //         const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
 
-                    const office = seller[0].getAttribute("data-office")
+            //         const office = seller[0].getAttribute("data-office")
 
-                    const items = await Connection.body(`itemslabel/${office}`, { code }, "POST")
+            //         const items = await Connection.body(`itemslabel/${office}`, { code }, "POST")
 
-                    row.child(listItemsbyGroup(items)).show();
-                    tr.addClass('shown');
-                }
-                i.classList.add('fas', 'fa-boxes');
-                i.classList.remove('spinner-border');
+            //         row.child(listItemsbyGroup(items)).show();
+            //         tr.addClass('shown');
+            //     }
+            //     i.classList.add('fas', 'fa-boxes');
+            //     i.classList.remove('spinner-border');
+            // } else {
+            const artcode = event.currentTarget.textContent
+            let tr = $(this).closest('tr');
+            let row = table.row(tr);
+
+            const i = event.currentTarget.children[0].children[0]
+
+            i.classList.remove('fas', 'fa-shopping-cart');
+            i.classList.add('spinner-border');
+
+            if (row.child.isShown()) {
+                row.child.hide();
+                tr.removeClass('shown');
             } else {
-                const artcode = event.currentTarget.textContent
-                let tr = $(this).closest('tr');
-                let row = table.row(tr);
+                const listsellers = document.getElementById('listsellers')
+                const id_salesman = listsellers.options[listsellers.selectedIndex].value;
+        
+                const sales = await Connection.noBody(`sale/${id_salesman}/${artcode}`, "GET")
 
-                const i = event.currentTarget.children[0].children[0]
-
-                i.classList.remove('fas', 'fa-shopping-cart');
-                i.classList.add('spinner-border');
-
-                if (row.child.isShown()) {
-                    row.child.hide();
-                    tr.removeClass('shown');
-                } else {
-                    const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
-
-                    const id_salesman = seller[0].getAttribute("data-id_salesman")
-
-                    const sales = await Connection.noBody(`sale/${id_salesman}/${artcode}`, "GET")
-
-                    row.child(listSales(sales)).show();
-                    tr.addClass('shown');
-                }
-                i.classList.add('fas', 'fa-shopping-cart');
-                i.classList.remove('spinner-border');
+                row.child(listSales(sales)).show();
+                tr.addClass('shown');
             }
+            i.classList.add('fas', 'fa-shopping-cart');
+            i.classList.remove('spinner-border');
+            // }
 
         });
 
@@ -354,7 +327,7 @@ function listItemsbyGroup(items) {
 
 function listSales(sales) {
 
-    let table = `<h5>Ventas</h5><table cellpadding="0" cellspacing="0" border="0" style="">`
+    let table = `<h5 class="text-center"><strong>Ventas</strong></h5><table class="table text-center" cellpadding="0" cellspacing="0" border="0" style="">`
     sales.forEach(sale => {
         let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month1}</strong></td><td>Cant Ventas: <strong>${sale.goal1}</strong></td></tr>
         <tr style="color: #495057;background-color:#e9ecef;"><td>Mes:<strong> ${sale.month2}</strong></td><td>Cant de Ventas: <strong>${sale.goal2}</strong></td></tr>
@@ -368,3 +341,14 @@ function listSales(sales) {
     return table
 }
 
+
+$('#tablegoals tbody').on('click', 'dropdown-filter-item', async function (event) {
+
+    let tr = $(this).closest('tr');
+    let row = table.row(tr);
+
+    if (row.child.isShown()) {
+        row.child.hide();
+        tr.removeClass('shown');
+    }
+});

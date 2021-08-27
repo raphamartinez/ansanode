@@ -33,6 +33,29 @@ module.exports = app => {
         }
     })
 
+    app.get('/sellersdashboard', Middleware.bearer, async (req, res, next) => {
+        try {
+            const id_login = req.login.id_login
+
+            const sellers = await Seller.listDashboard(id_login)
+            res.json(sellers)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/sellergoal/:id_salesman', Middleware.bearer, async (req, res, next) => {
+        try {
+            const id_salesman = req.params.id_salesman
+            const id_login = req.login.id_login
+
+            const sellers = await Seller.view(id_login, id_salesman)
+            res.json(sellers)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.post('/salesman', Middleware.bearer, async (req, res, next) => {
         try {
             const data = req.body.sellers

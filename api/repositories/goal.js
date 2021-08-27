@@ -49,6 +49,24 @@ class Goal {
             throw new InternalServerError('No se pudieron enumerar los login')
         }
     }
+
+    async listGoalsByManager(id_login){
+        try {
+            const sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
+            FROM ansa.salesman sa
+            CROSS JOIN ansa.goalline gl
+            LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+            WHERE sa.id_login = '${id_login}'
+            group by sa.code, gl.date
+            order by gl.date asc`
+
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    
 }
 
 module.exports = new Goal()

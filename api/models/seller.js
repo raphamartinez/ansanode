@@ -24,7 +24,40 @@ class Seller {
         }
     }
 
-    update(manager){
+    async listDashboard(id_login) {
+        try {
+            const data = await Repositorie.view(id_login)
+
+            await data.forEach(obj => {
+                let tmp = obj.name.split(" ")
+
+                obj.name = `${tmp[0]} ${tmp[1]}`
+                obj.percentage = obj.goals * 100 / obj.countlines
+                obj.percentage = obj.percentage.toFixed(0)
+            })
+
+            return data
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los vendedores.')
+        }
+    }
+
+    async view(id_login, id_salesman) {
+        try {
+            const data = await Repositorie.view(id_login, id_salesman)
+
+            await data.forEach(obj => {
+                obj.percentage = obj.goals * 100 / obj.countlines
+                obj.percentage = obj.percentage.toFixed(0)
+            })
+
+            return data
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los vendedores.')
+        }
+    }
+
+    update(manager) {
         try {
             return Repositorie.update(manager)
         } catch (error) {

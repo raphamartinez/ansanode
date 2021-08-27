@@ -346,6 +346,15 @@ class Hbs {
         }
     }
 
+    listItemsGroups() {
+        try {
+            return Repositorie.listItemsGroups()
+
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
     async listStockByItem(artcode) {
         try {
             const stocks = await Repositorie.listStockbyItem(artcode)

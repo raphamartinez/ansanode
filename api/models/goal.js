@@ -37,6 +37,24 @@ class Goal {
         }
     }
 
+    async listGoalsByManager(id_login){
+
+        try {
+            const data = await Repositorie.listGoalsByManager(id_login)
+
+            await data.forEach(obj => {
+                obj.percentage = obj.goals * 100 / obj.countlines  
+                obj.percentage = obj.percentage.toFixed(2)
+            })
+
+            return data
+
+        } catch (error) {
+            throw new InternalServerError('No se pude listar los goals.')
+        }
+
+    }
+
     delete(id_goal) {
         try {
             return Repositorie.delete(id_goal)

@@ -3,7 +3,11 @@
 
 
 const showCardHistory = (cardHistory, history) => {
-    cardHistory.innerHTML = ` <div class="col-xl-6 col-md-6 mb-4">
+    let div = document.createElement('div');
+
+    div.className = "col-xl-6 col-md-6 mb-4"
+
+    div.innerHTML = ` 
 <div class="card border-left-primary shadow h-100 py-2">
     <div class="card-body">
         <div class="row no-gutters align-items-center">
@@ -23,8 +27,9 @@ const showCardHistory = (cardHistory, history) => {
         </div>
     </div>
 </div>
-</div>`
+`
 
+cardHistory.appendChild(div)
 }
 
 const showCardBd = (cardHistory, lastupdate) => {
@@ -57,8 +62,95 @@ const showCardBd = (cardHistory, lastupdate) => {
 
 }
 
+const showGoals = () => {
+    let div = document.createElement('div');
+
+    div.className = "col-xl-12 col-md-12 mb-4"
+
+    div.innerHTML = ` 
+    <hr>
+    <div style="background-color:#e4e6ff;" class="card border-bottom-secondary shadow h-100 py-2">
+        <div class="card-body text-center">
+                    <h4>
+                    Metas para Vendedores
+                    </h4>
+                    <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                    <div id="goaldashboard"></div>
+                    <div class="h8 mb-0 font-weight-bold text-gray-600"></div>
+                </div>
+                <div class="col-auto">
+                </div>
+            </div>
+        </div>
+    </div>`;
+
+    return div
+
+}
+
+const sellers = (goal) => {
+    let div = document.createElement('div');
+
+    let classprogress
+    if(goal.percentage < 25) classprogress = 'bg-danger'
+    if(goal.percentage >= 25 && goal.percentage < 50) classprogress = 'bg-warning'
+    if(goal.percentage >= 50 && goal.percentage < 75) classprogress = 'bg-info'
+    if(goal.percentage >= 75 && goal.percentage < 100) classprogress = 'bg-success'
+
+
+    div.className = "col-xl-12 col-md-12 mb-4"
+
+    div.innerHTML = ` 
+    <a onclick="listGoalSalesmanId(event)" data-id_salesman="${goal.id_salesman}">
+    <div  class="form-row">
+       <div class="form-group col-md-6">
+           <h8><strong>${goal.name}</strong> - Cumplimiento de objetivos para los próximos 12 meses</h8>
+       </div>
+       <div class="form-group col-md-6">
+          <div class="progress">
+              <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
+          </div>
+      </div>        
+    </div></a>`;
+
+    return div
+
+}
+
+const progress = (goal) => {
+    let div = document.createElement('div');
+
+    let classprogress
+    if(goal.percentage < 25) classprogress = 'bg-danger'
+    if(goal.percentage >= 25 && goal.percentage < 50) classprogress = 'bg-warning'
+    if(goal.percentage >= 50 && goal.percentage < 75) classprogress = 'bg-info'
+    if(goal.percentage >= 75 && goal.percentage < 100) classprogress = 'bg-success'
+
+    div.className = "col-md-12"
+
+    div.style="background-color: #c4cbff;"
+
+    div.innerHTML = ` 
+    <div style="padding-top: 0.3rem;" class="form-row align-items-center">
+       <div class="form-group col-md-6">
+           <a><h8>${goal.date}</h8></a>
+       </div>
+       <div class="form-group align-items-center col-md-6">
+          <div class="progress">
+              <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
+          </div>
+      </div>        
+    </div>`;
+
+    return div
+
+}
 
 export const ViewDashboard = {
     showCardHistory,
-    showCardBd
+    showCardBd,
+    showGoals,
+    progress,
+    sellers
 }

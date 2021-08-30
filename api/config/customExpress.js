@@ -4,7 +4,6 @@ const BearerStrategy = require('passport-http-bearer').Strategy
 const cors = require('cors')
 const consign = require('consign')
 const path = require('path');
-const { InvalidArgumentError, NotFound, NotAuthorized } = require('../models/error');
 const jwt = require('jsonwebtoken');
 const Login = require('../models/login')
 
@@ -44,12 +43,6 @@ module.exports = () => {
     app.use(cors())
     next();
   });
-
-  // Resposta Fake para o coockie X-Powered-By
-  // app.use(( req, res, next) => {
-  //   res.setHeader('X-Powered-By', 'PHP/7.1.7')
-  //   next()
-  // });
 
   passport.use(
     new BearerStrategy(

@@ -24,13 +24,13 @@ const addGoals = () => {
     <div class="form-group text-center col-md-12 d-none d-md-block">
     <h8>Buscar Articulos sin stock?</h8>
     <div class="form-check">
-    <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1" checked>
+    <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1">
     <label class="form-check-label" for="stocksi">
     Sí
     </label>
   </div>
   <div class="form-check">
-    <input class="form-check-input" type="radio" name="stock" id="stockno" value="2">
+    <input class="form-check-input" type="radio" name="stock" id="stockno" value="2" checked>
     <label class="form-check-label" for="stockno">
     No
     </label>
@@ -71,7 +71,7 @@ const addGoals = () => {
                 <h5><strong>Información de la meta</strong></h5>
                 <ul class="list-group">
   <li>La meta debe ingresarse en la última columna llamada "cant".</li>
-  <li>Para guardar la meta, presione la tecla "Enter", después de lo cual el sistema lo dirigirá a la siguiente línea.</li>
+  <li>Para guardar la meta, presione la tecla "Enter", después del cual el sistema lo dirigirá a la siguiente línea.</li>
   <li>Use filtros de columna para ayudar con la tarea.</li>
 </ul>
 </div>

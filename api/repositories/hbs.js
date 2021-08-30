@@ -495,6 +495,7 @@ class Hbs {
             INNER JOIN Item I ON Ig.Code = I.ItemGroup
             INNER JOIN Stock St ON St.ArtCode = I.Code
             WHERE St.StockDepo IN (${stocks})
+            AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             GROUP BY Ig.Name`
             return queryhbs(sql)
         } catch (error) {
@@ -521,6 +522,7 @@ class Hbs {
             INNER JOIN Item i ON ig.Code = i.ItemGroup
             INNER JOIN Stock st ON st.ArtCode = i.Code
             WHERE st.Qty > 0
+            AND ig.Name NOT IN ('ACCESORIOS', 'ACCESORIOS AUTOS', 'KLL', 'BICICLETA', 'CAFETERIA', 'KART Y AVION', 'LENTES', 'LIVRE', 'LONAS', 'PNEUS MOTOS BRASIL', 'ROPA GOODYEAR', 'ROPAS Y ACCESORIOS', 'UNIFORME')
             GROUP BY ig.Name`
             return queryhbs(sql)
         } catch (error) {

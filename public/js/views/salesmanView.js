@@ -51,7 +51,7 @@ const optionSellers = (salesman) => {
 
     line.value = `{"name":"${salesman.name}", "code":"${salesman.code}", "office":"${salesman.office}"}`
 
-    const content = ` ${salesman.name}</option>`
+    const content = `${salesman.code} - ${salesman.name}</option>`
 
     line.innerHTML = content
 

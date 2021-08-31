@@ -6,7 +6,6 @@ class Goal {
     async insert(goal) {
         try {
             const item = await Repositorie.search(goal)
-            console.log(item);
             const obj = await Repositorie.validate(item)
 
             if (obj && obj.amount && obj.amount !== goal.amount) {

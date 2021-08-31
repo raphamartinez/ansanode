@@ -154,7 +154,7 @@ async function listGoalsLine(salesman, group, stock) {
         let index = 1
         goalsline.forEach(goal => {
             const field = View.lineaddgoal(goal, index, salesman.id_salesman)
-            index+=12
+            index += 12
             dtview.push(field)
         });
 
@@ -204,8 +204,14 @@ async function listGoalsLine(salesman, group, stock) {
                     className: "details-control",
                 },
                 { title: "Nombre" },
-                { title: "Stock Ci" },
-                { title: "Stock TT" },
+                {
+                    title: "Stock Ci",
+                    className: "datatable-grey",
+                },
+                {
+                    title: "Stock TT",
+                    className: "datatable-grey",
+                },
                 { title: datecolumn[0] },
                 { title: datecolumn[1] },
                 { title: datecolumn[2] },
@@ -250,9 +256,9 @@ async function listGoalsLine(salesman, group, stock) {
                 tr.removeClass('shown');
             } else {
                 const listsellers = document.getElementById('listsellers')
-                const id_salesman = listsellers.options[listsellers.selectedIndex].value;
+                const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
 
-                const sales = await Connection.noBody(`sale/${id_salesman}/${artcode}`, "GET")
+                const sales = await Connection.noBody(`sale/${salesman.id_salesman}/${artcode}`, "GET")
 
                 row.child(listSales(sales)).show();
                 tr.addClass('shown');

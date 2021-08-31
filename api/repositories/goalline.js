@@ -16,29 +16,32 @@ class GoalLine {
     }
 
  
-    list(id_salesman, date, group) {
+    list(id_salesman, group) {
         try {
-            let sql = `SELECT GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelname, GL.labelcode, GL.itemcode, GL.itemname, DATE_FORMAT(GL.date, '%m/%y') as date, GO.amount
+  
+            let sql = `SELECT GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelname, GL.labelcode, GL.itemcode, GL.itemname, 
+            SUM(IF(MONTH(GL.date) = MONTH(NOW()), GO.amount, 0)) as g1, (SELECT DATE_FORMAT(NOW(), '%Y-%m')) as d1,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 1 month)), GO.amount, 0)) as g2, (SELECT DATE_FORMAT(NOW() + interval 1 month, '%Y-%m')) as d2,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 2 month)), GO.amount, 0)) as g3, (SELECT DATE_FORMAT(NOW() + interval 2 month, '%Y-%m')) as d3,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 3 month)), GO.amount, 0)) as g4, (SELECT DATE_FORMAT(NOW() + interval 3 month, '%Y-%m')) as d4,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 4 month)), GO.amount, 0)) as g5, (SELECT DATE_FORMAT(NOW() + interval 4 month, '%Y-%m')) as d5,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 5 month)), GO.amount, 0)) as g6, (SELECT DATE_FORMAT(NOW() + interval 5 month, '%Y-%m')) as d6,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 6 month)), GO.amount, 0)) as g7, (SELECT DATE_FORMAT(NOW() + interval 6 month, '%Y-%m')) as d7,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 7 month)), GO.amount, 0)) as g8, (SELECT DATE_FORMAT(NOW() + interval 7 month, '%Y-%m')) as d8,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 8 month)), GO.amount, 0)) as g9, (SELECT DATE_FORMAT(NOW() + interval 8 month, '%Y-%m')) as d9,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 9 month)), GO.amount, 0)) as g10, (SELECT DATE_FORMAT(NOW() + interval 9 month, '%Y-%m')) as d10,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 10 month)), GO.amount, 0)) as g11, (SELECT DATE_FORMAT(NOW() + interval 10 month, '%Y-%m')) as d11,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 11 month)), GO.amount, 0)) as g12, (SELECT DATE_FORMAT(NOW() + interval 11 month, '%Y-%m')) as d12,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 12 month)), GO.amount, 0)) as g13, (SELECT DATE_FORMAT(NOW() + interval 12 month, '%Y-%m')) as d13
             FROM ansa.goalline GL
-            `
-
-            if(id_salesman) {
-                sql+= `LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ${id_salesman}
-                WHERE GL.application <> "DESCONSIDERAR"
-                AND GL.date = '${date}-01'
-                AND GL.itemgroup = '${group}'
-                ORDER BY GL.date
-                `
-            } else{
-                sql+= `LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
-                WHERE GL.application <> "DESCONSIDERAR"
-                AND GL.date = '${date}-01'
-                ORDER BY GL.date
-                `
-            }
+            LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND GL.itemgroup = ?
+            GROUP BY GL.itemcode
+            ORDER BY GL.date`
             
 
-            return query(sql)
+            return query(sql, [id_salesman, group])
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los login')
         }

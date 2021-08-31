@@ -43,9 +43,9 @@ class GoalLine {
         }
     }
 
-    async list(id_salesman, date, group, checkstock) {
+    async list(id_salesman, office, group, checkstock) {
         try {
-            const data = await RepositorieGoal.list(id_salesman, date, group)
+            const data = await RepositorieGoal.list(id_salesman, group)
 
             const stocks = [
                 ["01AUTOPJC", "1"],
@@ -70,7 +70,7 @@ class GoalLine {
             let arrstock = " "
 
             stocks.forEach(stock => {
-                if (stock[1] === "2") {
+                if (stock[1] === office) {
                     const st = stock[0]
 
                     if (arrstock.length > 1) {
@@ -101,7 +101,7 @@ class GoalLine {
                 }
             }
 
-            return data
+            return arr
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }

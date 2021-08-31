@@ -24,14 +24,14 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline/:id_salesman/:date/:group/:stock', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalsline/:id_salesman/:office/:group/:stock', Middleware.bearer, async ( req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
-            const date = req.params.date
             const group = req.params.group
             const checkstock = req.params.stock
+            const office = req.params.office
             
-            const goalsline = await GoalLine.list(id_salesman, date, group, checkstock)
+            const goalsline = await GoalLine.list(id_salesman, office, group, checkstock)
             res.json(goalsline)
         } catch (err) {
             next(err)

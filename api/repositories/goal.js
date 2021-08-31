@@ -36,6 +36,19 @@ class Goal {
         }
     }
 
+    async search(obj) {
+        try {
+            const sql = 'SELECT id_goalline FROM ansa.goalline where itemcode = ? and date = ?'
+            const result = await query(sql, [obj.itemcode, obj.date])
+
+            obj.id_goalline = result[0].id_goalline
+
+            return obj
+        } catch (error) {
+            return false
+        }
+    }
+
 
     list(goal) {
         try {
@@ -50,7 +63,7 @@ class Goal {
         }
     }
 
-    async listGoalsByManager(id_login){
+    async listGoalsByManager(id_login) {
         try {
             const sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
             FROM ansa.salesman sa
@@ -66,7 +79,7 @@ class Goal {
         }
     }
 
-    
+
 }
 
 module.exports = new Goal()

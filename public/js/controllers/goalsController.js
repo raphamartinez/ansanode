@@ -63,6 +63,8 @@ async function addGoalsList() {
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         settings.appendChild(View.addGoals())
+        modal.appendChild(View.modalAdd())
+
 
         const listsellers = document.getElementById('listsellers')
         const listgroups = document.getElementById('listgroups')
@@ -90,6 +92,71 @@ async function addGoalsList() {
         powerbi.innerHTML = " "
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
+    } catch (error) {
+
+    }
+}
+
+window.listGoalsSalesman = listGoalsSalesman
+
+async function listGoalsSalesman(event) {
+    event.preventDefault()
+    const info = document.getElementById('info')
+
+    try {
+        $('#searchGoal').modal('hide')
+
+
+        const listgroups = document.getElementById('listgroups')
+        const group = listgroups.options[listgroups.selectedIndex].value;
+
+        const listsellers = document.getElementById('listsellers')
+        const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
+
+        const stock = document.querySelector('input[name="stock"]:checked').value;
+
+        if (salesman && group && stock) {
+            info.innerHTML = ``
+            listGoalsLine(salesman, group, stock)
+        } else {
+            alert('Seleccione todos los campos!')
+        }
+    } catch (error) {
+
+    }
+}
+
+window.listGoalsLine = listGoalsLine
+
+async function listGoalsLine(salesman, group, stock) {
+
+    if ($.fn.DataTable.isDataTable('#tablegoals')) {
+        $('#tablegoals').dataTable().fnClearTable();
+        $('#tablegoals').dataTable().fnDestroy();
+        $('#tablegoals').empty();
+    }
+
+    const loadinggoals = document.getElementById('loadinggoals')
+    loadinggoals.innerHTML = `<div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>`
+    try {
+
+        const goalsline = await Connection.noBody(`goalsline/${salesman.id_salesman}/${salesman.office}/${group}/${stock}`, 'GET')
+
+        if ($.fn.DataTable.isDataTable('#tablegoals')) {
+            $('#tablegoals').dataTable().fnClearTable();
+            $('#tablegoals').dataTable().fnDestroy();
+            $('#tablegoals').empty();
+        }
+
+        let dtview = [];
+        let index = 1
+        goalsline.forEach(goal => {
+            const field = View.lineaddgoal(goal, index, salesman.id_salesman)
+            index+=12
+            dtview.push(field)
+        });
 
         const dates = [
             1,
@@ -105,7 +172,8 @@ async function addGoalsList() {
             11,
             12
         ]
-        const listdate = document.getElementById('listdate')
+
+        let datecolumn = []
 
         dates.forEach(date => {
             const today = new Date()
@@ -123,76 +191,8 @@ async function addGoalsList() {
             }
 
             const now = `${month}/${year}`
-            const datesql = `${year}-${month}`
-            listdate.appendChild(View.listDate(datesql, now))
+            datecolumn.push(now)
         })
-    } catch (error) {
-
-    }
-}
-
-window.listGoalsSalesman = listGoalsSalesman
-
-async function listGoalsSalesman(event) {
-    event.preventDefault()
-    const info = document.getElementById('info')
-
-    try {
-
-
-        const listgroups = document.getElementById('listgroups')
-        const group = listgroups.options[listgroups.selectedIndex].value;
-
-        const listdate = document.getElementById('listdate')
-        const date = listdate.options[listdate.selectedIndex].value;
-
-        const listsellers = document.getElementById('listsellers')
-        const id_salesman = listsellers.options[listsellers.selectedIndex].value;
-
-        const stock = document.querySelector('input[name="stock"]:checked').value;
-
-        if (id_salesman && date && group && stock) {
-            info.innerHTML = ``
-            listGoalsLine(id_salesman, date, group, stock)
-        } else {
-            alert('Seleccione todos los campos!')
-        }
-    } catch (error) {
-
-    }
-}
-
-window.listGoalsLine = listGoalsLine
-
-async function listGoalsLine(id_salesman, date, group, stock) {
-
-    if ($.fn.DataTable.isDataTable('#tablegoals')) {
-        $('#tablegoals').dataTable().fnClearTable();
-        $('#tablegoals').dataTable().fnDestroy();
-        $('#tablegoals').empty();
-    }
-
-    const loadinggoals = document.getElementById('loadinggoals')
-    loadinggoals.innerHTML = `<div class="spinner-border text-primary" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>`
-    try {
-
-        const goalsline = await Connection.noBody(`goalsline/${id_salesman}/${date}/${group}/${stock}`, 'GET')
-
-        if ($.fn.DataTable.isDataTable('#tablegoals')) {
-            $('#tablegoals').dataTable().fnClearTable();
-            $('#tablegoals').dataTable().fnDestroy();
-            $('#tablegoals').empty();
-        }
-
-        let dtview = [];
-        let index = 1
-        goalsline.forEach(goal => {
-            const field = View.lineaddgoal(goal, index, id_salesman)
-            index++
-            dtview.push(field)
-        });
 
         const table = $("#tablegoals").DataTable({
             data: dtview,
@@ -204,9 +204,20 @@ async function listGoalsLine(id_salesman, date, group, stock) {
                     className: "details-control",
                 },
                 { title: "Nombre" },
-                { title: "Stock Ciudad" },
+                { title: "Stock Ci" },
                 { title: "Stock TT" },
-                { title: "Cant" }
+                { title: datecolumn[0] },
+                { title: datecolumn[1] },
+                { title: datecolumn[2] },
+                { title: datecolumn[3] },
+                { title: datecolumn[4] },
+                { title: datecolumn[5] },
+                { title: datecolumn[6] },
+                { title: datecolumn[7] },
+                { title: datecolumn[8] },
+                { title: datecolumn[9] },
+                { title: datecolumn[10] },
+                { title: datecolumn[11] }
             ],
             paging: true,
             ordering: false,
@@ -225,34 +236,6 @@ async function listGoalsLine(id_salesman, date, group, stock) {
 
         $('#tablegoals tbody').on('click', 'td.details-control', async function (event) {
 
-            // const button = event.currentTarget.children[0].attributes[0].value
-
-            // if (button === "2") {
-            //     let tr = $(this).closest('tr');
-            //     const code = tr[0].childNodes[4].textContent
-            //     let row = table.row(tr);
-
-            //     const i = event.currentTarget.children[0].children[0]
-            //     i.classList.remove('fas', 'fa-boxes');
-            //     i.classList.add('spinner-border');
-
-
-            //     if (row.child.isShown()) {
-            //         row.child.hide();
-            //         tr.removeClass('shown');
-            //     } else {
-            //         const seller = document.getElementsByClassName("nav-item nav-link has-icon nav-link-faded listersaleman active");
-
-            //         const office = seller[0].getAttribute("data-office")
-
-            //         const items = await Connection.body(`itemslabel/${office}`, { code }, "POST")
-
-            //         row.child(listItemsbyGroup(items)).show();
-            //         tr.addClass('shown');
-            //     }
-            //     i.classList.add('fas', 'fa-boxes');
-            //     i.classList.remove('spinner-border');
-            // } else {
             const artcode = event.currentTarget.textContent
             let tr = $(this).closest('tr');
             let row = table.row(tr);
@@ -268,7 +251,7 @@ async function listGoalsLine(id_salesman, date, group, stock) {
             } else {
                 const listsellers = document.getElementById('listsellers')
                 const id_salesman = listsellers.options[listsellers.selectedIndex].value;
-        
+
                 const sales = await Connection.noBody(`sale/${id_salesman}/${artcode}`, "GET")
 
                 row.child(listSales(sales)).show();
@@ -276,7 +259,6 @@ async function listGoalsLine(id_salesman, date, group, stock) {
             }
             i.classList.add('fas', 'fa-shopping-cart');
             i.classList.remove('spinner-border');
-            // }
 
         });
 
@@ -301,29 +283,15 @@ $(document).on('keypress', '.goal', function (e) {
         const btn = e.currentTarget
         const goal = {
             id_salesman: btn.getAttribute("data-id_salesman"),
-            id_goalline: btn.getAttribute("data-id_goalline"),
+            itemcode: btn.getAttribute("data-itemcode"),
+            date: btn.getAttribute("data-date"),
             amount: btn.value
         }
-
         Connection.body(`goal`, { goal }, 'POST')
 
     }
 });
 
-function listItemsbyGroup(items) {
-
-    let table = `<h5>Stock</h5><table cellpadding="0" cellspacing="0" border="0" style="">`
-
-    items.forEach(item => {
-        let field = `<tr style=" color: #495057;background-color:#e9ecef;"><td>Stock de la Ciudad:<strong> ${item.CityQty}</strong></td><td>Stock Total: <strong>${item.StockQty}</strong></td></tr>`
-
-        table += field
-    })
-
-    table += `</table>`
-
-    return table
-}
 
 function listSales(sales) {
 

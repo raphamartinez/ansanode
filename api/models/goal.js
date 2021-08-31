@@ -5,14 +5,15 @@ class Goal {
 
     async insert(goal) {
         try {
-            const obj = await Repositorie.validate(goal)
+            const item = await Repositorie.search(goal)
+            console.log(item);
+            const obj = await Repositorie.validate(item)
 
             if (obj && obj.amount && obj.amount !== goal.amount) {
-                goal.id_goal = obj.id_goal
-                await Repositorie.update(goal)
-            }else {
-                console.log(goal);
-                await Repositorie.insert(goal)
+                item.id_goal = obj.id_goal
+                await Repositorie.update(item)
+            } else {
+                await Repositorie.insert(item)
             }
 
             return true
@@ -37,13 +38,13 @@ class Goal {
         }
     }
 
-    async listGoalsByManager(id_login){
+    async listGoalsByManager(id_login) {
 
         try {
             const data = await Repositorie.listGoalsByManager(id_login)
 
             await data.forEach(obj => {
-                obj.percentage = obj.goals * 100 / obj.countlines  
+                obj.percentage = obj.goals * 100 / obj.countlines
                 obj.percentage = obj.percentage.toFixed(2)
             })
 

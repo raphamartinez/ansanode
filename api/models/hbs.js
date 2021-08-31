@@ -371,20 +371,20 @@ class Hbs {
 
     async listSaleByItem(id_salesman, artcode) {
         try {
-            const salesman = await RepositorieSeller.view(id_salesman)
+            const salesman = await RepositorieSeller.view(0, id_salesman)
 
             const data = await Repositorie.listSaleByItem(artcode, salesman)
 
-            if (data[0].goal1 === null) {
-                data[0].goal1 = 0
+            if (data.goal1 === null) {
+                data.goal1 = 0
             }
 
-            if (data[0].goal2 === null) {
-                data[0].goal2 = 0
+            if (data.goal2 === null) {
+                data.goal2 = 0
             }
 
-            if (data[0].goal3 === null) {
-                data[0].goal3 = 0
+            if (data.goal3 === null) {
+                data.goal3 = 0
             }
 
             return data

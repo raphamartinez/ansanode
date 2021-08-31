@@ -534,16 +534,16 @@ class Hbs {
 
         try {
             const sql = `SELECT 
-            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-1),Sr.Qty,0)) AS goal1, DATE_FORMAT(NOW() - INTERVAL 1 month, '%m/%Y') AS month1,
-            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-2),Sr.Qty,0)) AS goal2, DATE_FORMAT(NOW() - INTERVAL 2 month, '%m/%Y') AS month2,
-            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW())-3),Sr.Qty,0)) AS goal3, DATE_FORMAT(NOW() - INTERVAL 3 month, '%m/%Y') AS month3
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW()- interval 1 MONTH)),Sr.Qty,0)) AS goal1, DATE_FORMAT(NOW() - INTERVAL 1 month, '%m/%Y') AS month1,
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW()- interval 2 MONTH)),Sr.Qty,0)) AS goal2, DATE_FORMAT(NOW() - INTERVAL 2 month, '%m/%Y') AS month2,
+            SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW()- interval 3 MONTH)),Sr.Qty,0)) AS goal3, DATE_FORMAT(NOW() - INTERVAL 3 month, '%m/%Y') AS month3
             FROM SalesOrder Sa
             INNER JOIN SalesOrderItemRow Sr ON Sa.internalId = Sr.masterId 
-            WHERE Sr.ArtCode = '${artcode}'
+            WHERE Sr.ArtCode = ${artcode}
             AND Sa.SalesMan = '${salesman.code}'`
 
             const data = await queryhbs(sql)
-            return data
+            return data[0]
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

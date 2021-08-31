@@ -61,7 +61,9 @@ class Seller {
                 group by sa.code, gl.date
                 order by gl.date asc`
 
-            } else{
+                const data = await query(sql)
+                return data[0]
+            } else {
                 sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
                 FROM ansa.salesman sa
                 CROSS JOIN ansa.goalline gl
@@ -69,10 +71,11 @@ class Seller {
                 WHERE sa.id_login = ${id_login}
                 group by sa.code
                 order by sa.code asc `
+
+                const data = await query(sql)
+                return data
             }
 
-            const data = await query(sql)
-            return data
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }

@@ -65,21 +65,21 @@ const showCardBd = (cardHistory, lastupdate) => {
 const showGoals = () => {
     let div = document.createElement('div');
 
-    div.className = "col-xl-12 col-md-12 mb-4"
+    div.className = "col-md-6 mb-4"
 
     div.innerHTML = ` 
     <hr>
-    <div style="background-color:#e4e6ff;" class="card border-bottom-secondary shadow h-100 py-2">
-        <div class="card-body text-center">
-                    <h4>
-                    Metas para Vendedores
-                    </h4>
-                    <div class="row no-gutters align-items-center">
+    <div class="card text-grey bg-secondary">
+    <div class="card-header text-white bg-secondary">
+    <div class="text-xl font-weight-bold text-uppercase mb-1">Meta por Vendedores</div>
+    </div>
+        <div class="card-body text-left">
+                    <div class="row no-gutters align-items-left">
                     <div class="col mr-2">
                     <div id="goaldashboard"></div>
-                    <div class="h8 mb-0 font-weight-bold text-gray-600"></div>
-                </div>
-                <div class="col-auto">
+                    <div class="col-auto text-white">
+                    Cumplimiento de objetivos para los próximos 12 meses
+                    </div>
                 </div>
             </div>
         </div>
@@ -99,19 +99,22 @@ const sellers = (goal) => {
     if(goal.percentage >= 75 && goal.percentage < 100) classprogress = 'bg-success'
 
 
-    div.className = "col-xl-12 col-md-12 mb-4"
+    div.className = "col-md-12 mb-2"
 
     div.innerHTML = ` 
     <a onclick="listGoalSalesmanId(event)" data-id_salesman="${goal.id_salesman}">
     <div  class="form-row">
-       <div class="form-group col-md-6">
-           <h8><strong>${goal.name}</strong> - Cumplimiento de objetivos para los próximos 12 meses</h8>
+       <div class="form-group text-left col-md-4">
+           <p><strong>${goal.name}</strong><p>
        </div>
-       <div class="form-group col-md-6">
+       <div class="form-group col-md-4">
           <div class="progress">
-              <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
+              <div style="color:#000000;" class="progress-bar progress-bar-striped ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
-      </div>        
+      </div>   
+      <div class="form-group col-md-4 text-center text-white">
+      Expectativa total: ${goal.goalssum}
+      </div>
     </div></a>`;
 
     return div
@@ -129,18 +132,21 @@ const progress = (goal) => {
 
     div.className = "col-md-12"
 
-    div.style="background-color: #c4cbff;"
+    div.style="background-color: rgb(90 159 236);"
 
     div.innerHTML = ` 
     <div style="padding-top: 0.3rem;" class="form-row align-items-center">
-       <div class="form-group col-md-6">
-           <a><h8>${goal.date}</h8></a>
+       <div class="form-group col-md-4">
+           <a><h8>${goal.itemgroup}</h8></a>
        </div>
-       <div class="form-group align-items-center col-md-6">
+       <div class="form-group align-items-center col-md-4">
           <div class="progress">
               <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
-      </div>        
+      </div>   
+      <div class="form-group col-md-4 text-center text-white">
+      Expectativa total: ${goal.goalssum}
+      </div>     
     </div>`;
 
     return div

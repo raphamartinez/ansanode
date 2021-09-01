@@ -31,17 +31,25 @@ const jobMail = new CronJob('0 1 * * * *', () => {
     }
 });
 
-const jobGoalLine = new CronJob('0 0 5 1 * *', () => {
+const jobGoalLine = new CronJob('0 15 5 1 * *', () => {
     try {
         console.log("Executed GoalLine!");
 
         const date = new Date()
 
-        const year = date.getFullYear()
-        const month = date.getMonth() + 1
-        const day = date.getDate()
+        let year = date.getFullYear()
+        let month = date.getMonth() + 12
 
-        const now = `${year}-${month}-${day}`
+        if (month > 12) {
+            month -= 12
+            year += 1
+        }
+
+        if (month <= 9) {
+            month = `0${month}`
+        }
+
+        const now = `${year}-${month}-01`
             
         GoalLine.create(now)
     } catch (error) {

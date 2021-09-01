@@ -195,7 +195,116 @@ const modalAdd = () => {
   return div
 }
 
+const showGoals = () => {
+    let div = document.createElement('div');
 
+    div.className = "col-xl-12 col-md-12 mb-4"
+
+    div.innerHTML = ` 
+    <div class="form-row col-md-12">
+    <div class="col-md-6">
+        <div class="card text-grey bg-secondary">
+            <div class="card-header text-white bg-secondary">
+                <div class="text-xl font-weight-bold text-uppercase mb-1">Meta por Vendedores</div>
+            </div>
+            <div class="card-body text-left">
+                <div class="row no-gutters align-items-left">
+                    <div class="col mr-2">
+                        <div id="goalsshow"></div>
+                        <div class="col-auto text-white">
+                            Cumplimiento de objetivos para los próximos 12 meses
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card text-grey bg-secondary">
+            <div class="card-header text-white bg-secondary">
+                <div class="text-xl font-weight-bold text-uppercase mb-1">Facturacion Prevista</div>
+            </div>
+            <div class="card-body text-left">
+                <div class="row no-gutters align-items-left">
+                    <div class="col mr-2">
+                        <div class="col-auto text-white">
+                        En desarrollo
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+`;
+
+    return div
+
+}
+
+const sellers = (goal) => {
+    let div = document.createElement('div');
+
+    let classprogress
+    if(goal.percentage < 25) classprogress = 'bg-danger'
+    if(goal.percentage >= 25 && goal.percentage < 50) classprogress = 'bg-warning'
+    if(goal.percentage >= 50 && goal.percentage < 75) classprogress = 'bg-info'
+    if(goal.percentage >= 75 && goal.percentage < 100) classprogress = 'bg-success'
+
+
+    div.className = "col-md-12 mb-2"
+
+    div.innerHTML = ` 
+    <a onclick="listGoalSalesmanId(event)" data-id_salesman="${goal.id_salesman}">
+    <div  class="form-row">
+       <div class="form-group text-left col-md-4">
+           <p><strong>${goal.name}</strong><p>
+       </div>
+       <div class="form-group col-md-4">
+          <div class="progress">
+              <div style="color:#000000;" class="progress-bar progress-bar-striped ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
+          </div>
+      </div>   
+      <div class="form-group col-md-4 text-center text-white">
+      Expectativa total: ${goal.goalssum}
+      </div>
+    </div></a>`;
+
+    return div
+
+}
+
+const progress = (goal) => {
+    let div = document.createElement('div');
+
+    let classprogress
+    if(goal.percentage < 25) classprogress = 'bg-danger'
+    if(goal.percentage >= 25 && goal.percentage < 50) classprogress = 'bg-warning'
+    if(goal.percentage >= 50 && goal.percentage < 75) classprogress = 'bg-info'
+    if(goal.percentage >= 75 && goal.percentage < 100) classprogress = 'bg-success'
+
+    div.className = "col-md-12"
+
+    div.style="background-color: rgb(90 159 236);"
+
+    div.innerHTML = ` 
+    <div style="padding-top: 0.3rem;" class="form-row align-items-center">
+       <div class="form-group col-md-4">
+           <a><h8>${goal.itemgroup}</h8></a>
+       </div>
+       <div class="form-group align-items-center col-md-4">
+          <div class="progress">
+              <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
+          </div>
+      </div>   
+      <div class="form-group col-md-4 text-center text-white">
+      Expectativa total: ${goal.goalssum}
+      </div>     
+    </div>`;
+
+    return div
+
+}
 
 export const View = {
   addGoals,
@@ -204,7 +313,10 @@ export const View = {
   listSalesman,
   listDate,
   listGroups,
-  modalAdd
+  modalAdd,
+  progress,
+  sellers,
+  showGoals
 }
 
 

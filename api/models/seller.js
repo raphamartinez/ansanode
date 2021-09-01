@@ -31,6 +31,8 @@ class Seller {
             await data.forEach(obj => {
                 let tmp = obj.name.split(" ")
 
+                if(obj.goalssum === null) obj.goalssum= 0
+
                 obj.name = `${tmp[0]} ${tmp[1]}`
                 obj.percentage = obj.goals * 100 / obj.countlines
                 obj.percentage = obj.percentage.toFixed(0)
@@ -44,9 +46,10 @@ class Seller {
 
     async view(id_login, id_salesman) {
         try {
-            const data = await Repositorie.view(id_login, id_salesman)
-
+            const data = await Repositorie.listMonth(id_salesman)
             await data.forEach(obj => {
+                if(obj.goalssum === null) obj.goalssum= 0
+
                 obj.percentage = obj.goals * 100 / obj.countlines
                 obj.percentage = obj.percentage.toFixed(0)
             })

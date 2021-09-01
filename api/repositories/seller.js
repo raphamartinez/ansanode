@@ -53,7 +53,7 @@ class Seller {
             let sql
 
             if (id_salesman) {
-                sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
+                sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
                 FROM ansa.salesman sa
                 CROSS JOIN ansa.goalline gl
                 LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
@@ -64,7 +64,7 @@ class Seller {
                 const data = await query(sql)
                 return data[0]
             } else {
-                sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, COUNT(gl.id_goalline) AS countlines 
+                sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
                 FROM ansa.salesman sa
                 CROSS JOIN ansa.goalline gl
                 LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
@@ -75,6 +75,26 @@ class Seller {
                 const data = await query(sql)
                 return data
             }
+
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
+        }
+    }
+
+    async listMonth(id_salesman) {
+        try {
+
+            let sql = `SELECT gl.itemgroup, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
+            FROM ansa.salesman sa
+            CROSS JOIN ansa.goalline gl
+            LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+            WHERE sa.id_salesman = ${id_salesman}
+            and gl.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            group by gl.itemgroup
+            order by gl.date asc`
+
+            const data = await query(sql)
+            return data
 
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')

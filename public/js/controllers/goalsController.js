@@ -1,6 +1,5 @@
 import { View } from "../views/goalsView.js"
 import { Connection } from '../services/connection.js'
-import { ViewDashboard } from "../views/dashboardView.js"
 
 window.listGoals = listGoals
 
@@ -29,11 +28,13 @@ async function listGoals() {
         settings.appendChild(View.opcionesGoals())
 
         let goals = await Connection.noBody('sellersdashboard', 'GET')
+        
+        settings.appendChild(View.showGoals())
 
-        settings.appendChild(ViewDashboard.showGoals())
+        const goalsshow = document.getElementById('goalsshow')
 
         goals.forEach(goal => {
-            settings.appendChild(ViewDashboard.sellers(goal))
+            goalsshow.appendChild(View.sellers(goal))
         })
 
     } catch (error) {

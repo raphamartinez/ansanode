@@ -37,6 +37,14 @@ async function listGoals() {
             goalsshow.appendChild(View.sellers(goal))
         })
 
+        const expectedsshow = document.getElementById('expectedsshow')
+
+        let expecteds = await Connection.noBody('expectedsellers', 'GET')
+
+        expecteds.forEach(expected => {
+            expectedsshow.appendChild(View.expecteds(expected))
+        })
+
     } catch (error) {
 
     }
@@ -326,3 +334,70 @@ $('#tablegoals tbody').on('click', 'dropdown-filter-item', async function (event
         tr.removeClass('shown');
     }
 });
+
+window.listExpectedSalesmanId = listExpectedSalesmanId
+
+async function listExpectedSalesmanId(event) {
+
+    let isExpanded = event.currentTarget.children
+
+    if (isExpanded.length === 1) {
+
+        const card = event.currentTarget
+        const id_salesman = card.getAttribute("data-id_salesman")
+
+        let expecteds = await Connection.noBody(`goalexpected/${id_salesman}`, 'GET')
+
+        let div = document.createElement('div');
+        div.className = "collapse col-md-12 sellerexpected"
+
+        await expecteds.forEach(expected => {
+            div.appendChild(View.expectedsMonth(expected))
+        })
+
+        card.appendChild(div)
+
+        $('.sellerexpected').collapse()
+    } else {
+
+        let btn = event.currentTarget
+        const type = btn.getAttribute("data-type")
+
+        if(type === "1"){
+        $('.sellerexpected').collapse('hide')
+
+        event.currentTarget.children[1].remove()
+        }
+    }
+}
+
+window.listExpectedSalesmanMonth = listExpectedSalesmanMonth
+
+async function listExpectedSalesmanMonth(event) {
+
+    let isExpanded = event.currentTarget.children
+
+    if (isExpanded.length === 1) {
+
+        const card = event.currentTarget
+        const id_salesman = card.getAttribute("data-id_salesman")
+        const date = card.getAttribute("data-date")
+
+        let expecteds = await Connection.noBody(`goalexpectedmonth/${id_salesman}/${date}`, 'GET')
+
+        let div = document.createElement('div');
+        div.className = "col-md-12 sellerexpectedmonth"
+
+        await expecteds.forEach(expected => {
+            div.appendChild(View.expectedsGroups(expected))
+        })
+
+        card.appendChild(div)
+
+        $('.sellerexpectedmonth').collapse()
+    } else {
+        $('.sellerexpectedmonth').collapse('hide')
+
+        event.currentTarget.children[1].remove()
+    }
+}

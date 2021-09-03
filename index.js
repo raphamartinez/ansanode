@@ -10,7 +10,6 @@ const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = r
 
 const connection = require('./api/infrastructure/database/connection')
 const tables = require('./api/infrastructure/database/tables')
-const Hbs = require('./api/models/hbs');
 const Surveymonkey = require('./api/models/surveymonkey')
 const GoalLine = require('./api/models/goalline')
 

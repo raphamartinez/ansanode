@@ -34,13 +34,15 @@ window.onload = async function () {
 
         let goals = await Connection.noBody('sellersdashboard', 'GET')
 
-        cardHistory.appendChild(ViewDashboard.showGoals())
+        if(goals.length > 0){
+            cardHistory.appendChild(ViewDashboard.showGoals())
 
-        let goaldashboard = document.getElementById('goaldashboard')
-
-        goals.forEach(goal => {
-            goaldashboard.appendChild(ViewDashboard.sellers(goal))
-        })
+            let goaldashboard = document.getElementById('goaldashboard')
+    
+            goals.forEach(goal => {
+                goaldashboard.appendChild(ViewDashboard.sellers(goal))
+            })
+        }
     }
 
     let name = user.name.substring(0, (user.name + " ").indexOf(" "))
@@ -170,7 +172,6 @@ async function listGoalSalesmanId(event) {
 
         let div = document.createElement('div');
         div.className = "collapse col-md-12 sellergoal"
-        div.nam
 
         await goals.forEach(goal => {
             div.appendChild(ViewDashboard.progress(goal))

@@ -132,19 +132,19 @@ const progress = (goal) => {
 
     div.className = "col-md-12"
 
-    div.style="background-color: rgb(90 159 236);"
+    div.style="background-color: rgba(90, 159, 236, .4); border-radius: 5px 5px 5px 5px; "
 
     div.innerHTML = ` 
     <div style="padding-top: 0.3rem;" class="form-row align-items-center">
-       <div class="form-group col-md-4">
-           <a><h8>${goal.itemgroup}</h8></a>
+       <div class="form-group text-center col-md-4">
+           <a><h8><strong>${goal.itemgroup}</strong></h8></a>
        </div>
-       <div class="form-group align-items-center col-md-4">
+       <div class="form-group text-center align-items-center col-md-4">
           <div class="progress">
               <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
       </div>   
-      <div class="form-group col-md-4 text-center text-white">
+      <div class="form-group text-center col-md-4 text-center text-white">
       Expectativa total: ${goal.goalssum}
       </div>     
     </div>`;

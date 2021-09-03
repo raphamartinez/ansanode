@@ -1,4 +1,6 @@
 const Hbs = require('../models/hbs')
+const Item = require('../models/item')
+
 const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
@@ -109,6 +111,17 @@ module.exports = app => {
 
             const sale = await Hbs.listSaleByItem(id_salesman, artcode)
             res.json(sale)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/expectedsellers', Middleware.bearer, async ( req, res, next) => {
+        try {
+            const id_login = req.login.id_login
+
+            const expected = await Item.listExpectedSalesByManager(id_login)
+            res.json(expected)
         } catch (err) {
             next(err)
         }

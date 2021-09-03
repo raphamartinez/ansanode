@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableItemPrice()
     this.createTableGoal()
     this.createTableGoalLines()
     this.createTableSalesman()
@@ -10,7 +11,6 @@ class Tables {
     this.createTablemailattachment()
     this.createTableMailScheduling()
     this.createTableMailUser()
-    this.createTableItemGroup()
     this.createTableStock()
     this.createTableType()
     this.createTableFile()
@@ -33,6 +33,17 @@ class Tables {
     this.createTableUserHbs()
 
     return true
+  }
+
+  createTableItemPrice(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.itemprice (id_itemprice int NOT NULL AUTO_INCREMENT, code VARCHAR (100), price DOUBLE, PRIMARY KEY (id_itemprice))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableGoal(){

@@ -1,5 +1,8 @@
 const Goal = require('../models/goal')
 const GoalLine = require('../models/goalline')
+const Sellers = require('../models/seller')
+const moment = require('moment')
+
 const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
@@ -78,6 +81,31 @@ module.exports = app => {
 
             const result = await Goal.delete(id_goal)
             res.json(result)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/goalexpected/:id_salesman', Middleware.bearer, async ( req, res, next) => {
+        try {
+            const id_salesman = req.params.id_salesman
+
+            const expected = await Sellers.listExpected(id_salesman)
+            res.json(expected)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/goalexpectedmonth/:id_salesman/:date', Middleware.bearer, async ( req, res, next) => {
+        try {
+            const id_salesman = req.params.id_salesman
+            let date = req.params.date
+
+            date = moment(date).format("YYYY-MM-DD")
+
+            const expected = await Sellers.listExpectedMonth(id_salesman, date)
+            res.json(expected)
         } catch (err) {
             next(err)
         }

@@ -24,6 +24,32 @@ class Seller {
         }
     }
 
+    async listExpected(id_salesman) {
+        try {
+            const data = await Repositorie.listExpected(id_salesman)
+            
+            data.forEach(obj => {
+                obj.expected = obj.expected.toLocaleString('en-US',{style: 'currency', currency: 'USD'})
+            })
+            return data
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los vendedores.')
+        }
+    }
+
+    async listExpectedMonth(id_salesman, date) {
+        try {
+            const data = await Repositorie.listExpectedMonth(id_salesman, date)
+
+            data.forEach(obj => {
+                obj.expected = obj.expected.toLocaleString('en-US',{style: 'currency', currency: 'USD'})
+            })
+            return data
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los vendedores.')
+        }
+    }
+
     async listDashboard(id_login) {
         try {
             const data = await Repositorie.view(id_login)

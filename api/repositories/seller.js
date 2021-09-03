@@ -100,6 +100,48 @@ class Seller {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }
     }
+
+    async listExpected(id_salesman) {
+        try {
+
+            let sql = `SELECT DATE_FORMAT(GL.date, '%m/%Y') as date, GL.date as datesql, GO.id_salesman, sum(GO.amount) as amount, sum(GO.amount * PR.price) AS expected
+            FROM ansa.goalline GL
+            INNER JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
+            INNER JOIN ansa.salesman SA ON GO.id_salesman = SA.id_salesman
+            INNER JOIN ansa.itemprice PR ON GL.itemcode = PR.code
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND GL.date >= NOW() - interval 1 month
+            AND SA.id_salesman = ${id_salesman}
+            AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            group by GL.date
+            order by GL.date`
+
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
+        }
+    }
+
+    async listExpectedMonth(id_salesman, date) {
+        try {
+
+            let sql = `SELECT GL.itemgroup, GL.date as datesql, GO.id_salesman , sum(GO.amount) as amount, sum(GO.amount * PR.price) AS expected
+            FROM ansa.goalline GL
+            INNER JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
+            INNER JOIN ansa.salesman SA ON GO.id_salesman = SA.id_salesman
+            INNER JOIN ansa.itemprice PR ON GL.itemcode = PR.code
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND GL.date = ?
+            AND SA.id_salesman = ?
+            AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            group by GL.itemgroup
+            order by GL.itemgroup`
+
+            return query(sql, [date, id_salesman])
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
+        }
+    }
 }
 
 module.exports = new Seller()

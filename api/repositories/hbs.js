@@ -549,6 +549,22 @@ class Hbs {
         }
     }
 
+    listItemPrice() {
+        try {
+            const sql = `SELECT pr.ArtCode as code, pr.PriceList, MIN(pr.Price) as price
+            FROM (SELECT * FROM Price ORDER BY Price ASC) AS pr
+            INNER JOIN Item it ON pr.ArtCode = it.Code
+            INNER JOIN ItemGroup ig ON it.ItemGroup = ig.Code
+            WHERE ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            GROUP BY ArtCode
+            ORDER BY pr.ArtCode ASC`
+
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar prices') 
+        }
+    }
+
     listClocksOffice() {
         try {
             const sql = `SELECT Office, PortNr, IPAddress, Password FROM PayRollSettingsZKclockOfficeIPRow`

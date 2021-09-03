@@ -107,18 +107,6 @@ class GoalLine {
         }
     }
 
-    async listdashboard() {
-        try {
-            const countline = await RepositorieGoal.countLineGoal()
-
-            const countsellersgoal = await RepositorieGoal.countSellersGoal()
-
-
-        } catch (error) {
-
-        }
-    }
-
     update() {
         try {
             return Repositorie.update(goal)

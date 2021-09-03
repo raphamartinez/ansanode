@@ -227,8 +227,9 @@ const showGoals = () => {
             <div class="card-body text-left">
                 <div class="row no-gutters align-items-left">
                     <div class="col mr-2">
+                    <div id="expectedsshow"></div>
                         <div class="col-auto text-white">
-                        En desarrollo
+                        La expectativa de facturación se basa en el objetivo para los próximos 12 meses, los valores pueden cambiar según la variación en los precios de los artículos.
                         </div>
                     </div>
                 </div>
@@ -285,7 +286,7 @@ const progress = (goal) => {
 
     div.className = "col-md-12"
 
-    div.style="background-color: rgb(90 159 236);"
+    // div.style="background-color: rgb(90 159 236);"
 
     div.innerHTML = ` 
     <div style="padding-top: 0.3rem;" class="form-row align-items-center">
@@ -306,6 +307,69 @@ const progress = (goal) => {
 
 }
 
+const expecteds = (expected) => {
+    let div = document.createElement('div');
+
+    div.className = "col-md-12 mb-2"
+
+    div.innerHTML = ` 
+    <a onclick="listExpectedSalesmanId(event)" data-id_salesman="${expected.id_salesman}" data-type="1">
+    <div  class="form-row">
+       <div class="form-group text-left col-md-6">
+           <p><strong>${expected.name}</strong><p>
+       </div>  
+      <div class="form-group col-md-6 text-center text-white">
+      Expectativa de facturación total: <strong style="color: #00FF00;">${expected.expected}</strong>
+      </div>
+      <div class="col-md-12 expecteds"></div>
+    </div></a>`;
+
+    return div
+
+}
+
+const expectedsMonth = (expected) => {
+    let div = document.createElement('div');
+
+    div.className = "col-md-12 collapsed"
+
+    div.innerHTML = ` 
+    <a onclick="listExpectedSalesmanMonth(event)" data-id_salesman="${expected.id_salesman}" data-date="${expected.datesql}">
+    <div  class="form-row">
+       <div class="form-group text-center col-md-4">
+           <p><strong>${expected.date}</strong><p>
+       </div>  
+      <div class="form-group col-md-8 text-left text-white">
+      Expectativa de facturación: <strong style="color: #00FF00;">${expected.expected}</strong>
+      </div>
+      <div class="col-md-12 expectedsMonth"><div  class="form-row"></div></div>
+    </div></a>`;
+
+    return div
+
+}
+
+const expectedsGroups = (expected) => {
+    let div = document.createElement('div');
+
+    div.className = "col-md-12 collapsed"
+    div.style="background-color: rgba(90, 159, 236, .4); border-radius: 5px 5px 5px 5px; padding-top: 0.3rem;"
+
+    div.innerHTML = ` 
+    <a onclick="listExpectedSalesmanMonth(event)" data-id_salesman="${expected.id_salesman}" data-date="${expected.datesql}" data-group="${expected.group}">
+    <div class="form-row">
+       <div class="form-group text-center align-items-center col-md-4">
+           <p><strong>${expected.itemgroup}</strong><p>
+       </div>  
+      <div class="form-group align-items-center col-md-8 text-left text-white">
+      Expectativa de facturación: <strong style="color: #00FF00;">${expected.expected}</strong>
+      </div>
+    </div></a>`;
+
+    return div
+
+}
+
 export const View = {
   addGoals,
   opcionesGoals,
@@ -316,7 +380,10 @@ export const View = {
   modalAdd,
   progress,
   sellers,
-  showGoals
+  showGoals,
+  expecteds,
+  expectedsMonth,
+  expectedsGroups
 }
 
 

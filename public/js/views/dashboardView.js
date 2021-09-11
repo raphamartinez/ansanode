@@ -69,15 +69,15 @@ const showGoals = () => {
 
     div.innerHTML = ` 
     <hr>
-    <div class="card text-grey bg-secondary">
-    <div class="card-header text-white bg-secondary">
+    <div class="card text-grey bg-light">
+    <div class="card-header bg-light">
     <div class="text-xl font-weight-bold text-uppercase mb-1">Meta por Vendedores</div>
     </div>
         <div class="card-body text-left">
                     <div class="row no-gutters align-items-left">
                     <div class="col mr-2">
                     <div id="goaldashboard"></div>
-                    <div class="col-auto text-white">
+                    <div class="col-auto text-grey">
                     Cumplimiento de objetivos para los próximos 12 meses
                     </div>
                 </div>
@@ -112,7 +112,7 @@ const sellers = (goal) => {
               <div style="color:#000000;" class="progress-bar progress-bar-striped ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
       </div>   
-      <div class="form-group col-md-4 text-center text-white">
+      <div class="form-group col-md-4 text-center">
       Expectativa total: ${goal.goalssum}
       </div>
     </div></a>`;
@@ -132,7 +132,7 @@ const progress = (goal) => {
 
     div.className = "col-md-12"
 
-    div.style="background-color: rgba(90, 159, 236, .4); border-radius: 5px 5px 5px 5px; "
+    div.style="background-color: rgba(90, 159, 236, .1); "
 
     div.innerHTML = ` 
     <div style="padding-top: 0.3rem;" class="form-row align-items-center">
@@ -144,8 +144,8 @@ const progress = (goal) => {
               <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
       </div>   
-      <div class="form-group text-center col-md-4 text-center text-white">
-      Expectativa total: ${goal.goalssum}
+      <div class="form-group text-center col-md-4 text-left ">
+      Expectativa total: <strong> ${goal.goalssum} </strong>
       </div>     
     </div>`;
 

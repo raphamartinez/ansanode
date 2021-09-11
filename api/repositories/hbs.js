@@ -130,24 +130,27 @@ class Hbs {
     listNcs() {
 
         try {
-            const sql = ` SELECT 'A' as DocType,'' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date, Invoice.DueDate
-            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, Invoice.SalesMan
-            ,CurrencyRate, BaseRate, -Total as Total, Saldo, Invoice.Office , Invoice.FromRate
+            const sql = `  SELECT 'A' as DocType,'' as Type, InvoiceType, Invoice.SerNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date, Invoice.DueDate
+            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan
+            ,Invoice.CurrencyRate, Invoice.BaseRate, -Invoice.Total as Total, Saldo, Invoice.Office , Invoice.FromRate
             , Invoice.Comment, Customer.GroupCode as CustGroup
             , Saldo as SaldoInv
-            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            ,IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName 
             FROM Invoice 
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
             INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
             LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
-            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
             WHERE Invoice.Saldo != 0
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
             AND Invoice.OpenFlag = 1
             AND Invoice.Status = 1 
-            AND (Invalid <> 1 OR Invalid IS NULL) 
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
             AND InvoiceType = 1
             AND (AppliesToInvoiceNr = 0 OR AppliesToInvoiceNr IS NULL)
             AND (Installments = 0 OR Installments IS NULL) 
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
             ORDER BY Invoice.SerNr  `
             return queryhbs(sql)
         } catch (error) {
@@ -157,24 +160,27 @@ class Hbs {
 
     listInvoices() {
         try {
-            const sql = `  SELECT 'A' as DocType, '' as Type, InvoiceType, SerNr, CONCAT(TransDate, " ", TransTime) AS date,
-            DueDate, Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, Invoice.SalesMan, 
-            CurrencyRate, BaseRate, Total as Total, Saldo, Invoice.Office , Invoice.FromRate
+            const sql = ` SELECT 'A' as DocType, '' as Type, InvoiceType, Invoice.SerNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
+            Invoice.DueDate, Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan, 
+            Invoice.CurrencyRate, Invoice.BaseRate, Invoice.Total as Total, Saldo, Invoice.Office , Invoice.FromRate
             , Invoice.Comment ,Customer.GroupCode as CustGroup
             , Saldo as SaldoInv
-            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            ,IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName 
             FROM Invoice 
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
             INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
             LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
-            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
             WHERE Invoice.Saldo != 0
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
             AND Invoice.OpenFlag = 1
             AND Invoice.Status = 1 
-            AND (Invalid <> 1 OR Invalid IS NULL) 
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
             AND InvoiceType <> 1 
             AND (Installments = 0 OR Installments IS NULL) 
-            ORDER BY Invoice.SerNr `
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+            ORDER BY Invoice.SerNr`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar facturas')
@@ -186,10 +192,12 @@ class Hbs {
             const sql = `SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
             InvoiceInstallRow.DueDate as DueDate, OfficialSerNr, Invoice.PayTerm, Invoice.Currency as Currency,
             Invoice.CurrencyRate, Invoice.BaseRate, Invoice.CustCode, UPPER(Customer.Name) as CustName, InvoiceInstallRow.Saldo as Saldo, InvoiceInstallRow.Amount as Total,
-            InvoiceInstallRow.Saldo as SaldoInv, Invoice.SalesMan, Invoice.Office, Invoice.Comment, Invoice.FromRate
-            ,concat(per.Name,' ' ,LastName) as SalesManName 
+            InvoiceInstallRow.Saldo as SaldoInv, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan, Invoice.Office, Invoice.Comment, Invoice.FromRate
+            ,IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName  
             FROM InvoiceInstallRow 
             INNER JOIN Invoice ON Invoice.internalId = InvoiceInstallRow.masterId
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
             INNER JOIN Customer ON Customer.Code = Invoice.CustCode
             LEFT JOIN PromissoryNote ON (PromissoryNote.InvoiceNr = Invoice.SerNr AND InvoiceInstallRow.InstallNr = PromissoryNote.InvoiceInstallNr and PromissoryNote.Status = 1 and (PromissoryNote.Invalid = 0 or PromissoryNote.Invalid IS NULL))
             LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode
@@ -197,15 +205,15 @@ class Hbs {
                 FROM NegociatePromissoryNote npn inner join NegociatePromissoryNoteRow npnr on npn.internalId = npnr.masterId
                 WHERE npn.Status = 1 AND (npn.Invalid = 0 OR npn.Invalid IS NULL) AND OriginType = 1) npn
                 ON (Invoice.SerNr = npn.OriginNr AND InvoiceInstallRow.InstallNr = npn.InstallNr)
-            LEFT JOIN Person per ON per.Code = Invoice.SalesMan 
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
             WHERE Invoice.Status = 1
             AND InvoiceInstallRow.OpenFlag = 1
             AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
-            AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND now()
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND '2030-01-01'
             GROUP BY InvoiceInstallRow.internalId
-            ORDER BY SerNr  `
+            ORDER BY SerNr `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar facturas c/ cotas')
@@ -242,6 +250,7 @@ class Hbs {
             left  JOIN  PayMode ON rpmr.PayMode = PayMode.Code AND(PayMode.PayType = 2 or PayMode.PayType = 104) 
             WHERE Cheque.Status in (1,7) 
             AND Cheque.Type  in (0,1,2) 
+            AND Cheque.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
             group by  Cheque.SerNr
             ORDER BY SerNr
             `
@@ -569,6 +578,17 @@ class Hbs {
         try {
             const sql = `SELECT Office, PortNr, IPAddress, Password FROM PayRollSettingsZKclockOfficeIPRow`
             return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listInvoiceItems(invoice) {
+        try {
+            const sql = `SELECT ir.Artcode AS code, ir.Name AS name, ir.Labels AS label, ir.Qty AS qty, TRUNCATE(ir.Price,2) AS price, TRUNCATE(ir.Qty * ir.Price,2) as priceamount FROM InvoiceItemRow ir
+            INNER JOIN Invoice iv ON iv.internalId = ir.masterId
+            WHERE iv.SerNr = ?`
+            return queryhbs(sql, invoice)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

@@ -5,13 +5,13 @@ const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
 const jwt = require('jsonwebtoken');
-const { job, jobHbs, jobMail, jobGoalLine } = require('./api/models/job')
-const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('./api/models/error');
+const { job, jobHbs, jobMail, jobGoalLine, jobReceivable } = require('./api/models/job')
+const { InvalidArgumentError, NotFound, NotAuthorized } = require('./api/models/error');
 
-const connection = require('./api/infrastructure/database/connection')
-const tables = require('./api/infrastructure/database/tables')
-const Surveymonkey = require('./api/models/surveymonkey')
-const GoalLine = require('./api/models/goalline')
+// const connection = require('./api/infrastructure/database/connection')
+// const tables = require('./api/infrastructure/database/tables')
+// const Hbs = require('./api/models/hbs')
+// const GoalLine = require('./api/models/goalline')
 
 
 process.setMaxListeners(100)
@@ -36,6 +36,7 @@ app.listen(3000, () => {
     job.start()
     jobHbs.start()
     jobGoalLine.start()
+    jobReceivable.start()
   }
 })
 
@@ -74,7 +75,7 @@ app.use((err, req, res, next) => {
   res.json(body)
 
 })
-
+// Hbs.listReceivables()
 // Surveymonkey.ListResponse()
 
 // Mailpowerbi.listMailtoSend()

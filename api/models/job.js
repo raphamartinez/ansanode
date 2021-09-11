@@ -22,6 +22,15 @@ const jobHbs = new CronJob('0 30 5 * * *', () => {
     }
 });
 
+const jobReceivable = new CronJob('0 30 5 * * *', () => {
+    try {
+        console.log('Executed Cron Hbs sucessfuly!');
+        Hbs.listReceivables()
+    } catch (error) {
+        console.log('Error cron!' + error);
+    }
+});
+
 const jobMail = new CronJob('0 1 * * * *', () => {
     try {
         console.log("Executed Mail!");
@@ -60,4 +69,4 @@ const jobGoalLine = new CronJob('0 15 5 1 * *', () => {
 
 
 
-module.exports = { job, jobHbs, jobMail, jobGoalLine }
+module.exports = { job, jobHbs, jobMail, jobGoalLine, jobReceivable }

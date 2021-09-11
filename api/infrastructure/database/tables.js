@@ -3,6 +3,7 @@ class Tables {
 
   init(connection) {
     this.connection = connection
+    this.createTableFinanceInvoice()
     this.createTableItemPrice()
     this.createTableGoal()
     this.createTableGoalLines()
@@ -33,6 +34,17 @@ class Tables {
     this.createTableUserHbs()
 
     return true
+  } 
+
+  createTableFinanceInvoice(){
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeinvoice (id_financeinvoice int NOT NULL AUTO_INCREMENT, invoicenr int, comment VARCHAR(250), contact VARCHAR (150), responsible VARCHAR (150), status int, payday DATE, contactdate DATETIME, datereg DATETIME, PRIMARY KEY (id_financeinvoice))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableItemPrice(){

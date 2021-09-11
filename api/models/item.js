@@ -37,7 +37,14 @@ class Item {
         } catch (error) {
             throw new InternalServerError('No se pude listar los goals.')
         }
+    }
 
+    listInvoiceItems(invoice){
+        try {
+            return RepositorieHbs.listInvoiceItems(invoice)
+        } catch (error) {
+            throw new InternalServerError('No se pude listar los items.')
+        }
     }
 
 }

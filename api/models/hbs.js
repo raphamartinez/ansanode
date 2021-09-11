@@ -8,7 +8,7 @@ class Hbs {
 
     async init() {
         try {
-            await this.listReceivables()
+            // await this.listReceivables()
             await this.listSalary()
             await this.listUsers()
 

@@ -54,11 +54,12 @@ const opcionesGoals = () => {
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <div class="col-md-6 text-left">
         <div class="btn-group" role="group">
-            <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 Opciones
             </button>
             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a onclick="addGoalsList(event)" class="dropdown-item"><i class="fa fa-plus"></i> Fijar metas</a>
+                <a onclick="addGoalsList(event)" class="dropdown-item"><i class="fa fa-plus"></i> Fijar metas Online</a>
+                <a onclick="addGoalsList(event)" class="dropdown-item"><i class="fa fa-file-excel"></i> Fijar metas con Excel</a>
             </div>
         </div>
     </div>
@@ -203,15 +204,15 @@ const showGoals = () => {
     div.innerHTML = ` 
     <div class="form-row col-md-12">
     <div class="col-md-6">
-        <div class="card text-grey bg-secondary">
-            <div class="card-header text-white bg-secondary">
+        <div class="card text-grey bg-light">
+            <div class="card-header bg-light">
                 <div class="text-xl font-weight-bold text-uppercase mb-1">Meta por Vendedores</div>
             </div>
             <div class="card-body text-left">
                 <div class="row no-gutters align-items-left">
                     <div class="col mr-2">
                         <div id="goalsshow"></div>
-                        <div class="col-auto text-white">
+                        <div class="col-auto text-grey">
                             Cumplimiento de objetivos para los próximos 12 meses
                         </div>
                     </div>
@@ -220,15 +221,15 @@ const showGoals = () => {
         </div>
     </div>
     <div class="col-md-6">
-        <div class="card text-grey bg-secondary">
-            <div class="card-header text-white bg-secondary">
+        <div class="card text-grey bg-light">
+            <div class="card-header bg-light">
                 <div class="text-xl font-weight-bold text-uppercase mb-1">Facturacion Prevista</div>
             </div>
             <div class="card-body text-left">
                 <div class="row no-gutters align-items-left">
                     <div class="col mr-2">
                     <div id="expectedsshow"></div>
-                        <div class="col-auto text-white">
+                        <div class="col-auto text-grey">
                         La expectativa de facturación se basa en el objetivo para los próximos 12 meses, los valores pueden cambiar según la variación en los precios de los artículos.
                         </div>
                     </div>
@@ -266,8 +267,8 @@ const sellers = (goal) => {
               <div style="color:#000000;" class="progress-bar progress-bar-striped ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
       </div>   
-      <div class="form-group col-md-4 text-center text-white">
-      Expectativa total: ${goal.goalssum}
+      <div class="form-group col-md-4 text-left">
+      Expectativa total: <strong> ${goal.goalssum} </strong>
       </div>
     </div></a>`;
 
@@ -286,10 +287,8 @@ const progress = (goal) => {
 
     div.className = "col-md-12"
 
-    // div.style="background-color: rgb(90 159 236);"
-
     div.innerHTML = ` 
-    <div style="padding-top: 0.3rem;" class="form-row align-items-center">
+    <div  class="form-row align-items-center">
        <div class="form-group col-md-4">
            <a><h8>${goal.itemgroup}</h8></a>
        </div>
@@ -298,8 +297,8 @@ const progress = (goal) => {
               <div style="color:#000000;" class="progress-bar ${classprogress}" role="progressbar" style="width: ${goal.percentage}%;" aria-valuenow="${goal.percentage}" aria-valuemin="0" aria-valuemax="100">${goal.percentage}%</div>
           </div>
       </div>   
-      <div class="form-group col-md-4 text-center text-white">
-      Expectativa total: ${goal.goalssum}
+      <div class="form-group col-md-4 text-left">
+      Expectativa total: <strong> ${goal.goalssum} </strong>
       </div>     
     </div>`;
 
@@ -318,8 +317,8 @@ const expecteds = (expected) => {
        <div class="form-group text-left col-md-6">
            <p><strong>${expected.name}</strong><p>
        </div>  
-      <div class="form-group col-md-6 text-center text-white">
-      Expectativa de facturación total: <strong style="color: #00FF00;">${expected.expected}</strong>
+      <div class="form-group col-md-6 text-left">
+      Expectativa de facturación: <strong style="color: #00FF00;">${expected.expected}</strong>
       </div>
       <div class="col-md-12 expecteds"></div>
     </div></a>`;
@@ -339,7 +338,7 @@ const expectedsMonth = (expected) => {
        <div class="form-group text-center col-md-4">
            <p><strong>${expected.date}</strong><p>
        </div>  
-      <div class="form-group col-md-8 text-left text-white">
+      <div class="form-group col-md-8 text-left">
       Expectativa de facturación: <strong style="color: #00FF00;">${expected.expected}</strong>
       </div>
       <div class="col-md-12 expectedsMonth"><div  class="form-row"></div></div>
@@ -353,7 +352,7 @@ const expectedsGroups = (expected) => {
     let div = document.createElement('div');
 
     div.className = "col-md-12 collapsed"
-    div.style="background-color: rgba(90, 159, 236, .4); border-radius: 5px 5px 5px 5px; padding-top: 0.3rem;"
+    div.style="background-color: rgba(90, 159, 236, .4); padding-top: 0.3rem;"
 
     div.innerHTML = ` 
     <a onclick="listExpectedSalesmanMonth(event)" data-id_salesman="${expected.id_salesman}" data-date="${expected.datesql}" data-group="${expected.group}">

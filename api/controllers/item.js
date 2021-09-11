@@ -61,6 +61,17 @@ module.exports = app => {
         }
     })
 
+    app.get('/invoiceitems/:invoice', Middleware.bearer, async (req, res, next) => {
+        try {
+            const invoice = req.params.invoice
+
+            const items = await Item.listInvoiceItems(invoice)
+            res.json(items)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.post('/price', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login

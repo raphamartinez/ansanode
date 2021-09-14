@@ -16,7 +16,7 @@ class Prosegur {
 
     async listHistoryWebscraping() {
         try {
-            const sql = `SELECT description, DATE_FORMAT(dateReg, '%m-%d-%Y %H:%i:%s') as date FROM ansa.webscrapinghistory ORDER BY dateReg DESC LIMIT 1 `
+            const sql = `SELECT description, DATE_FORMAT(dateReg, '%H:%i %d/%m/%Y') as date FROM ansa.webscrapinghistory ORDER BY dateReg DESC LIMIT 1 `
             const result = await query(sql)
 
             if (!result[0]) {

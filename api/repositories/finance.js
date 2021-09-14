@@ -5,9 +5,9 @@ class Finance {
 
     async insert(finance) {
         try {
-            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, ${finance.type}, datereg) values (?, ?, now() - interval 4 hour)`
+            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
 
-            const result = await query(sql, [finance.invoicenr, finance.value])
+            const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status])
             return result[0]
         } catch (error) {
             console.log(error);
@@ -30,8 +30,8 @@ class Finance {
 
     async update(finance) {
         try {
-            const sql = `UPDATE ansa.financeinvoice SET ${finance.type} = ? WHERE id_financeinvoice = ?`
-            const result = await query(sql, [finance.value, finance.id_financeinvoice])
+            const sql = `UPDATE ansa.financeinvoice SET contactdate = ?, responsible = ?, contact = ?, comment = ?, payday = ?, status = ? WHERE id_financeinvoice = ?`
+            const result = await query(sql, [finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, finance.id_financeinvoice])
 
             return result[0]
         } catch (error) {
@@ -45,7 +45,8 @@ class Finance {
         try {
             let sql = `SELECT DISTINCT(re.CustCode), re.CustName
             FROM ansa.receivable re
-            GROUP BY CustCode `
+            GROUP BY CustCode 
+            ORDER BY re.CustName ASC`
 
             return query(sql)
         } catch (error) {

@@ -30,7 +30,7 @@ btnFinance.addEventListener('click', async (event) => {
             $('#dataTable').empty();
         }
 
-        title.innerHTML = "Finanzas"
+        title.innerHTML = "Cobranza"
         title.appendChild(ViewFinance.buttonsearchstock())
         powerbi.innerHTML = " "
         loading.innerHTML = " "
@@ -284,7 +284,8 @@ async function searchFinance(event) {
                             { title: "Contacto" },
                             { title: "Descripción" },
                             { title: "Fecha de Paga" },
-                            { title: "Status da Cobranza" }
+                            { title: "Status da Cobranza" },
+                            { title: "Guardar contacto" }
                         ],
                         paging: false,
                         ordering: true,
@@ -345,11 +346,53 @@ async function searchFinance(event) {
                         } else {
                             switch (type) {
                                 case "0":
-                                    // i.classList.remove(classList[0], classList[1]);
-                                    btn.previousElementSibling.children[0].removeAttribute("hidden")
-                                    btn.previousElementSibling.children[0].type = "checkbox"
+                                    let currentLine = $(this).closest('tr');
+                                    const tablecopy = event.currentTarget.parentNode.parentNode.parentNode
+                                    if (currentLine[0].classList[1] !== "copy") {
+                                        currentLine[0].classList.add('copy');
+                                    } else {
+                                        currentLine[0].style = "background-color: #fff;"
+                                        currentLine[0].classList.remove('copy');
+                                    }
 
-                                    //colocar radio button aqui
+                                    for (let index = 0; index < tablecopy.children.length; index++) {
+                                        const element = tablecopy.children[index];
+                                        if (element.classList[1] !== "copy") {
+                                            const cell = element.children[0]
+
+                                            let a1 = cell.children[1]
+                                            let a2 = cell.children[2]
+                                            let a3 = cell.children[3]
+
+                                            if (a1.previousElementSibling.children[0].type === "hidden" && a1.children[0].classList[1] !== "fa-save") {
+                                                a1.previousElementSibling.children[0].removeAttribute("hidden")
+                                                a1.previousElementSibling.children[0].type = "checkbox"
+                                                a1.style = "display:none;"
+                                                a2.style = "display:none;"
+                                                a3.style = "display:none;"
+                                            } else {
+                                                a1.previousElementSibling.children[0].removeAttribute("checkbox")
+                                                a1.previousElementSibling.children[0].type = "hidden"
+                                                a1.children[0].classList.remove("fa-save");
+                                                a1.children[0].classList.add("fa-copy");
+                                                a1.style = "display:inline;"
+                                                a2.style = "display:inline;"
+                                                a3.style = "display:inline;"
+                                            }
+                                        } else {
+                                            currentLine[0].style = "background-color: #caffc9;"
+                                            const cell = element.children[0]
+                                            let a1 = cell.children[1]
+                                            let a2 = cell.children[2]
+                                            let a3 = cell.children[3]
+                                            a1.previousElementSibling.children[0].removeAttribute("hidden")
+                                            a1.previousElementSibling.children[0].type = "checkbox"
+                                            a1.children[0].classList.add("fa-save");
+                                            a1.children[0].classList.remove("fa-copy");
+                                            a2.style = "display:none;"
+                                            a3.style = "display:none;"
+                                        }
+                                    }
 
                                     break
                                 case "1":
@@ -472,26 +515,33 @@ function titleFinance(date) {
 $(document).on('keypress', '.finance', function (e) {
     if (e.which == 13) {
         e.preventDefault();
-        var $next = $('[tabIndex=' + (+this.tabIndex + 1) + ']');
+        var $next = $('[tabIndex=' + (+ this.tabIndex + 1) + ']');
 
         if (!$next.length) {
             $next = $('[tabIndex=1]');
         }
 
         $next.focus();
-
-        const btn = e.currentTarget
-
-        const finance = {
-            invoicenr: btn.getAttribute("data-sernr"),
-            type: btn.getAttribute("data-type"),
-            value: btn.value
-        }
-
-        Connection.body(`finance`, { finance }, 'POST')
-
     }
 });
+
+
+$(document).on('keyup', '.finance', function (e) {
+
+    const tr = e.currentTarget.parentElement.parentElement
+
+    const contactdate = tr.children[5].children[0].value.length
+    const responsible = tr.children[6].children[0].value.length
+    const contact = tr.children[7].children[0].value.length
+    const desc = tr.children[8].children[0].value.length
+
+    if (contactdate > 0 && responsible > 0 && contact > 0 && desc > 0) {
+        tr.children[11].children[0].disabled = false
+    } else {
+        tr.children[11].children[0].disabled = true
+    }
+});
+
 
 
 function viewFinance(title, invoices) {
@@ -506,10 +556,10 @@ function viewFinance(title, invoices) {
     invoices.forEach(invoice => {
 
         let td = [
-            `<div class="form-check"><input class="form-check-input" type="hidden" value=""></div>
-             <a data-type="0" class="invoice-control" data-invoice="${invoice.SerNr}"><i style="color: #32CD32;" class="fas fa-copy"></i></a>
-             <a data-type="1" class="invoice-control" data-invoice="${invoice.SerNr}"><i class="fas fa-list-ol"></i></a>
-             <a data-type="2" class="invoice-control" data-invoice="${invoice.SerNr}"><i style="color: #8B4513;" class="fas fa-th-large"></i></a>`,
+            `<div class="form-check" style="display: inline;"><input onclick="copyLineFinance(event)" class="form-check-input" type="hidden" value=""></div>
+             <a data-toggle="popover" title="Copiar contacto a otras facturas" data-type="0" class="invoice-control" data-invoice="${invoice.SerNr}"><i style="color: #32CD32;" class="fas fa-copy"></i></a>
+             <a data-toggle="popover" title="Ver historial de contactos" data-type="1" class="invoice-control" data-invoice="${invoice.SerNr}"><i class="fas fa-list-ol"></i></a>
+             <a data-toggle="popover" title="Ver los artículos" data-type="2" class="invoice-control" data-invoice="${invoice.SerNr}"><i style="color: #8B4513;" class="fas fa-th-large"></i></a>`,
             `<strong>${invoice.SerNr}</strong>`,
             `<strong>${invoice.SalesMan}</strong>`,
             `${invoice.date}`,
@@ -526,9 +576,10 @@ function viewFinance(title, invoices) {
                 <option value="2">Pago pronto</option>
                 <option value="3">Pago rechazado</option>
                 <option value="4">Reenviar al gerente</option>
-             </select>`
+             </select>`,
+            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-success" onclick="saveFinance(event)" disabled>Guardar</button>`
         ]
-        index += 6
+        index += 7
 
         dtview.push(td)
     })
@@ -605,4 +656,135 @@ function viewFinanceHistory(historys) {
     div += table
 
     return div
+}
+
+window.copyLineFinance = copyLineFinance
+function copyLineFinance(event) {
+
+    const check = event.currentTarget.checked
+    const tr = event.path[3]
+
+    if (tr.classList[1] !== "copy") {
+        const copy = document.getElementsByClassName('copy')
+
+        if (check) {
+            tr.children[5].children[0].value = copy[0].children[5].children[0].value
+            tr.children[6].children[0].value = copy[0].children[6].children[0].value
+            tr.children[7].children[0].value = copy[0].children[7].children[0].value
+            tr.children[8].children[0].value = copy[0].children[8].children[0].value
+            tr.children[9].children[0].value = copy[0].children[9].children[0].value
+            tr.children[10].children[0].value = copy[0].children[10].children[0].value
+
+            const finance = {
+                contactdate: tr.children[5].children[0].value,
+                responsible: tr.children[6].children[0].value,
+                contact: tr.children[7].children[0].value,
+                comment: tr.children[8].children[0].value,
+                payday: tr.children[9].children[0].value,
+                status: tr.children[10].children[0].value,
+                invoicenr: tr.children[10].children[0].getAttribute("data-sernr")
+            }
+
+            Connection.body(`finance`, { finance }, 'POST')
+
+            tr.children[11].children[0].disabled = true
+        } else {
+            tr.children[5].children[0].value = ""
+            tr.children[6].children[0].value = ""
+            tr.children[7].children[0].value = ""
+            tr.children[8].children[0].value = ""
+            tr.children[9].children[0].value = ""
+            tr.children[10].children[0].value = 0
+
+            const finance = {
+                contactdate: tr.children[5].children[0].value,
+                responsible: tr.children[6].children[0].value,
+                contact: tr.children[7].children[0].value,
+                comment: tr.children[8].children[0].value,
+                payday: tr.children[9].children[0].value,
+                status: tr.children[10].children[0].value,
+                invoicenr: tr.children[10].children[0].getAttribute("data-sernr")
+            }
+
+            Connection.body(`finance`, { finance }, 'POST')
+
+            tr.children[11].children[0].disabled = true
+        }
+    } else {
+        if (check) {
+            if (event.path[4].children.length === 1) return alert('No hay otras facturas para copiar los datos')
+            for (let index = 0; index < event.path[4].children.length; index++) {
+                const element = event.path[4].children[index];
+                element.children[5].children[0].value = tr.children[5].children[0].value
+                element.children[6].children[0].value = tr.children[6].children[0].value
+                element.children[7].children[0].value = tr.children[7].children[0].value
+                element.children[8].children[0].value = tr.children[8].children[0].value
+                element.children[9].children[0].value = tr.children[9].children[0].value
+                element.children[10].children[0].value = tr.children[10].children[0].value
+
+                const finance = {
+                    contactdate: element.children[5].children[0].value,
+                    responsible: element.children[6].children[0].value,
+                    contact: element.children[7].children[0].value,
+                    comment: element.children[8].children[0].value,
+                    payday: element.children[9].children[0].value,
+                    status: element.children[10].children[0].value,
+                    invoicenr: element.children[10].children[0].getAttribute("data-sernr")
+                }
+
+                Connection.body(`finance`, { finance }, 'POST')
+
+                element.children[11].children[0].disabled = true
+            }
+        } else {
+            if (event.path[4].children.length === 1) return alert('No hay otras facturas para copiar los datos')
+            for (let index = 0; index < event.path[4].children.length; index++) {
+                const element = event.path[4].children[index];
+                if (element.classList[1] !== "copy") {
+                    element.children[5].children[0].value = ""
+                    element.children[6].children[0].value = ""
+                    element.children[7].children[0].value = ""
+                    element.children[8].children[0].value = ""
+                    element.children[9].children[0].value = ""
+                    element.children[10].children[0].value = 0
+
+                    const finance = {
+                        contactdate: element.children[5].children[0].value,
+                        responsible: element.children[6].children[0].value,
+                        contact: element.children[7].children[0].value,
+                        comment: element.children[8].children[0].value,
+                        payday: element.children[9].children[0].value,
+                        status: element.children[10].children[0].value,
+                        invoicenr: element.children[10].children[0].getAttribute("data-sernr")
+                    }
+
+                    Connection.body(`finance`, { finance }, 'POST')
+                    
+                    element.children[11].children[0].disabled = true
+                }
+            }
+            alert("¡Todos los registros de contactos se guardaron correctamente!")
+        }
+    }
+}
+
+window.saveFinance = saveFinance
+
+function saveFinance(event) {
+    const btn = event.currentTarget
+
+    const finance = {
+        contactdate: event.path[2].children[5].children[0].value,
+        responsible: event.path[2].children[6].children[0].value,
+        contact: event.path[2].children[7].children[0].value,
+        comment: event.path[2].children[8].children[0].value,
+        payday: event.path[2].children[9].children[0].value,
+        status: event.path[2].children[10].children[0].value,
+        invoicenr: btn.getAttribute("data-sernr")
+    }
+
+    Connection.body(`finance`, { finance }, 'POST')
+    event.currentTarget.disabled = true
+
+    alert("!Registro de contacto guardado correctamente!")
 }

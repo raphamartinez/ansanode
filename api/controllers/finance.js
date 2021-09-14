@@ -8,7 +8,7 @@ module.exports = app => {
             const finance = req.body.finance
 
             const result = await Finance.insert(finance)
-            res.status(201).json(result)
+            res.status(201).json({return: "guardado"})
         } catch (err) {
             next(err)
         }

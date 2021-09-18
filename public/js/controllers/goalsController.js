@@ -28,7 +28,7 @@ async function listGoals() {
         settings.appendChild(View.opcionesGoals())
 
         let goals = await Connection.noBody('sellersdashboard', 'GET')
-        
+
         settings.appendChild(View.showGoals())
 
         const goalsshow = document.getElementById('goalsshow')
@@ -106,6 +106,61 @@ async function addGoalsList() {
     }
 }
 
+window.addGoalsListExcel = addGoalsListExcel
+
+async function addGoalsListExcel() {
+
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+<div class="spinner-border text-primary" role="status">
+  <span class="sr-only">Loading...</span>
+</div>
+`
+    try {
+        let title = document.querySelector('[data-title]')
+        let powerbi = document.querySelector('[data-powerbi]')
+        const cardHistory = document.querySelector('[data-card]')
+        let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]')
+
+        settings.innerHTML = ''
+        powerbi.innerHTML = " "
+        modal.innerHTML = " "
+        settings.appendChild(View.addGoalsExcel())
+        modal.appendChild(View.modalAddExcel())
+        modal.appendChild(View.modalUploadExcel())
+
+        const listsellers = document.getElementById('listsellers')
+        const listgroups = document.getElementById('listgroups')
+
+        const sellers = await Connection.noBody('sellersgoalline', 'GET')
+
+        const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
+
+        sellers.forEach(obj => {
+            listsellers.appendChild(View.listSalesman(obj))
+        })
+
+        itemsgroups.forEach(obj => {
+            listgroups.appendChild(View.listGroups(obj))
+        })
+
+
+        if ($.fn.DataTable.isDataTable('#tablegoals')) {
+            $('#tablegoals').dataTable().fnClearTable();
+            $('#tablegoals').dataTable().fnDestroy();
+            $('#tablegoals').empty();
+        }
+
+        title.innerHTML = "Fijar Metas con Excel"
+        powerbi.innerHTML = " "
+        loading.innerHTML = " "
+        cardHistory.style.display = 'none';
+    } catch (error) {
+
+    }
+}
+
 window.listGoalsSalesman = listGoalsSalesman
 
 async function listGoalsSalesman(event) {
@@ -134,6 +189,61 @@ async function listGoalsSalesman(event) {
 
     }
 }
+
+window.listGoalsExcel = listGoalsExcel
+
+async function listGoalsExcel(event) {
+    event.preventDefault()
+
+    try {
+        $('#searchGoal').modal('hide')
+
+
+        const arrgroups = document.querySelectorAll('#listgroups option:checked')
+        const groups = Array.from(arrgroups).map(el => `'${el.value}'`);
+
+        const listsellers = document.getElementById('listsellers')
+        const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
+
+        if (salesman && groups != "''") {
+            generateExcelGoals(salesman, groups)
+        } else {
+            alert('Seleccione todos los campos!')
+        }
+    } catch (error) {
+        alert('Seleccione todos los campos!')
+    }
+}
+
+window.generateExcelGoals = generateExcelGoals
+
+async function generateExcelGoals(salesman, groups) {
+
+    const loadinggoals = document.getElementById('loadinggoals')
+    loadinggoals.innerHTML = `<div class="spinner-border text-primary" role="status">
+    <span class="sr-only">Loading...</span>
+  </div>`
+
+    try {
+        const xls = await Connection.backFile(`goalslineexcel/${salesman.id_salesman}/${groups}`, 'GET')
+
+        const filexls = await xls.blob();
+
+        let a = document.createElement('a');
+        a.href = window.URL.createObjectURL(filexls);
+        a.target = "_blank";
+        a.download = "meta.xlsx";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        loadinggoals.innerHTML = ``
+    } catch (error) {
+        alert("Error en la generación del excel de meta, por favor contacte o T.I.")
+        loadinggoals.innerHTML = ``
+    }
+}
+
 
 window.listGoalsLine = listGoalsLine
 
@@ -363,10 +473,10 @@ async function listExpectedSalesmanId(event) {
         let btn = event.currentTarget
         const type = btn.getAttribute("data-type")
 
-        if(type === "1"){
-        $('.sellerexpected').collapse('hide')
+        if (type === "1") {
+            $('.sellerexpected').collapse('hide')
 
-        event.currentTarget.children[1].remove()
+            event.currentTarget.children[1].remove()
         }
     }
 }
@@ -399,5 +509,49 @@ async function listExpectedSalesmanMonth(event) {
         $('.sellerexpectedmonth').collapse('hide')
 
         event.currentTarget.children[1].remove()
+    }
+}
+
+window.inputFile = inputFile
+
+function inputFile() {
+    var fileName = document.getElementById('file').files[0].name;
+    if (fileName.split('.').pop() === "xlsx") {
+        document.getElementById('filename').innerHTML = fileName
+    } else {
+        document.getElementById('file').value = "";
+        document.getElementById('filename').innerHTML = "Buscar archivo..."
+        alert("El archivo insertado no es un Excel válido")
+    }
+}
+
+window.uploadGoals = uploadGoals
+
+async function uploadGoals(event) {
+    event.preventDefault()
+    $('#uploadGoals').modal('hide')
+
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+    `
+    try {
+        const btn = event.currentTarget
+
+        const file = btn.form.file.files[0]
+
+        const formData = new FormData()
+
+        formData.append('file', file)
+
+        const obj = await Connection.bodyMultipart('goalexcel', formData, 'POST')
+        console.log(obj);
+
+        loading.innerHTML = ``
+    } catch (error) {
+        alert(error)
+        loading.innerHTML = ``
     }
 }

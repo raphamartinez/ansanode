@@ -47,6 +47,40 @@ class GoalLine {
         }
     }
 
+
+    async listExcel(id_salesman, groups) {
+        try {
+  
+            let sql = `SELECT (SELECT code from ansa.salesman where id_salesman = ?) as code,GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelcode, GL.labelname, GL.itemcode, GL.itemname, 
+            SUM(IF(MONTH(GL.date) = MONTH(NOW()), GO.amount, 0)) as g1, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 1 month)), GO.amount, 0)) as g2, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 2 month)), GO.amount, 0)) as g3, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 3 month)), GO.amount, 0)) as g4, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 4 month)), GO.amount, 0)) as g5,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 5 month)), GO.amount, 0)) as g6,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 6 month)), GO.amount, 0)) as g7, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 7 month)), GO.amount, 0)) as g8, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 8 month)), GO.amount, 0)) as g9,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 9 month)), GO.amount, 0)) as g10, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 10 month)), GO.amount, 0)) as g11, 
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 11 month)), GO.amount, 0)) as g12,
+            SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 12 month)), GO.amount, 0)) as g13
+            FROM ansa.goalline GL
+            LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND GL.itemgroup IN (${groups})
+            GROUP BY GL.itemcode
+            ORDER BY GL.itemcode`
+            
+
+            const data = await query(sql, [id_salesman, id_salesman, groups])
+
+            return data
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los login')
+        }
+    }
+
     async listDate(date) {
         try {
             const sql = 'SELECT * FROM goalline WHERE date = ?'

@@ -10,6 +10,7 @@ class Goal {
 
             return result
         } catch (error) {
+            console.log(error);
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
     }
@@ -36,15 +37,26 @@ class Goal {
         }
     }
 
+    async listSalesman(code) {
+        try {
+            const sql = 'SELECT id_salesman FROM ansa.salesman where code = ?'
+            const result = await query(sql, [code])
+
+            return result[0].id_salesman
+        } catch (error) {
+            return false
+        }
+    }
+
     async search(obj) {
         try {
             const sql = 'SELECT id_goalline FROM ansa.goalline where itemcode = ? and date = ?'
             const result = await query(sql, [obj.itemcode, obj.date])
+            console.log(result);
 
-            obj.id_goalline = result[0].id_goalline
-
-            return obj
+            return result[0].id_goalline
         } catch (error) {
+            console.log(error);
             return false
         }
     }

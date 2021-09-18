@@ -238,12 +238,74 @@ const refresh = async () => {
     throw new Error('error')
 }
 
+const backFile = async (url, method) => {
+    const accessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+    try {
+        const result = await fetch(`${protocol}//${host}/${url}`, {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            }
+        })
+
+        if (result.ok) {
+            return result
+        } else {
+            if (result.status === 401) {
+                const valid = await refresh()
+
+                if (valid === true) {
+                    try {
+                        const newAccessToken = JSON.parse(localStorage.getItem('accessToken'))
+
+                        const newresult = await fetch(`${protocol}//${host}/${url}`, {
+                            method: method,
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Bearer ${newAccessToken}`
+                            }
+                        })
+
+                        if (newresult.ok) {
+                            return newresult
+                        } else {
+                            alert('Error del Servidor.')
+                            return result
+                        }
+                    } catch (error) {
+                        throw new Error(error)
+                    }
+                } else {
+                    return false
+                }
+            }
+
+            if (result.status === 404) {
+                alert('No se ha encontrado.')
+                return result.json()
+            }
+
+            if (result.status === 500) {
+                alert('Error del Servidor.')
+                return result.json()
+            }
+        }
+
+    } catch (error) {
+        return error
+    }
+}
+
+
 export const Connection = {
     noBody,
     body,
     noBearer,
     refresh,
-    bodyMultipart
+    bodyMultipart,
+    backFile
 }
 
 

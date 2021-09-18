@@ -2,12 +2,13 @@ const Goal = require('../models/goal')
 const GoalLine = require('../models/goalline')
 const Sellers = require('../models/seller')
 const moment = require('moment')
-
+const multer = require('multer')
+const multerConfig = require('../config/multer')
 const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
 
-    app.get('/goals', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goals', Middleware.bearer, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -18,7 +19,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalsline', Middleware.bearer, async (req, res, next) => {
         try {
             const goalsline = await GoalLine.list()
             res.json(goalsline)
@@ -27,13 +28,13 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline/:id_salesman/:office/:group/:stock', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalsline/:id_salesman/:office/:group/:stock', Middleware.bearer, async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const group = req.params.group
             const checkstock = req.params.stock
             const office = req.params.office
-            
+
             const goalsline = await GoalLine.list(id_salesman, office, group, checkstock)
             res.json(goalsline)
         } catch (err) {
@@ -41,7 +42,20 @@ module.exports = app => {
         }
     })
 
-    app.get('/goals/:id_goal', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalslineexcel/:id_salesman/:groups', Middleware.bearer, async (req, res, next) => {
+        try {
+            const id_salesman = req.params.id_salesman
+            const groups = req.params.groups
+
+            const wb = await GoalLine.listExcel(id_salesman, groups)
+
+            wb.write('meta.xlsx', res)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/goals/:id_goal', Middleware.bearer, async (req, res, next) => {
         try {
             const id_goal = req.params.id_goal
 
@@ -52,7 +66,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/goal', Middleware.bearer, async ( req, res, next) => {
+    app.post('/goal', Middleware.bearer, async (req, res, next) => {
         try {
             const goal = req.body.goal
 
@@ -63,7 +77,18 @@ module.exports = app => {
         }
     })
 
-    app.put('/goal/:id_goal', Middleware.bearer, async ( req, res, next) => {
+    app.post('/goalexcel', Middleware.bearer, multer(multerConfig).single('file'), async (req, res, next) => {
+        try {
+            const file = req.file
+
+            const result = await Goal.upload(file)
+            res.status(201).json(result)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.put('/goal/:id_goal', Middleware.bearer, async (req, res, next) => {
         try {
             const goal = req.body
             const id_goal = req.params.id_goal
@@ -75,7 +100,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/goal/:id_goal', Middleware.bearer, async ( req, res, next) => {
+    app.delete('/goal/:id_goal', Middleware.bearer, async (req, res, next) => {
         try {
             const id_goal = req.params.id_goal
 
@@ -86,7 +111,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalexpected/:id_salesman', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalexpected/:id_salesman', Middleware.bearer, async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
 
@@ -97,7 +122,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalexpectedmonth/:id_salesman/:date', Middleware.bearer, async ( req, res, next) => {
+    app.get('/goalexpectedmonth/:id_salesman/:date', Middleware.bearer, async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             let date = req.params.date

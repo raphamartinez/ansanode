@@ -577,7 +577,7 @@ function viewFinance(title, invoices) {
                 <option value="3">Pago rechazado</option>
                 <option value="4">Reenviar al gerente</option>
              </select>`,
-            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-success" onclick="saveFinance(event)" disabled>Guardar</button>`
+            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-success finance" onclick="saveFinance(event)" disabled>Guardar</button>`
         ]
         index += 7
 

@@ -1,8 +1,61 @@
 const Repositorie = require('../repositories/label')
-const RepositorieSeller = require('../repositories/seller')
 const RepositorieGoal = require('../repositories/goalline')
 const RepositorieHbs = require('../repositories/hbs')
-const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
+const { InvalidArgumentError, InternalServerError } = require('./error')
+const xl = require('excel4node');
+
+async function datesGoal() {
+
+    const dates = [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13
+    ]
+
+    let datecolumn = []
+
+    dates.forEach(date => {
+        const today = new Date()
+
+        let month = today.getMonth() + date
+        let year = today.getFullYear()
+
+        if (month > 12) {
+            month -= 12
+            year += 1
+        }
+
+        if (month <= 9) {
+            month = `0${month}`
+        }
+
+        const now = `${month}/${year}`
+        datecolumn.push(now)
+    })
+
+    return datecolumn
+}
+
+async function colorCell(wb, color, pattern) {
+
+    return wb.createStyle({
+        fill: {
+            type: 'pattern',
+            fgColor: color,
+            patternType: pattern || 'solid',
+        }
+    });
+}
 
 class GoalLine {
 
@@ -104,6 +157,129 @@ class GoalLine {
             return arr
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
+        }
+    }
+
+    async listExcel(id_salesman, groups) {
+        try {
+            const data = await RepositorieGoal.listExcel(id_salesman, groups)
+            const wb = new xl.Workbook({
+                author: 'America Neumáticos S.A',
+            });
+
+            const headerStyle = wb.createStyle({
+                fill: {
+                    type: 'pattern',
+                    patternType: 'solid',
+                    fgColor: '#4e73df',
+                },
+                font: {
+                    color: '#FFFFFF',
+                    size: 14,
+                }
+            });
+
+            const ws = wb.addWorksheet('Meta');
+
+            const dates = await datesGoal()
+
+            const titles = [
+                "Vendedor",
+                "Id",
+                "Grupo",
+                "Producto",
+                "Aplicacion",
+                "Nº Etiqueta",
+                "Etiqueta",
+                "Cod Articulo",
+                "Articulo",
+                dates[0],
+                dates[1],
+                dates[2],
+                dates[3],
+                dates[4],
+                dates[5],
+                dates[6],
+                dates[7],
+                dates[8],
+                dates[9],
+                dates[10],
+                dates[11],
+                dates[12]
+            ]
+
+            const date = new Date()
+            const date2 = new Date(date.getTime() - 14400000)
+            const now = `${date2.getHours()}:${date2.getMinutes()} ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`
+
+            ws.addImage({
+                path: './public/img/ansalogomin.png',
+                type: 'picture',
+                position: {
+                  type: 'absoluteAnchor',
+                  from: {
+                    col: 1,
+                    row: 1,
+                    rowOff: 0,
+                  },
+                },
+              });
+
+            ws.cell(1, 2, 2, 9, true).string(`Establecimiento de Metas - ${data[0].code}`).style(wb.createStyle({
+                font: {
+                    bold: true,
+                    color: '#000000',
+                    size: 21,
+                }
+            }))
+
+            ws.cell(3,2,3,9, true).string(`Fecha de Registro: ${now}`)
+            ws.cell(4,2,4,9, true).string(`Grupos: ${groups}`)
+            ws.cell(5,2,5,9, true)
+            ws.column(2).hide()
+            ws.row(6).freeze();
+            ws.column(5).setWidth(35);
+            ws.column(7).setWidth(35);
+            ws.column(9).setWidth(50).freeze()
+            ws.row(6).filter({
+                firstColumn: 1,
+                lastColumn: 9
+            });
+
+
+            let headerIndex = 1
+            titles.forEach(title => {
+                ws.cell(6, headerIndex++).string(title).style(headerStyle)
+            })
+
+            let rowIndex = 7
+            data.forEach(record => {
+                let columnIndex = 1
+                Object.keys(record).forEach(columnName => {
+                    switch (columnIndex) {
+                        case 2:
+                            ws.cell(rowIndex, columnIndex++).number(record[columnName])
+                            break
+                        default:
+                            if (columnIndex > 9) {
+                             if(typeof record[columnName] === "object") record[columnName] = 0
+                                ws.cell(rowIndex, columnIndex++).number(parseInt(record[columnName]))
+                            } else {
+                                ws.cell(rowIndex, columnIndex++).string(record[columnName])
+                            }
+                            break
+                    }
+                })
+                rowIndex++
+            })
+
+            // wb.write('meta.xlsx');
+            // wb.write('meta.xlsx', res); escrever na resposta
+
+            return wb
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError(error)
         }
     }
 

@@ -52,6 +52,8 @@ btnFinance.addEventListener('click', async (event) => {
         });
 
         document.getElementById("overdueyes").checked = true;
+        $('#selectclients').selectpicker();
+        $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
         loading.innerHTML = ``
     } catch (error) {
@@ -110,6 +112,8 @@ async function listFinance(event) {
         });
 
         document.getElementById("overdueyes").checked = true;
+        $('#selectclients').selectpicker();
+        $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
         loading.innerHTML = ``
     } catch (error) {
@@ -134,11 +138,11 @@ async function searchFinance(event) {
 
         const selectclients = document.querySelectorAll('#selectclients option:checked')
         const clients = Array.from(selectclients).map(el => `'${el.value}'`);
-        if (clients[0] === "''") clients[0] = "ALL"
+        if (clients.length === 0) clients[0] = "ALL"
 
         const selectoffice = document.querySelectorAll('#selectoffice option:checked')
         const offices = Array.from(selectoffice).map(el => `'${el.value}'`);
-        if (offices[0] === "''") offices[0] = "ALL"
+        if (offices.length === 0) offices[0] = "ALL"
 
         const overdue = document.querySelector('input[name="overdue"]:checked').value;
 

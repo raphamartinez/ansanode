@@ -1,8 +1,10 @@
 const SurveyMonkey = require('survey-monkey')
 const fetch = require('node-fetch');
-const https = require('https')
 const fs = require('fs');
-const Repositorie = require('../repositories/surveymonkey')
+const request = require('request');
+const https = require('https');
+const path = require('path')
+
 
 class Surveymonkey {
 
@@ -35,7 +37,12 @@ class Surveymonkey {
                             url: response.pages[20].questions[0].answers[0].download_url,
                             responseId: obj.id
                         }
-                        https.get(asset.url, resp => resp.pipe(fs.createWriteStream(`./ativo_${asset.plate}.jpeg`)));
+                        https.get(asset.url, resp => resp.pipe(fs.createWriteStream(`./tmp/ativos/ativo_${asset.plate}.jpg`)));
+                        request({ url: asset.url, encoding: null }, (err, resp, buffer) => {
+                            fs.createWriteStream(`./tmp/ativos/ativo_${asset.plate}.jpg`).write(buffer);
+                        });
+
+    
 
                         console.log(asset.url);
                         // Repositorie.insert(asset)

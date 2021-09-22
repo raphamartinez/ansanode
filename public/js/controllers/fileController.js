@@ -1131,3 +1131,15 @@ async function listblock(event) {
         alert(error)
     }
 }
+
+window.inputArchive = inputArchive
+function inputArchive() {
+    var fileName = document.getElementById('file').files[0].name;
+    if (fileName.split('.').pop() === "xlsx") {
+        document.getElementById('filename').innerHTML = fileName
+    } else {
+        document.getElementById('file').value = "";
+        document.getElementById('filename').innerHTML = "Buscar archivo..."
+        alert("El archivo insertado no es un Excel válido")
+    }
+}

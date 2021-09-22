@@ -23,6 +23,7 @@ async function addModalStock(event) {
             selectstock.appendChild(ViewStock.listOption(obj.StockDepo))
         });
 
+        $('#stockselect').selectpicker();
         $('#addstock').modal('show')
 
     } catch (error) {

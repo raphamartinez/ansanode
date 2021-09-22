@@ -47,7 +47,8 @@ async function listItems() {
         fields.groups.forEach(obj => {
             selectitemgroup.appendChild(View.listOption(obj.Name))
         });
-
+        $('#stock').selectpicker();
+        $('#itemgroup').selectpicker();
         document.getElementById("stockartsi").checked = true;
 
         const items = await Connection.noBody('itemscomplete', 'GET')
@@ -280,7 +281,7 @@ async function listPrice() {
         fields.groups.forEach(obj => {
             selectitemgroup.appendChild(View.listOption(obj.Name))
         });
-
+        $('#itemgroup').selectpicker();
         const items = await Connection.noBody('itemscomplete', 'GET')
 
         autocompletecod(document.getElementById("artcode"), items);
@@ -450,7 +451,8 @@ async function listGoodyear() {
         offices.forEach(office => {
             divoffice.appendChild(View.listOffice(office))
         });
-
+        $('#office').selectpicker();
+        
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();

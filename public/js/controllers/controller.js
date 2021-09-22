@@ -1,0 +1,14 @@
+import './dashboardController.js';
+import './fileController.js';
+import './financeController.js';
+import './goalsController.js';
+import './historyController.js';
+import './itemController.js';
+import './loginController.js';
+import './mailController.js';
+import './powerController.js';
+import './salesController.js';
+import './salesmanController.js';
+import './settingsController.js';
+import './stockController.js';
+import './userController.js';

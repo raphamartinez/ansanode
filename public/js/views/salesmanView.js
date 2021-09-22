@@ -27,7 +27,7 @@ const modalAddSalesman = () => {
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="salesmanselect" id="salesmanselect" multiple required>
+                        <select title="Seleccione un vendedor para agregar al sistema" class="selectpicker form-control" name="salesmanselect" id="salesmanselect" multiple required>
                 </select>
                     </div> 
                 </div>

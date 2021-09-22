@@ -115,6 +115,7 @@ async function modalAddSalesman(event) {
         })
         loading.innerHTML = " "
 
+        $('#salesmanselect').selectpicker();
         $('#modalsalesman').modal('show')
     } catch (error) {
         loading.innerHTML = " "

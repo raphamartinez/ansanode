@@ -15,13 +15,11 @@ const modalsearch = () => {
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <select multiple class="selectpicker form-control" name="selectoffice" id="selectoffice" required>
-                               <option value="" disabled selected>Sucursal</option>
+                            <select multiple title="Sucursal" class="selectpicker form-control" name="selectoffice" id="selectoffice" required>
                             </select>
                         </div> 
                         <div class="form-group col-md-6">
-                            <select multiple class="selectpicker form-control" name="selectclients " id="selectclients" required>
-                               <option value="" disabled selected>Clientes</option>
+                            <select multiple title="Clientes" class="selectpicker form-control" name="selectclients " id="selectclients" required>
                             </select>
                         </div> 
                         <div class="form-group text-center col-md-12 ">

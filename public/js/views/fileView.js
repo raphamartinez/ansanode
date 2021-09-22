@@ -65,7 +65,7 @@ const search = (modal, search) => {
                             <input type="text" placeholder="Nombre del archivo" class="form-control" name="title" id="title" required>
                         </div>
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="type" id="type" required>
+                        <select class="form-control" name="type" id="type" required>
                     <option value="" disabled selected>Tipo del archivo</option>
                     <option value="1">Manual</option>
                     <option value="2">Documento</option>
@@ -113,7 +113,7 @@ const modal = (search) => {
                             <input type="text" placeholder="Descripción del archivo"  class="form-control" name="description" id="description" required>
                         </div>
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="type" id="type" required>
+                        <select class="form-control" name="type" id="type" required>
                     <option value="" disabled selected>Tipo</option>
                     <option value="1">Manual</option>
                     <option value="2">Documento</option>
@@ -122,8 +122,8 @@ const modal = (search) => {
                     </div> 
                     <div class="form-group col-md-12"> 
                         <div class="form-group col-md-12 custom-file">
-                            <input type="file" class="custom-file-input" id="file" name="file" required>
-                            <label class="custom-file-label" for="customFile" id="fileName" name="fileName">Insertar archivo</label>
+                            <input type="file" class="custom-file-input" id="file" name="file" oninput="inputArchive(event)" required>
+                            <label class="custom-file-label" for="customFile" id="filename" name="filename">Insertar archivo</label>
                         </div>
                     </div>
                 </div>
@@ -164,7 +164,7 @@ const addoffice = (search) => {
                             <input type="text" placeholder="Descripción del Office"  class="form-control" name="description" id="description" required>
                         </div>
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="mimetype" id="mimetype" required>
+                        <select class="form-control" name="mimetype" id="mimetype" required>
                     <option value="" disabled selected>Tipo de Office</option>
                     <option value="application/powerpoint">PowerPoint</option>
                     <option value="application/excel">Excel</option>
@@ -172,7 +172,7 @@ const addoffice = (search) => {
                 </select>
                 </div>
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="type" id="type" required>
+                        <select class="form-control" name="type" id="type" required>
                     <option value="" disabled selected>Tipo</option>
                     <option value="10">PowerPoint</option>
                     <option value="11">Excel</option>

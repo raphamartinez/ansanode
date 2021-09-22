@@ -81,4 +81,19 @@ module.exports = app => {
             next(err)
         }
     })
+
+    app.get('/salesorder/:datestart/:dateend/:salesman/:office', Middleware.bearer, async ( req, res, next) => {
+        try {
+            let search = {
+                datestart:req.params.datestart,
+                dateend:req.params.dateend,
+                salesman:req.params.salesman,
+                office:req.params.office
+            }
+            const salesorders = await Finance.listSalesOrders(search)
+            res.json(salesorders)
+        } catch (err) {
+            next(err)
+        }
+    })
 }

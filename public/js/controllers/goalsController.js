@@ -90,6 +90,9 @@ async function addGoalsList() {
             listgroups.appendChild(View.listGroups(obj))
         })
 
+        $('#listsellers').selectpicker();
+        $('#listgroups').selectpicker();
+
 
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
             $('#tablegoals').dataTable().fnClearTable();
@@ -151,6 +154,9 @@ async function addGoalsListExcel() {
             $('#tablegoals').dataTable().fnDestroy();
             $('#tablegoals').empty();
         }
+
+        $('#listsellers').selectpicker();
+        $('#listgroups').selectpicker();
 
         title.innerHTML = "Fijar Metas con Excel"
         powerbi.innerHTML = " "

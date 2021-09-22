@@ -16,8 +16,7 @@ const modaladd = (id_login) => {
                     <div class="form-row">
                         <div class="form-group col-md-12">
                         Seleccione los depósitos a los que el usuario debe tener acceso
-                        <select multiple class="selectpicker form-control" name="stock" id="stockselect" required>
-                        <option value="" disabled selected>Depósito</option>
+                        <select multiple title="Depósito" class="selectpicker form-control" name="stock" id="stockselect" required>
                     </select>
                     </div> 
                     </div>

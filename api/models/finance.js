@@ -1,4 +1,5 @@
 const Repositorie = require('../repositories/finance')
+const RepositorieHbs = require('../repositories/hbs')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
 class Finance {
@@ -213,6 +214,14 @@ let dview
             return Repositorie.listDistinctClients()
         } catch (error) {
             throw new InternalServerError('No se pude listar los goals.')
+        }
+    }
+
+    listSalesOrders(search){
+        try {
+            return RepositorieHbs.listSalesOrder(search)
+        } catch (error) {
+            throw new InternalServerError('No se pude listar las orders.')
         }
     }
 

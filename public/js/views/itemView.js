@@ -57,13 +57,11 @@ const showModalSearch = () => {
                     <input type="text" placeholder="Nombre del Artículo" class="form-control" name="itemname" id="itemname">
                 </div>
                 <div class="form-group col-md-6">   
-                <select class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
-                <option value= "" disabled selected>Grupo de Artículo</option>
+                <select title="Grupo de Artículo" class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
                 </select>        
                 </div>
                     <div class="form-group col-md-6">          
-                    <select class="selectpicker form-control" multiple name="stock" id="stock">
-                    <option value= "" disabled selected>Deposito</option>
+                    <select title="Deposito" class="selectpicker form-control" multiple name="stock" id="stock">
                     </select> 
                     </div>
                     <div class="form-group col-md-12">
@@ -111,7 +109,7 @@ const showModalPrice = () => {
             <div class="modal-body">
                 <div class="form-row">
                 <div class="form-group col-md-6">
-                <select class="selectpicker form-control"a name="pricelist" id="pricelist" required>
+                <select class="form-control"a name="pricelist" id="pricelist" required>
                 <option value="MINORISTA">Minorista (Padrón)</option>
                 <option value="MAYORISTA">Mayorista</option>
                 <option value="PROMOCION">Promocion</option>
@@ -124,8 +122,7 @@ const showModalPrice = () => {
                     <input type="text" placeholder="Nombre del Artículo" class="form-control" name="itemname" id="itemname">
                 </div>
                 <div class="form-group col-md-12">   
-                <select class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
-                <option value= "" disabled selected>Grupo de Artículo</option>
+                <select title="Grupo de Artículo" class="selectpicker form-control" multiple name="itemgroup" id="itemgroup">
                 </select>        
                 </div>
                 </div>
@@ -170,8 +167,7 @@ const showModalGoodyear = () => {
                         <input type="date" placeholder="Fecha Final" class="form-control" name="dateend" id="dateend">
                     </div> 
                     <div class="form-group col-md-12">
-                    <select class="selectpicker form-control" multiple name="office" id="office" required>
-                    <option value= "" disabled selected>Sucursal</option>
+                    <select title="Sucursal" class="selectpicker form-control" multiple name="office" id="office" required>
                     </select>
                 </div> 
                 </div>

@@ -281,6 +281,48 @@ class Hbs {
     //     }
     // }
 
+    listSalesOrder(search) {
+        try {
+            let sql = `SELECT SO.SerNr,CONCAT(DATE_FORMAT(SO.TransTime, '%H:%i'), " ", DATE_FORMAT(SO.TransDate, '%d/%m/%Y')) AS date,SO.CustCode,SO.CustName,TRUNCATE(SO.Total,2) as Total,TRUNCATE(SO.SubTotal,2) as SubTotal,SO.Invalid,SO.Closed,SO.Status,
+            SOIr.ArtCode, SOIr.Name, SOIr.Labels, SOIr.Qty, TRUNCATE(SOIr.Price,2) as Price, TRUNCATE(SOIr.RowNet,2) as RowNet, TRUNCATE(SOIr.RowTotal,2) as RowTotal,
+            SO.Currency, SO.CurrencyRate, SO.BaseRate,CONCAT(pe.Name,' ',pe.LastName) as SalesMan,
+            TRUNCATE(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total)),2) AS totalUsd,
+            TRUNCATE(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal)),2) AS subtotalUsd,`
+
+            sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total))),2)
+                    FROM SalesOrder SO
+                    WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
+                    AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
+
+            if (search.datestart != "ALL" && search.dateend != "ALL") sql += `AND TransDate >= '${search.datestart}' AND TransDate <= '${search.dateend}' `
+
+            if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
+
+            if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            sql += `) AS sumAmount`
+
+            sql += ` FROM SalesOrder SO 
+            INNER JOIN SalesOrderItemRow SOIr ON SOIr.masterId = SO.internalId 
+            INNER JOIN Customer C ON C.Code = SO.CustCode 
+            LEFT JOIN Person pe ON pe.Code = SO.SalesMan 
+            WHERE (SO.Closed = 0 OR SO.Closed IS NULL) 
+            AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
+
+            if (search.datestart != "ALL" && search.dateend != "ALL") sql += `AND TransDate >= '${search.datestart}' AND TransDate <= '${search.dateend}' `
+
+            if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
+
+            if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            sql += `ORDER BY SO.TransDate,SO.TransTime`
+            console.log(sql);
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     async insertReceivable(invoice) {
         try {
             const sql = `INSERT INTO ansa.receivable set ?`
@@ -387,9 +429,9 @@ class Hbs {
 
             if (data[0].Qty > 0) return data[0]
 
-            return {  Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
+            return { Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
         } catch (error) {
-            return {  Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
+            return { Qty: 0, Reserved: 0, CityQty: 0, CityReserved: 0 }
         }
     }
 
@@ -570,7 +612,7 @@ class Hbs {
 
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError('No se pudo enumerar prices') 
+            throw new InternalServerError('No se pudo enumerar prices')
         }
     }
 

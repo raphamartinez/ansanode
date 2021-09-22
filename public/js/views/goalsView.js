@@ -223,16 +223,11 @@ const modalAdd = () => {
           </div>
           <hr>
           <div class="form-group text-center col-md-12 d-none d-md-block">
-              <h8>Vendedor</h8>
-              <select id="listsellers" class="form-control">
-                  <option disabled selected></option>
-      
+              <select title="Vendedor" id="listsellers" class="form-control">
               </select>
           </div>
           <div class="form-group text-center col-md-12 d-none d-md-block">
-              <h8>Grupo del Articulo</h8>
-              <select id="listgroups" class="form-control">
-                  <option disabled selected></option>
+              <select title="Grupo del Articulo" id="listgroups" class="selectpicker form-control">
               </select>
           </div>
               </div>
@@ -266,15 +261,11 @@ const modalAddExcel = () => {
             <form>
                 <div class="modal-body">
             <div class="form-group text-center col-md-12 d-none d-md-block">
-                <h8>Vendedor</h8>
-                <select id="listsellers" class="form-control">
-                    <option disabled selected></option>
+                <select title="Vendedor" id="listsellers" class="selectpicker form-control">
                 </select>
             </div>
             <div class="form-group text-center col-md-12 d-none d-md-block">
-                <h8>Grupo del Articulo</h8>
-                <select id="listgroups" class="form-control" multiple>
-                    <option disabled selected></option>
+                <select title="Grupo del Articulo" id="listgroups" class="selectpicker form-control" multiple>
                 </select>
             </div>
                 </div>

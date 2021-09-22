@@ -10,7 +10,7 @@ const { InvalidArgumentError, NotFound, NotAuthorized } = require('./api/models/
 
 // const connection = require('./api/infrastructure/database/connection')
 // const tables = require('./api/infrastructure/database/tables')
-const Survey = require('./api/models/surveymonkey')
+// const Survey = require('./api/models/surveymonkey')
 // const GoalLine = require('./api/models/goalline')
 
 

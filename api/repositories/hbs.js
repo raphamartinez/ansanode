@@ -365,7 +365,7 @@ class Hbs {
 
             sql += `AND St.StockDepo IN (${search.stock}) `
             sql += `AND I.Code IN (${search.artcode}) `
-            if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
+            if (search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
             if (search.stockart < 1) sql += `AND St.Qty > 0 `
 
@@ -449,7 +449,7 @@ class Hbs {
 
             if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
             if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
-            if (search.itemgroup != "''") sql += `AND IG.Name IN (${search.itemgroup}) `
+            if (search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
             if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
 
             sql += ` 
@@ -468,12 +468,12 @@ class Hbs {
             SELECT I.Code as ArtCode, I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
             FROM Item I
             INNER JOIN Stock St ON I.Code = St.ArtCode
+            INNER JOIN StockDepo Sd ON St.StockDepo = Sd.Code
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
             WHERE (I.Closed = 0 OR I.Closed IS NULL )
-            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
+            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO') `
 
-            if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
-            if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `
+            if (search.office.length > 0) sql += `AND Sd.Office IN (${search.office}) `
 
             sql += ` 
             AND I.SupCode = '331'             
@@ -494,10 +494,10 @@ class Hbs {
             LEFT JOIN InvoiceItemRow It ON I.Code = It.ArtCode
             LEFT JOIN Invoice Iv ON Iv.internalId = It.masterId
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO')`
+            WHERE Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO') `
 
-            if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}'`
-            if (search.office != "''") sql += `AND Iv.Office IN (${search.office}) `
+            if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}' `
+            if (search.office.length > 0) sql += `AND Iv.Office IN (${search.office}) `
 
             sql += ` 
             AND I.SupCode = '331'         

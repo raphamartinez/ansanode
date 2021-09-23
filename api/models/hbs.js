@@ -182,7 +182,7 @@ class Hbs {
         try {
             let history = `Listado de Artículos `
 
-            if (search.stock[0].length <= 2) {
+            if (search.stock.length === 0) {
                 const data = await Repositorie.listStocks(id_login)
                 let resultArray = data.map(v => Object.assign({}, v));
 
@@ -209,7 +209,7 @@ class Hbs {
             }
             history += `- Cod: ${search.artcode} `
 
-            if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
+            if (search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
             if (search.itemname) history += `- Nombre: '${search.itemname}' `
 
 
@@ -306,24 +306,29 @@ class Hbs {
             let history = `Listado de Goodyear `
 
             if (search.datestart && search.dateend) history += `- Fecha: ${search.datestart} hasta que ${search.dateend} `
-            if (search.office != "''") history += `- Sucursal: ${search.office}.`
+            if (search.office.length > 0) history += `- Sucursal: ${search.office}.`
 
             History.insertHistory(history, id_login)
 
             const data = await Repositorie.listGoodyear(search)
             const sales = await Repositorie.listGoodyearSales(search)
 
-            data.forEach(obj => {
+            await data.forEach(obj => {
                 let sale = sales.find(sale => sale.ArtCode === obj.ArtCode)
-
                 if (obj.Reserved > 0) obj.StockQty - obj.Reserved
-                obj.SalesQty = sale.SalesQty
+                
+                if (sale !== undefined) {
+                    obj.SalesQty = sale.SalesQty
+                } else {
+                    obj.SalesQty = 0
+                }
             })
 
 
             return data
 
         } catch (error) {
+            console.log(error);
             throw new InternalServerError('Error')
         }
     }
@@ -335,7 +340,7 @@ class Hbs {
 
             if (search.pricelist) history += `- Promocion: ${search.pricelist} `
             if (search.artcode) history += `- Cod: ${search.artcode} `
-            if (search.itemgroup != "''") history += `- Grupo: ${search.itemgroup} `
+            if (search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
             if (search.itemname) history += `- Nombre: '${search.itemname}'.`
 
             History.insertHistory(history, id_login)

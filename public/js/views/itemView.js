@@ -34,6 +34,25 @@ const buttonsearchprice = (title) => {
 
 }
 
+const buttonsearchgoodyear = (title) => {
+
+    const divbtn = document.createElement('div')
+
+    const content = `    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-12 text-left">
+            <button type="button" data-toggle="modal" data-target="#searchGoodyear" class="btn btn-success">
+            Nueva Consulta
+            </button>
+        </div>
+    </div>`
+
+    divbtn.innerHTML = content
+    title.appendChild(divbtn)
+
+}
+
+
 const showModalSearch = () => {
     const div = document.createElement('div')
 
@@ -341,5 +360,6 @@ export const View = {
     showModalGoodyear,
     listGoodyear,
     buttonsearchstock,
-    buttonsearchprice
+    buttonsearchprice,
+    buttonsearchgoodyear
 }

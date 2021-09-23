@@ -119,9 +119,9 @@ async function search(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if (stock[0].length > 2) text.innerHTML += `<br>Deposito: ${stock}<br>`
-        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
-        if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
+        if (stock.length > 0) text.innerHTML += `<br>Deposito: ${stock}<br>`
+        if (itemgroup.length > 0) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
+        if (artcode) text.innerHTML += `Cod: ${artcode}<br>`
         if (itemname) text.innerHTML += `Articulo: ${itemname}`
 
         title.appendChild(text)
@@ -148,6 +148,7 @@ async function search(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false
@@ -172,6 +173,7 @@ async function search(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false,
@@ -314,10 +316,7 @@ async function searchPrice(event) {
 
         const artcode = btn.form.artcode.value
         const itemname = btn.form.itemname.value
-        // const arrstock = document.querySelectorAll('#stock option:checked')
-        // const stock = Array.from(arrstock).map(el => `'${el.value}'`);
-        // const stockart = document.querySelector('input[name="stockart"]:checked').value;
-
+ 
         const search = {
             pricelist: pricelist,
             itemgroup: itemgroup,
@@ -351,9 +350,9 @@ async function searchPrice(event) {
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if (itemgroup[0].length > 2) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
-        if (pricelist !== " ") text.innerHTML += `Promocion: ${pricelist}<br>`
-        if (artcode > 0) text.innerHTML += `Cod: ${artcode}<br>`
+        if (itemgroup.length > 0) text.innerHTML += `Grupo de Artículo: ${itemgroup}<br>`
+        if (pricelist) text.innerHTML += `Promocion: ${pricelist}<br>`
+        if (artcode) text.innerHTML += `Cod: ${artcode}<br>`
         if (itemname) text.innerHTML += `Articulo: ${itemname}`
 
         title.appendChild(text)
@@ -380,6 +379,7 @@ async function searchPrice(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false
@@ -404,6 +404,7 @@ async function searchPrice(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false,
@@ -460,6 +461,8 @@ async function listGoodyear() {
         }
 
         title.innerHTML = "Informe Goodyear"
+        View.buttonsearchgoodyear(title)
+
         powerbi.innerHTML = " "
         cardHistory.style.display = 'none';
     } catch (error) {
@@ -501,13 +504,16 @@ async function searchGoodyear(event) {
         });
 
         let title = document.querySelector('[data-title]')
+        title.innerHTML = `Informe Goodyear`
+        View.buttonsearchgoodyear(title)
+
         const text = document.createElement('h5')
         text.style.color = 'gray'
         text.style.fontSize = '1rem'
         text.style.alignContent = 'left'
 
         text.innerHTML += `<br>Filtros<br>`
-        if (office[0].length > 2) text.innerHTML += `<br>Sucursal: ${office}<br>`
+        if (office.length > 0) text.innerHTML += `<br>Sucursal: ${office}<br>`
         if (datestart && dateend) text.innerHTML += `Curso del Tiempo ${datestart} até ${dateend}<br>`
 
         title.appendChild(text)
@@ -515,6 +521,12 @@ async function searchGoodyear(event) {
         let user = JSON.parse(sessionStorage.getItem('user'))
 
         let perfil = user.perfil
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
 
         if (perfil !== 1) {
             $(document).ready(function () {
@@ -534,6 +546,7 @@ async function searchGoodyear(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false
@@ -558,6 +571,7 @@ async function searchGoodyear(event) {
                     scrollCollapse: true,
                     scrollX: true,
                     autoHeight: true,
+                    lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
                     pagingType: "numbers",
                     searchPanes: true,
                     fixedHeader: false,

@@ -1,11 +1,11 @@
 const Hbs = require('../models/hbs')
 const Item = require('../models/item')
-
+const Authorization = require('../infrastructure/auth/authorization')
 const Middleware = require('../infrastructure/auth/middleware')
 
 module.exports = app => {
 
-    app.post('/goodyear', Middleware.bearer, async (req, res, next) => {
+    app.post('/goodyear', [Middleware.bearer, Authorization('goodyear', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             const search = req.body.search
@@ -17,7 +17,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/items', Middleware.bearer, async (req, res, next) => {
+    app.post('/items', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             let search = req.body.search
@@ -29,7 +29,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/itemslabel/:office', Middleware.bearer, async (req, res, next) => {
+    app.post('/itemslabel/:office', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             let code = req.body.code
             let office = req.params.office
@@ -41,7 +41,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemsgroups', Middleware.bearer, async (req, res, next) => {
+    app.get('/itemsgroups', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const itemsgroups = await Hbs.listItemsGroups()
             res.json(itemsgroups)
@@ -50,7 +50,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemscomplete', Middleware.bearer, async (req, res, next) => {
+    app.get('/itemscomplete', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -61,7 +61,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/invoiceitems/:invoice', Middleware.bearer, async (req, res, next) => {
+    app.get('/invoiceitems/:invoice', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const invoice = req.params.invoice
 
@@ -72,7 +72,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/price', Middleware.bearer, async (req, res, next) => {
+    app.post('/price', [Middleware.bearer, Authorization('price', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             const search = req.body.search
@@ -84,7 +84,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockandgroup', Middleware.bearer, async (req, res, next) => {
+    app.get('/stockandgroup', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const fields = await Hbs.listStockandGroup()
             res.json(fields)
@@ -93,7 +93,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockuser', Middleware.bearer, async (req, res, next) => {
+    app.get('/stockuser', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -104,7 +104,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockbyitem/:artcode', Middleware.bearer, async (req, res, next) => {
+    app.get('/stockbyitem/:artcode', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const artcode = req.params.artcode
 

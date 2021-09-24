@@ -12,18 +12,16 @@ class History {
         }
     }
 
-    list() {
+    list(id_login) {
         try {
-            const sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and HI.status = 1 ORDER BY HI.id_history DESC`
-            return query(sql)
-        } catch (error) {
-            throw new InternalServerError('No se pudo enumerar historial')
-        }
-    }
+            let sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name 
+            FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and 
+            HI.status = 1 `
 
-    listUser(id_login) {
-        try {
-            const sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and HI.status = 1 and HI.id_login = ${id_login} ORDER BY HI.id_history DESC`
+            if(id_login) sql+= `and HI.id_login = ${id_login} `
+           
+           sql+= ` ORDER BY HI.id_history DESC`
+
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar historial')

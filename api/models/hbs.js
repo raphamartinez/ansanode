@@ -426,9 +426,9 @@ class Hbs {
         try {
             const data = await Repositorie.listStocks(id_login)
 
-            var resultArray = data.map(v => Object.assign({}, v));
+            let resultArray = data.map(v => Object.assign({}, v));
 
-            var stocks = resultArray.map(function (text) {
+            let stocks = resultArray.map(function (text) {
                 return `'${text['StockDepo']}'`;
             });
 

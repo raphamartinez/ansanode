@@ -1,20 +1,21 @@
 const Finance = require('../models/finance')
 const Middleware = require('../infrastructure/auth/middleware')
+const Authorization = require('../infrastructure/auth/authorization')
 
 module.exports = app => {
 
-    app.post('/finance', Middleware.bearer, async ( req, res, next) => {
+    app.post('/finance', [Middleware.bearer, Authorization('finance', 'create')], async (req, res, next) => {
         try {
             const finance = req.body.finance
 
-            const result = await Finance.insert(finance)
-            res.status(201).json({return: "guardado"})
+            await Finance.insert(finance)
+            res.status(201).json({ return: "guardado" })
         } catch (err) {
             next(err)
         }
     })
 
-    app.put('/finance/:id_finance', Middleware.bearer, async ( req, res, next) => {
+    app.put('/finance/:id_finance', [Middleware.bearer, Authorization('finance', 'update')], async (req, res, next) => {
         try {
             const finance = req.body.finance
             const id_finance = req.params.id_finance
@@ -26,7 +27,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/finance/:id_finance', Middleware.bearer, async ( req, res, next) => {
+    app.delete('/finance/:id_finance', [Middleware.bearer, Authorization('finance', 'delete')], async (req, res, next) => {
         try {
             const id_finance = req.params.id_finance
 
@@ -37,7 +38,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/finance/:clients/:offices/:overdue', Middleware.bearer, async ( req, res, next) => {
+    app.get('/finance/:clients/:offices/:overdue', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             const clients = req.params.clients
             const offices = req.params.offices
@@ -50,7 +51,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/clients', Middleware.bearer, async ( req, res, next) => {
+    app.get('/clients', [Middleware.bearer, Authorization('clients', 'read')], async (req, res, next) => {
         try {
             const clients = await Finance.listDistinctClients()
             res.json(clients)
@@ -59,7 +60,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/financehistory/:invoice', Middleware.bearer, async ( req, res, next) => {
+    app.get('/financehistory/:invoice', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             let invoice = req.params.invoice
 
@@ -70,7 +71,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/financeclient/:client/:date', Middleware.bearer, async ( req, res, next) => {
+    app.get('/financeclient/:client/:date', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             let client = req.params.client
             let date = req.params.date
@@ -82,13 +83,13 @@ module.exports = app => {
         }
     })
 
-    app.get('/salesorder/:datestart/:dateend/:salesman/:office', Middleware.bearer, async ( req, res, next) => {
+    app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.bearer, Authorization('sales', 'read')], async (req, res, next) => {
         try {
             let search = {
-                datestart:req.params.datestart,
-                dateend:req.params.dateend,
-                salesman:req.params.salesman,
-                office:req.params.office
+                datestart: req.params.datestart,
+                dateend: req.params.dateend,
+                salesman: req.params.salesman,
+                office: req.params.office
             }
             const salesorders = await Finance.listSalesOrders(search)
             res.json(salesorders)

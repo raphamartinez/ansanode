@@ -170,7 +170,14 @@ const optionBis = (powerbis) => {
 
     line.value = powerbis.url
 
-    const data = `${powerbis.name} - ${powerbis.title}`
+    let data
+
+    if(powerbis.name !== undefined) {
+        data = `${powerbis.name} - ${powerbis.title}`
+    }else{
+        data = powerbis.title
+    }
+    
 
     line.innerHTML = data
 

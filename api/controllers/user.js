@@ -1,10 +1,11 @@
 const User = require('../models/user')
 const Middleware = require('../infrastructure/auth/middleware')
 const History = require('../models/history')
+const Authorization = require('../infrastructure/auth/authorization')
 
 module.exports = app => {
 
-    app.get('/users', Middleware.bearer , async ( req, res, next) => {
+    app.get('/users', [Middleware.bearer, Authorization('user', 'read')] , async ( req, res, next) => {
 
         try {
             const users = await User.listUsers()
@@ -17,7 +18,7 @@ module.exports = app => {
         }
     }) 
 
-    app.get('/user/:id_login', Middleware.bearer, async ( req, res, next) => {
+    app.get('/user/:id_login', [Middleware.bearer, Authorization('user', 'read')], async ( req, res, next) => {
         try {
             const id_login = req.params.id_login
 
@@ -31,7 +32,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/user', Middleware.bearer, async ( req, res, next) => {
+    app.post('/user', [Middleware.bearer, Authorization('user', 'create')], async ( req, res, next) => {
         try {
             const data = req.body
             const result = await User.insertUser(data)
@@ -44,7 +45,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/user/:id', Middleware.bearer, async ( req, res, next) => {
+    app.put('/user/:id', [Middleware.bearer, Authorization('user', 'update')], async ( req, res, next) => {
 
         try {
             const data = req.body
@@ -59,7 +60,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/user/:id_user', Middleware.bearer, async( req, res, next) => {
+    app.delete('/user/:id_user', [Middleware.bearer, Authorization('user', 'delete')], async( req, res, next) => {
         try {
             const id_user = req.params.id_user
             await User.deleteStatus(id_user)

@@ -316,7 +316,6 @@ class Hbs {
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
 
             sql += `ORDER BY SO.TransDate,SO.TransTime`
-            console.log(sql);
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError(error)

@@ -1,9 +1,10 @@
 const PowerBi = require('../models/powerbi')
 const Middleware = require('../infrastructure/auth/middleware')
+const Authorization = require('../infrastructure/auth/authorization')
 
 module.exports = app => {
 
-    app.get('/powerbis/:type', Middleware.bearer, async ( req, res, next) => {
+    app.get('/powerbis/:type', [Middleware.bearer, Authorization('powerbi', 'read')], async ( req, res, next) => {
 
         try {
             const id_login = req.login.id_login
@@ -15,7 +16,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/powerbis', Middleware.bearer, async ( req, res, next) => {
+    app.get('/powerbis', [Middleware.bearer, Authorization('powerbi', 'read')], async ( req, res, next) => {
 
         try {
             const id_login = req.login.id_login
@@ -26,7 +27,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/powerbisadmin', Middleware.bearer, async ( req, res, next) => {
+    app.get('/powerbisadmin', [Middleware.bearer, Authorization('powerbi', 'read')], async ( req, res, next) => {
 
         try {
             const powerbis = await PowerBi.listBis()
@@ -45,7 +46,7 @@ module.exports = app => {
         }
     });
 
-    app.get('/powerbisuser/:id', Middleware.bearer, async ( req, res, next) => {
+    app.get('/powerbisuser/:id', [Middleware.bearer, Authorization('powerbi', 'read')], async ( req, res, next) => {
 
         try {
             const id_login = req.params.id
@@ -57,7 +58,7 @@ module.exports = app => {
     })
 
 
-    app.get('/powerbi/:id', Middleware.bearer, async ( req, res, next) => {
+    app.get('/powerbi/:id', [Middleware.bearer, Authorization('powerbi', 'read')], async ( req, res, next) => {
         try {
             const id_powerbi = req.params.id
             const user = await PowerBi.viewPowerBi(id_powerbi)
@@ -67,7 +68,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/powerbi', Middleware.bearer, async ( req, res, next) => {
+    app.post('/powerbi', [Middleware.bearer, Authorization('powerbi', 'create')], async ( req, res, next) => {
         try {
             const powerbi = req.body.powerbi
             const result = await PowerBi.insertPowerBi(powerbi)
@@ -77,7 +78,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/powerbi/:id', Middleware.bearer, async ( req, res, next) => {
+    app.put('/powerbi/:id', [Middleware.bearer, Authorization('powerbi', 'update')], async ( req, res, next) => {
 
         try {
             const id_powerbi = req.params.id
@@ -89,7 +90,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/powerbi/:id', Middleware.bearer, async ( req, res, next) => {
+    app.delete('/powerbi/:id', [Middleware.bearer, Authorization('powerbi', 'delete')], async ( req, res, next) => {
         try {
             const id_powerbi = req.params.id
             const result = await PowerBi.deletePowerBi(id_powerbi)

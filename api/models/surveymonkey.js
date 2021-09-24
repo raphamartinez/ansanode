@@ -39,10 +39,14 @@ class Surveymonkey {
                         }
                         https.get(asset.url, resp => resp.pipe(fs.createWriteStream(`./tmp/ativos/ativo_${asset.plate}.jpg`)));
                         request({ url: asset.url, encoding: null }, (err, resp, buffer) => {
-                            fs.createWriteStream(`./tmp/ativos/ativo_${asset.plate}.jpg`).write(buffer);
+                            fs.writeFile(`./tmp/ativos/ativo_${asset.plate}.jpg`,buffer, (error) => {
+                                if(!error) {
+                                    console.log("image write succesfully!");
+                                }else{
+                                    console.log(error);
+                                }
+                            });
                         });
-
-    
 
                         console.log(asset.url);
                         // Repositorie.insert(asset)

@@ -22,15 +22,9 @@ class History {
         }
     }
 
-    async listHistory(perfil, id_login) {
+    async list(id_login) {
         try {
-            if (perfil === 1) {
-                const list = await Repositorie.list()
-                return list
-            } else {
-                const list = await Repositorie.listUser(id_login)
-                return list
-            }
+            return Repositorie.list(id_login)
         } catch (error) {
             throw new NotFound('Historial.')
         }

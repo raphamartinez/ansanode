@@ -178,8 +178,8 @@ const showModalGoodyear = () => {
             <div class="modal-body">
                 <div class="form-row">
                     <div class="form-group col-md-6">
-                     <h6 class="text-center">Fecha de Inicio</h6>
-                        <input type="date" placeholder="Fecha de Inicio" class="form-control" name="datestart" id="datestart">
+                     <h6 class="text-center">Fecha Inicial</h6>
+                        <input type="date" placeholder="Fecha Inicial" class="form-control" name="datestart" id="datestart">
                     </div> 
                     <div class="form-group col-md-6">
                     <h6 class="text-center">Fecha Final</h6>

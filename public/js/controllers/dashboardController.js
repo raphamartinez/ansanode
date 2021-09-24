@@ -14,6 +14,7 @@ window.onload = async function () {
     let divadmin = document.querySelector('[data-adm]')
     let divitem = document.querySelector('[data-item]')
     let divadm = document.getElementById('perfiladm')
+    let divcharge = document.querySelector('[data-charge]')
 
 
     let user = JSON.parse(sessionStorage.getItem('user'))
@@ -24,13 +25,17 @@ window.onload = async function () {
 
     ViewDashboard.showCardHistory(cardHistory, history)
     ViewDashboard.showCardBd(cardHistory, lastupdate)
+    $("#perfiladm").attr("data-id_login", user.id_login);
 
-    if (perfil !== 1) {
-        divadmin.innerHTML = " "
-        divitem.innerHTML = " "
-        divadm.innerHTML = " "
+    if (perfil !== 1 && perfil !== 4) {
+        divadmin.remove()
+        divitem.remove()
+        divcharge.remove()
     } else {
-        $("#perfiladm").attr("data-id_login", user.id_login);
+        if (perfil === 4) {
+            divcharge.remove()
+            divadmin.remove()
+        }
 
         let goals = await Connection.noBody('sellersdashboard', 'GET')
 

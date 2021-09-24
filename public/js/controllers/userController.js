@@ -655,6 +655,17 @@ async function viewUser(event) {
 
         powerbi.innerHTML = View.viewUser(user)
 
+        let us = JSON.parse(sessionStorage.getItem('user'))
+
+        if (us.perfil !== 1) {
+            let divBack = document.querySelector('[data-back-manager]')
+            let btnPowerbi = document.querySelector('[data-btn-powerbi]')
+            let btnStock = document.querySelector('[data-btn-stock]')
+            divBack.remove()
+            btnPowerbi.remove()
+            btnStock.remove()
+        }
+
         const powerbis = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
 
         let dtview = [];

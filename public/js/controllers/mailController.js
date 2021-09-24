@@ -149,7 +149,16 @@ async function modaladdmail(event) {
         })
     })
 
-    const powerbis = await Connection.noBody('powerbisadmin', 'GET')
+    let user = JSON.parse(sessionStorage.getItem('user'))
+    let powerbis
+
+    if (user.perfil !== 1) {
+        powerbis = await Connection.noBody('powerbis', 'GET')
+    }else{
+        powerbis = await Connection.noBody('powerbisadmin', 'GET')
+    }
+    
+
     const bisselect = document.getElementById('bis')
 
     powerbis.forEach(obj => {

@@ -6,12 +6,21 @@ window.listItems = listItems
 async function listItems() {
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+
     try {
+
+        const fields = await Connection.noBody('stockuser', 'GET')
+        
+        if(fields === false){
+            return alert("No tiene acceso a ningún stock, solicite acceso a un administrador.")
+        }
+
+        loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
+
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
@@ -20,7 +29,6 @@ async function listItems() {
 
         settings.innerHTML = ''
         modal.innerHTML = " "
-        modal.appendChild(View.showModalSearch())
 
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
@@ -35,10 +43,9 @@ async function listItems() {
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
-
+        modal.appendChild(View.showModalSearch())
         const selectstock = document.getElementById('stock')
         const selectitemgroup = document.getElementById('itemgroup')
-        const fields = await Connection.noBody('stockuser', 'GET')
 
         fields.stocks.forEach(obj => {
             selectstock.appendChild(View.listOption(obj.StockDepo))
@@ -247,12 +254,20 @@ window.listPrice = listPrice
 async function listPrice() {
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+
     try {
+
+        const fields = await Connection.noBody('stockuser', 'GET')
+        if(fields === false){
+            return alert("No tiene acceso a ningún stock para ver los artículos, solicite acceso a un administrador.")
+        }
+
+        loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
+
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
@@ -277,8 +292,6 @@ async function listPrice() {
 
 
         const selectitemgroup = document.getElementById('itemgroup')
-        const fields = await Connection.noBody('stockandgroup', 'GET')
-
 
         fields.groups.forEach(obj => {
             selectitemgroup.appendChild(View.listOption(obj.Name))
@@ -474,14 +487,7 @@ window.searchGoodyear = searchGoodyear
 
 async function searchGoodyear(event) {
     event.preventDefault()
-    $('#searchGoodyear').modal('hide')
 
-    let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
     try {
 
         const btn = event.currentTarget
@@ -495,6 +501,17 @@ async function searchGoodyear(event) {
             dateend: dateend,
             office: office
         }
+
+        if(!datestart || !dateend) return alert("¡El período es obligatorio!")
+
+        $('#searchGoodyear').modal('hide')
+
+        let loading = document.querySelector('[data-loading]')
+        loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
 
         const data = await Connection.body('goodyear', { search: search }, 'POST')
         let dtview = [];

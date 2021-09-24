@@ -1,22 +1,7 @@
 const passport = require('passport')
 const Login = require('../../models/login')
 const Token = require('../../models/token')
-const Controll = require('./accesscontrol')
 
-const method = {
-  read: {
-    all: 'readAny',
-    only: 'readOwn'
-  },
-  create: {
-    all: 'createAny',
-    only: 'createOwn'
-  },
-  delete: {
-    all: 'deleteAny',
-    only: 'deleteOwn'
-  }
-}
 
 module.exports = {
 
@@ -48,33 +33,6 @@ module.exports = {
     if (req.get('Authorization')) {
       return this.bearer( req, res, next)
     }
-    next()
-  },
-
-  perfil( req, res, next) {
-
-    const permissionsPerfil = Controll.can(req.user.perfil)
-    const actions = method[action]
-    const permissionAll = permissionsPerfil[actions.all](perfil)
-    const permissionOnly = permissionsPerfil[actions.only](perfil)
-
-    if (permissionAll.granted === false && permissionOnly.granted === false) {
-      res.status(403)
-      res.end()
-      return
-    }
-
-    req.access = {
-      all: {
-        allowed: permissionAll.granted,
-        atributes: permissionAll.atributes
-      },
-      only: {
-        allowed: permissionOnly.granted,
-        atributes: permissionOnly.atributes
-      }
-    }
-
     next()
   },
 

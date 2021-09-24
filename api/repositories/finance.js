@@ -35,8 +35,6 @@ class Finance {
 
             return result[0]
         } catch (error) {
-            console.log(error);
-
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
     }

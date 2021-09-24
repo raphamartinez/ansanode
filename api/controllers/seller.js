@@ -1,10 +1,11 @@
 const Hbs = require('../models/hbs')
 const Seller = require('../models/seller')
 const Middleware = require('../infrastructure/auth/middleware')
+const Authorization = require('../infrastructure/auth/authorization')
 
 module.exports = app => {
 
-    app.get('/sellershbs', Middleware.bearer, async (req, res, next) => {
+    app.get('/sellershbs', [Middleware.bearer, Authorization('salesman', 'read')], async (req, res, next) => {
         try {
             const sellers = await Hbs.listSalesman()
             res.json(sellers)
@@ -13,7 +14,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellers', Middleware.bearer, async (req, res, next) => {
+    app.get('/sellers', [Middleware.bearer, Authorization('salesman', 'read')], async (req, res, next) => {
         try {
             const sellers = await Seller.list()
             res.json(sellers)
@@ -22,7 +23,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersgoalline', Middleware.bearer, async (req, res, next) => {
+    app.get('/sellersgoalline', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -33,7 +34,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersdashboard', Middleware.bearer, async (req, res, next) => {
+    app.get('/sellersdashboard', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -44,7 +45,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellergoal/:id_salesman', Middleware.bearer, async (req, res, next) => {
+    app.get('/sellergoal/:id_salesman', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const id_login = req.login.id_login
@@ -56,7 +57,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/salesman', Middleware.bearer, async (req, res, next) => {
+    app.post('/salesman', [Middleware.bearer, Authorization('salesman', 'create')], async (req, res, next) => {
         try {
             const data = req.body.sellers
             const result = await Seller.insert(data)
@@ -66,7 +67,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/salesman/:id_salesman', Middleware.bearer, async (req, res, next) => {
+    app.put('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'update')], async (req, res, next) => {
         try {
             const manager = req.body.manager
             const result = await Seller.update(manager)
@@ -76,7 +77,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/salesman/:id_salesman', Middleware.bearer, async (req, res, next) => {
+    app.delete('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'delete')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const result = await Seller.delete(id_salesman)

@@ -10,7 +10,7 @@ class MailPowerBi {
 
     async insertMailPowerBi(mail) {
         try {
-            const id_mailpowerbi = await Repositorie.insertMail(mail)
+            const id_mailpowerbi = await Repositorie.insertMail(mail, req.login.id_login)
 
             return id_mailpowerbi
         } catch (error) {
@@ -96,9 +96,9 @@ class MailPowerBi {
         }
     }
 
-    listMailPowerBi() {
+    listMailPowerBi(id_login) {
         try {
-            return Repositorie.listMail()
+            return Repositorie.listMail(id_login)
 
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los powerbi.')

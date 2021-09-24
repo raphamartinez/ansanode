@@ -310,7 +310,7 @@ const viewUser = (user) => {
         <div class="container col-md-12 text-center">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div class="col-md-6 text-left">
-            <button onclick="listUser(event)" type="button" class="btn btn-secondary">
+            <button data-back-manager onclick="listUser(event)" type="button" class="btn btn-secondary">
                 <i class="fas fa-chevron-left"></i> Volver a la lista
             </button>
 
@@ -385,7 +385,7 @@ const viewUser = (user) => {
                 <div class="card-header text-white bg-secondary"><strong>Acceso a PowerBi:</strong></div>
                 <div class="form-row p-3">
                     <div class="form-group col-md-1.5">
-                        <button onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
+                        <button data-btn-powerbi onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
                             data-id_login="${user.id_login}" data-name="${user.name}" type="button"
                             class="btn btn-success">
                             <i class="fas fa-plus"></i> Nuevo Informe
@@ -400,7 +400,7 @@ const viewUser = (user) => {
                 <div class="card-header text-white text-left bg-secondary"><strong>Acceso a Depósito:</strong></div>
                 <div class="form-row p-3">
                     <div class="form-group col-md-1.5">
-                        <button onclick="addModalStock(event)" data-toggle="modal" data-target="#addstock" href=""
+                        <button data-btn-stock onclick="addModalStock(event)" data-toggle="modal" data-target="#addstock" href=""
                             data-id_login="${user.id_login}" data-name="${user.name}" type="button"
                             class="btn btn-success">
                             <i class="fas fa-plus"></i> Nuevo Depósito

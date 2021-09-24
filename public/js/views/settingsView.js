@@ -9,7 +9,7 @@ const sidebar = () => {
         <div class="card">
           <div class="card-body">
             <nav class="nav flex-column text-left nav-pills nav-gap-y-1">
-              <a href="#profile" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">
+              <a data-config-archive href="#profile" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded active">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cloud-arrow-down" viewBox="0 0 16 16">
   <path fill-rule="evenodd" d="M7.646 10.854a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 9.293V5.5a.5.5 0 0 0-1 0v3.793L6.354 8.146a.5.5 0 1 0-.708.708l2 2z"/>
   <path d="M4.406 3.342A5.53 5.53 0 0 1 8 2c2.69 0 4.923 2 5.166 4.579C14.758 6.804 16 8.137 16 9.773 16 11.569 14.502 13 12.687 13H3.781C1.708 13 0 11.366 0 9.318c0-1.763 1.266-3.223 2.942-3.593.143-.863.698-1.723 1.464-2.383zm.653.757c-.757.653-1.153 1.44-1.153 2.056v.448l-.445.049C2.064 6.805 1 7.952 1 9.318 1 10.785 2.23 12 3.781 12h8.906C13.98 12 15 10.988 15 9.773c0-1.216-1.02-2.228-2.313-2.228h-.5v-.5C12.188 4.825 10.328 3 8 3a4.53 4.53 0 0 0-2.941 1.1z"/>
@@ -17,25 +17,25 @@ const sidebar = () => {
   Archivos
 
               </a>
-              <a onclick="mailList(event)" href="#account" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+              <a data-config-mail onclick="mailList(event)" href="#account" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-envelope-fill" viewBox="0 0 16 16">
   <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414.05 3.555zM0 4.697v7.104l5.803-3.558L0 4.697zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586l-1.239-.757zm3.436-.586L16 11.801V4.697l-5.803 3.546z"/>
 </svg>
               Correo electrónico
               </a>
-              <a href="#security" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+              <a data-config-security href="#security" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-shield-shaded" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M8 14.933a.615.615 0 0 0 .1-.025c.076-.023.174-.061.294-.118.24-.113.547-.29.893-.533a10.726 10.726 0 0 0 2.287-2.233c1.527-1.997 2.807-5.031 2.253-9.188a.48.48 0 0 0-.328-.39c-.651-.213-1.75-.56-2.837-.855C9.552 1.29 8.531 1.067 8 1.067v13.866zM5.072.56C6.157.265 7.31 0 8 0s1.843.265 2.928.56c1.11.3 2.229.655 2.887.87a1.54 1.54 0 0 1 1.044 1.262c.596 4.477-.787 7.795-2.465 9.99a11.775 11.775 0 0 1-2.517 2.453 7.159 7.159 0 0 1-1.048.625c-.28.132-.581.24-.829.24s-.548-.108-.829-.24a7.158 7.158 0 0 1-1.048-.625 11.777 11.777 0 0 1-2.517-2.453C1.928 10.487.545 7.169 1.141 2.692A1.54 1.54 0 0 1 2.185 1.43 62.456 62.456 0 0 1 5.072.56z"/>
             </svg>
               Seguridad
               </a>
-              <a href="#notification" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+              <a data-config-notification href="#notification" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
   <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2zm.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
 </svg>
               Notificaciones  
               </a>
-              <a onclick="salesmanList(event)" href="#salesman" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
+              <a data-config-salesman onclick="salesmanList(event)" href="#salesman" data-toggle="tab" class="nav-item nav-link has-icon nav-link-faded">
               <i class="fas fa-users"></i>
               Vendedores  
               </a>

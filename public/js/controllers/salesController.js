@@ -83,7 +83,7 @@ async function listSales(event) {
         office: offices
     }
 
-    if(!search.datestart && !search.dateend) {
+    if(!search.datestart || !search.dateend) {
         return alert("¡El período es obligatorio!")
     }
 

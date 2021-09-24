@@ -148,7 +148,7 @@ class Tables {
 
   createTableMailUser(){
     const sql = `CREATE TABLE IF NOT EXISTS ansa.mailpowerbi (id_mailpowerbi int NOT NULL AUTO_INCREMENT, recipients VARCHAR(250), cc VARCHAR(250), cco VARCHAR(250), title VARCHAR (100), body VARCHAR (250),
-    type int, datereg DATETIME, PRIMARY KEY (id_mailpowerbi))`
+    type int, datereg DATETIME, id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_mailpowerbi))`
 
     this.connection.query(sql, (error) => {
       if (error) {

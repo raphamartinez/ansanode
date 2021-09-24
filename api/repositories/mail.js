@@ -2,10 +2,10 @@ const query = require('../infrastructure/database/queries')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
 
 class Mail {
-    async insertMail(mail) {
+    async insertMail(mail,id_login) {
         try {
-            const sql = 'INSERT INTO ansa.mailpowerbi (recipients, cc, cco, title, body, type, datereg) values (?, ?, ?, ?, ?, ?,  now() - interval 4 hour )'
-            await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type])
+            const sql = 'INSERT INTO ansa.mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour )'
+            await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type, id_login])
 
             const result = await query("Select LAST_INSERT_ID() as id_mailpowerbi from ansa.mailpowerbi LIMIT 1")
 
@@ -89,12 +89,16 @@ class Mail {
         }
     }
 
-    listMail() {
+    listMail(id_login) {
         try {
             let sql = `SELECT MA.id_mailpowerbi, MA.recipients, MA.cc, MA.cco, MA.title, MA.body, DATE_FORMAT(MA.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(MT.id_mailattachment) as countatt
             FROM ansa.mailpowerbi MA
             LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
-            GROUP BY MA.id_mailpowerbi`
+            `
+
+            if(id_login) sql+= `WHERE MA.id_login = ${id_login} `
+
+            sql += `GROUP BY MA.id_mailpowerbi`
 
             return query(sql)
         } catch (error) {

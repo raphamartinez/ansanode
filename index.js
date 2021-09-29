@@ -6,9 +6,8 @@ const express = require('express')
 const path = require('path')
 const { job, jobHbs, jobMail, jobGoalLine, jobReceivable } = require('./api/models/job')
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
-const logger = require('./api/logger/pino')
+// const logger = require('./api/logger/pino')
 const jwt = require('jsonwebtoken');
-const accessControl = require('accesscontrol')
 // const connection = require('./api/infrastructure/database/connection')
 // const tables = require('./api/infrastructure/database/tables')
 // const Survey = require('./api/models/surveymonkey')
@@ -72,7 +71,7 @@ app.use((error, req, res, next) => {
   }
 
 
-  logger.error({status, body})
+  // logger.error({status, body})
 
   res.status(status)
   res.json(body)

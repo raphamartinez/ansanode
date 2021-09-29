@@ -6,8 +6,8 @@ const consign = require('consign')
 const path = require('path');
 const jwt = require('jsonwebtoken');
 const Login = require('../models/login')
-const logger = require('../logger/pino')
-const pinoHttp = require('pino-http')({ logger })
+// const logger = require('../logger/pino')
+// const pinoHttp = require('pino-http')({ logger })
 
 module.exports = () => {
 

@@ -35,7 +35,6 @@ app.use((err, req, res, next) => {
       body.dateExp = err.dateExp
     }
   
-    logger.error({status, body})
   
     res.status(status)
     res.json(body)

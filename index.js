@@ -21,7 +21,7 @@ app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
 app.listen(3000, () => {
-  logger.info('Server Started')
+  // logger.info('Server Started')
 
   app.use(express.static(__dirname + '/public'))
   app.use(express.static(__dirname + '/views'))
@@ -45,7 +45,6 @@ app.use((error, req, res, next) => {
   const body = {
     message: 'Hubo un problema al realizar la operación. Intenta más tarde'
   }
-  logger.error(error)
 
   if (error instanceof NotFound) {
     status = 404

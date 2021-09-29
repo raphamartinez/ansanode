@@ -5,6 +5,8 @@ const btnInforme = document.getElementById('btnInforme')
 const btnPunto = document.getElementById('btnPunto')
 const btnVehiculos = document.getElementById('btnVehiculos')
 const btnSucursales = document.getElementById('btnSucursales')
+const btnInformeAdmin = document.querySelector('[data-btnInformeAdmin]')
+
 const cardHistory = document.querySelector('[data-card]')
 
 window.modalDeleteBi = modalDeleteBi
@@ -14,6 +16,81 @@ window.editPowerBi = editPowerBi
 window.modalEditBi = modalEditBi
 window.deletePowerBi = deletePowerBi
 window.autocompletesearch = autocompletesearch
+
+btnInformeAdmin.addEventListener('click', async (event) => {
+    event.preventDefault()
+
+    cardHistory.style.display = 'none';
+    let loading = document.querySelector('[data-loading]')
+    loading.innerHTML = `
+<div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
+  <span class="sr-only">Loading...</span>
+</div>
+`
+
+    try {
+        let title = document.querySelector('[data-title]')
+        let powerbi = document.querySelector('[data-powerbi]')
+        let modal = document.querySelector('[data-modal]')
+        let settings = document.querySelector('[data-settings]');
+
+
+        title.innerHTML = "Listado de Informes"
+        powerbi.innerHTML = " "
+        modal.innerHTML = " "
+        settings.innerHTML = " "
+        title.appendChild(ViewPowerBi.buttons())
+        const data = await Connection.noBody(`powerbisadmin`, 'GET')
+        let dtview = [];
+
+        data.forEach(powerbi => {
+            const field = ViewPowerBi.listPowerBiAdmin(powerbi)
+            dtview.push(field)
+        });
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Descripción" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+
+        loading.innerHTML = " "
+
+    } catch (error) {
+
+    }
+})
 
 async function autocompletesearch(event) {
     event.preventDefault()
@@ -585,18 +662,11 @@ window.addModalPowerBi = addModalPowerBi
 async function addModalPowerBi(event) {
     event.preventDefault()
 
-    try {
-        let modal = document.querySelector('[data-modal]')
-        modal.innerHTML = ``
-        modal.appendChild(ViewPowerBi.showModalPbiInsert())
+    let modal = document.querySelector('[data-modal]')
+    modal.innerHTML = ``
+    modal.appendChild(ViewPowerBi.showModalPbiInsert())
 
-        const btn = event.currentTarget
-        const id_login = btn.getAttribute("data-id_login")
-        $("#idinsertnewbi").attr("data-id_login", id_login)
-        $('#edituser').modal('show')
-    } catch (error) {
-
-    }
+    $('#addpowerbi').modal('show')
 }
 
 
@@ -613,57 +683,38 @@ async function addPowerBi(event) {
         `
 
         const btn = event.currentTarget
-        const id_login = btn.getAttribute("data-id_login")
         const title = btn.form.title.value
         const url = btn.form.url.value
         const type = btn.form.type.value
+        const description = btn.form.description.value
+
+        const date = new Date()
+
+        date.getTime()
 
         const powerbi = {
+            count: 0,
             title: title,
             url: url,
             type: type,
-            id_login: id_login
+            typedesc: document.querySelector('#type option:checked').innerHTML,
+            description: description,
+            dateReg: `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
         }
 
-        await Connection.body('powerbi', { powerbi }, 'POST')
+        powerbi.id_powerbi = await Connection.body('powerbi', { powerbi }, 'POST')
 
-        const data = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
+        const row = ViewPowerBi.listPowerBiAdmin(powerbi)
 
-        if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
-            $('#powerbiuserlist').dataTable().fnClearTable();
-            $('#powerbiuserlist').dataTable().fnDestroy();
-            $('#powerbiuserlist').empty();
-        }
+        const table = $('#dataTable').DataTable();
 
-        let dtview = [];
+        const rowNode = table.row.add(row)
+            .draw()
+            .node();
 
-        data.forEach(powerbi => {
-            const field = ViewPowerBi.listPowerBiAdmin(powerbi, id_login)
-            dtview.push(field)
-        });
-
-        $(document).ready(function () {
-            $("#powerbiuserlist").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Nombre" },
-                    { title: "Tipo" },
-                    { title: "Fecha de Registro" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false
-            })
-        })
+        await $(rowNode)
+            .css('color', 'black')
+            .animate({ color: '#4e73df' });
 
         loading.innerHTML = " "
         alert('PowerBi agregado con éxito!')
@@ -685,12 +736,14 @@ async function modalEditBi(event) {
         const url = btn.getAttribute("data-url")
         const title = btn.getAttribute("data-title")
         const type = btn.getAttribute("data-type")
+        const description = btn.getAttribute("data-description")
         const id_login = btn.getAttribute("data-id_login")
 
         $("#ideditpowerbi").attr("data-id_powerbi", id_powerbi);
         $("#ideditpowerbi").attr("data-id_login", id_login);
         $("#urledit").val(url);
         $("#titleedit").val(title);
+        $("#descriptionedit").val(description);
         $("#typeedit").val(type);
         $('#editpowerbi').modal('show')
     } catch (error) {
@@ -714,18 +767,19 @@ async function editPowerBi(event) {
         const title = btn.form.title.value
         const url = btn.form.url.value
         const type = btn.form.type.value
-        const id_login = btn.getAttribute("data-id_login")
+        const description = btn.form.description.value
 
         const powerbi = {
             id_powerbi: id_powerbi,
             title: title,
             url: url,
-            type: type
+            type: type,
+            description: description
         }
 
         await Connection.body(`powerbi/${id_powerbi}`, { powerbi }, 'PUT')
 
-        const data = await Connection.noBody(`powerbisuser/${id_login}`, 'GET')
+        const data = await Connection.noBody(`powerbisadmin`, 'GET')
 
         if ($.fn.DataTable.isDataTable('#powerbiuserlist')) {
             $('#powerbiuserlist').dataTable().fnClearTable();
@@ -849,4 +903,41 @@ async function deletePowerBi(event) {
         loading.innerHTML = " "
         alert('Algo salió mal, informa al sector de TI')
     }
+}
+
+window.modalAddBiUser = modalAddBiUser
+async function modalAddBiUser(event) {
+    event.preventDefault()
+    let modal = document.querySelector('[data-modal]')
+
+    const btn = event.currentTarget
+    const id_powerbi = btn.getAttribute("data-id_powerbi")
+
+    const users = await Connection.noBody('users', 'GET')
+    modal.appendChild(ViewPowerBi.modalAddBiUser(id_powerbi))
+
+    const userselect = document.getElementById('userselect')
+
+    users.forEach(obj => {
+        userselect.appendChild(ViewPowerBi.optionUser(obj))
+    })
+
+    $('#userselect').selectpicker()
+
+    $('#modalAddBiUser').modal('show')
+}
+
+window.addBiUser = addBiUser
+async function addBiUser(event) {
+    event.preventDefault()
+
+    const btn = event.currentTarget
+    const id_powerbi = btn.getAttribute("data-id_powerbi")
+    const userselect = document.querySelectorAll('#userselect option:checked')
+    const users = Array.from(userselect).map(el => `${el.value}`);
+
+    await Connection.body('powerbiview', { id_powerbi, users }, 'POST')
+
+    $('#modalAddBiUser').modal('hide')
+    alert('Enlace del PowerBi agregado con éxito a los usuarios!')
 }

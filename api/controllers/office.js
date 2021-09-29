@@ -1,24 +1,23 @@
 const Office = require('../models/office')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
     app.get('/offices', [Middleware.bearer, Authorization('office', 'read')], async ( req, res, next) => {
         try {
+            
+            const cached = await cachelist.searchValue(`office`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const offices = await Office.listOffice()
+            cachelist.addCache(`office`, JSON.stringify(offices), 60 * 60 * 12)
+
             res.json(offices)
-        } catch (err) {
-            next(err)
-        }
-    })
-
-    app.get('/office/:id', [Middleware.bearer, Authorization('office', 'read')], async ( req, res, next) => {
-        try {
-            const id_office = req.params.id
-
-            const office = await User.viewUser(id_office)
-            res.json(office)
         } catch (err) {
             next(err)
         }
@@ -29,6 +28,8 @@ module.exports = app => {
             const data = req.body
 
             const result = await Office.createOffice(data)
+            cachelist.delPrefix('office')
+
             res.status(201).json(result)
         } catch (err) {
             next(err)
@@ -41,6 +42,8 @@ module.exports = app => {
             const id_office = req.params.id
 
             const result = await Office.updateOffice(data, id_office)
+            cachelist.delPrefix('office')
+
             res.json(result)
         } catch (err) {
             next(err)
@@ -52,6 +55,8 @@ module.exports = app => {
             const id_office = req.params.id
 
             const result = await Office.deleteOffice(id_office)
+            cachelist.delPrefix('office')
+            
             res.json(result)
         } catch (err) {
             next(err)

@@ -3,12 +3,11 @@ import { ViewStock } from "../views/stockView.js"
 import { Connection } from '../services/connection.js'
 
 const btn = document.querySelector('[data-btn-users]')
-const create = document.querySelector('[data-btn-create]')
 const cardHistory = document.querySelector('[data-card]')
 
-create.addEventListener('click', async (event) => {
+window.modalCreateUser = modalCreateUser
+async function modalCreateUser(event){
     event.preventDefault()
-    cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
     loading.innerHTML = `
     <div class="spinner-border text-primary" role="status">
@@ -17,27 +16,15 @@ create.addEventListener('click', async (event) => {
     `
     try {
 
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
-        }
-
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
 
-
-
-        title.innerHTML = "Crear nuevo usuario"
-        powerbi.innerHTML = " "
         modal.innerHTML = " "
         settings.innerHTML = " "
 
         const offices = await Connection.noBody('offices', 'GET')
 
-        title.appendChild(View.createUser())
+        modal.appendChild(View.createUser())
 
         const divoffice = document.getElementById('office')
 
@@ -46,11 +33,15 @@ create.addEventListener('click', async (event) => {
         });
 
         loading.innerHTML = " "
+        $('#createuser').modal('show')
+
     } catch (error) {
+        $('#createuser').modal('hide')
+
         loading.innerHTML = " "
         alert('Algo salió mal, informa al sector de TI!')
     }
-})
+}
 
 
 btn.addEventListener('click', async (event) => {
@@ -70,10 +61,11 @@ btn.addEventListener('click', async (event) => {
         let settings = document.querySelector('[data-settings]');
 
 
-        title.innerHTML = "Lista de Usuarios"
+        title.innerHTML = "Listado de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
         settings.innerHTML = " "
+        title.appendChild(View.buttons())
 
         const data = await Connection.noBody('users', 'GET')
         let dtview = [];
@@ -420,7 +412,7 @@ async function listUsers() {
         let settings = document.querySelector('[data-settings]');
 
 
-        title.innerHTML = "Lista de Usuarios"
+        title.innerHTML = "Listado de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
         settings.innerHTML = " "
@@ -754,7 +746,7 @@ async function listUser(event) {
         let settings = document.querySelector('[data-settings]');
 
 
-        title.innerHTML = "Lista de Usuarios"
+        title.innerHTML = "Listado de Usuarios"
         powerbi.innerHTML = " "
         modal.innerHTML = ""
         settings.innerHTML = " "

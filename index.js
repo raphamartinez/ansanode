@@ -4,15 +4,15 @@ require('events').EventEmitter.prototype._maxListeners = 100;
 const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
-const jwt = require('jsonwebtoken');
 const { job, jobHbs, jobMail, jobGoalLine, jobReceivable } = require('./api/models/job')
-const { InvalidArgumentError, NotFound, NotAuthorized } = require('./api/models/error');
-
+const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
+const logger = require('./api/logger/pino')
+const jwt = require('jsonwebtoken');
+const accessControl = require('accesscontrol')
 // const connection = require('./api/infrastructure/database/connection')
 // const tables = require('./api/infrastructure/database/tables')
-const Survey = require('./api/models/surveymonkey')
+// const Survey = require('./api/models/surveymonkey')
 // const GoalLine = require('./api/models/goalline')
-
 
 process.setMaxListeners(100)
 const app = customExpress()
@@ -22,6 +22,7 @@ app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
 app.listen(3000, () => {
+  logger.info('Server Started')
 
   app.use(express.static(__dirname + '/public'))
   app.use(express.static(__dirname + '/views'))
@@ -38,42 +39,43 @@ app.listen(3000, () => {
     jobGoalLine.start()
     jobReceivable.start()
   }
-})
+});
 
-
-app.use((err, req, res, next) => {
-
+app.use((error, req, res, next) => {
   let status = 500
   const body = {
-    message: err.message
+    message: 'Hubo un problema al realizar la operación. Intenta más tarde'
   }
+  logger.error(error)
 
-  if (err instanceof NotFound) {
+  if (error instanceof NotFound) {
     status = 404
-    body.dateExp = err.dateExp
+    body.dateExp = error.dateExp
   }
 
-  if (err instanceof NotAuthorized) {
+  if (error instanceof NotAuthorized) {
     status = 401
-    body.dateExp = err.dateExp
+    body.dateExp = error.dateExp
   }
 
-  if (err instanceof InvalidArgumentError) {
+  if (error instanceof InvalidArgumentError) {
     status = 400
   }
 
-  if (err instanceof jwt.JsonWebTokenError) {
+  if (error instanceof jwt.JsonWebTokenError) {
     status = 401
   }
 
-  if (err instanceof jwt.TokenExpiredError) {
+  if (error instanceof jwt.TokenExpiredError) {
     status = 401
-    body.dateExp = err.dateExp
+    body.dateExp = error.dateExp
   }
+
+
+  logger.error({status, body})
 
   res.status(status)
   res.json(body)
-
 })
 
 // Survey.ListResponse()

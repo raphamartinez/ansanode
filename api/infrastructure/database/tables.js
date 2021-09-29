@@ -297,7 +297,7 @@ class Tables {
 
   createTablePowerBI() {
     const sql = `CREATE TABLE IF NOT EXISTS powerbi (id_powerbi int NOT NULL AUTO_INCREMENT, url VARCHAR (1000) NOT NULL, title VARCHAR (50) NOT NULL,
-    type int, token VARCHAR (250), idreport VARCHAR (100), dateReg DATETIME NOT NULL, PRIMARY KEY (id_powerbi))`
+    type int, token VARCHAR (250), description VARCHAR (250), idreport VARCHAR (100), dateReg DATETIME NOT NULL, PRIMARY KEY (id_powerbi))`
 
     this.connection.query(sql, (error) => {
       if (error) {

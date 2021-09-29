@@ -256,45 +256,62 @@ const createUser = () => {
 
     const content =
         `
-        <form id="formInsertUser" onsubmit="createUser(event)">
-        <div class="card-body">
-        <div class="form-row">
-        <div class="form-group col-md-6">
-            <input placeholder="Nombre" class="form-control" id="name" name="name" type="text" required>
+        <div class="modal fade" id="createuser" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrar nuevo Usuario</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form id="formInsertUser" onsubmit="createUser(event)">
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <input placeholder="Nombre" class="form-control" id="name" name="name" type="text" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <input placeholder="Fecha de Nacimiento" class="form-control" id="dateBirthday"
+                                    name="dateBirthday" type="date">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <input placeholder="Email Organização" class="form-control" id="mailenterprise"
+                                    name="mailenterprise" type="email" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <select name="perfil" id="perfil" class="form-control" required>
+                                    <option value="" disabled selected>Perfil</option>
+                                    <option value="1">Administrador</option>
+                                    <option value="2">Vendedor</option>
+                                    <option value="3">Depositero</option>
+                                    <option value="4">Gerente</option>
+                                    <option value="5">Personal Administrativo</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <select class="form-control" name="office" id="office" required>
+                                    <option value="" disabled selected>Sucursal</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <input placeholder="Acceso al sistema" class="form-control" id="mail" name="mail"
+                                    type="text" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <input type="password" placeholder="Contraseña" class="form-control" name="password"
+                                    id="password" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-success"><i class="fas fa-check"> Crear</i></button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <div class="form-group col-md-6">
-            <input placeholder="Fecha de Nacimiento" class="form-control" id="dateBirthday" name="dateBirthday" type="date">
-        </div>
-        <div class="form-group col-md-12">
-        <input placeholder="Email Organização" class="form-control" id="mailenterprise" name="mailenterprise" type="email" required>
     </div>
-        <div class="form-group col-md-6">
-            <select name="perfil" id="perfil" class="form-control" required>
-                <option value="" disabled selected>Perfil</option>
-                <option value="1" >Administrador</option>
-                <option value= "2" >Vendedor</option>
-                <option value= "3" >Depositero</option>
-                <option value= "4" >Gerente</option>
-                <option value= "5" >Personal Administrativo</option>              
-            </select>                        
-        </div>
-        <div class="form-group col-md-6">   
-        <select class="form-control" name="office" id="office" required>
-        <option value="" disabled selected>Sucursal</option>
-    </select>
-    </div>
-    <div class="form-group col-md-6">
-    <input placeholder="Acceso al sistema" class="form-control" id="mail" name="mail" type="text" required>
-</div>
-<div class="form-group col-md-6">          
-<input type="password" placeholder="Contraseña" class="form-control" name="password" id="password" required>
-</div>
-    </div>
-    </div>
-    <div class="col-lg-12 text-center">
-    <button class="btn btn-success mb-3" type="submit">Crear</button>
-</div>
-</form>
     `
     line.innerHTML = content
 
@@ -385,11 +402,7 @@ const viewUser = (user) => {
                 <div class="card-header text-white bg-secondary"><strong>Acceso a PowerBi:</strong></div>
                 <div class="form-row p-3">
                     <div class="form-group col-md-1.5">
-                        <button data-btn-powerbi onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
-                            data-id_login="${user.id_login}" data-name="${user.name}" type="button"
-                            class="btn btn-success">
-                            <i class="fas fa-plus"></i> Nuevo Informe
-                        </button>
+
                     </div>
                 </div>
             </div>
@@ -413,7 +426,11 @@ const viewUser = (user) => {
     </div>
 </div>
     `
-
+//     <button data-btn-powerbi onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
+//     data-id_login="${user.id_login}" data-name="${user.name}" type="button"
+//     class="btn btn-success">
+//     <i class="fas fa-plus"></i> Nuevo Informe
+// </button>
     return content
 }
 
@@ -433,6 +450,24 @@ const listPowerBiAdmin = (powerbi, id_login) => {
     return content
 }
 
+const buttons = () => {
+
+    const divbtn = document.createElement('div')
+
+    const content = `    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-12 text-left">
+            <button type="button" data-toggle="modal" onclick="modalCreateUser(event)" class="btn btn-success">
+            Registrar Usuario
+            </button>
+        </div>
+    </div>`
+
+    divbtn.innerHTML = content
+    
+    return divbtn
+}
+
 
 export const View = {
     showTable,
@@ -444,5 +479,6 @@ export const View = {
     listOffice,
     showModalChangePass,
     viewUser,
-    listPowerBiAdmin
+    listPowerBiAdmin,
+    buttons
 }

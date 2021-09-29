@@ -2,15 +2,25 @@ const Hbs = require('../models/hbs')
 const Item = require('../models/item')
 const Authorization = require('../infrastructure/auth/authorization')
 const Middleware = require('../infrastructure/auth/middleware')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
     app.post('/goodyear', [Middleware.bearer, Authorization('goodyear', 'read')], async (req, res, next) => {
         try {
+
+            const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const id_login = req.login.id_login
             const search = req.body.search
 
             const items = await Hbs.listGoodyear(search, id_login)
+            cachelist.addCache(`goodyear:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
+
             res.status(201).json(items)
         } catch (err) {
             next(err)
@@ -19,10 +29,18 @@ module.exports = app => {
 
     app.post('/items', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
+            const cached = await cachelist.searchValue(`items:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const id_login = req.login.id_login
             let search = req.body.search
 
             const items = await Hbs.listItems(search, id_login)
+            cachelist.addCache(`items:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
+
             res.json(items)
         } catch (err) {
             next(err)
@@ -43,7 +61,15 @@ module.exports = app => {
 
     app.get('/itemsgroups', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
+            const cached = await cachelist.searchValue(`itemsgroups`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const itemsgroups = await Hbs.listItemsGroups()
+            cachelist.addCache(`itemsgroups`, JSON.stringify(itemsgroups), 60 * 60 * 12)
+
             res.json(itemsgroups)
         } catch (err) {
             next(err)
@@ -52,9 +78,15 @@ module.exports = app => {
 
     app.get('/itemscomplete', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
-            const id_login = req.login.id_login
+            const cached = await cachelist.searchValue(`items:id_login:${req.login.id_login}`)
 
-            const items = await Hbs.listItemsComplete(id_login)
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
+            const items = await Hbs.listItemsComplete(req.login.id_login)
+            cachelist.addCache(`items:id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 12)
+
             res.json(items)
         } catch (err) {
             next(err)
@@ -74,10 +106,19 @@ module.exports = app => {
 
     app.post('/price', [Middleware.bearer, Authorization('price', 'read')], async (req, res, next) => {
         try {
+
+            const cached = await cachelist.searchValue(`price:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const id_login = req.login.id_login
             const search = req.body.search
 
             const items = await Hbs.listPrice(search, id_login)
+            cachelist.addCache(`price:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
+
             res.json(items)
         } catch (err) {
             next(err)
@@ -86,7 +127,15 @@ module.exports = app => {
 
     app.get('/stockandgroup', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
         try {
+            const cached = await cachelist.searchValue(`stockandgroup`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const fields = await Hbs.listStockandGroup()
+            cachelist.addCache(`stockandgroup`, JSON.stringify(fields), 60 * 60 * 6)
+
             res.json(fields)
         } catch (err) {
             next(err)
@@ -129,9 +178,17 @@ module.exports = app => {
 
     app.get('/expectedsellers', Middleware.bearer, async ( req, res, next) => {
         try {
+            const cached = await cachelist.searchValue(`goal:id_login:${req.login.id_login}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const id_login = req.login.id_login
 
             const expected = await Item.listExpectedSalesByManager(id_login)
+            cachelist.addCache(`goal:id_login:${req.login.id_login}`, JSON.stringify(expected), 60 * 60 * 6)
+
             res.json(expected)
         } catch (err) {
             next(err)

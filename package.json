@@ -46,6 +46,8 @@
     "passport-http-bearer": "^1.0.1",
     "passport-local": "^1.0.0",
     "pdf-merger-js": "^3.2.1",
+    "pino": "^6.13.3",
+    "pino-http": "^5.8.0",
     "puppeteer": "^9.1.1",
     "read-excel-file": "^5.1.0",
     "redis": "^3.1.2",
@@ -55,6 +57,7 @@
     "zklib": "^0.2.11"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "nodemon": "^2.0.7",
+    "pino-pretty": "^7.0.1"
   }
 }

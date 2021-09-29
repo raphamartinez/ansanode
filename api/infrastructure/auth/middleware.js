@@ -1,7 +1,7 @@
 const passport = require('passport')
 const Login = require('../../models/login')
 const Token = require('../../models/token')
-
+const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('../../models/error')
 
 module.exports = {
 
@@ -44,13 +44,13 @@ module.exports = {
         try {
           if (error) {
             return next(error)
-          }
+          } 
           req.token = info.token
           req.login = login
           req.authenticated = true
           return next()
         } catch (error) {
-          return next(error)
+          throw new NotAuthorized('Acceso no autorizado al recurso solicitado.')
         }
       }
     )( req, res, next)

@@ -30,7 +30,7 @@ const showModalEdit = () => {
                     <input type="text" placeholder="Título" class="form-control" name="title" id="titleedit" required>
                     </div> 
                     <div class="form-group col-md-6">
-                    <select class="selectpicker form-control" name="type" id="typeedit" required>
+                    <select class="form-control" name="type" id="typeedit" required>
                     <option value="" disabled selected>Tipo</option>
                     <option value="1" >Informe</option>
                     <option value="2">Personal</option>
@@ -41,6 +41,9 @@ const showModalEdit = () => {
                 <div class="form-group col-md-12">          
                 <input type="text" placeholder="Url" class="form-control" name="url" id="urledit" required>
             </div>
+            <div class="form-group col-md-12">
+            <textarea placeholder="Descripción del informe..." id="descriptionedit" name="description" class="form-control"></textarea>
+            </div> 
                 </div>
             </div>
             <div class="modal-footer">
@@ -100,6 +103,7 @@ const listPowerBi = (powerbi) => {
        `<a onclick="viewBi(event)" href="" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>`,
        `${powerbi.title}`,
        `${powerbi.typedesc}`,
+       `${powerbi.description}`,
        `${powerbi.dateReg}`,
       ]
 
@@ -110,12 +114,14 @@ const listPowerBiAdmin = (powerbi, id_login) => {
 
     const content =  [
         `
-        <a onclick="viewBi(event)" href="" data-id_login="${id_login}" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600;"></i></a>
-        <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32;"></i></a>
-        <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000;"></i></a>
+        <a onclick="viewBi(event)" href="" data-id_login="${id_login}" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600; padding: 2px;"></i></a>
+        <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-description="${powerbi.description}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32; padding: 2px;"></i></a>
+        <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>
+        <a onclick="modalAddBiUser(event)" data-id_powerbi="${powerbi.id_powerbi}" ><i class="fas fa-users" style="color:#000000; padding: 2px;"><span class="badge badge-dark">${powerbi.count}</span></i></a>
         `,
         `${powerbi.title}`,
         `${powerbi.typedesc}`,
+        `${powerbi.description}`,
         `${powerbi.dateReg}`,
        ]
 
@@ -167,7 +173,10 @@ const showModalPbiInsert = () => {
                 </select>
                 </div>  
                 <div class="form-group col-md-12">
-                <input type="text" placeholder="Url" class="form-control" name="url" id="url" required>
+                <input type="url" placeholder="Url" class="form-control" name="url" id="url" required>
+                </div> 
+                <div class="form-group col-md-12">
+                <textarea placeholder="Descripción del informe..." id="description" name="description" class="form-control"></textarea>
                 </div> 
                 </div> 
             <div class="modal-footer">
@@ -185,6 +194,72 @@ const showModalPbiInsert = () => {
     return div
 }
 
+const modalAddBiUser = (id_powerbi) => {
+    const div = document.createElement('div')
+
+    const content = `     <div class="modal fade" id="modalAddBiUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Enlace Informe al Usuario</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12"> 
+                        <select title="Usuarios" multiple class="selectpicker form-control" name="userselect" id="userselect" required>
+                </select>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button data-id_powerbi="${id_powerbi}" type="submit" onclick="addBiUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Enlace</i></button>   
+                </div>
+            </form>
+        </div>
+    </div>
+</div>`
+
+    div.innerHTML = content
+
+    return div
+
+}
+
+
+const optionUser = (user) => {
+    const line = document.createElement('option')
+
+    line.value = user.id_login
+
+    const content = ` ${user.name}</option>`
+
+    line.innerHTML = content
+
+    return line
+}
+
+const buttons = () => {
+
+    const divbtn = document.createElement('div')
+
+    const content = `    
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <div class="col-md-12 text-left">
+            <button type="button" data-toggle="modal" onclick="addModalPowerBi(event)" class="btn btn-success">
+            Registrar Informe
+            </button>
+        </div>
+    </div>`
+
+    divbtn.innerHTML = content
+    
+    return divbtn
+}
+
 
 
 
@@ -196,5 +271,8 @@ export const ViewPowerBi = {
     showModalEdit,
     showModalDelete,
     header,
-    showModalPbiInsert
+    showModalPbiInsert,
+    buttons,
+    optionUser,
+    modalAddBiUser
 }

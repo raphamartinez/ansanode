@@ -7,18 +7,22 @@ const Token = require('../../models/token')
 
 const { NotAuthorized, InvalidArgumentError } = require('../../models/error')
 
-
+function verifyToken(token) {
+  if (token === undefined) {
+    throw new NotAuthorized('Acceso no autorizado al recurso solicitado.')
+  }
+}
 
 function verifyLogin(login) {
   if (!login) {
-    throw new NotAuthorized()
+    throw new NotAuthorized('Acceso no autorizado al recurso solicitado.')
   }
 }
 
 async function verifyPassword(password, passwordHash) {
   const passwordValid = await bcrypt.compare(password, passwordHash)
   if (!passwordValid) {
-    throw new NotAuthorized()
+    throw new NotAuthorized('Las contraseñas ingresadas no coinciden.')
   }
 }
 
@@ -46,8 +50,9 @@ passport.use(
   new BearerStrategy(
     async (token, done) => {
     try {
-      const id = await Token.access.verify(token)
-      const login = await Login.viewLogin(id)
+      verifyToken(token)
+      const id_login = await Token.access.verify(token)
+      const login = await Login.viewLogin(id_login)
       verifyLogin(login.mail)
       done(null, login, { token })
     } catch (error) {

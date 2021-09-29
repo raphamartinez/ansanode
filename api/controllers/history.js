@@ -2,6 +2,7 @@ const History = require('../models/history')
 const Middleware = require('../infrastructure/auth/middleware')
 const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('../models/error');
 const Authorization = require('../infrastructure/auth/authorization')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
     app.post('/history', Middleware.bearer, async (req, res, next) => {
@@ -10,6 +11,9 @@ module.exports = app => {
             const description = req.body.description
 
             const history = await History.insertHistory(description, id_login)
+
+            cachelist.delPrefix('history')
+
             res.status(201).json(history)
         } catch (err) {
             next(err)
@@ -18,10 +22,15 @@ module.exports = app => {
 
     app.get('/history', [Middleware.bearer, Authorization('history', 'read')], async (req, res, next) => {
         try {
-            const perfil = req.login.perfil
-            const id_login = req.login.id_login
+            const cached = await cachelist.searchValue(`history:id_login:${req.login.id_login}`)
 
-            const history = await History.listHistoryDashboard(perfil, id_login)
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
+            const history = await History.listHistoryDashboard(req.login.perfil, req.login.id_login)
+            cachelist.addCache(`history:id_login:${req.login.id_login}`, JSON.stringify(history), 60 * 30)
+
             res.json(history)
         } catch (err) {
             next(err)
@@ -30,9 +39,15 @@ module.exports = app => {
 
     app.get('/history/:id', [Middleware.bearer, Authorization('history', 'read')], async (req, res, next) => {
         try {
-            const id_login = req.params.id
+            const cached = await cachelist.searchValue(`history:${JSON.stringify(req.params)}`)
 
-            const history = await History.listHistoryDashboardUser(id_login)
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
+            const history = await History.listHistoryDashboardUser(req.params.id)
+            cachelist.addCache(`history:${JSON.stringify(req.params)}`, JSON.stringify(history), 60 * 30)
+
             res.json(history)
         } catch (err) {
             next(err)
@@ -49,6 +64,7 @@ module.exports = app => {
                 const id_login = req.login.id_login
                 historys = await History.list(id_login)
             }
+
             res.json(historys)
         } catch (err) {
             next(err)

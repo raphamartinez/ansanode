@@ -4,16 +4,13 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class PowerBi {
     async insert(powerbi) {
         try {
+            const sql = 'INSERT INTO ansa.powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
+            await query(sql, [powerbi.url, powerbi.title, powerbi.type, powerbi.description])
 
-            const sql = 'INSERT INTO ansa.powerbi (url, title, type, dateReg) values (?, ?, ?, now() - interval 4 hour )'
-            await query(sql, [powerbi.url, powerbi.title, powerbi.type])
+            const sqlid = 'SELECT LAST_INSERT_ID() AS id_powerbi FROM ansa.powerbi LIMIT 1'
+            const obj = await query(sqlid)
 
-            const sqlId = 'select LAST_INSERT_ID() as id_powerbi from ansa.powerbi LIMIT 1'
-            const obj = await query(sqlId)
-            const sqlView = 'INSERT INTO ansa.viewpowerbi (id_powerbi, id_login, dateReg) values ( ?, ?, now() - interval 4 hour )'
-            await query(sqlView, [obj[0].id_powerbi, powerbi.id_login])
-
-            return true
+            return obj[0].id_powerbi
         } catch (error) {
             throw new InvalidArgumentError('El powerbi no se pudo insertar en la base de datos')
         }
@@ -48,7 +45,12 @@ class PowerBi {
 
     listBis() {
         try {
-            const sql = `SELECT US.name, BI.id_powerbi, BI.title, BI.url FROM ansa.powerbi BI, ansa.viewpowerbi VB, ansa.login LO, ansa.user US WHERE VB.id_powerbi = BI.id_powerbi and LO.id_login = VB.id_login and US.id_login = LO.id_login`
+            const sql = `SELECT BI.id_powerbi, BI.type, BI.type as typedesc, BI.title, BI.description, BI.url, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg, 
+            count(VB.id_powerbi) as count
+            FROM ansa.powerbi BI 
+            LEFT JOIN ansa.viewpowerbi VB ON VB.id_powerbi = BI.id_powerbi
+            group by BI.id_powerbi 
+            ORDER BY BI.dateReg DESC`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('El powerbi no pudo aparecer en la lista')

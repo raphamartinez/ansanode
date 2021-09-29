@@ -1,4 +1,5 @@
 const Controll = require('./accesscontrol')
+const { NotAuthorized } = require('../../models/error')
 
 const method = {
     read: {
@@ -25,11 +26,9 @@ module.exports = (entity, action) => (req, res, next) => {
     const actions = method[action]
     const permissionAll = permissionLogin[actions.all](entity)
     const permissionOnly = permissionLogin[actions.only](entity)
-
+    
     if (permissionAll.granted === false && permissionOnly.granted === false) {
-        res.status(403)
-        res.end()
-        return
+        throw new NotAuthorized('Acceso no autorizado al recurso solicitado.')
     }
 
     req.access = {

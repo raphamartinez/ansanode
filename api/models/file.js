@@ -30,7 +30,7 @@ class File {
         try {
             return Repositorie.view(id_file)
         } catch (error) {
-            throw new NotFound('Archivo')
+            throw new NotFound('Archivo no encontrado')
         }
     }
 
@@ -44,7 +44,7 @@ class File {
                     fs.unlinkSync(file.path)
                     await Repositorie.delete(id_file)
                   }else{
-                    throw new InvalidArgumentError('No se encontró el archivo, por lo que se puede eliminar.')
+                    throw new NotFound('No se encontró el archivo, por lo que se puede eliminar.')
                   }
             }else{
                 await Repositorie.delete(id_file)
@@ -54,7 +54,7 @@ class File {
 
         } catch (error) {
             if (error && error.code == 'ENOENT') {
-                throw new InvalidArgumentError('No se encontró el archivo, por lo que se puede eliminar.')
+                throw new NotFound('No se encontró el archivo, por lo que se puede eliminar.')
             } else {
                 throw new InvalidArgumentError('Se produjo un error al intentar eliminar el archivo.')
             }

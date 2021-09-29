@@ -30,5 +30,5 @@ class InvalidArgumentError extends Error {
   }
   
   
-  module.exports = { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized }
+module.exports = { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized }
   

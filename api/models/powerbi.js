@@ -5,8 +5,8 @@ class PowerBi {
 
     async insertPowerBi(powerbi) {
         try {
-            const result = await Repositorie.insert(powerbi)
-            return result
+            const id_powerbi = await Repositorie.insert(powerbi)
+            return id_powerbi
         } catch (error) {
             throw new InvalidArgumentError('No se pudo crear el powerbi.')
         }
@@ -96,7 +96,26 @@ class PowerBi {
 
     async listBis() {
         try {
-            return Repositorie.listBis()
+            const data = await Repositorie.listBis()
+
+            data.forEach(powerbi => {
+
+                switch (powerbi.type) {
+                    case 1: powerbi.typedesc = 'Informe'
+                        break
+
+                    case 2: powerbi.typedesc = 'Personal'
+                        break
+
+                    case 3: powerbi.typedesc = 'Seguridad - Vehículos'
+                        break
+
+                    case 4: powerbi.typedesc = 'Seguridad - Sucursales'
+                        break
+                }
+            })
+
+            return data
         } catch (error) {
             throw new InternalServerError('No se pudo ver powerbi.')
         }

@@ -5,7 +5,15 @@ const path = require('path')
 
 module.exports = app => {
 
-    app.post('/login', Middleware.local, async function ( req, res, next) {
+    app.all('/admin/*', Middleware.bearer, async function (req, res, next) {
+        try {
+            next()
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/login', Middleware.local, async function (req, res, next) {
         try {
             const id_login = req.login.id_login
             const token = await Login.generateTokens(id_login)
@@ -18,7 +26,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/logout', [Middleware.refresh, Middleware.bearer], async function ( req, res, next) {
+    app.post('/logout', [Middleware.refresh, Middleware.bearer], async function (req, res, next) {
         try {
             const token = req.token
             await Login.logout(token)
@@ -29,15 +37,7 @@ module.exports = app => {
 
     });
 
-    app.all('/admin/*', Middleware.bearer, async function ( req, res, next) {
-        try {
-            next()
-        } catch (err) {
-            next(err)
-        }
-    })
-
-    app.post('/insertLogin', Middleware.bearer, async function ( req, res, next) {
+    app.post('/insertLogin', Middleware.bearer, async function (req, res, next) {
         try {
             const data = req.body
             await Login.insertLogin(data)
@@ -47,20 +47,20 @@ module.exports = app => {
         }
     });
 
-    app.post('/forgotPassword', async function ( req, res, next) {
+    app.post('/forgotPassword', async function (req, res, next) {
         try {
             const mailenterprise = req.body.mail
             const login = await Login.forgotPassword(mailenterprise)
 
             History.insertHistory('Solicitud de restablecimiento de contraseña', login.id_login)
 
-            res.json({  url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
+            res.json({ url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
         } catch (err) {
             next(err)
         }
     });
 
-    app.get('/newPassword/:token', async function ( req, res, next) {
+    app.get('/newPassword/:token', async function (req, res, next) {
         try {
             res.render('password')
         } catch (err) {
@@ -68,20 +68,20 @@ module.exports = app => {
         }
     });
 
-    app.post('/resetPassword', async function ( req, res, next) {
+    app.post('/resetPassword', async function (req, res, next) {
         try {
             const token = req.body.token
             const password = req.body.password
             const id_login = await Login.changePassword(token, password)
 
             History.insertHistory('Contraseña alterada.', id_login)
-            res.json({  url: '../', message: 'Contraseña alterada con éxito!' })
+            res.json({ url: '../', message: 'Contraseña alterada con éxito!' })
         } catch (err) {
             next(err)
         }
     });
 
-    app.post('/refresh', Middleware.refresh, async function ( req, res, next) {
+    app.post('/refresh', Middleware.refresh, async function (req, res, next) {
         try {
             const token = await Login.generateTokens(req.login.id_login)
             res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken })
@@ -90,10 +90,10 @@ module.exports = app => {
         }
     });
 
-    app.post('/changepass', Middleware.bearer, async ( req, res, next) => {
+    app.post('/changepass', Middleware.bearer, async (req, res, next) => {
         try {
             const data = req.body.user
-            const result = await Login.updatePassword(data,data.id_login)
+            const result = await Login.updatePassword(data, data.id_login)
 
             History.insertHistory(`Contraseña alterada del usuario ${data.name}`, req.login.id_login)
 

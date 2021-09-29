@@ -4,10 +4,11 @@ const multer = require('multer')
 const multerConfig = require('../config/multer')
 const History = require('../models/history')
 const Authorization = require('../infrastructure/auth/authorization')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.post('/file', [Middleware.bearer, Authorization('file', 'create')], multer(multerConfig).single('file'), async ( req, res, next) => {
+    app.post('/file', [Middleware.bearer, Authorization('file', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
         try {
             const file = req.file
             const details = req.body
@@ -17,13 +18,15 @@ module.exports = app => {
             History.insertHistory(`Carga de archivo realizada - ${details.title}.`, req.login.id_login)
             const newfile = await File.view(id_file)
 
+            cachelist.delPrefix('file')
+
             res.json(newfile)
         } catch (err) {
             next(err)
         }
     })
 
-    app.post('/fileoffice', [Middleware.bearer, Authorization('file', 'create')], async ( req, res, next) => {
+    app.post('/fileoffice', [Middleware.bearer, Authorization('file', 'create')], async (req, res, next) => {
         try {
             const data = req.body.obj
 
@@ -32,13 +35,15 @@ module.exports = app => {
             History.insertHistory(`Carga de archivo realizada - ${data.title}.`, req.login.id_login)
             const newfile = await File.view(id_file)
 
+            cachelist.delPrefix('file')
+
             res.json(newfile)
         } catch (err) {
             next(err)
         }
     })
 
-    app.delete('/file/:id_file', [Middleware.bearer, Authorization('file', 'delete')], async ( req, res, next) => {
+    app.delete('/file/:id_file', [Middleware.bearer, Authorization('file', 'delete')], async (req, res, next) => {
         try {
             const id_file = req.params.id_file
 
@@ -46,21 +51,30 @@ module.exports = app => {
 
             History.insertHistory(`Archivo - ${file.title} eliminado!`, req.login.id_login)
 
+            cachelist.delPrefix('file')
+
             res.json(file)
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/files/:type/:title', [Middleware.bearer, Authorization('file', 'read')], async ( req, res, next) => {
+    app.get('/files/:type/:title', [Middleware.bearer, Authorization('file', 'read')], async (req, res, next) => {
         try {
+
+            const cached = await cachelist.searchValue(`file:${JSON.stringify(req.params)}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
 
             const file = {
                 type: req.params.type,
                 title: req.params.title
             }
 
-            const files = await File.list(file,req.login.id_login)
+            const files = await File.list(file, req.login.id_login)
+            cachelist.addCache(`file:${JSON.stringify(req.params)}`, JSON.stringify(files), 60 * 60 * 12)
 
             res.json(files)
         } catch (err) {
@@ -68,7 +82,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/file/:id_file', [Middleware.bearer, Authorization('file', 'read')], async ( req, res, next) => {
+    app.get('/file/:id_file', [Middleware.bearer, Authorization('file', 'read')], async (req, res, next) => {
         try {
             const id_file = req.params.id_file
 

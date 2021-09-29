@@ -1,6 +1,7 @@
 const Finance = require('../models/finance')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
@@ -9,6 +10,9 @@ module.exports = app => {
             const finance = req.body.finance
 
             await Finance.insert(finance)
+
+            cachelist.delPrefix('finance')
+
             res.status(201).json({ return: "guardado" })
         } catch (err) {
             next(err)
@@ -21,6 +25,9 @@ module.exports = app => {
             const id_finance = req.params.id_finance
 
             const result = await Finance.update(finance, id_finance)
+
+            cachelist.delPrefix('update')
+
             res.json(result)
         } catch (err) {
             next(err)
@@ -32,6 +39,9 @@ module.exports = app => {
             const id_finance = req.params.id_finance
 
             const result = await Finance.delete(id_finance)
+
+            cachelist.delPrefix('update')
+
             res.json(result)
         } catch (err) {
             next(err)
@@ -40,21 +50,21 @@ module.exports = app => {
 
     app.get('/finance/:clients/:offices/:overdue', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
         try {
+
+            const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
             const clients = req.params.clients
             const offices = req.params.offices
             const overdue = req.params.overdue
 
             const finances = await Finance.list(clients, offices, overdue)
-            res.json(finances)
-        } catch (err) {
-            next(err)
-        }
-    })
+            cachelist.addCache(`finance:${JSON.stringify(req.params)}`, JSON.stringify(finances), 60 * 60 * 3)
 
-    app.get('/clients', [Middleware.bearer, Authorization('clients', 'read')], async (req, res, next) => {
-        try {
-            const clients = await Finance.listDistinctClients()
-            res.json(clients)
+            res.json(finances)
         } catch (err) {
             next(err)
         }
@@ -78,21 +88,6 @@ module.exports = app => {
 
             const finances = await Finance.listClients(client, date)
             res.json(finances)
-        } catch (err) {
-            next(err)
-        }
-    })
-
-    app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.bearer, Authorization('sales', 'read')], async (req, res, next) => {
-        try {
-            let search = {
-                datestart: req.params.datestart,
-                dateend: req.params.dateend,
-                salesman: req.params.salesman,
-                office: req.params.office
-            }
-            const salesorders = await Finance.listSalesOrders(search)
-            res.json(salesorders)
         } catch (err) {
             next(err)
         }

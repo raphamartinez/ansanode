@@ -1,6 +1,7 @@
 const Stock = require('../models/stock')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
+const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
@@ -10,6 +11,9 @@ module.exports = app => {
             const stock = req.body.stock
 
             const items = await Stock.insert(stock, id_login)
+
+            cachelist.delPrefix('stock')
+
             res.status(201).json(items)
         } catch (err) {
             next(err)
@@ -18,9 +22,15 @@ module.exports = app => {
 
     app.get('/stocks/:id_login', [Middleware.bearer,  Authorization('stock', 'read')], async ( req, res, next) => {
         try {
-            const id_login = req.params.id_login
+            const cached = await cachelist.searchValue(`stock:id_login:${req.params.id_login}`)
 
-            const stock = await Stock.list(id_login)
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
+            const stock = await Stock.list(req.params.id_login)
+            cachelist.addCache(`stock:id_login:${req.params.id_login}`, JSON.stringify(stock), 60 * 60 * 3)
+
 
             res.json(stock)
         } catch (err) {
@@ -33,6 +43,8 @@ module.exports = app => {
             const id_stock = req.params.id_stock
 
             await Stock.delete(id_stock)
+
+            cachelist.delPrefix('stock')
 
             res.json(id_stock)
         } catch (err) {

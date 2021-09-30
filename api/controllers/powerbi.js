@@ -1,5 +1,4 @@
 const PowerBi = require('../models/powerbi')
-const ViewPowerBi = require('../models/viewpowerbi')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
@@ -76,7 +75,6 @@ module.exports = app => {
         }
     })
 
-
     app.get('/powerbi/:id', [Middleware.bearer, Authorization('powerbi', 'read')], async (req, res, next) => {
         try {
             const id_powerbi = req.params.id
@@ -98,20 +96,6 @@ module.exports = app => {
             res.status(201).json(id_powerbi)
         } catch (err) {
             next(err)
-        }
-    })
-
-    app.post('/powerbiview', Middleware.bearer, async (req, res, next) => {
-        try {
-            const users = req.body.users
-            const id_powerbi = req.body.id_powerbi
-            await ViewPowerBi.insertPowerBi(users, id_powerbi)
-
-            cachelist.delPrefix('powerbi')
-
-            res.status(200).json({ msg: `PowerBi agregado con éxito!` })
-        } catch (error) {
-            next(error)
         }
     })
 

@@ -905,10 +905,17 @@ async function deletePowerBi(event) {
     }
 }
 
+function adjustModalDatatable() {
+    $('#modalAddBiUser').on('shown.bs.modal', function () {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    })
+}
+
 window.modalAddBiUser = modalAddBiUser
 async function modalAddBiUser(event) {
     event.preventDefault()
     let modal = document.querySelector('[data-modal]')
+    modal.innerHTML = ""
 
     const btn = event.currentTarget
     const id_powerbi = btn.getAttribute("data-id_powerbi")
@@ -924,7 +931,45 @@ async function modalAddBiUser(event) {
 
     $('#userselect').selectpicker()
 
+    const usersbi = await Connection.noBody(`powerbiview/${id_powerbi}`, 'GET')
+
+    let dtusers = [];
+
+    usersbi.forEach(obj => {
+        const field = ViewPowerBi.lineUsersBi(obj, id_powerbi)
+        dtusers.push(field)
+    });
+
     $('#modalAddBiUser').modal('show')
+
+    if ($.fn.DataTable.isDataTable('#tableusers')) {
+        $('#tableusers').dataTable().fnClearTable();
+        $('#tableusers').dataTable().fnDestroy();
+        $('#tableusers').empty();
+    }
+
+    $("#tableusers").DataTable({
+        data: dtusers,
+        columns: [
+            { title: "Opciones" },
+            { title: "Usuario" }
+        ],
+        paging: false,
+        ordering: true,
+        info: false,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: false,
+        fixedHeader: false,
+        searching: false,
+        responsive: true
+    })
+
+    adjustModalDatatable()
+
 }
 
 window.addBiUser = addBiUser
@@ -938,6 +983,100 @@ async function addBiUser(event) {
 
     await Connection.body('powerbiview', { id_powerbi, users }, 'POST')
 
+    document.getElementById(`row${id_powerbi}`).innerHTML = users.length
+
     $('#modalAddBiUser').modal('hide')
     alert('Enlace del PowerBi agregado con éxito a los usuarios!')
+}
+
+window.deleteAccessPowerbi = deleteAccessPowerbi
+async function deleteAccessPowerbi(event) {
+    try {
+        event.preventDefault()
+
+        const btn = event.currentTarget
+        const id_viewpowerbi = btn.getAttribute("data-id_viewpowerbi")
+        const id_powerbi = btn.getAttribute("data-id_powerbi")
+
+        await Connection.noBody(`powerbiview/${id_viewpowerbi}`, 'DELETE')
+
+        const table = $('#tableusers').DataTable();
+
+        table
+            .row(event.path[3])
+            .remove()
+            .draw();
+
+        if (document.getElementById(`row${id_powerbi}`).innerHTML > 0) {
+            document.getElementById(`row${id_powerbi}`).innerHTML = document.getElementById(`row${id_powerbi}`).innerHTML - 1
+        }
+
+        alert('Acceso caducado con éxito!')
+    } catch (error) {
+        alert('Algo salió mal, informa al sector de TI')
+    }
+}
+
+
+
+
+function list(dtview) {
+    let user = JSON.parse(sessionStorage.getItem('user'))
+
+    let perfil = user.perfil
+
+    if (perfil !== 1) {
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false
+            }
+            )
+        })
+    } else {
+        $(document).ready(function () {
+            $("#dataTable").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Opciones" },
+                    { title: "Nombre" },
+                    { title: "Tipo" },
+                    { title: "Fecha de Registro" }
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel', 'pdf', 'print'
+                ]
+            }
+            )
+        })
+    }
 }

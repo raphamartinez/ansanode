@@ -11,6 +11,7 @@ class Mail {
 
             return result[0].id_mailpowerbi
         } catch (error) {
+            console.log(error);
             throw new InvalidArgumentError('No se pudo insertar el archivo en la base de datos')
         }
     }

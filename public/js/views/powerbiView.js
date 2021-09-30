@@ -117,7 +117,7 @@ const listPowerBiAdmin = (powerbi, id_login) => {
         <a onclick="viewBi(event)" href="" data-id_login="${id_login}" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600; padding: 2px;"></i></a>
         <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-description="${powerbi.description}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32; padding: 2px;"></i></a>
         <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>
-        <a onclick="modalAddBiUser(event)" data-id_powerbi="${powerbi.id_powerbi}" ><i class="fas fa-users" style="color:#000000; padding: 2px;"><span class="badge badge-dark">${powerbi.count}</span></i></a>
+        <a onclick="modalAddBiUser(event)" data-id_powerbi="${powerbi.id_powerbi}" ><i class="fas fa-users" style="color:#000000; padding: 2px;"><span id="row${powerbi.id_powerbi}"  class="badge badge-dark">${powerbi.count}</span></i></a>
         `,
         `${powerbi.title}`,
         `${powerbi.typedesc}`,
@@ -197,11 +197,11 @@ const showModalPbiInsert = () => {
 const modalAddBiUser = (id_powerbi) => {
     const div = document.createElement('div')
 
-    const content = `     <div class="modal fade" id="modalAddBiUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    const content = `<div class="modal fade" id="modalAddBiUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Enlace Informe al Usuario</h5>
+                <h5 class="modal-title" id="exampleModalLabel">Listado de Accesos</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">x</span>
                 </button>
@@ -209,11 +209,18 @@ const modalAddBiUser = (id_powerbi) => {
             <form>
                 <div class="modal-body">
                     <div class="form-row">
-                        <div class="form-group col-md-12"> 
-                        <select title="Usuarios" multiple class="selectpicker form-control" name="userselect" id="userselect" required>
-                </select>
-                    </div> 
-                </div>
+                        <div class="form-group col-md-12 text-center"> 
+                            <h6>Nuevo accesos</h6>
+                            <select title="Usuarios" multiple class="selectpicker form-control" name="userselect" id="userselect" required>
+                            </select>
+                            <hr>
+                        </div> 
+                        <div class="form-group col-md-12 text-center"> 
+                            <h6>Usuarios con acceso</h6>
+                            <table class="table table-bordered text-center" id="tableusers" width="100%" cellspacing="0"></table>
+                        </div> 
+                    </div>
+                </div>    
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
                     <button data-id_powerbi="${id_powerbi}" type="submit" onclick="addBiUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Enlace</i></button>   
@@ -260,13 +267,20 @@ const buttons = () => {
     return divbtn
 }
 
+const lineUsersBi = (user, id_powerbi) => {
+    const content = [
+        `<a onclick="deleteAccessPowerbi(event)" data-id_powerbi="${id_powerbi}" data-id_viewpowerbi="${user.id_viewpowerbi}" ><i class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+        `${user.name}`
+    ]
 
-
+    return content
+}
 
 export const ViewPowerBi = {
     showSimplePowerBI,
     showPowerBI,
     listPowerBi,
+    lineUsersBi,
     listPowerBiAdmin,
     showModalEdit,
     showModalDelete,

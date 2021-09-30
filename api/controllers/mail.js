@@ -36,7 +36,7 @@ module.exports = app => {
     app.post('/mail', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const mail = req.body.mailschedule
-            const id_mailpowerbi = await Mail.insertMailPowerBi(mail)
+            const id_mailpowerbi = await Mail.insertMailPowerBi(mail, req.login.id_login)
             await Mail.insertMailAttachment(mail.attachment, id_mailpowerbi)
             await Mail.insertMailScheduling(mail.schedule, id_mailpowerbi)
 

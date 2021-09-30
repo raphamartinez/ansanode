@@ -12,9 +12,17 @@ class ViewPowerBi {
         }
     }
 
-    list() {
+    list(id_powerbi) {
         try {
-            const sql = `SELECT id_viewpowerbi, id_powerbi, id_login, dateReg FROM viewpowerbi `
+            let sql = `SELECT vp.id_viewpowerbi, us.name 
+            FROM viewpowerbi vp
+            INNER JOIN user us ON vp.id_login = us.id_login `
+
+            sql += `WHERE vp.id_powerbi = ${id_powerbi} `
+
+            sql+= `GROUP BY vp.id_viewpowerbi
+            ORDER BY vp.dateReg DESC`
+
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los powerbi')
@@ -23,8 +31,8 @@ class ViewPowerBi {
 
     async delete(id_viewpowerbi) {
         try {
-            const sql = `DELETE from viewpowerbi WHERE id_viewpowerbi = ${id_viewpowerbi}`
-            const result = await query(sql)
+            const sql = `DELETE from viewpowerbi WHERE id_viewpowerbi = ?`
+            const result = await query(sql, id_viewpowerbi)
             return result[0]
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el powerbi en la base de datos')

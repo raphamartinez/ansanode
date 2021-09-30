@@ -4,6 +4,7 @@ require('events').EventEmitter.prototype._maxListeners = 100;
 const customExpress = require('./api/config/customExpress')
 const express = require('express')
 const path = require('path')
+const jwt = require('jsonwebtoken')
 const { job, jobHbs, jobMail, jobGoalLine, jobReceivable } = require('./api/models/job')
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 // const logger = require('./api/logger/pino')
@@ -21,7 +22,6 @@ app.engine('html', require('ejs').renderFile)
 app.set('view engine', 'html')
 
 app.listen(3000, () => {
-  // logger.info('Server Started')
 
   app.use(express.static(__dirname + '/public'))
   app.use(express.static(__dirname + '/views'))
@@ -40,40 +40,39 @@ app.listen(3000, () => {
   }
 });
 
-app.use((error, req, res, next) => {
+app.use((err, req, res, next) => {
+
   let status = 500
   const body = {
     message: 'Hubo un problema al realizar la operación. Intenta más tarde'
   }
 
-  if (error instanceof NotFound) {
+  if (err instanceof NotFound) {
     status = 404
-    body.dateExp = error.dateExp
+    body.dateExp = err.dateExp
   }
 
-  if (error instanceof NotAuthorized) {
+  if (err instanceof NotAuthorized) {
     status = 401
-    body.dateExp = error.dateExp
+    body.dateExp = err.dateExp
   }
 
-  if (error instanceof InvalidArgumentError) {
+  if (err instanceof InvalidArgumentError) {
     status = 400
   }
 
-  if (error instanceof jwt.JsonWebTokenError) {
+  if (err instanceof jwt.JsonWebTokenError) {
     status = 401
   }
 
-  if (error instanceof jwt.TokenExpiredError) {
+  if (err instanceof jwt.TokenExpiredError) {
     status = 401
-    body.dateExp = error.dateExp
+    body.dateExp = err.dateExp
   }
-
-
-  // logger.error({status, body})
 
   res.status(status)
   res.json(body)
+
 })
 
 // Survey.ListResponse()

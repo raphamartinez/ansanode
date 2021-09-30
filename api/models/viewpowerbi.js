@@ -21,7 +21,7 @@ class ViewPowerBi {
         }
     }
 
-    async deletePowerBi(id_viewpowerbi) {
+    async delete(id_viewpowerbi) {
         try {
             const result = await Repositorie.delete(id_viewpowerbi)
             return result
@@ -30,9 +30,9 @@ class ViewPowerBi {
         }
     }
 
-    listPowerBi() {
+    listPowerBi(id_powerbi) {
         try {
-            return Repositorie.list()
+            return Repositorie.list(id_powerbi)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los powerbi.')
         }

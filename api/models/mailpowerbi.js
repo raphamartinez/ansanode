@@ -8,9 +8,9 @@ const PDFMerger = require('pdf-merger-js');
 
 class MailPowerBi {
 
-    async insertMailPowerBi(mail) {
+    async insertMailPowerBi(mail, id_login) {
         try {
-            const id_mailpowerbi = await Repositorie.insertMail(mail, req.login.id_login)
+            const id_mailpowerbi = await Repositorie.insertMail(mail, id_login)
 
             return id_mailpowerbi
         } catch (error) {

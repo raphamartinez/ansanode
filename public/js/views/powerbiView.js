@@ -276,6 +276,53 @@ const lineUsersBi = (user, id_powerbi) => {
     return content
 }
 
+const modalAddBisUser = (id_login) => {
+    const div = document.createElement('div')
+
+    const content = `     <div class="modal fade" id="addpowerbi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Agregar Informes</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">x</span>
+                </button>
+            </div>
+            <form>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12"> 
+                        <select title="Seleccione un informe para agregar al usuario" class="selectpicker form-control" name="powerbisselect" id="powerbisselect" multiple required>
+                </select>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button data-id_login="${id_login}" type="submit" onclick="addPowerBisUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></button>   
+                </div>
+            </form>
+        </div>
+    </div>
+</div>`
+
+    div.innerHTML = content
+
+    return div
+
+}
+
+const optionBi = (powerbi) => {
+    const line = document.createElement('option')
+
+    line.value = powerbi.id_powerbi
+
+    const content = ` ${powerbi.title}</option>`
+
+    line.innerHTML = content
+
+    return line
+}
+
 export const ViewPowerBi = {
     showSimplePowerBI,
     showPowerBI,
@@ -288,5 +335,7 @@ export const ViewPowerBi = {
     showModalPbiInsert,
     buttons,
     optionUser,
-    modalAddBiUser
+    optionBi,
+    modalAddBiUser,
+    modalAddBisUser
 }

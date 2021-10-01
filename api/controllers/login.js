@@ -9,6 +9,7 @@ module.exports = app => {
         try {
             next()
         } catch (err) {
+            console.log(err);
             next(err)
         }
     })

@@ -21,6 +21,24 @@ class ViewPowerBi {
         }
     }
 
+    async insertPowerBis(powerbis, id_login) {
+        try {
+
+            powerbis.forEach(async obj => {
+                const viewpowerbi = {
+                    id_login: id_login,
+                    id_powerbi: obj
+                }
+
+                Repositorie.insert(viewpowerbi)
+            })
+
+            return true
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo crear el powerbi.')
+        }
+    }
+
     async delete(id_viewpowerbi) {
         try {
             const result = await Repositorie.delete(id_viewpowerbi)

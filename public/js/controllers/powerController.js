@@ -657,19 +657,6 @@ function viewBi(event) {
     Connection.body('history', { description: `Acceso de Informe - ${description}` }, 'POST')
 }
 
-window.addModalPowerBi = addModalPowerBi
-
-async function addModalPowerBi(event) {
-    event.preventDefault()
-
-    let modal = document.querySelector('[data-modal]')
-    modal.innerHTML = ``
-    modal.appendChild(ViewPowerBi.showModalPbiInsert())
-
-    $('#addpowerbi').modal('show')
-}
-
-
 async function addPowerBi(event) {
     try {
         event.preventDefault()
@@ -1078,5 +1065,79 @@ function list(dtview) {
             }
             )
         })
+    }
+}
+
+window.addModalPowerBi = addModalPowerBi
+
+async function addModalPowerBi(event) {
+    event.preventDefault()
+
+    const btn = event.currentTarget
+    const id_login = btn.getAttribute("data-id_login")
+
+
+    let modal = document.querySelector('[data-modal]')
+    modal.innerHTML = ``
+
+    modal.appendChild(ViewPowerBi.modalAddBisUser(id_login))
+
+    const data = await Connection.noBody(`powerbisadmin`, 'GET')
+    
+    const powerbisselect = document.getElementById('powerbisselect')
+
+    data.forEach(powerbi => {
+        powerbisselect.appendChild(ViewPowerBi.optionBi(powerbi))
+    });
+
+    $("#powerbisselect").selectpicker();
+
+    $('#addpowerbi').modal('show')
+}
+
+window.addPowerBisUser = addPowerBisUser
+async function addPowerBisUser(event) {
+    try {
+        event.preventDefault()
+        $('#addpowerbi').modal('hide')
+
+        let loading = document.querySelector('[data-loading]')
+        loading.innerHTML = `
+        <div class="spinner-border text-primary" role="status">
+          <span class="sr-only">Loading...</span>
+        </div>
+        `
+
+        const btn = event.currentTarget
+        const id_login = btn.getAttribute("data-id_login")
+
+        const powerbiselect = document.querySelectorAll('#powerbisselect option:checked')
+        const powerbi = Array.from(powerbiselect).map(el => `${el.value}`);
+
+        if(powerbi.length === 0 ) return alert("Debe seleccionar cualquier informe para agregar.")
+
+        const obj = await Connection.body('powerbisview', { powerbi, id_login }, 'POST')
+
+        powerbi.forEach(obj => {
+
+            const row = ViewPowerBi.listPowerBiAdmin(obj)
+
+            const table = $('#powerbiuserlist').DataTable();
+    
+            const rowNode = table.row.add(row)
+                .draw()
+                .node();
+    
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
+        })
+
+
+        loading.innerHTML = " "
+        alert(obj.msg)
+    } catch (error) {
+        loading.innerHTML = " "
+        alert('Algo salió mal, informa al sector de TI')
     }
 }

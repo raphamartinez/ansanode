@@ -18,6 +18,20 @@ module.exports = app => {
         }
     })
 
+    app.post('/powerbisview', Middleware.bearer, async (req, res, next) => {
+        try {
+            const powerbis = req.body.powerbi
+            const id_login = req.body.id_login
+            await ViewPowerBi.insertPowerBis(powerbis, id_login)
+
+            cachelist.delPrefix('powerbi')
+
+            res.status(200).json({ msg: `Informes agregados con éxito ao usuario!` })
+        } catch (error) {
+            next(error)
+        }
+    })
+
     app.get('/powerbiview/:id_powerbi', Middleware.bearer, async (req, res, next) => {
         try {
             

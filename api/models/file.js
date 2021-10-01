@@ -3,6 +3,9 @@ const fs = require('fs')
 const History = require('./history')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
+/**
+ * 
+ */
 class File {
 
     async save(file, details, id_login) {

@@ -402,7 +402,11 @@ const viewUser = (user) => {
                 <div class="card-header text-white bg-secondary"><strong>Acceso a PowerBi:</strong></div>
                 <div class="form-row p-3">
                     <div class="form-group col-md-1.5">
-
+                    <button data-btn-powerbi onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
+                    data-id_login="${user.id_login}" data-name="${user.name}" type="button"
+                    class="btn btn-success">
+                    <i class="fas fa-plus"></i> Nuevo Informe
+                </button>
                     </div>
                 </div>
             </div>
@@ -426,11 +430,7 @@ const viewUser = (user) => {
     </div>
 </div>
     `
-//     <button data-btn-powerbi onclick="addModalPowerBi(event)" data-toggle="modal" data-target="#addpowerbi" href=""
-//     data-id_login="${user.id_login}" data-name="${user.name}" type="button"
-//     class="btn btn-success">
-//     <i class="fas fa-plus"></i> Nuevo Informe
-// </button>
+
     return content
 }
 

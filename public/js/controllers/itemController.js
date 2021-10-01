@@ -466,7 +466,8 @@ async function listGoodyear() {
             divoffice.appendChild(View.listOffice(office))
         });
         $('#office').selectpicker();
-        
+        $('#itemgroup').selectpicker();
+
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
@@ -495,11 +496,14 @@ async function searchGoodyear(event) {
         const dateend = btn.form.dateend.value
         const arroffice = document.querySelectorAll('#office option:checked')
         const office = Array.from(arroffice).map(el => `'${el.value}'`);
+        const arritemgroup = document.querySelectorAll('#itemgroup option:checked')
+        const itemgroup = Array.from(arritemgroup).map(el => `'${el.value}'`);
 
         const search = {
             datestart: datestart,
             dateend: dateend,
-            office: office
+            office: office,
+            itemgroup: itemgroup
         }
 
         if(!datestart || !dateend) return alert("¡El período es obligatorio!")
@@ -531,6 +535,7 @@ async function searchGoodyear(event) {
 
         text.innerHTML += `<br>Filtros<br>`
         if (office.length > 0) text.innerHTML += `<br>Sucursal: ${office}<br>`
+        if (itemgroup.length > 0) text.innerHTML += `<br>Grupo de Item: ${itemgroup}<br>`
         if (datestart && dateend) text.innerHTML += `Curso del Tiempo ${datestart} até ${dateend}<br>`
 
         title.appendChild(text)

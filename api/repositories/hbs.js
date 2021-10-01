@@ -289,7 +289,7 @@ class Hbs {
             TRUNCATE(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total)),2) AS totalUsd,
             TRUNCATE(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal)),2) AS subtotalUsd,`
 
-            sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total))),2)
+            sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal))),2)
                     FROM SalesOrder SO
                     WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
                     AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
@@ -469,8 +469,9 @@ class Hbs {
             INNER JOIN Stock St ON I.Code = St.ArtCode
             INNER JOIN StockDepo Sd ON St.StockDepo = Sd.Code
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE (I.Closed = 0 OR I.Closed IS NULL )
-            AND Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO') `
+            WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
+
+            if (search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
 
             if (search.office.length > 0) sql += `AND Sd.Office IN (${search.office}) `
 
@@ -493,8 +494,9 @@ class Hbs {
             LEFT JOIN InvoiceItemRow It ON I.Code = It.ArtCode
             LEFT JOIN Invoice Iv ON Iv.internalId = It.masterId
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE Ig.Name IN ('CAMION', 'PASSEIO', 'UTILITARIO') `
+            WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
 
+            if (search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
             if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}' `
             if (search.office.length > 0) sql += `AND Iv.Office IN (${search.office}) `
 

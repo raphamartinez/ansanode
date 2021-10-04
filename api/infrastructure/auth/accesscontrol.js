@@ -38,10 +38,6 @@ controll
 
 controll
     .grant('4')
-    .readOwn('mail')
-    .createAny('mail')
-    .deleteOwn('mail')
-    .updateOwn('mail')
     .readAny('goal')
     .createAny('goal')
     .deleteAny('goal')

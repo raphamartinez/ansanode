@@ -29,7 +29,10 @@ btn.addEventListener('click', async (event) => {
     if (user.perfil !== 1) {
 
         let configSalesman = document.querySelector('[data-config-salesman]')
-        configSalesman.innerHTML = ``
+        configSalesman.remove()
+
+        let configMail = document.querySelector('[data-config-mail]')
+        configMail.remove()
 
     }
 

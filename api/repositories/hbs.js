@@ -480,6 +480,8 @@ class Hbs {
             GROUP BY I.Code
             ORDER BY I.Code`
 
+            console.log(sql);
+
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar articulos goodyear')
@@ -504,6 +506,8 @@ class Hbs {
             AND I.SupCode = '331'         
             GROUP BY I.Code
             ORDER BY I.Code`
+
+            console.log(sql);
 
             return queryhbs(sql)
         } catch (error) {

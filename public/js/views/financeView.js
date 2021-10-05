@@ -6,7 +6,7 @@ const modalsearch = () => {
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Agregar acceso al depósito</h5>
+                <h5 class="modal-title">Listado de Cobranza</h5>
                 <button class="close" type="button" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">x</span>
                 </button>
@@ -19,8 +19,7 @@ const modalsearch = () => {
                             </select>
                         </div> 
                         <div class="form-group col-md-6">
-                            <select multiple title="Clientes" class="selectpicker form-control" name="selectclients " id="selectclients" required>
-                            </select>
+                            <input placeholder="Clientes" class="form-control" name="selectclients" id="selectclients" required />
                         </div> 
                         <div class="form-group text-center col-md-12 ">
                             <h8>Buscar apenas clientes com facturas vencidas?</h8>

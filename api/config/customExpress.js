@@ -37,8 +37,6 @@ module.exports = () => {
 
   app.use(express.static(__dirname + '/public'))
   app.use(express.static(__dirname + '/views'))
-  app.use(cors())
-
 
   app.use((req, res, next) => {
     res.set('X-Powered-By', 'PHP/7.1.7');

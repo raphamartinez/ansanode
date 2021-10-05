@@ -37,12 +37,8 @@ btnFinance.addEventListener('click', async (event) => {
         cardHistory.style.display = 'none';
 
 
-        const selectclients = document.getElementById('selectclients')
         const clients = await Connection.noBody('clients', 'GET')
-
-        clients.forEach(obj => {
-            selectclients.appendChild(ViewFinance.listClients(obj))
-        });
+        autocompleteclients(document.getElementById("selectclients"), clients);
 
         const selectoffice = document.getElementById('selectoffice')
         const offices = await Connection.noBody('offices', 'GET')
@@ -52,7 +48,6 @@ btnFinance.addEventListener('click', async (event) => {
         });
 
         document.getElementById("overdueyes").checked = true;
-        $('#selectclients').selectpicker();
         $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
         loading.innerHTML = ``
@@ -61,6 +56,75 @@ btnFinance.addEventListener('click', async (event) => {
         alert(error)
     }
 })
+
+
+function autocompleteclients(inp, arr) {
+    var currentFocus;
+    inp.addEventListener("input", function (e) {
+        var a, b, i, val = this.value;
+        closeAllLists();
+        if (!val) { return false; }
+        currentFocus = -1;
+        a = document.createElement("DIV");
+        a.setAttribute("id", this.id + "autocomplete-list");
+        a.setAttribute("class", "autocomplete-items");
+        this.parentNode.appendChild(a);
+        for (i = 0; i < arr.length; i++) {
+            if (arr[i].CustName.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+                b = document.createElement("DIV");
+                b.innerHTML = "<strong>" + arr[i].CustName.substr(0, val.length) + "</strong>";
+                b.innerHTML += arr[i].CustName.substr(val.length);
+                b.innerHTML += `<input type='hidden' value='${arr[i].CustCode}'>`;
+                b.addEventListener("click", function (e) {
+                    inp.value = this.getElementsByTagName("input")[0].value;
+                    closeAllLists();
+                });
+                a.appendChild(b);
+            }
+        }
+    });
+
+    inp.addEventListener("keydown", function (e) {
+        var x = document.getElementById(this.id + "autocomplete-list");
+        if (x) x = x.getElementsByTagName("div");
+        if (e.keyCode == 40) {
+            currentFocus++;
+            addActive(x);
+        } else if (e.keyCode == 38) {
+            currentFocus--;
+            addActive(x);
+        } else if (e.keyCode == 13) {
+            e.preventDefault();
+            if (currentFocus > -1) {
+                if (x) x[currentFocus].click();
+            }
+        }
+    });
+    function addActive(x) {
+        if (!x) return false;
+        removeActive(x);
+        if (currentFocus >= x.length) currentFocus = 0;
+        if (currentFocus < 0) currentFocus = (x.length - 1);
+        x[currentFocus].classList.add("autocomplete-active");
+    }
+    function removeActive(x) {
+        for (var i = 0; i < x.length; i++) {
+            x[i].classList.remove("autocomplete-active");
+        }
+    }
+    function closeAllLists(elmnt) {
+        var x = document.getElementsByClassName("autocomplete-items");
+        for (var i = 0; i < x.length; i++) {
+            if (elmnt != x[i] && elmnt != inp) {
+                x[i].parentNode.removeChild(x[i]);
+            }
+        }
+    }
+    document.addEventListener("click", function (e) {
+        closeAllLists(e.target);
+    });
+}
+
 
 window.listFinance = listFinance
 
@@ -97,12 +161,8 @@ async function listFinance(event) {
         cardHistory.style.display = 'none';
 
 
-        const selectclients = document.getElementById('selectclients')
         const clients = await Connection.noBody('clients', 'GET')
-
-        clients.forEach(obj => {
-            selectclients.appendChild(ViewFinance.listClients(obj))
-        });
+        autocompleteclients(document.getElementById("selectclients"), clients);
 
         const selectoffice = document.getElementById('selectoffice')
         const offices = await Connection.noBody('offices', 'GET')
@@ -136,9 +196,8 @@ async function searchFinance(event) {
     `
     try {
 
-        const selectclients = document.querySelectorAll('#selectclients option:checked')
-        const clients = Array.from(selectclients).map(el => `'${el.value}'`);
-        if (clients.length === 0) clients[0] = "ALL"
+        let clients = document.querySelector('#selectclients').value
+        if (!clients) clients = "ALL"
 
         const selectoffice = document.querySelectorAll('#selectoffice option:checked')
         const offices = Array.from(selectoffice).map(el => `'${el.value}'`);

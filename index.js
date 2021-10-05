@@ -12,7 +12,6 @@ const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = r
 // const connection = require('./api/infrastructure/database/connection')
 // const tables = require('./api/infrastructure/database/tables')
 const Survey = require('./api/models/surveymonkey')
-// const GoalLine = require('./api/models/goalline')
 
 process.setMaxListeners(100)
 const app = customExpress()

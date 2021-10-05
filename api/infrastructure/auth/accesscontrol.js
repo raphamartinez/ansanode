@@ -91,6 +91,7 @@ controll
     .updateAny('user')
     .createAny('user')
     .readAny('user')
+    .readAny('clients')
     .readAny('sales')
 
 module.exports = controll

@@ -86,6 +86,7 @@ module.exports = app => {
     app.post('/salesman', [Middleware.bearer, Authorization('salesman', 'create')], async (req, res, next) => {
         try {
             const data = req.body.sellers
+            console.log(data);
             const result = await Seller.insert(data)
 
             cachelist.delPrefix('sellers')

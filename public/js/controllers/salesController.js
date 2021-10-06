@@ -48,8 +48,8 @@ btnSalesOrder.addEventListener('click', async (event) => {
         offices.forEach(office => {
             selectOffice.appendChild(ViewSales.optionOffice(office))
         })
-        $('#selectsellers').selectpicker();
-        $('#selectoffice').selectpicker();
+        await $('#selectsellers').selectpicker();
+        await $('#selectoffice').selectpicker();
         $('#searchSalesOrder').modal('show')
 
     } catch (error) {

@@ -36,9 +36,28 @@ btnFinance.addEventListener('click', async (event) => {
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
-
         const clients = await Connection.noBody('clients', 'GET')
-        autocompleteclients(document.getElementById("selectclients"), clients);
+
+        let dtview = []
+        clients.forEach(client => {
+            let obj = {
+                label: client.CustName,
+                value: `${client.CustCode}`
+            }
+            dtview.push(obj)
+        })
+
+        new SelectPure(".select-pure", {
+            options: dtview,
+            multiple: true,
+            autocomplete: true,
+            icon: "fa fa-times",
+            inlineIcon: false,
+            placeholder: false
+        });
+
+        document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
+
 
         const selectoffice = document.getElementById('selectoffice')
         const offices = await Connection.noBody('offices', 'GET')
@@ -160,9 +179,30 @@ async function listFinance(event) {
         loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
-
         const clients = await Connection.noBody('clients', 'GET')
-        autocompleteclients(document.getElementById("selectclients"), clients);
+
+        let dtview = []
+        clients.forEach(client => {
+            let obj = {
+                label: client.CustName,
+                value: `${client.CustCode}`
+            }
+            dtview.push(obj)
+        })
+
+        new SelectPure(".select-pure", {
+            placeholder: "Clientes",
+            options: dtview,
+            multiple: true,
+            autocomplete: true,
+            icon: "fa fa-times",
+            inlineIcon: false,
+            onChange: event => {
+                cleanPlaceholder(event)
+             }
+        });
+
+        // document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
 
         const selectoffice = document.getElementById('selectoffice')
         const offices = await Connection.noBody('offices', 'GET')
@@ -172,7 +212,6 @@ async function listFinance(event) {
         });
 
         document.getElementById("overdueyes").checked = true;
-        $('#selectclients').selectpicker();
         $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
         loading.innerHTML = ``
@@ -196,8 +235,9 @@ async function searchFinance(event) {
     `
     try {
 
-        let clients = document.querySelector('#selectclients').value
-        if (!clients) clients = "ALL"
+        const selectclients = document.querySelectorAll('.select-pure__option--selected')
+        const clients = Array.from(selectclients).map(el => `'${el.getAttribute('data-value')}'`);
+        if (clients.length === 0) clients[0] = "ALL"
 
         const selectoffice = document.querySelectorAll('#selectoffice option:checked')
         const offices = Array.from(selectoffice).map(el => `'${el.value}'`);
@@ -822,7 +862,7 @@ function copyLineFinance(event) {
                     }
 
                     Connection.body(`finance`, { finance }, 'POST')
-                    
+
                     element.children[11].children[0].disabled = true
                 }
             }

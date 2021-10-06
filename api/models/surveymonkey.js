@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const fs = require('fs');
 const path = require('path')
 const puppeteer = require('puppeteer')
+const Repositorie = require('../repositories/surveymonkey')
 
 const pluck = (object, ...keys) => {
 
@@ -22,7 +23,7 @@ class Surveymonkey {
             const api = new SurveyMonkey(accessToken)
             // const responses = await api.getSurvayResponses('285770536')
 
-            for (var id_page = 2; id_page <= 24; id_page++) {
+            for (var id_page = 1; id_page <= 24; id_page++) {
                 console.log(id_page);
                 const data = await fetch(`https://api.surveymonkey.com/v3/surveys/285770536/responses?page=${id_page}&per_page=50`, {
                     method: 'GET',
@@ -36,17 +37,22 @@ class Surveymonkey {
                     headless: true,
                     ignoreHTTPSErrors: true
                 })
-
+console.log(responses);
                 responses.data.forEach(async obj => {
+                    let arrdata = []
 
                     const response = await api.getSurvayResponseDetails('285770536', obj.id)
                     if (response.pages[0].questions[0].answers[0] !== undefined && response.pages[20].questions[0]) {
+
                         const asset = {
                             name: response.pages[1].questions[0].answers[0].text,
                             plate: response.pages[0].questions[1].answers[0].text,
                             url: response.pages[20].questions[0].answers[0].download_url,
                             responseId: obj.id
                         }
+                        arrdata.push(asset)
+
+
                         // https.get(asset.url, resp => resp.pipe(fs.createWriteStream(`./tmp/ativos/ativo_${asset.plate}.jpg`)));
                         // request({ url: asset.url, encoding: null }, (err, resp, buffer) => {
                         //     fs.writeFile(`./tmp/ativos/ativo_${asset.plate}.jpg`,buffer, (error) => {
@@ -57,6 +63,7 @@ class Surveymonkey {
                         //         }
                         //     });
                         // });
+
                         const page = await browser.newPage()
                         page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 11_0 like Mac OS X) AppleWebKit/604.1.38 (KHTML, like Gecko) Version/11.0 Mobile/15A372 Safari/604.1');
 
@@ -66,35 +73,35 @@ class Surveymonkey {
                         const cookies = [
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1696100306,
+                                "expirationDate": 1633541747,
                                 "hostOnly": false,
                                 "httpOnly": false,
-                                "name": "_ga",
+                                "name": "_dc_gtm_UA-56526-1",
                                 "path": "/",
-                                "sameSite": "no_restriction",
-                                "secure": true,
+                                "sameSite": "unspecified",
+                                "secure": false,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "GA1.1.1503069348.1633027992",
+                                "value": "1",
                                 "id": 1
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1696100306,
+                                "expirationDate": 1665098639,
                                 "hostOnly": false,
                                 "httpOnly": false,
-                                "name": "_ga_JMDBBLT4C7",
+                                "name": "_ga",
                                 "path": "/",
-                                "sameSite": "no_restriction",
-                                "secure": true,
+                                "sameSite": "unspecified",
+                                "secure": false,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "GS1.1.1633028306.1.0.1633028306.0",
+                                "value": "GA1.2.533201936.1633443083",
                                 "id": 2
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1633114706,
+                                "expirationDate": 1633628087,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "_gid",
@@ -103,26 +110,12 @@ class Surveymonkey {
                                 "secure": false,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "GA1.2.1688141389.1633027992",
+                                "value": "GA1.2.1450466649.1633443083",
                                 "id": 3
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1633030092,
-                                "hostOnly": false,
-                                "httpOnly": false,
-                                "name": "_hjFirstSeen",
-                                "path": "/",
-                                "sameSite": "lax",
-                                "secure": false,
-                                "session": false,
-                                "storeId": "0",
-                                "value": "1",
-                                "id": 4
-                            },
-                            {
-                                "domain": ".surveymonkey.com",
-                                "expirationDate": 1664564292,
+                                "expirationDate": 1664979333,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "_hjid",
@@ -131,26 +124,25 @@ class Surveymonkey {
                                 "secure": false,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "734b1f3a-e933-4d4d-98c5-54cd9cff1fd0",
-                                "id": 5
+                                "value": "5c0ceefe-734d-4c12-9760-5e36be0a39a6",
+                                "id": 4
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1634237923.581085,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "apex__sm",
                                 "path": "/",
                                 "sameSite": "no_restriction",
                                 "secure": true,
-                                "session": false,
+                                "session": true,
                                 "storeId": "0",
-                                "value": "belz7D3jDyp9CPFfFSgDTg1JbIgrTP9jvEnM7mzSLwYmFdrSeoQ4WzgA5wXwLsSdI1BT9lF7wa9m3ctHdutW4JbZh3YDTWX8HVofluwnS512bhpNNUCynm0YYz6J71o_2B",
-                                "id": 6
+                                "value": "aGx4f14g7Ym26AkA_2BGf_2FdnYYMqJ6Mwzjydi_2B_2FmbDCdf8gyrqWe5hUKJ7_2FbKT5QXhVjYtf7VfuzaqtQXN74ORmd4ZWeWBUs7IgrdeYtr8YIV8OOYN0K5K_2BcT0Und81e9y",
+                                "id": 5
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1664564323.58115,
+                                "expirationDate": 1665077686.322698,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "attr_multitouch",
@@ -159,26 +151,25 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "\"wmQ7ebtcvMlU0zdlBeDlhZFngI0=\"",
-                                "id": 7
+                                "value": "\"3ONhTlZnMNry61HYxgykhDQtrB8=\"",
+                                "id": 6
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1634237923.581191,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "auth",
                                 "path": "/",
                                 "sameSite": "no_restriction",
                                 "secure": true,
-                                "session": false,
+                                "session": true,
                                 "storeId": "0",
-                                "value": "k3RsKITwSh1RU8_2Bi02PbuuePNDLgqLdhUJZ4yAMeqmJljJaQJ39lBG2P0kFMNqSKJ2R_2FXlr_2By7vlphJDeBuCqhWB5Jdnnli_2Bg_2FQaRLFw2oTAEe_2BvoSCGyBJVLq_2BpIRr12CB4PO6leidfwTpUOBgIMJjDRdS1FyJVp5gKfNaIm2WFfYCXwlNIpSKTp4sHdcSf2beuxgjIZ1FJymcOqmQg4IrMWRIkavAwZPwGZ38JhlDKx5R_2BhXSW1nHLi19TCBVzczH2UR792uC39k14v1xdlirwmyJX7KMkxof3UF1QLLQ_3D",
-                                "id": 8
+                                "value": "T5IHlBt_2Fb2jPZJpM0kR4A8paHRAPEAAB6ObNojeEJ1RjNPKrszwHqhzUqqqBgW_2BSEWSImWHMMkzsBDSekDrVxdbtYqaGaAJNQRrDYkAa6TnGrIargZklnhtwy98b27_2B4z76Ed7gdyvbqunOjoYrYrxablg0ysBVD1CnSoCkq1U_2FabyTqJ_2FBtKzgKuE_2FUz4s4F_2BAicUwZKdTAJ_2BygzcmYM9NHEYaO9SIx3JibJLlA6jZ7x3w5dXJEJiEWCIqiQDVNKZq4_2BMOcv3cLro6zQwKy2c_2FZjiOYdw3NrUa88GO9Xw2fnZ5CRvSg_2FbtH5qMmxuNY",
+                                "id": 7
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1640804323.581223,
+                                "expirationDate": 1641317686.322803,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "cdp_seg",
@@ -187,12 +178,12 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "\"XOlSGwOw47CgJkL9/Q3eMbSQFxk=\"",
-                                "id": 9
+                                "value": "\"uc108+nqDKgy9s8RuifpmIjDMdg=\"",
+                                "id": 8
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1649357905.136038,
+                                "expirationDate": 1649871281.860103,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "cfu",
@@ -202,11 +193,11 @@ class Surveymonkey {
                                 "session": false,
                                 "storeId": "0",
                                 "value": "UUAfsJH4J9fxf0_2BJn_2F_2BSWJL4HMgDuYnaVVTJksJ_2Fx1A_3D",
-                                "id": 10
+                                "id": 9
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1633030123.581267,
+                                "expirationDate": 1633543486.322843,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "ep201",
@@ -215,12 +206,12 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "\"tO8MqeAybFSyKYdvhk8tUwW7kYY=\"",
-                                "id": 11
+                                "value": "\"1LV1LEV+WbcRNAgYKANL09WbfzU=\"",
+                                "id": 10
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1640804323.581297,
+                                "expirationDate": 1641317686.322892,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "ep202",
@@ -229,12 +220,12 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "\"4U7hBb2+K/1C9k5Vp/onPYh9HWw=\"",
-                                "id": 12
+                                "value": "\"T3XiIW0PJS2tCIA0w9Iw1s60y/4=\"",
+                                "id": 11
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1640804323.581322,
+                                "expirationDate": 1641317686.32293,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "ep203",
@@ -243,26 +234,25 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "\"aMgqP5CEgUlDNadkPolauZXsJ5I=\"",
-                                "id": 13
+                                "value": "\"Yt0CxlRIo2VhySaGxx9M6X2QD9c=\"",
+                                "id": 12
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1634237923.581346,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "sm_dc",
                                 "path": "/",
                                 "sameSite": "no_restriction",
                                 "secure": true,
-                                "session": false,
+                                "session": true,
                                 "storeId": "0",
                                 "value": "0",
-                                "id": 14
+                                "id": 13
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1633114684.254173,
+                                "expirationDate": 1633628084.351195,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "sm_dv",
@@ -271,26 +261,25 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "SvOF7Sk90bIMloQX1zHnJy_2Fb9Iv9NneScZed90nP5vp2Trhjqw2yiQ8cFM1mg6Y8qWpwrCNmgljQq2nqYSlx0g_3D_3D",
-                                "id": 15
+                                "value": "SvOF7Sk90bIMloQX1zHnJ7unpZvNKKacwRiuGWapty8aLjUaFWc7zwfCe8DdYhPZ8DD8id3iW1eaQWg5975kkQ_3D_3D",
+                                "id": 14
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1634237923.581368,
                                 "hostOnly": false,
                                 "httpOnly": true,
                                 "name": "sm_rec",
                                 "path": "/",
                                 "sameSite": "no_restriction",
                                 "secure": true,
-                                "session": false,
+                                "session": true,
                                 "storeId": "0",
                                 "value": "UserID=109473642&Username=AmericaNeumaticos&PackageID=36&LanguageID=17",
-                                "id": 16
+                                "id": 15
                             },
                             {
                                 "domain": ".surveymonkey.com",
-                                "expirationDate": 1640804303.161175,
+                                "expirationDate": 1641317685.992605,
                                 "hostOnly": false,
                                 "httpOnly": false,
                                 "name": "smasm",
@@ -300,11 +289,11 @@ class Surveymonkey {
                                 "session": false,
                                 "storeId": "0",
                                 "value": "1065.2504.1593710325|1114.2650.1597702724|1272.3070.1604680921|1292.3115.1606159049|1480.3564.1628801654|1536.3711.1623160990|1608.3914.1624645123|1613.3925.1623792035|1616.3932.1627572112|1647.4017.1627572112|1651.4025.1627572112|1702.4162.1631212072|1781.4334.1632147524",
-                                "id": 17
+                                "id": 16
                             },
                             {
                                 "domain": "pt.surveymonkey.com",
-                                "expirationDate": 1648580306,
+                                "expirationDate": 1649093687,
                                 "hostOnly": true,
                                 "httpOnly": false,
                                 "name": "OptanonConsent",
@@ -313,51 +302,27 @@ class Surveymonkey {
                                 "secure": true,
                                 "session": false,
                                 "storeId": "0",
-                                "value": "isGpcEnabled=0&datestamp=Thu+Sep+30+2021+15%3A58%3A26+GMT-0300+(Hor%C3%A1rio+Padr%C3%A3o+de+Bras%C3%ADlia)&version=6.23.0&isIABGlobal=false&hosts=&consentId=21254422-dd48-4f37-9a20-7857759edb09&interactionCount=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A1%2CC0004%3A0&AwaitingReconsent=false",
-                                "id": 18
-                            },
-                            {
-                                "domain": "pt.surveymonkey.com",
-                                "hostOnly": true,
-                                "httpOnly": true,
-                                "name": "session",
-                                "path": "/",
-                                "sameSite": "lax",
-                                "secure": true,
-                                "session": true,
-                                "storeId": "0",
-                                "value": "b6MeEUq8uHRIXk_vJ4OFAKFecnvh8fGVNssE6--2V11c2zLk6rji7xVdruHYpyw6x8RMzkL7F-RcbexKYo7eu4AFlUkAAAAAAAAASsoIVmFHQdhVgjKi_Lh9lIwHX2NzcmZ0X5SMKGI0OWY3NzMwOGY4Mjg5NDBiMDFjNGFjZTIxMzUxZGYzYTNjYzdmM2OUc4eULg",
-                                "id": 19
-                            },
-                            {
-                                "domain": "pt.surveymonkey.com",
-                                "expirationDate": 1633114705,
-                                "hostOnly": true,
-                                "httpOnly": false,
-                                "name": "upgrade_browser_modal",
-                                "path": "/",
-                                "sameSite": "unspecified",
-                                "secure": false,
-                                "session": false,
-                                "storeId": "0",
-                                "value": "true",
-                                "id": 20
+                                "value": "isGpcEnabled=0&datestamp=Wed+Oct+06+2021+14%3A34%3A47+GMT-0300+(Hor%C3%A1rio+Padr%C3%A3o+de+Bras%C3%ADlia)&version=6.23.0&isIABGlobal=false&hosts=&consentId=1665cb64-974e-44d9-af3d-fdc7e4195b63&interactionCount=0&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A1%2CC0004%3A0&AwaitingReconsent=false",
+                                "id": 17
                             }
-                        ]
-
+                            ]
                         page.on('response', resp => {
-
                             const data = resp.headers()
                             const result = JSON.stringify(pluck(data, 'content-disposition'))
-                            console.log(result);
                             const namestring = result.split('filename=')
-                            if(namestring.length > 0){
+                            if (namestring.length > 0) {
                                 console.log(namestring);
-                                const removeasset = namestring[1].split('"')
-                                const name = removeasset[1].split("\\")
-                                console.log(name[0]);
-    
-                                // Repositorie.insert(asset)
+                                if (namestring[1].indexOf('"') !== -1) {
+                                    const removeasset = namestring[1].split('"')
+                                    const name = removeasset[1].split("\\")
+                                    // console.log(name[0]);
+                                    // console.log(resp._url);
+
+                                    let line = arrdata.find(dt => dt.url === resp._url)
+
+                                    line.systemurl = `tmp/uploads/${name[0]}`
+                                    Repositorie.insert(obj)
+                                }
                             }
                         });
 
@@ -365,8 +330,6 @@ class Surveymonkey {
 
                         await page.goto(asset.url, { waitUntil: 'networkidle2' })
                         await page.close()
-
-                        console.log(asset.url);
                     }
                 })
             }

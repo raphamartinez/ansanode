@@ -346,7 +346,9 @@ class Hbs {
 
     listSalesMan() {
         try {
-            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office FROM SalesOrder Sa LEFT JOIN User Us ON Sa.SalesMan = Us.Code WHERE ( Us.Closed = 0 OR Us.Closed IS NULL) AND Us.Office IS NOT NULL GROUP BY Us.Code ORDER BY SalesMan `
+            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office
+            FROM SalesOrder Sa 
+            INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Office IS NOT NULL GROUP BY Us.Code ORDER BY SalesMan`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar SalesMan')

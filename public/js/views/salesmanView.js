@@ -122,7 +122,7 @@ const modalAddManager = (id_salesman) => {
                 <div class="modal-body">
                     <div class="form-row">
                         <div class="form-group col-md-12"> 
-                        <select class="selectpicker form-control" name="managerselect" id="managerselect" required>
+                        <select class="form-control" name="managerselect" id="managerselect" required>
                         <option value="" disabled selected>Usuarios</option>
                 </select>
                     </div> 

@@ -14,14 +14,15 @@ const modalsearch = () => {
             <form>
                 <div class="modal-body">
                     <div class="form-row">
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-12">
                             <select multiple title="Sucursal" class="selectpicker form-control" name="selectoffice" id="selectoffice" required>
                             </select>
                         </div> 
-                        <div class="form-group col-md-6">
-                            <input placeholder="Clientes" class="form-control" name="selectclients" id="selectclients" required />
+                        
+                        <div class="select-pure col-md-12 mb-2">
                         </div> 
-                        <div class="form-group text-center col-md-12 ">
+
+                        <div class="form-group text-center col-md-12">
                             <h8>Buscar apenas clientes com facturas vencidas?</h8>
                             <div class="form-check form-check-inline">
                                     <input class="form-check-input" type="radio" name="overdue" id="overdueyes" value="1" checked>

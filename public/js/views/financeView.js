@@ -68,7 +68,7 @@ const listClients = (client) => {
 const listOffice = (office) => {
     const line = document.createElement('option')
 
-    line.value = office.id_office
+    line.value = office.code
 
     const content = ` ${office.name}</option>`
 

@@ -9,7 +9,7 @@ module.exports = app => {
         try {
             const finance = req.body.finance
 
-            await Finance.insert(finance)
+            await Finance.insert(finance, req.login.id_login)
 
             cachelist.delPrefix('finance')
 

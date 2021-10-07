@@ -4,16 +4,16 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('./error
 
 class Finance {
 
-    async insert(finance) {
+    async insert(finance, id_login) {
         try {
 
             const check = await Repositorie.check(finance)
 
             if (check) {
                 finance.id_financeinvoice = check.id_financeinvoice
-                return Repositorie.update(finance)
+                return Repositorie.update(finance, id_login)
             } else {
-                return Repositorie.insert(finance)
+                return Repositorie.insert(finance, id_login)
             }
 
         } catch (error) {
@@ -231,6 +231,7 @@ let dview
             const data = await Repositorie.listInvoiceHistory(invoice)
 
             data.forEach(obj => {
+                // obj.name = obj.name.substring(0, (obj.name + " ").indexOf(" "))
 
                 if (obj.comment === null) obj.comment = " "
                 if (obj.responsible === null) obj.responsible = " "
@@ -243,15 +244,12 @@ let dview
                         obj.statusdesc = "Pendiente"
                         break
                     case 1:
-                        obj.statusdesc = "Pago cuestionado"
+                        obj.statusdesc = "En Gestion de Cobro"
                         break
                     case 2:
-                        obj.statusdesc = "Pago pronto"
+                        obj.statusdesc = "Pago Programado"
                         break
                     case 3:
-                        obj.statusdesc = "Pago rechazado"
-                        break
-                    case 4:
                         obj.statusdesc = "Reenviar al gerente"
                         break
                     default:

@@ -675,10 +675,9 @@ function viewFinance(title, invoices) {
             `<select tabindex="${index + 5}" data-SerNr="${invoice.SerNr}" value="${invoice.status}" data-type="status" class="form-control finance" name="status" id="status">
             <option value="${invoice.status}" disabled selected>${invoice.statusdesc}</option>    
             <option value="0">Pendiente</option>
-                <option value="1">Pago cuestionado</option>
-                <option value="2">Pago pronto</option>
-                <option value="3">Pago rechazado</option>
-                <option value="4">Reenviar al gerente</option>
+                <option value="1">En Gestion de Cobro</option>
+                <option value="2">Pago Programado</option>
+                <option value="3">Reenviar al gerente</option>
              </select>`,
             `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-success finance" onclick="saveFinance(event)" disabled>Guardar</button>`
         ]
@@ -738,6 +737,7 @@ function viewFinanceHistory(historys) {
     <th scope="col">Descripción</th>
     <th scope="col">Fecha de Paga</th>
     <th scope="col">Status</th>
+    <th scope="col">Usuario</th>
     <th scope="col">Fecha de Registro</th>
     </tr>`
 
@@ -750,6 +750,7 @@ function viewFinanceHistory(historys) {
         <td>${history.comment}</td>
         <td>${history.payday}</td>
         <td>${history.statusdesc}</td>
+        <td>${history.name}</td>
         <td>${history.datereg}</td>
         </tr>`
         table += td

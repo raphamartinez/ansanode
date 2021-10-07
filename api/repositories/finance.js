@@ -3,11 +3,11 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 
 class Finance {
 
-    async insert(finance) {
+    async insert(finance, id_login) {
         try {
-            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
+            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour, ?)`
 
-            const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status])
+            const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, id_login])
             return result[0]
         } catch (error) {
             console.log(error);
@@ -28,10 +28,10 @@ class Finance {
         }
     }
 
-    async update(finance) {
+    async update(finance, id_login) {
         try {
-            const sql = `UPDATE ansa.financeinvoice SET contactdate = ?, responsible = ?, contact = ?, comment = ?, payday = ?, status = ? WHERE id_financeinvoice = ?`
-            const result = await query(sql, [finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, finance.id_financeinvoice])
+            const sql = `UPDATE ansa.financeinvoice SET contactdate = ?, responsible = ?, contact = ?, comment = ?, payday = ?, status = ?, id_login = ? WHERE id_financeinvoice = ?`
+            const result = await query(sql, [finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, id_login, finance.id_financeinvoice])
 
             return result[0]
         } catch (error) {
@@ -131,10 +131,12 @@ class Finance {
 
     listInvoiceHistory(invoice) {
         try {
-            let sql = `SELECT id_financeinvoice, invoicenr, comment, contact, responsible, status, DATE_FORMAT(payday, '%d/%m/%Y') as payday, DATE_FORMAT(contactdate, '%H:%i %d/%m/%Y') as contactdate,
-            DATE_FORMAT(datereg, '%H:%i %d/%m/%Y') as datereg FROM ansa.financeinvoice
-        WHERE invoicenr = ?
-        ORDER BY datereg ASC;`
+            let sql = `SELECT fi.id_financeinvoice, fi.invoicenr, fi.comment, fi.contact, fi.responsible, fi.status, DATE_FORMAT(fi.payday, '%d/%m/%Y') as payday, DATE_FORMAT(fi.contactdate, '%H:%i %d/%m/%Y') as contactdate,
+            DATE_FORMAT(fi.datereg, '%H:%i %d/%m/%Y') as datereg, us.name
+            FROM ansa.financeinvoice fi
+            INNER JOIN ansa.user us ON fi.id_login = us.id_login
+            WHERE invoicenr = ?
+            ORDER BY datereg ASC`
 
             return query(sql, invoice)
         } catch (error) {

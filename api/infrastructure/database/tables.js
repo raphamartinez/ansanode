@@ -37,7 +37,11 @@ class Tables {
   } 
 
   createTableFinanceInvoice(){
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeinvoice (id_financeinvoice int NOT NULL AUTO_INCREMENT, invoicenr int, comment VARCHAR(250), contact VARCHAR (150), responsible VARCHAR (150), status int, payday DATE, contactdate DATETIME, datereg DATETIME, PRIMARY KEY (id_financeinvoice))`
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeinvoice (id_financeinvoice int NOT NULL AUTO_INCREMENT, 
+      invoicenr int, comment VARCHAR(250), contact VARCHAR (150), responsible VARCHAR (150), status int, id_login int,
+      payday DATE, contactdate DATETIME, datereg DATETIME, 
+      FOREIGN KEY (id_login) REFERENCES login (id_login), 
+      PRIMARY KEY (id_financeinvoice))`
 
     this.connection.query(sql, (error) => {
       if (error) {

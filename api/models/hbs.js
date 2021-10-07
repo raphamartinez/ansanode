@@ -115,7 +115,7 @@ class Hbs {
                         const date1 = new Date(obj.date)
                         const date2 = new Date('01-01-2020')
                         if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "06FDM"
+                            obj.Office = "13"
                         }
                     }
                     Repositorie.insertReceivable(obj)
@@ -130,7 +130,7 @@ class Hbs {
                         const date1 = new Date(obj.date)
                         const date2 = new Date('01-01-2020')
                         if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "06FDM"
+                            obj.Office = "13"
                         }
                     }
 
@@ -146,7 +146,7 @@ class Hbs {
                         const date1 = new Date(obj.date)
                         const date2 = new Date('01-01-2020')
                         if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "06FDM"
+                            obj.Office = "13"
                         }
                     }
 
@@ -162,7 +162,7 @@ class Hbs {
                         const date1 = new Date(obj.date)
                         const date2 = new Date('01-01-2020')
                         if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "06FDM"
+                            obj.Office = "13"
                         }
                     }
 

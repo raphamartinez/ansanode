@@ -54,7 +54,6 @@ btnSalesOrder.addEventListener('click', async (event) => {
 
     } catch (error) {
         loading.innerHTML = ``
-        filecontent.innerHTML = ``
     }
 })
 

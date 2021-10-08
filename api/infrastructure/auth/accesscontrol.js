@@ -7,6 +7,7 @@ const controll = new AccessControl()
 // 3 - depositero
 // 4 - gerente
 // 5 - personal administrativo
+// 6 - encarregado de Sucursal
 
 controll
     .grant('5')
@@ -18,6 +19,20 @@ controll
     .readOwn('powerbi')
     .readOwn('user')
     .readAny('sales')
+    .readOwn('office')
+
+controll
+    .grant('6')
+    .readOwn('finance')
+    .createAny('finance')
+    .updateAny('finance')
+    .readAny('clients')
+    .readOwn('history')
+    .readOwn('powerbi')
+    .readOwn('user')
+    .readOwn('sales') 
+    .readOwn('office')
+    .readAny('salesman')
 
 controll
     .grant('2')

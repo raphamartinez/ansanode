@@ -15,6 +15,7 @@ window.onload = async function () {
     let divitem = document.querySelector('[data-item]')
     let divadm = document.getElementById('perfiladm')
     let divcharge = document.querySelector('[data-charge]')
+    let divmanage = document.querySelector('[data-management]')
 
 
     let user = JSON.parse(sessionStorage.getItem('user'))
@@ -27,26 +28,40 @@ window.onload = async function () {
     ViewDashboard.showCardBd(cardHistory, lastupdate)
     $("#perfiladm").attr("data-id_login", user.id_login);
 
-    if (perfil !== 1 && perfil !== 4) {
+    if (perfil !== 1 && perfil !== 4 && perfil !== 6) {
         divadmin.remove()
         divitem.remove()
         divcharge.remove()
+
     } else {
         if (perfil === 4) {
             divcharge.remove()
             divadmin.remove()
         }
 
-        let goals = await Connection.noBody('sellersdashboard', 'GET')
+        if (perfil === 6) {
+            divadmin.remove()
+            divitem.remove()
+            divmanage.remove()
+            divadm.remove()
+            document.querySelector('[data-people]').remove()
+            document.querySelector('[data-bi]').remove()
+            document.querySelector('[data-security]').remove()
+            document.querySelector('[data-doc]').remove()
+            document.querySelector('[data-salesorder]').remove()
+        } else {
 
-        if(goals.length > 0){
-            cardHistory.appendChild(ViewDashboard.showGoals())
+            let goals = await Connection.noBody('sellersdashboard', 'GET')
 
-            let goaldashboard = document.getElementById('goaldashboard')
-    
-            goals.forEach(goal => {
-                goaldashboard.appendChild(ViewDashboard.sellers(goal))
-            })
+            if (goals.length > 0) {
+                cardHistory.appendChild(ViewDashboard.showGoals())
+
+                let goaldashboard = document.getElementById('goaldashboard')
+
+                goals.forEach(goal => {
+                    goaldashboard.appendChild(ViewDashboard.sellers(goal))
+                })
+            }
         }
     }
 

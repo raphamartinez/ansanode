@@ -45,6 +45,7 @@ const showModalInsert = () => {
                     <option value= "3" >Depositero</option>
                     <option value= "4" >Gerente</option>
                     <option value= "5" >Personal Administrativo</option>
+                    <option value= "6" >Encarregado de Sucursal</option>
                 </select>
                 <select class="selectpicker form-control col-md-6" name="office" id="officeinsert" required>
                 <option value="" disabled selected>Sucursal</option>
@@ -105,6 +106,7 @@ const showModalEdit = () => {
                     <option value= "3" >Depositero</option>
                     <option value= "4" >Gerente</option>
                     <option value= "5" >Personal Administrativo</option>
+                    <option value= "6" >Encarregado de Sucursal</option>
                 </select>
                 </div>
                 <div class="form-group col-md-6">   
@@ -287,6 +289,7 @@ const createUser = () => {
                                     <option value="3">Depositero</option>
                                     <option value="4">Gerente</option>
                                     <option value="5">Personal Administrativo</option>
+                                    <option value= "6" >Encarregado de Sucursal</option>
                                 </select>
                             </div>
                             <div class="form-group col-md-6">

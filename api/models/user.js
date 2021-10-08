@@ -114,12 +114,15 @@ class User {
                     case 5: obj.perfilDesc = "Personal administrativo"
                         break
 
+                    case 6: obj.perfilDesc = "Encarregado de Sucursal"
+                        break
+
                     default: obj.perfilDesc = "Usuario"
                         break
                 }
 
-                if (!obj.mailenterprise) obj.mailenterprise = "" 
-                if(obj.dateBirthday === '00/00/0000') obj.dateBirthday = ""
+                if (!obj.mailenterprise) obj.mailenterprise = ""
+                if (obj.dateBirthday === '00/00/0000') obj.dateBirthday = ""
             })
 
             return data
@@ -164,19 +167,19 @@ class User {
             }
 
             if (!user.mailenterprise) {
-                user.mailenterpriseDesc = "No informado" 
+                user.mailenterpriseDesc = "No informado"
                 user.mailenterprise = " "
-            } else{
+            } else {
                 user.mailenterpriseDesc = user.mailenterprise
             }
-            if(user.dateBirthday === '00/00/0000'){
+            if (user.dateBirthday === '00/00/0000') {
                 user.dateBirthdayDesc = "No informado"
                 user.dateBirthday = " "
-            } else{
+            } else {
                 user.dateBirthdayDesc = user.dateBirthday
             }
 
-            
+
             return user
         } catch (error) {
             throw new NotFound('Usuario.')

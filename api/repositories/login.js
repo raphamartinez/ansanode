@@ -49,9 +49,14 @@ class Login {
 
     async view(id_login) {
         try {
-            const sql = `SELECT US.name, US.perfil, US.id_login FROM ansa.login LO, ansa.user US where US.id_login = LO.id_login and LO.id_login = ${id_login} and LO.status = 1`
-            const result = await query(sql)
+            const sql = `SELECT US.name, OC.code as office, US.perfil, US.id_login 
+            FROM ansa.login LO
+            INNER JOIN ansa.user US ON LO.id_login = US.id_login
+            INNER JOIN ansa.office OC ON US.id_office = OC.id_office
+            where LO.id_login = ? and LO.status = 1`
 
+            const result = await query(sql, id_login)
+console.log();
             if (!result) {
                 throw new InvalidArgumentError(`El nombre de usuario o la contraseña no son válidos`)
             }

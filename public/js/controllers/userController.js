@@ -389,6 +389,7 @@ async function createUser(event) {
 
         await Connection.body('user', { user }, 'POST')
         loading.innerHTML = " "
+        $('#createuser').modal('hide')
 
         await listUsers()
     } catch (error) {

@@ -50,9 +50,9 @@ class Office {
         }
     }
 
-    listOffice() {
+    listOffice(office) {
         try {
-            return Repositorie.list()
+            return Repositorie.list(office)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursales.')
         }

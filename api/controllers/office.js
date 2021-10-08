@@ -5,17 +5,24 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/offices', [Middleware.bearer, Authorization('office', 'read')], async ( req, res, next) => {
+    app.get('/offices', [Middleware.bearer, Authorization('office', 'read')], async (req, res, next) => {
         try {
-            
-            const cached = await cachelist.searchValue(`office`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
+            let offices
+
+            if (req.access.all.allowed) {
+                const cached = await cachelist.searchValue(`office`)
+
+                if (cached) {
+                    return res.json(JSON.parse(cached))
+                }
+
+                offices = await Office.listOffice()
+                cachelist.addCache(`office`, JSON.stringify(offices), 60 * 60 * 2)
+
+            } else {
+                offices = await Office.listOffice(req.login.office)
             }
-
-            const offices = await Office.listOffice()
-            cachelist.addCache(`office`, JSON.stringify(offices), 60 * 60 * 12)
 
             res.json(offices)
         } catch (err) {
@@ -23,7 +30,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/office', [Middleware.bearer, Authorization('office', 'create')], async ( req, res, next) => {
+    app.post('/office', [Middleware.bearer, Authorization('office', 'create')], async (req, res, next) => {
         try {
             const data = req.body
 
@@ -36,7 +43,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/office/:id', [Middleware.bearer, Authorization('office', 'update')], async ( req, res, next) => {
+    app.put('/office/:id', [Middleware.bearer, Authorization('office', 'update')], async (req, res, next) => {
         try {
             const data = req.body
             const id_office = req.params.id
@@ -50,13 +57,13 @@ module.exports = app => {
         }
     })
 
-    app.delete('/office/:id', [Middleware.bearer, Authorization('office', 'delete')], async ( req, res, next) => {
+    app.delete('/office/:id', [Middleware.bearer, Authorization('office', 'delete')], async (req, res, next) => {
         try {
             const id_office = req.params.id
 
             const result = await Office.deleteOffice(id_office)
             cachelist.delPrefix('office')
-            
+
             res.json(result)
         } catch (err) {
             next(err)

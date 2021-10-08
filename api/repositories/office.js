@@ -43,9 +43,11 @@ class Office {
         }
     }
 
-    list() {
+    list(office) {
         try {
-            const sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.office FF WHERE FF.status = 1`
+            let sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.office FF WHERE FF.status = 1`
+
+            if(office) sql += ` and FF.code = '${office}'`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')

@@ -51,14 +51,22 @@ module.exports = app => {
     app.get('/finance/:clients/:offices/:overdue', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
+            let offices = req.params.offices
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
+            if (req.access.all.allowed) {
+                offices = req.params.offices
+
+                const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
+
+                if (cached) {
+                    return res.json(JSON.parse(cached))
+                }
+
+            } else {
+                offices = req.login.office
             }
 
             const clients = req.params.clients
-            const offices = req.params.offices
             const overdue = req.params.overdue
 
             const finances = await Finance.list(clients, offices, overdue)

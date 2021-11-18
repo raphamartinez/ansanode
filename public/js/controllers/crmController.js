@@ -222,7 +222,7 @@ const table = async (data) => {
     })
 
 }
-
+//
 const view = async (event) => {
 
     document.querySelector('[data-loading]').style.display = "block"

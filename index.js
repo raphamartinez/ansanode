@@ -81,4 +81,3 @@ app.use((err, req, res, next) => {
 // Clock.listClockMachineHbs()
 
 // Hbs.listReceivables()
-//teste

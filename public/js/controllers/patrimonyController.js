@@ -7,7 +7,7 @@ const adjustModalDatatable = () => {
         $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
     })
 }
-
+//
 const listImages = async (event) => {
 
     const modal = document.createElement('div')

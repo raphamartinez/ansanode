@@ -8,15 +8,12 @@ btn.addEventListener('click', async (event) => {
     event.preventDefault()
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         title.innerHTML = "Historial"
@@ -91,9 +88,9 @@ btn.addEventListener('click', async (event) => {
             }
             );
         }
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 })
 

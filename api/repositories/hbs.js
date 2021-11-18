@@ -17,7 +17,7 @@ class Hbs {
     listSalary() {
         try {
             const sql = ` SELECT sa.SerNr as serNr, DATE_FORMAT(sa.TransDate, '%Y-%m-%d') as date, sa.TransTime as time, sa.Office as office, sa.BaseRate as baserate, sa.CurrencyRate as currencyrate, sa.Comment as comment, 
-            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
+            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY)`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('La lista de salarios falló')
@@ -48,33 +48,9 @@ class Hbs {
         }
     }
 
-    async lastClockMachine(code) {
-        try {
-            const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ${code} ORDER BY TimestampDate DESC LIMIT 1`
-            const data = await query(sql)
-
-            return data[0].date
-        } catch (error) {
-            throw new InternalServerError('La última lista de control de punto falló')
-        }
-    }
-
-    listClockMachine() {
-        try {
-            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(cl.Date," ",cl.TIME) AS TimestampDate, cl.InOutType AS Type, cl.Office, wo.Name
-            FROM ClockMachineRecord cl
-            INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code`
-
-            return queryhbs(sql)
-
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     async insertUser(user) {
         try {
-            const sql = `INSERT INTO ansa.userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
+            const sql = `INSERT INTO ansa.userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
             await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
 
             return true
@@ -96,7 +72,7 @@ class Hbs {
 
     dropReceivable() {
         try {
-            const sql = `drop table IF EXISTS ansa.receivable`
+            const sql = `delete from ansa.receivable`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la tabla receivable')
@@ -180,6 +156,7 @@ class Hbs {
             AND InvoiceType <> 1 
             AND (Installments = 0 OR Installments IS NULL) 
             AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+            GROUP BY Invoice.SerNr
             ORDER BY Invoice.SerNr`
             return queryhbs(sql)
         } catch (error) {
@@ -208,12 +185,13 @@ class Hbs {
             LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
             WHERE Invoice.Status = 1
             AND InvoiceInstallRow.OpenFlag = 1
+            AND InvoiceInstallRow.Saldo != 0
             AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
             AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
             AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
             AND InvoiceInstallRow.DueDate BETWEEN '2001-01-01' AND '2030-01-01'
             GROUP BY InvoiceInstallRow.internalId
-            ORDER BY SerNr `
+            ORDER BY SerNr  `
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar facturas c/ cotas')
@@ -330,17 +308,6 @@ class Hbs {
             return true
         } catch (error) {
             throw new InvalidArgumentError('No se pudo ingresar el receivable en la base de datos')
-        }
-    }
-
-    async insertClockMachine(data) {
-        try {
-            const sql = `INSERT INTO ansa.clockmachine set ?`
-            await query(sql, data)
-
-            return true
-        } catch (error) {
-            throw new InvalidArgumentError('No se pudo ingresar el clockmachine en la base de datos')
         }
     }
 

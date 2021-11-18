@@ -1,0 +1,95 @@
+const query = require('../infrastructure/database/queries')
+const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
+
+class Crm {
+
+    async insert(crm, id_login) {
+        try {
+            const sql = `INSERT INTO ansa.crm (contactdate, client, name, phone, mail, description, status, id_login, datereg ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
+            const result = await query(sql, [crm.contactdate, crm.client, crm.name, crm.phone, crm.mail, crm.description, crm.status, id_login])
+
+            return result.insertId
+        } catch (error) {
+            throw new InvalidArgumentError(`Error on insert in database - ${error}`)
+        }
+    }
+
+    async insertProduct(product) {
+        try {
+            const sql = `INSERT INTO ansa.crmproducts (code, name, type, classification, id_crm ) VALUES (?, ?, ?, ?, ?)`
+            const result = await query(sql, [product.code, product.name, product.type, product.classification, product.id_crm])
+
+            return result.insertId
+        } catch (error) {
+            throw new InvalidArgumentError(`Error on insert in database - ${error}`)
+        }
+    }
+
+    async delete() {
+        try {
+            const sql = ``
+            const result = await query(sql)
+            return result[0]
+        } catch (error) {
+            throw new InternalServerError('')
+        }
+    }
+
+    async update() {
+        try {
+            const sql = ''
+            const result = await query(sql, [])
+            return result[0]
+        } catch (error) {
+            throw new InvalidArgumentError('')
+        }
+    }
+
+    listProducts(id) {
+        try {
+            const sql = `SELECT id, code, name, type, 
+            CASE
+                        WHEN classification = 1 THEN "-50%"
+                        WHEN classification = 2 THEN "50%"
+                        WHEN classification = 3 THEN "75%"
+                        WHEN classification = 4 THEN "100%"
+                        ELSE "no clasificado"
+            END as classification
+            FROM ansa.crmproducts WHERE id_crm = ?`
+
+            return query(sql, id)
+
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('')
+        }
+    }
+
+    list(search) {
+        try {
+            let sql = `SELECT cr.id, cr.client, cr.name, cr.phone, cr.mail, cr.description, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as contactdate, DATE_FORMAT(cr.datereg, '%H:%i %d/%m/%Y') as datereg, cr.status, us.name as user
+            FROM ansa.crm cr
+            INNER JOIN ansa.user us ON cr.id_login = us.id_login 
+            WHERE cr.status = 1 `
+
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${search.offices})) `
+
+            if (search.sellers && search.sellers != "ALL") sql += ` cr.id_login IN (${search.sellers}) `
+
+            if (search.start && search.end) sql += ` AND cr.contactdate BETWEEN '${search.start}' AND '${search.end}' `
+
+            if (search.id) sql += ` AND cr.id_login = ${search.id} `
+
+            sql += ` ORDER BY cr.contactdate DESC`
+
+            return query(sql)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('')
+        }
+    }
+}
+
+module.exports = new Crm()

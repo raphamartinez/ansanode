@@ -289,8 +289,8 @@ const deleteMailSchedule = (id_mailpowerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">¿Eliminar el correo electrónico programado?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -302,7 +302,7 @@ const deleteMailSchedule = (id_mailpowerbi) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_mailpowerbi="${id_mailpowerbi}"  onclick="deleteMailSchedule(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></a>   
                 </div>
             </form>
@@ -324,8 +324,8 @@ const deleteSchedule = (id_mailscheduling, id_mailpowerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Eliminar horario</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -336,7 +336,7 @@ const deleteSchedule = (id_mailscheduling, id_mailpowerbi) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_mailscheduling="${id_mailscheduling}" data-id_mailpowerbi="${id_mailpowerbi}" onclick="deleteSchedule(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></a>   
                 </div>
             </form>
@@ -358,8 +358,8 @@ const deleteAttachment = (id_mailattachment, id_mailpowerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">¿Eliminar adjunto?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -370,7 +370,7 @@ const deleteAttachment = (id_mailattachment, id_mailpowerbi) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_mailattachment="${id_mailattachment}" data-id_mailpowerbi="${id_mailpowerbi}"  onclick="deleteAttachment(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></a>   
                 </div>
             </form>
@@ -391,8 +391,8 @@ const addattachment = (id_mailpowerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar archivo adjunto</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -427,7 +427,7 @@ const addattachment = (id_mailpowerbi) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_mailpowerbi="${id_mailpowerbi}"  onclick="addattachment(event)" name="btn" id="btn" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></a>   
                 </div>
             </form>
@@ -449,8 +449,8 @@ const addschedule = (id_mailpowerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar calendario de correo electrónico</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -469,7 +469,7 @@ const addschedule = (id_mailpowerbi) => {
             </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_mailpowerbi="${id_mailpowerbi}"  onclick="addschedule(event)" name="btn" id="btn" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></a>   
                 </div>
             </form>
@@ -491,8 +491,8 @@ const viewAttachment = (url, id_mailpowerbi, id_mailattachment) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Archivo adjunto</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">

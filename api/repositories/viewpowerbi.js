@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class ViewPowerBi {
     async insert(viewpowerbi) {
         try {
-            const sql = 'INSERT INTO ansa.viewpowerbi (id_powerbi, id_login, dateReg) values (?, ?, now() - interval 4 hour )'
+            const sql = 'INSERT INTO ansa.viewpowerbi (id_powerbi, id_login, dateReg) values (?, ?, now() - interval 3 hour )'
             const result = query(sql, [viewpowerbi.id_powerbi, viewpowerbi.id_login])
             return result[0]
         } catch (error) {

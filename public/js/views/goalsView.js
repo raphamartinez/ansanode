@@ -195,8 +195,8 @@ const modalAdd = () => {
     const div = document.createElement('div')
 
     const content = `
-  <div class="modal fade" id="searchGoal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+  <div class="modal fade" id="searchGoal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content">
           <div class="modal-header">
               <h5 class="modal-title">Filtrar la Meta</h5>
@@ -206,7 +206,7 @@ const modalAdd = () => {
           </div>
           <form>
               <div class="modal-body">
-              <div class="form-group text-center col-md-12 d-none d-md-block">
+              <div class="form-group border text-center col-md-12 d-none d-md-block">
               <h8>Buscar Articulos sin stock?</h8>
               <div class="form-check">
                   <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1">
@@ -249,13 +249,13 @@ const modalAddExcel = () => {
     const div = document.createElement('div')
 
     const content = `
-    <div class="modal fade" id="searchGoal" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal fade" id="searchGoal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Generar Excel de Metas</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -287,13 +287,13 @@ const modalUploadExcel = () => {
     const div = document.createElement('div')
 
     const content = `
-    <div class="modal fade" id="uploadGoals" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal fade" id="uploadGoals" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Importar Excel</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>

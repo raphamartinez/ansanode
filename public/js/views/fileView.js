@@ -49,13 +49,13 @@ const directory = (title, div) => {
 const search = (modal, search) => {
     const div = document.createElement('div')
 
-    const content = `     <div class="modal fade" id="modalsearch" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    const content = `     <div class="modal fade" id="modalsearch" tabindex="-1" >
+    <div class="modal-dialog modal-dialog-centered" >
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Búsqueda por archivo </h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -74,7 +74,7 @@ const search = (modal, search) => {
                     </div> 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-search="${search}" type="submit" onclick="searchfile(event)" name="btn" id="btnsearch" class=" btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
                 </div>
             </form>
@@ -99,8 +99,8 @@ const modal = (search) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar archivo </h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form enctype="multipart/form-data" method="POST">
@@ -128,7 +128,7 @@ const modal = (search) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-search="${search}" type="submit" name="btn" id="btn" onclick="upload(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
                 </div>
             </form>
@@ -150,8 +150,8 @@ const addoffice = (search) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar archivo Office </h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form enctype="multipart/form-data" method="POST">
@@ -184,7 +184,7 @@ const addoffice = (search) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button  data-search="${search}" type="submit" name="btn" id="btn" onclick="uploadoffice(event)" class=" btn btn-success"><i class="fas fa-check"> Insertar</i></button>   
                 </div>
             </form>
@@ -207,8 +207,8 @@ const pdf = (file) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">PDF</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -251,8 +251,8 @@ const video = (file) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Video</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -297,8 +297,8 @@ const image = (file) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Imagen</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -340,8 +340,8 @@ const office = (file) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Archivo Office</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <div class="modal-body">
@@ -383,8 +383,8 @@ const deleteFile = (id_file) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Borrar archivo</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -396,7 +396,7 @@ const deleteFile = (id_file) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_file="${id_file}"  onclick="deleteFile(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Borrar</i></a>   
                 </div>
             </form>
@@ -495,7 +495,7 @@ const sendMail = () => {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fa fa-times"></i> Cancelar</button>
                         <button type="submit" class="btn btn-success pull-right"><i class="fa fa-envelope"></i> Enviar</button>
                     </div>
                 </form>

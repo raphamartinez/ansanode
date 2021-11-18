@@ -5,7 +5,7 @@ class Finance {
 
     async insert(finance, id_login) {
         try {
-            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour, ?)`
+            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
 
             const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, id_login])
             return result[0]
@@ -59,7 +59,7 @@ class Finance {
             FROM (SELECT DATE_FORMAT(re.date, '%H:%i %d/%m/%Y') as date, re.SalesMan, re.CustCode, re.CustName, re.SerNr, IF(DATEDIFF(NOW(), re.DueDate) > 0,DATEDIFF(NOW(), re.DueDate),0)  as daysOverdue, DATE_FORMAT(re.DueDate, '%d/%m/%Y') as DueDate,
             TRUNCATE(SUM(IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
             IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total))))),2) as amount, fi.status,
-            DATE_FORMAT(fi.contactdate, '%Y-%m-%dT%H:%i') as contactdate,if(fi.datereg > NOW() - interval 1 day , DATE_FORMAT(fi.payday, '%Y-%m-%d'), "") as payday, if(fi.datereg > NOW() - interval 1 day ,fi.comment,"") as comment, if(fi.datereg > NOW() - interval 1 day ,fi.responsible,"") as responsible, 
+            DATE_FORMAT(fi.contactdate, '%Y-%m-%d') as contactdate,if(fi.datereg > NOW() - interval 1 day , DATE_FORMAT(fi.payday, '%Y-%m-%d'), "") as payday, if(fi.datereg > NOW() - interval 1 day ,fi.comment,"") as comment, if(fi.datereg > NOW() - interval 1 day ,fi.responsible,"") as responsible, 
             if(fi.datereg > NOW() - interval 1 day ,fi.contact,"") as contact, if(fi.datereg > NOW() - interval 1 day ,DATE_FORMAT(fi.datereg, '%H:%i %d/%m/%Y'), "") as dateReg
             FROM ansa.receivable re
             LEFT JOIN ansa.financeinvoice fi ON re.SerNr = fi.invoicenr `
@@ -84,7 +84,7 @@ class Finance {
         }
     }
 
-    list(clients, offices) {
+    list(clients, offices, overdue, type) {
         try {
             let sql = `SELECT re.CustCode, re.CustName, 
 
@@ -116,15 +116,25 @@ class Finance {
             WHERE re.CustCode <> 1
             `
 
+            if (offices !== "ALL") sql += `AND re.Office IN (${offices}) `
 
-            if (offices !== "ALL") sql += `AND re.Office IN (${offices})`
+            if (clients !== "ALL") sql += `AND re.CustCode IN (${clients}) `
 
-            if (clients !== "ALL") sql += `AND re.CustCode IN (${clients})`
+            if (type !== '3') {
+                if(type === '1' ){
+                    sql += `AND re.PayTerm != "Cheque " `
+                }else{
+                    sql += `AND re.PayTerm = "Cheque " `
+                }
+            }
+
+            if(overdue === '1') sql += `AND re.DueDate <= NOW() `
 
             sql += `GROUP BY re.CustCode `
 
             return query(sql)
         } catch (error) {
+            console.log(error);
             throw new InternalServerError('No se pudieron enumerar los login')
         }
     }

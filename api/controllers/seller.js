@@ -85,13 +85,11 @@ module.exports = app => {
 
     app.post('/salesman', [Middleware.bearer, Authorization('salesman', 'create')], async (req, res, next) => {
         try {
-            const data = req.body.sellers
-            console.log(data);
-            const result = await Seller.insert(data)
+            await Seller.insert(req.body.sellers)
 
             cachelist.delPrefix('sellers')
 
-            res.status(201).json(result)
+            res.status(201).json({ msg: 'Vendedor agregado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -100,11 +98,11 @@ module.exports = app => {
     app.put('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'update')], async (req, res, next) => {
         try {
             const manager = req.body.manager
-            const result = await Seller.update(manager)
+            await Seller.update(manager)
 
             cachelist.delPrefix('sellers')
 
-            res.status(201).json(manager)
+            res.json({ msg: 'Vendedor actualizado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -113,11 +111,11 @@ module.exports = app => {
     app.delete('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'delete')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
-            const result = await Seller.delete(id_salesman)
+            await Seller.delete(id_salesman)
 
             cachelist.delPrefix('sellers')
 
-            res.json(id_salesman)
+            res.json({ msg: 'Vendedor eliminado con éxito.' })
         } catch (err) {
             next(err)
         }

@@ -21,6 +21,7 @@ btnfiles.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Carpeta de archivos"
@@ -50,7 +51,7 @@ btnfiles.addEventListener('click', async (event) => {
         const searchline = document.getElementById('searchline')
         searchline.style.display = 'none';
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
 
         const filecontent = document.getElementById('filecontent')
 
@@ -58,7 +59,7 @@ btnfiles.addEventListener('click', async (event) => {
 
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
         filecontent.innerHTML = ``
     }
 })
@@ -83,10 +84,10 @@ async function modalAddFile(event) {
 
         $('#modaladdfile').modal('show')
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -109,10 +110,10 @@ async function modalAddOffice(event) {
 
         $('#modaladdoffice').modal('show')
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -135,7 +136,7 @@ async function modalsearch(event) {
 
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -147,11 +148,7 @@ async function searchfile(event) {
     $('#modalsearch').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
 
         const btn = event.currentTarget
@@ -365,11 +362,11 @@ async function searchfile(event) {
 
 
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
 
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -380,11 +377,7 @@ async function upload(event) {
     $('#modaladdfile').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
         const btn = event.currentTarget
         const search = btn.getAttribute("data-search")
@@ -559,10 +552,10 @@ async function upload(event) {
                 .animate({ color: '#4e73df' });
         }
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -573,11 +566,7 @@ async function uploadoffice(event) {
     $('#modaladdoffice').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
         const btn = event.currentTarget
         const search = btn.getAttribute("data-search")
@@ -655,10 +644,10 @@ async function uploadoffice(event) {
                 .css('color', 'black')
                 .animate({ color: '#4e73df' });
         }
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }
 
@@ -690,11 +679,7 @@ async function deleteFile(event) {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
         const btn = event.currentTarget
 
@@ -702,7 +687,7 @@ async function deleteFile(event) {
 
         await Connection.noBody(`file/${id_file}`, 'DELETE')
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
         $(`#${id_file}div`).remove();
         $('#deletefile').modal('hide')
         alert('Archivo eliminado con éxito!')
@@ -755,7 +740,7 @@ async function downloadFile(event) {
 
         Connection.body('history', { description: `Descarga del archivo - ${filename}` }, 'POST')
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
 
     }

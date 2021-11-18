@@ -46,19 +46,6 @@ async function formatStringDatetoCompare(data) {
     return ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano;
 }
 
-async function dateCompare(d1, d2) {
-    const dt1 = await formatStringDatetoCompare(d1)
-
-    const date1 = new Date(dt1);
-    const date2 = new Date(d2);
-
-    if (date1.getTime() > date2.getTime()) {
-        return true
-    } else {
-        return false
-    }
-}
-
 class WebScraping {
 
     async init() {
@@ -72,7 +59,7 @@ class WebScraping {
             console.log('robot ok');
         } catch (error) {
             await Repositorie.insertHistory(`Error - ${error}`)
-            console.log('robot error');
+            console.log(`erro no robô - ${error}`);
             throw new InternalServerError('No se pudo ejecutar el robot.')
         }
     }
@@ -90,7 +77,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
             const page = await browser.newPage()
@@ -194,7 +181,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
 
@@ -260,7 +247,7 @@ class WebScraping {
         try {
 
             const browser = await puppeteer.launch({
-                headless: true,
+                headless: false,
                 args: ['--no-sandbox'],
             })
 
@@ -275,12 +262,6 @@ class WebScraping {
             await page.waitForNavigation()
 
             await page.goto('https://localizacion.prosegur.com/informes/distancias-recorridas', { waitUntil: 'networkidle0' })
-
-            const dtInit = await page.$eval("#dateInit", (input) => {
-                return input.getAttribute("value")
-            }); const dtEnd = await page.$eval("#dateEnd", (input) => {
-                return input.getAttribute("value")
-            });
 
             await page.click(`select [value="TODOS"]`)
             await page.waitForTimeout(2000)
@@ -323,7 +304,7 @@ class WebScraping {
         try {
             const browser = await puppeteer.launch({
                 args: ['--lang=pt-BR', '--no-sandbox'],
-                headless: true,
+                headless: false,
             })
             const page = await browser.newPage()
 
@@ -488,7 +469,7 @@ class WebScraping {
             for (const login of logins) {
 
                 const browser = await puppeteer.launch({
-                    headless: true,
+                    headless: false,
                     args: ['--no-sandbox', '--disable-dev-shm-usage']
                 })
 
@@ -549,12 +530,13 @@ class WebScraping {
 
                             const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + " " + time;
 
-                            const newdate1 = moment(date);
+                            let date1 = new Date(date)
+                            let date2 = new Date(lastInsert)
 
-                            const newdate2 = moment(lastInsert)
+                            console.log(date1);
+                            console.log(date2);
 
-                            if (newdate1.isAfter(newdate2)) {
-                                const date = moment(newdate1).format("YYYY-MM-DD HH:mm:ss")
+                            if (date1.getTime() > date2.getTime()) {
                                 await Repositorie.insertInviolavel(title, date, line[2], login[0])
                             }
                         }
@@ -588,7 +570,6 @@ class WebScraping {
 
             if (url.includes('app.powerbi.com')) {
                 await page.waitForTimeout(15000)
-                // await page.waitForSelector('#pvExplorationHost > div > div > exploration > div > explore-canvas > div > div.canvasFlexBox > div > div.displayArea.disableAnimations.fitToPage'); //um seletor de uma celula da tabela
                 await page.click('#fullScreenIcon')
             }
 
@@ -596,7 +577,7 @@ class WebScraping {
                 path: `${path}.pdf`, format: "A1", height: 1080, width: 1920, landscape: true
             });
 
-            await scissors(`${path}.pdf`).crop({ b: 500, t:500})
+            await scissors(`${path}.pdf`).crop({ b: 500, t: 500 })
 
             await browser.close();
 

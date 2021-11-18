@@ -62,10 +62,11 @@ module.exports = app => {
         try {
             const goal = req.body.goal
 
+            await Goal.insert(goal)
+
             cachelist.delPrefix('goal')
 
-            const result = await Goal.insert(goal)
-            res.status(201).json(result)
+            res.status(201).json({msg: 'Meta agregada con éxito.'})
         } catch (err) {
             next(err)
         }
@@ -75,10 +76,11 @@ module.exports = app => {
         try {
             const file = req.file
 
+            await Goal.upload(file)
+
             cachelist.delPrefix('goal')
 
-            const result = await Goal.upload(file)
-            res.status(201).json(result)
+            res.json({msg: 'Metas agregadas con éxito.'})
         } catch (err) {
             next(err)
         }
@@ -89,10 +91,11 @@ module.exports = app => {
             const goal = req.body
             const id_goal = req.params.id_goal
 
+            await Office.updateOffice(goal, id_goal)
+
             cachelist.delPrefix('goal')
 
-            const result = await Office.updateOffice(goal, id_goal)
-            res.json(result)
+            res.json({ msg: 'Meta actualizada con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -102,10 +105,11 @@ module.exports = app => {
         try {
             const id_goal = req.params.id_goal
 
+            await Goal.delete(id_goal)
+
             cachelist.delPrefix('goal')
 
-            const result = await Goal.delete(id_goal)
-            res.json(result)
+            res.json({ msg: 'Meta eliminada con éxito.' })
         } catch (err) {
             next(err)
         }

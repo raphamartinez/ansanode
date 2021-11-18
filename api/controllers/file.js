@@ -47,13 +47,13 @@ module.exports = app => {
         try {
             const id_file = req.params.id_file
 
-            const file = await File.delete(id_file)
+            await File.delete(id_file)
 
             History.insertHistory(`Archivo - ${file.title} eliminado!`, req.login.id_login)
 
             cachelist.delPrefix('file')
 
-            res.json(file)
+            res.json({msg: 'Archivo eliminado con éxito.'})
         } catch (err) {
             next(err)
         }

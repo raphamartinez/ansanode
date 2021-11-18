@@ -39,9 +39,9 @@ class Finance {
         }
     }
 
-    async list(clients, offices, overdue) {
+    async list(clients, offices, overdue, type) {
         try {
-            const data = await Repositorie.list(clients, offices, overdue)
+            const data = await Repositorie.list(clients, offices, overdue, type)
             let invoices = []
 
             await data.forEach(obj => {

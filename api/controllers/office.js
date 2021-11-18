@@ -21,7 +21,7 @@ module.exports = app => {
                 cachelist.addCache(`office`, JSON.stringify(offices), 60 * 60 * 2)
 
             } else {
-                offices = await Office.listOffice(req.login.office)
+                offices = await Office.listOffice(req.login.id_login)
             }
 
             res.json(offices)
@@ -37,7 +37,7 @@ module.exports = app => {
             const result = await Office.createOffice(data)
             cachelist.delPrefix('office')
 
-            res.status(201).json(result)
+            res.status(201).json({ msg: 'Sucursal agregada con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -48,10 +48,10 @@ module.exports = app => {
             const data = req.body
             const id_office = req.params.id
 
-            const result = await Office.updateOffice(data, id_office)
+            await Office.updateOffice(data, id_office)
             cachelist.delPrefix('office')
 
-            res.json(result)
+            res.json({ msg: 'Sucursal actualizada con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -61,10 +61,10 @@ module.exports = app => {
         try {
             const id_office = req.params.id
 
-            const result = await Office.deleteOffice(id_office)
+            await Office.deleteOffice(id_office)
             cachelist.delPrefix('office')
 
-            res.json(result)
+            res.json({ msg: 'Sucursal eliminada con éxito.' })
         } catch (err) {
             next(err)
         }

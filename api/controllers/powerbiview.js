@@ -12,7 +12,7 @@ module.exports = app => {
 
             cachelist.delPrefix('powerbi')
 
-            res.status(200).json({ msg: `PowerBi agregado con éxito!` })
+            res.status(200).json({ msg: `PowerBi agregado con éxito.` })
         } catch (error) {
             next(error)
         }
@@ -26,7 +26,7 @@ module.exports = app => {
 
             cachelist.delPrefix('powerbi')
 
-            res.status(200).json({ msg: `Informes agregados con éxito ao usuario!` })
+            res.status(200).json({ msg: `Informes agregados con éxito ao usuario.` })
         } catch (error) {
             next(error)
         }
@@ -34,7 +34,6 @@ module.exports = app => {
 
     app.get('/powerbiview/:id_powerbi', Middleware.bearer, async (req, res, next) => {
         try {
-            
             const powerbis = await ViewPowerBi.listPowerBi(req.params.id_powerbi)
 
             res.json(powerbis)
@@ -45,10 +44,9 @@ module.exports = app => {
 
     app.delete('/powerbiview/:id_powerbi', Middleware.bearer, async (req, res, next) => {
         try {
-            
             await ViewPowerBi.delete(req.params.id_powerbi)
 
-            res.json({msg: `Acceso ao informe caducado con éxito!`})
+            res.json({msg: `Acceso ao informe caducado con éxito.`})
         } catch (error) {
             next(error)
         }

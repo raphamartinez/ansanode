@@ -76,6 +76,23 @@ module.exports = app => {
         }
     })
 
+    app.get('/items/all', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+        try {
+            const cached = await cachelist.searchValue(`items/all`)
+
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            }
+
+            const items = await Item.listUnion()
+            cachelist.addCache(`items/all`, JSON.stringify(items), 60 * 60 * 12)
+
+            res.json(items)
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get('/itemscomplete', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`items:id_login:${req.login.id_login}`)

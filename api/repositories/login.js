@@ -5,12 +5,12 @@ class Login {
 
     async insert(login) {
         try {
-            const sql = 'INSERT INTO ansa.login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 4 hour )'
+            const sql = 'INSERT INTO ansa.login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 3 hour )'
             await query(sql, [login.mail, login.password, login.mailVerify, login.status])
 
             const sqlId = 'select LAST_INSERT_ID() as id_login from ansa.login LIMIT 1'
-            const id = await query(sqlId)
-            return id[0]
+            const obj = await query(sqlId)
+            return obj[0]
         } catch (error) {
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
@@ -49,14 +49,13 @@ class Login {
 
     async view(id_login) {
         try {
-            const sql = `SELECT US.name, OC.code as office, US.perfil, US.id_login 
+            const sql = `SELECT US.name, US.perfil, US.id_login 
             FROM ansa.login LO
             INNER JOIN ansa.user US ON LO.id_login = US.id_login
-            INNER JOIN ansa.office OC ON US.id_office = OC.id_office
             where LO.id_login = ? and LO.status = 1`
 
             const result = await query(sql, id_login)
-console.log();
+
             if (!result) {
                 throw new InvalidArgumentError(`El nombre de usuario o la contraseña no son válidos`)
             }

@@ -2,8 +2,8 @@
 
 function Check() {
     {
-        var senha = document.getElementById("password").value;
-        var confirmacao = document.getElementById("passwordconf").value;
+        var senha = document.querySelector('#pass').value
+        var confirmacao = document.querySelector('#checkpassword').value
         var forca = document.getElementById("meter");
 
         var strength = 0;

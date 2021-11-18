@@ -27,23 +27,6 @@ async function onSubmit() {
     }
 }
 
-window.onLogout = onLogout
-
-async function onLogout() {
-
-    try {
-        const refreshToken = JSON.parse(localStorage.getItem('refreshToken'))
-
-        const data = await Connection.body('logout', { refreshToken: refreshToken }, 'POST')
-
-        sessionStorage.clear()
-        localStorage.clear()
-
-        window.location.href = data.url
-    } catch (error) {
-        alert(error)
-    }
-}
 
 window.onPassword = onPassword
 

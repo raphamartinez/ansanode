@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class Mail {
     async insertMail(mail,id_login) {
         try {
-            const sql = 'INSERT INTO ansa.mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour )'
+            const sql = 'INSERT INTO ansa.mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
             await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type, id_login])
 
             const result = await query("Select LAST_INSERT_ID() as id_mailpowerbi from ansa.mailpowerbi LIMIT 1")
@@ -113,7 +113,7 @@ class Mail {
             FROM ansa.mailpowerbi MA
             LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
             LEFT JOIN ansa.mailscheduling MS ON MA.id_mailpowerbi = MS.id_mailpowerbi
-            WHERE MS.date between now() - interval 4 hour AND now() - interval 59 minute
+            WHERE MS.date between now() - interval 3 hour AND now() - interval 59 minute
             GROUP BY MA.id_mailpowerbi`
             const result = await query(sql)
 

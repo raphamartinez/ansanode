@@ -19,18 +19,6 @@ class Hbs {
         }
     }
 
-    async listClockMachine() {
-        try {
-            const data = await Repositorie.listClockMachine()
-
-            data.forEach(obj => {
-                Repositorie.insertClockMachine(obj)
-            })
-        } catch (error) {
-            console.log(error);
-        }
-    }
-
     listSalesman() {
         try {
             return Repositorie.listSalesMan()
@@ -104,7 +92,6 @@ class Hbs {
     async listReceivables() {
         try {
             await Repositorie.dropReceivable()
-            await Repositorie.createTableReceivable()
 
             const ncs = await Repositorie.listNcs()
 
@@ -173,6 +160,7 @@ class Hbs {
             console.log('finalizada a consulta')
             return true
         } catch (error) {
+            console.log(error);
             console.log('consulta de inadimplencia deu erro');
             return false
         }

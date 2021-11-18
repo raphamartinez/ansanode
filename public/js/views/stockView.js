@@ -7,8 +7,8 @@ const modaladd = (id_login) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar acceso al depósito</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -22,7 +22,7 @@ const modaladd = (id_login) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-id_login ="${id_login}" type="submit" onclick="addstock(event)" class="btn btn-success"><i class="fas fa-plus"> Confirmar</i></button>   
                 </div>
             </form>
@@ -44,8 +44,8 @@ const modaldelete = (id_stock, id_login) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Eliminar el acceso al depósito</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -57,7 +57,7 @@ const modaldelete = (id_stock, id_login) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-id_stock ="${id_stock}" data-id_login="${id_login}" type="submit" onclick="deletestock(event)" class="btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>   
                 </div>
             </form>

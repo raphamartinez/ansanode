@@ -3,6 +3,7 @@ const Middleware = require('../infrastructure/auth/middleware')
 const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = require('../models/error');
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
+const WebScraping = require('../models/webscraping')
 
 module.exports = app => {
     app.post('/history', Middleware.bearer, async (req, res, next) => {
@@ -28,10 +29,16 @@ module.exports = app => {
                 return res.json(JSON.parse(cached))
             }
 
-            const history = await History.listHistoryDashboard(req.login.perfil, req.login.id_login)
-            cachelist.addCache(`history:id_login:${req.login.id_login}`, JSON.stringify(history), 60 * 30)
+            const system = await History.listHistoryDashboard(req.login.perfil, req.login.id_login)
+            const robot = await WebScraping.listWebscrapingHistory()
 
-            res.json(history)
+            const historys = {
+                system, robot
+            }
+
+            cachelist.addCache(`history:id_login:${req.login.id_login}`, JSON.stringify(historys), 60 * 30)
+
+            res.json(historys)
         } catch (err) {
             next(err)
         }

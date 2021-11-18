@@ -5,7 +5,7 @@ const btnInforme = document.getElementById('btnInforme')
 const btnPunto = document.getElementById('btnPunto')
 const btnVehiculos = document.getElementById('btnVehiculos')
 const btnSucursales = document.getElementById('btnSucursales')
-const btnInformeAdmin = document.querySelector('[data-btnInformeAdmin]')
+const btnInformeAdmin = document.querySelector('[data-menu-reportAdmin]')
 
 const cardHistory = document.querySelector('[data-card]')
 
@@ -33,6 +33,7 @@ btnInformeAdmin.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Listado de Informes"
@@ -85,7 +86,7 @@ btnInformeAdmin.addEventListener('click', async (event) => {
             )
         })
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
     } catch (error) {
 
@@ -102,6 +103,7 @@ async function autocompletesearch(event) {
         const url = document.getElementById('searchcomplete').dataset.url
         const type = document.getElementById('searchcomplete').dataset.type
         let powerbi = document.querySelector('[data-powerbi]')
+        document.querySelector('[data-features]').innerHTML = ""
 
         if (url) {
             cardHistory.style.display = 'none';
@@ -116,7 +118,7 @@ async function autocompletesearch(event) {
             document.getElementById('searchcomplete').placeholder = "Nombre del informe..."
 
             title.innerHTML = description
-            loading.innerHTML = " "
+            loading.style.display = "none"
             powerbi.innerHTML = `   
             <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
             <div class="col-md-12 h3 font-weight-bold text-primary text-center p-3"> Otros informes</div>`
@@ -194,7 +196,7 @@ async function autocompletesearch(event) {
                     }
                     )
                 })
-                loading.innerHTML = " "
+                loading.style.display = "none"
             }
 
         } else {
@@ -225,6 +227,7 @@ btnSucursales.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Seguridad - Sucursales"
@@ -304,7 +307,7 @@ btnSucursales.addEventListener('click', async (event) => {
             })
         }
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
     } catch (error) {
 
@@ -329,6 +332,7 @@ btnVehiculos.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Seguridad - Vehículos"
@@ -409,7 +413,7 @@ btnVehiculos.addEventListener('click', async (event) => {
             })
         }
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
     } catch (error) {
 
@@ -434,9 +438,10 @@ btnPunto.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
-        title.innerHTML = "Control de Punto"
+        title.innerHTML = "Personas"
         powerbi.innerHTML = " "
         modal.innerHTML = " "
         settings.innerHTML = ""
@@ -515,7 +520,7 @@ btnPunto.addEventListener('click', async (event) => {
             })
         }
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
     } catch (error) {
 
@@ -541,6 +546,7 @@ btnInforme.addEventListener('click', async (event) => {
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Informes"
@@ -621,7 +627,7 @@ btnInforme.addEventListener('click', async (event) => {
             })
         }
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
     } catch (error) {
 
@@ -633,11 +639,7 @@ function viewBi(event) {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+loading.style.display = "block"
 
     const btn = event.currentTarget
     const url = btn.getAttribute("data-url")
@@ -645,10 +647,11 @@ function viewBi(event) {
     let powerbi = document.querySelector('[data-powerbi]')
     let description = btn.getAttribute("data-title")
     let settings = document.querySelector('[data-settings]');
+    document.querySelector('[data-features]').innerHTML = ""
 
 
     title.innerHTML = description
-    loading.innerHTML = " "
+    loading.style.display = "none"
     settings.innerHTML = " "
     powerbi.innerHTML = `   
     <iframe  id="viewbi" width="1140" height="600" src="${url}" frameborder="0" allowFullScreen="true"></iframe>
@@ -703,10 +706,10 @@ async function addPowerBi(event) {
             .css('color', 'black')
             .animate({ color: '#4e73df' });
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('PowerBi agregado con éxito!')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }
@@ -742,11 +745,7 @@ async function editPowerBi(event) {
     event.preventDefault()
     $('#editpowerbi').modal('hide')
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
 
         const btn = event.currentTarget
@@ -804,10 +803,10 @@ async function editPowerBi(event) {
             })
         })
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('PowerBi editado con éxito!')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }
@@ -834,11 +833,7 @@ async function deletePowerBi(event) {
     event.preventDefault()
     $('#deletepowerbi').modal('hide')
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
         const btn = event.currentTarget
         const id_powerbi = btn.getAttribute("data-id_powerbi")
@@ -884,10 +879,10 @@ async function deletePowerBi(event) {
             })
         })
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('PowerBi excluido con éxito!')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }
@@ -1134,10 +1129,10 @@ async function addPowerBisUser(event) {
         })
 
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(obj.msg)
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }

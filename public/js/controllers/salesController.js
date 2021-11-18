@@ -15,23 +15,20 @@ btnSalesOrder.addEventListener('click', async (event) => {
 
     cardHistory.style.display = 'none';
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+    loading.style.display = "block"
+
     try {
-        const btn = event.currentTarget
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
 
         title.innerHTML = "Diario Ordenes de Ventas"
         modal.innerHTML = ''
         settings.innerHTML = ''
-        loading.innerHTML = ``
+        powerbi.innerHTML = ""
 
         title.appendChild(ViewSales.buttonsearch())
         modal.appendChild(ViewSales.modalsearch())
@@ -52,8 +49,10 @@ btnSalesOrder.addEventListener('click', async (event) => {
         await $('#selectoffice').selectpicker();
         $('#searchSalesOrder').modal('show')
 
+        loading.style.display = "none"
+
     } catch (error) {
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 })
 
@@ -63,17 +62,22 @@ async function listSales(event) {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `<div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>`
+    loading.style.display = "block"
+
     const btn = event.currentTarget
     let title = document.querySelector('[data-title]')
 
     const selectsellers = document.querySelectorAll('#selectsellers option:checked')
     const sellers = Array.from(selectsellers).map(el => `'${el.value}'`);
 
-    const selectoffice = document.querySelectorAll('#selectoffice option:checked')
-    const offices = Array.from(selectoffice).map(el => `'${el.value}'`);
+    let offices
+    let selectoffice = document.querySelectorAll('#selectoffice option:checked')
+    offices = Array.from(selectoffice).map(el => `'${el.value}'`);
+
+    if (offices.length === 0) {
+        let selectofficedefault = document.querySelectorAll('#selectoffice option')
+        offices = Array.from(selectofficedefault).map(el => `'${el.value}'`);
+    }
 
     let search = {
         datestart: btn.form.datestart.value,
@@ -82,38 +86,27 @@ async function listSales(event) {
         office: offices
     }
 
-    if(!search.datestart || !search.dateend) {
+    if (!search.datestart || !search.dateend) {
         return alert("¡El período es obligatorio!")
     }
 
-    if(search.salesman.length === 0) search.salesman = "ALL"
-    if(search.office.length === 0) search.office = "ALL"
+    if (search.salesman.length === 0) search.salesman = "ALL"
+    if (search.office.length === 0) search.office = "ALL"
 
     $('#searchSalesOrder').modal('hide')
 
     const data = await Connection.noBody(`salesorder/${search.datestart}/${search.dateend}/${search.salesman}/${search.office}`, 'GET')
 
     const dtview = []
-    let amountusd = data[0].sumAmount.toLocaleString('en-US',{style: 'currency', currency: 'USD'})
+    let amountusd = data[0].sumAmount.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
     data.forEach(obj => {
         const line = ViewSales.showSales(obj)
         dtview.push(line)
     })
 
-    // const text = document.createElement('h5')
-    // text.style.color = 'gray'
-    // text.style.fontSize = '1rem'
-    // text.style.alignContent = 'left'
-
-    // text.innerHTML += `<br>Filtros<br>`
-    // if (search.salesman.length > 0) text.innerHTML += `<br>Vendedor: ${search.salesman}<br>`
-    // if (search.office.length > 0) text.innerHTML += `Sucursal: ${search.office}<br>`
-
-    // title.appendChild(text)
-
     document.getElementById('cardamount').innerHTML = `Monto USD: ${amountusd} `
     viewSalesOrder(dtview)
-    loading.innerHTML = ``
+    loading.style.display = "none"
 
 
     selectsellers.values = ''

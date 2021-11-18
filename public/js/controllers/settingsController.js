@@ -10,6 +10,7 @@ btn.addEventListener('click', async (event) => {
     let modal = document.querySelector('[data-modal]')
     let settings = document.querySelector('[data-settings]');
     const cardHistory = document.querySelector('[data-card]')
+    document.querySelector('[data-features]').innerHTML = ""
 
     if ($.fn.DataTable.isDataTable('#dataTable')) {
         $('#dataTable').dataTable().fnClearTable();

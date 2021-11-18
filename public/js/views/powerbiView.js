@@ -47,7 +47,7 @@ const showModalEdit = () => {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" name="btn" id="ideditpowerbi" onclick="editPowerBi(event)" class="btn btn-warning"><i class="fas fa-edit"> Confirmar</i></button>   
             </div>
         </form>
@@ -70,8 +70,8 @@ const showModalDelete = (id_powerbi, id_login) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Quieres eliminar este informe?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -83,7 +83,7 @@ const showModalDelete = (id_powerbi, id_login) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" name="btn" onclick="deletePowerBi(event)" data-id_powerbi="${id_powerbi}" data-id_login="${id_login}" id="iddeletepowerbi" class="btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>   
                 </div>
             </form>
@@ -180,7 +180,7 @@ const showModalPbiInsert = () => {
                 </div> 
                 </div> 
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" name="btn" id="idinsertnewbi" class="btn btn-success" onclick="addPowerBi(event)"><i class="fas fa-check"> Confirmar</i></button>   
             </div>
         </form>
@@ -202,8 +202,8 @@ const modalAddBiUser = (id_powerbi) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Listado de Accesos</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -222,7 +222,7 @@ const modalAddBiUser = (id_powerbi) => {
                     </div>
                 </div>    
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-id_powerbi="${id_powerbi}" type="submit" onclick="addBiUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Enlace</i></button>   
                 </div>
             </form>
@@ -284,8 +284,8 @@ const modalAddBisUser = (id_login) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar Informes</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -297,7 +297,7 @@ const modalAddBisUser = (id_login) => {
                     </div> 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-id_login="${id_login}" type="submit" onclick="addPowerBisUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></button>   
                 </div>
             </form>

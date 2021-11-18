@@ -11,6 +11,7 @@ const controll = new AccessControl()
 
 controll
     .grant('5')
+    .readOwn('clock')
     .readAny('finance')
     .createAny('finance')
     .updateAny('finance')
@@ -20,7 +21,8 @@ controll
     .readOwn('user')
     .readAny('sales')
     .readOwn('office')
-
+    .readAny('salesman')
+    
 controll
     .grant('6')
     .readOwn('finance')
@@ -36,6 +38,7 @@ controll
 
 controll
     .grant('2')
+    .readOwn('clock')
     .readAny('items')
     .readAny('pricelist')
     .readOwn('goal')
@@ -50,25 +53,34 @@ controll
     .readOwn('office')
     .readOwn('powerbi')
     .readOwn('user')
+    .readOwn('crm', ['id'])
+    .createOwn('crm')
+    .deleteOwn('crm')
+    .updateOwn('crm')
 
 controll
     .grant('4')
-    .readAny('goal')
-    .createAny('goal')
-    .deleteAny('goal')
-    .updateAny('goal')
-    .readAny('goal')
+    .readOwn('clock')
+    .readOwn('goal')
+    .createOwn('goal')
+    .deleteOwn('goal')
+    .updateOwn('goal')
+    .readOwn('goal')
     .readOwn('history')
     .readAny('items')
-    .readAny('pricelist')
-    .readAny('goodyear')
-    .readAny('office')
+    .readOwn('pricelist')
+    .readOwn('goodyear')
+    .readOwn('office')
     .readOwn('powerbi')
     .readAny('salesman')
-    .readAny('stock')
+    .readOwn('stock')
     .readOwn('user')
     .readOwn('clients')
-    .readAny('sales')
+    .readOwn('sales')
+    .readOwn('finance')
+    .readOwn('office')
+    .readOwn('crm', ['office'])
+
 
 controll
     .grant('3')
@@ -78,7 +90,12 @@ controll
 
 controll
     .grant('1')
-    .extend('5')
+    .extend('5') 
+    .readAny('clock')
+    .readAny('patrimony')
+    .createAny('patrimony')
+    .deleteAny('patrimony')
+    .updateAny('patrimony')
     .readAny('file')
     .createAny('file')
     .deleteAny('file')
@@ -111,5 +128,13 @@ controll
     .readAny('user')
     .readAny('clients')
     .readAny('sales')
+    .readAny('quiz')
+    .createAny('quiz')
+    .deleteAny('quiz')
+    .updateAny('quiz')
+    .readAny('crm')
+    .createAny('crm')
+    .deleteAny('crm')
+    .updateAny('crm')
 
 module.exports = controll

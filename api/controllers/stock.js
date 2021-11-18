@@ -10,11 +10,11 @@ module.exports = app => {
             const id_login = req.body.id_login
             const stock = req.body.stock
 
-            const items = await Stock.insert(stock, id_login)
+            await Stock.insert(stock, id_login)
 
             cachelist.delPrefix('stock')
 
-            res.status(201).json(items)
+            res.status(201).json({ msg: 'Stock agregado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -40,13 +40,11 @@ module.exports = app => {
 
     app.delete('/stock/:id_stock', [Middleware.bearer,  Authorization('stock', 'delete')], async ( req, res, next) => {
         try {
-            const id_stock = req.params.id_stock
-
-            await Stock.delete(id_stock)
+            await Stock.delete(req.params.id_stock)
 
             cachelist.delPrefix('stock')
 
-            res.json(id_stock)
+            res.json({ msg: 'Stock eliminado con éxito.' })
         } catch (err) {
             next(err)
         }

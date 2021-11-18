@@ -49,9 +49,9 @@ module.exports = app => {
     app.post('/attachment', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const attachment = req.body.attachment
-            const result = await Mail.insertMailAttachment(attachment.urls, attachment.id_mailpowerbi)
+            const id = await Mail.insertMailAttachment(attachment.urls, attachment.id_mailpowerbi)
 
-            res.status(201).send(result)
+            res.status(201).send({ id, msg: 'Archivo adjunto agregado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -60,9 +60,9 @@ module.exports = app => {
     app.post('/scheduling', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const scheduling = req.body.scheduling
-            const result = await Mail.insertMailScheduling(scheduling.schedule, scheduling.id_mailpowerbi)
+            const id = await Mail.insertMailScheduling(scheduling.schedule, scheduling.id_mailpowerbi)
 
-            res.status(201).send(result)
+            res.status(201).send({ id, msg: 'Programación de fecha agregada con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -77,7 +77,7 @@ module.exports = app => {
             data.id_mailpowerbi = id_mailpowerbi
 
             await Mail.updateMailPowerBi(data)
-            res.json()
+            res.json({ msg: 'Email actualizado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -93,7 +93,7 @@ module.exports = app => {
 
             await Mail.updateMailAttachment(data)
 
-            res.json()
+            res.json({ msg: 'Archivo adjunto con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -102,8 +102,9 @@ module.exports = app => {
     app.delete('/mail/:id_mailpowerbi', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailpowerbi = req.params.id_mailpowerbi
-            const result = await Mail.deleteMailPowerBi(id_mailpowerbi)
-            res.json(result)
+            await Mail.deleteMailPowerBi(id_mailpowerbi)
+            
+            res.json({ msg: 'Email eliminado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -112,8 +113,9 @@ module.exports = app => {
     app.delete('/attachment/:id_mailattachment', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailattachment = req.params.id_mailattachment
-            const result = await Mail.deleteMailAttachment(id_mailattachment)
-            res.json(result)
+            await Mail.deleteMailAttachment(id_mailattachment)
+
+            res.json({ msg: 'Archivo anexo eliminado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -122,8 +124,9 @@ module.exports = app => {
     app.delete('/scheduling/:id_mailscheduling', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailscheduling = req.params.id_mailscheduling
-            const result = await Mail.deleteMailScheduling(id_mailscheduling)
-            res.json(result)
+            await Mail.deleteMailScheduling(id_mailscheduling)
+
+            res.json({ msg: 'Programación de fecha eliminada con éxito.' })
         } catch (err) {
             next(err)
         }

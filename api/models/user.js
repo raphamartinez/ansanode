@@ -1,5 +1,7 @@
 const Repositorie = require('../repositories/user')
 const RepositorieLogin = require('../repositories/login')
+const RepositorieOffice = require('../repositories/office')
+
 const bcrypt = require('bcrypt')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 
@@ -31,15 +33,22 @@ class User {
                     mailenterprise: data.user.mailenterprise,
                     dateBirthday: data.user.dateBirthday,
                     status: 1,
-                    office: {
-                        id_office: data.user.office.id_office
-                    },
+                    offices: data.user.offices,
                     login: {
                         id_login: obj.id_login
                     }
                 }
 
-                const result = await Repositorie.insert(user)
+                const us = await Repositorie.insert(user)
+
+                await data.user.offices.forEach(async office => {
+                    await RepositorieOffice.insert(obj.id_login, office)
+                })
+
+                const result = {
+                    id_login: obj.id_login,
+                    id_user: us.id_user
+                }
 
                 return result
             } else {
@@ -50,10 +59,9 @@ class User {
         }
     }
 
-    async deleteStatus(id_user) {
+    async deleteStatus(id_login) {
         try {
-            const status = 0
-            const result = await Repositorie.deleteStatus(status, id_user)
+            const result = await Repositorie.deleteStatus(0, id_login)
             return result
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el usuario.')
@@ -63,31 +71,33 @@ class User {
     async updateUser(data, id_user) {
 
         try {
-            const verifyMail = await RepositorieLogin.checkMail(data.user.mail)
 
-            if (verifyMail !== true) {
-                const user = {
-                    id_user: id_user,
-                    name: data.user.name,
-                    mailenterprise: data.user.mailenterprise,
-                    perfil: data.user.perfil,
-                    dateBirthday: data.user.dateBirthday,
-                    office: {
-                        id_office: data.user.id_office
-                    }
-                }
-
-                const login = {
-                    id_login: data.user.id_login,
-                    mail: data.user.mail
-                }
-
-                await Repositorie.update(user)
-                await RepositorieLogin.update(login)
-                return true
-            } else {
-                throw new InvalidArgumentError('Ya existe un usuario con este acceso, cámbielo.')
+            const user = {
+                id_user: id_user,
+                name: data.user.name,
+                mailenterprise: data.user.mailenterprise,
+                perfil: data.user.perfil,
+                dateBirthday: data.user.dateBirthday,
+                offices: data.user.offices
             }
+
+            const login = {
+                id_login: data.user.id_login,
+                mail: data.user.mail
+            }
+
+            await Repositorie.update(user)
+            await RepositorieLogin.update(login)
+
+            await RepositorieOffice.delete(login.id_login)
+
+            console.log(data.user);
+
+            await data.user.offices.forEach(async office => {
+                await RepositorieOffice.insert(login.id_login, office)
+            })
+
+            return true
         } catch (error) {
             throw new InvalidArgumentError('No se pudo actualizar el usuario.')
         }
@@ -115,6 +125,9 @@ class User {
                         break
 
                     case 6: obj.perfilDesc = "Encarregado de Sucursal"
+                        break
+
+                    case 7: obj.perfilDesc = "Auditor"
                         break
 
                     default: obj.perfilDesc = "Usuario"
@@ -146,6 +159,14 @@ class User {
         try {
             const user = await Repositorie.viewAdm(id_login)
 
+            const offices = await RepositorieOffice.list(id_login)
+
+            if (offices.length > 0) {
+                user.offices = offices
+            } else {
+                user.offices = []
+            }
+
             switch (user.perfil) {
                 case 1: user.perfilDesc = "Admin"
                     break
@@ -160,6 +181,12 @@ class User {
                     break
 
                 case 5: user.perfilDesc = "Personal administrativo"
+                    break
+                    
+                case 6: obj.perfilDesc = "Encarregado de Sucursal"
+                    break
+
+                case 7: obj.perfilDesc = "Auditor"
                     break
 
                 default: user.perfilDesc = "Usuario"

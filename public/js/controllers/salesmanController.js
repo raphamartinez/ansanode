@@ -95,11 +95,7 @@ window.modalAddSalesman = modalAddSalesman
 
 async function modalAddSalesman(event) {
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     event.preventDefault()
 
     try {
@@ -113,12 +109,12 @@ async function modalAddSalesman(event) {
         sellers.forEach(salesman => {
             salesmanselect.appendChild(ViewSalesman.optionSellers(salesman))
         })
-        loading.innerHTML = " "
+        loading.style.display = "none"
 
         $('#salesmanselect').selectpicker();
         $('#modalsalesman').modal('show')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }
@@ -130,11 +126,7 @@ async function addSalesman(event) {
     $('#modalsalesman').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
 
     try {
         const arrsellers = document.querySelectorAll('#salesmanselect option:checked')
@@ -144,11 +136,11 @@ async function addSalesman(event) {
 
         salesmanList(event)
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Vendedor agregado con éxito!')
 
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }

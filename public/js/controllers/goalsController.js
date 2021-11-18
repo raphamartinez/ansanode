@@ -11,6 +11,7 @@ async function listGoals() {
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         modal.innerHTML = " "
@@ -56,17 +57,14 @@ window.addGoalsList = addGoalsList
 async function addGoalsList() {
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]')
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         powerbi.innerHTML = " "
@@ -102,7 +100,7 @@ async function addGoalsList() {
 
         title.innerHTML = "Fijar Metas"
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
+        loading.style.display = "none"
         cardHistory.style.display = 'none';
     } catch (error) {
 
@@ -114,17 +112,14 @@ window.addGoalsListExcel = addGoalsListExcel
 async function addGoalsListExcel() {
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]')
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         powerbi.innerHTML = " "
@@ -160,7 +155,7 @@ async function addGoalsListExcel() {
 
         title.innerHTML = "Fijar Metas con Excel"
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
+        loading.style.display = "none"
         cardHistory.style.display = 'none';
     } catch (error) {
 
@@ -538,11 +533,7 @@ async function uploadGoals(event) {
     $('#uploadGoals').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
         const btn = event.currentTarget
 
@@ -555,9 +546,9 @@ async function uploadGoals(event) {
         const obj = await Connection.bodyMultipart('goalexcel', formData, 'POST')
         console.log(obj);
 
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
         alert(error)
-        loading.innerHTML = ``
+        loading.style.display = "none";
     }
 }

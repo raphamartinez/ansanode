@@ -57,12 +57,12 @@ const showModalSearch = () => {
     const div = document.createElement('div')
 
     const content = `
-<div class="modal fade" id="search" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="false">
-<div class="modal-dialog" role="document">
+<div class="modal fade" id="search" tabindex="-1" >
+<div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Listado de Stock</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
         </div>
@@ -83,7 +83,7 @@ const showModalSearch = () => {
                     <select title="Deposito" class="selectpicker form-control" multiple name="stock" id="stock">
                     </select> 
                     </div>
-                    <div class="form-group col-md-12">
+                    <div class="form-group border text-center col-md-12">
                     <label for="antecedente">¿Artículos con Stock 0?</label>
                     <div class="custom-control custom-radio custom-control-inline" color:black>
                         <input type="radio" class="custom-control-input perfil" id="stockartsi" name="stockart" value="0" required>
@@ -97,7 +97,7 @@ const showModalSearch = () => {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" onclick="search(event)" name="btn"  class="btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
             </div>
         </form>
@@ -115,12 +115,12 @@ const showModalPrice = () => {
     const div = document.createElement('div')
 
     const content = `
-<div class="modal fade" id="searchPrice" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="false">
-<div class="modal-dialog" role="document">
+<div class="modal fade" id="searchPrice" tabindex="-1" >
+<div class="modal-dialog modal-dialog-centered" >
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Lista de Precios y Saldos</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
         </div>
@@ -147,7 +147,7 @@ const showModalPrice = () => {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" onclick="searchPrice(event)" name="btn"  class="btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
             </div>
         </form>
@@ -165,12 +165,12 @@ const showModalGoodyear = () => {
     const div = document.createElement('div')
 
     const content = `
-<div class="modal fade" id="searchGoodyear" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="false">
-<div class="modal-dialog" role="document">
+<div class="modal fade" id="searchGoodyear" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Informe Goodyear</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <button class="close" type="button" data-bs-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">x</span>
             </button>
         </div>
@@ -200,7 +200,7 @@ const showModalGoodyear = () => {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                 <button type="submit" onclick="searchGoodyear(event)" name="btn"  class="btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
             </div>
         </form>
@@ -305,7 +305,7 @@ const showModalStock = (artname, artcode, cant) => {
                 </div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-dismiss="modal">Vuelve</button>
+                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Vuelve</button>
             </div>
         </form>
     </div>

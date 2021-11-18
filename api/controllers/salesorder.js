@@ -8,11 +8,11 @@ module.exports = app => {
     app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.bearer, Authorization('sales', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`salesorder:${JSON.stringify(req.params)}`)
+            // const cached = await cachelist.searchValue(`salesorder:${JSON.stringify(req.params)}`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            }
+            // if (cached) {
+            //     return res.json(JSON.parse(cached))
+            // }
 
             let search = {
                 datestart: req.params.datestart,
@@ -20,6 +20,7 @@ module.exports = app => {
                 salesman: req.params.salesman,
                 office: req.params.office
             }
+
             const salesorders = await Finance.listSalesOrders(search)
             cachelist.addCache(`salesorder:${JSON.stringify(req.params)}`, JSON.stringify(salesorders), 60 * 30)
 

@@ -3,6 +3,16 @@ const Hbs = require('./hbs')
 const WebScraping = require('./webscraping')
 const Mailpowerbi = require('./mailpowerbi')
 const GoalLine = require('./goalline')
+const Quiz = require('./quiz')
+
+const jobInterview = new CronJob('0 1 0 * * *', () => {
+    try {
+        console.log('Executed Quiz!');
+        Quiz.finishRobot()
+    } catch (error) {
+        console.log('Error quiz!' + error);
+    }
+});
 
 const job = new CronJob('0 15 * * * *', () => {
     try {
@@ -22,7 +32,7 @@ const jobHbs = new CronJob('0 30 5 * * *', () => {
     }
 });
 
-const jobReceivable = new CronJob('0 30 5 * * *', () => {
+const jobReceivable = new CronJob('0 1 4 * * *', () => {
     try {
         console.log('Executed Cron Hbs sucessfuly!');
         Hbs.listReceivables()
@@ -69,4 +79,4 @@ const jobGoalLine = new CronJob('0 15 5 1 * *', () => {
 
 
 
-module.exports = { job, jobHbs, jobMail, jobGoalLine, jobReceivable }
+module.exports = { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview }

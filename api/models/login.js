@@ -1,4 +1,6 @@
 const Repositorie = require('../repositories/login')
+const RepositorieOffice = require('../repositories/office')
+
 const bcrypt = require('bcrypt')
 const Token = require('./token')
 const { ResetPasswordMail } = require('./mail')
@@ -10,9 +12,19 @@ class Login {
     async viewLogin(id_login) {
         try {
             const login = await Repositorie.view(id_login)
+            const offices = await RepositorieOffice.list(login.id_login)
+            
+            if (offices.length > 0) {
+                login.offices = offices
+            } else {
+                login.offices = []
+            }
+
+            login.name = login.name.substring(0, (login.name + " ").indexOf(" "))
+
             return login
         } catch (error) {
-            throw new NotFound('Login.')
+            throw new NotFound(error)
         }
     }
 

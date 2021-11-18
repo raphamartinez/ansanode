@@ -7,6 +7,7 @@ async function addModalStock(event) {
     try {
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         modal.innerHTML = ``
         settings.innerHTML = " "
@@ -38,11 +39,7 @@ async function addstock(event) {
     $('#addstock').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
     try {
 
         const btn = event.currentTarget
@@ -89,10 +86,10 @@ async function addstock(event) {
         })
 
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Acceso al depósito agregado con éxito!')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }
@@ -127,11 +124,7 @@ async function deletestock(event) {
     $('#deletestock').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+loading.style.display = "block";
 
     try {
 
@@ -179,10 +172,10 @@ async function deletestock(event) {
         })
 
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Acceso al depósito eliminado con éxito!')
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
 
     }

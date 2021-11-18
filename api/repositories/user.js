@@ -4,10 +4,12 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class User {
     async insert(user) {
         try {
-            const sql = `INSERT INTO ansa.user (name, mailenterprise, perfil, dateBirthday, status, dateReg, id_login, id_office) values (?, ?, ?, ?, ?, now() - interval 4 hour , ?, ?)`
-            await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login, user.office.id_office])
+            const sql = `INSERT INTO ansa.user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )`
+            await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login])
 
-            return true
+            const sqlId = 'select LAST_INSERT_ID() as id_user from ansa.user LIMIT 1'
+            const obj = await query(sqlId)
+            return obj[0]
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el usuario en la base de datos')
         }
@@ -23,10 +25,11 @@ class User {
         }
     }
 
-    async deleteStatus(status, id_user) {
+    async deleteStatus(status, id_login) {
         try {
-            const sql = `UPDATE ansa.user set status = ? WHERE id_user = ?`
-            await query(sql, [status, id_user])
+            const sql = `UPDATE ansa.user set status = ? WHERE id_login = ?`
+            await query(sql, [status, id_login])
+            
             return true
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el usuario en la base de datos')
@@ -35,8 +38,8 @@ class User {
 
     async update(user) {
         try {
-            const sql = 'UPDATE ansa.user SET name = ?, perfil = ?, dateBirthday = ?, id_office = ?, mailenterprise = ? WHERE id_user = ?'
-            await query(sql, [user.name, user.perfil, user.dateBirthday, user.office.id_office, user.mailenterprise, user.id_user])
+            const sql = 'UPDATE ansa.user SET name = ?, perfil = ?, dateBirthday = ?, mailenterprise = ? WHERE id_user = ?'
+            await query(sql, [user.name, user.perfil, user.dateBirthday, user.mailenterprise, user.id_user])
             return true
         } catch (error) {
             throw new InvalidArgumentError('Error al actualizar los datos')
@@ -56,8 +59,8 @@ class User {
 
     async viewAdm(id_login) {
         try {
-            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, US.id_office, OFI.name as office, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US, ansa.office OFI WHERE 
-            US.id_login = LO.id_login and OFI.id_office = US.id_office and LO.id_login = ${id_login}`
+            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthdayDesc, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US WHERE 
+            US.id_login = LO.id_login  and LO.id_login = ${id_login}`
             const result = await query(sql)
             return result[0]
         } catch (error) {

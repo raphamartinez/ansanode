@@ -3,22 +3,24 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 
 class Office {
 
-    async insert(office) {
+    async insert(id_login, id_office) {
         try {
-            const sql = 'INSERT INTO office (name, status, dateReg) set (?, ?, now() - interval 4 hour )'
-            const result = await query(sql, [office.name, office.status])
+            const sql = 'INSERT INTO officeuser (id_login, id_office) values (?, ?)'
+            const result = await query(sql, [id_login, id_office])
             return result[0]
         } catch (error) {
+            console.log(error);
             throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
         }
     }
 
-    async delete(id_office) {
+    async delete(id_login) {
         try {
-            const sql = `DELETE from office WHERE id_office = ${id_office}`
+            const sql = `DELETE from officeuser WHERE id_login = ${id_login}`
             const result = await query(sql)
             return result[0]
         } catch (error) {
+            console.log(error);
             throw new InternalServerError('No se puede eliminar la sucursal en la base de datos')
         }
     }
@@ -43,11 +45,19 @@ class Office {
         }
     }
 
-    list(office) {
+    list(id_login) {
         try {
-            let sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.office FF WHERE FF.status = 1`
+            let sql
 
-            if(office) sql += ` and FF.code = '${office}'`
+            if (id_login) {
+                sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
+            FROM ansa.office FF 
+            INNER JOIN ansa.officeuser OS ON OS.id_office = FF.id_office
+            WHERE FF.status = 1 and OS.id_login = '${id_login}'`
+            } else {
+                sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
+            FROM ansa.office FF WHERE FF.status = 1`
+            }
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')

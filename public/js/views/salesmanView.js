@@ -19,8 +19,8 @@ const modalAddSalesman = () => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Agregar vendedor al sistema </h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -32,7 +32,7 @@ const modalAddSalesman = () => {
                     </div> 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" onclick="addSalesman(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></button>   
                 </div>
             </form>
@@ -79,8 +79,8 @@ const deleteSalesman = (id_salesman) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">¿Eliminar el Vendedor?</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form action="" method="POST">
@@ -92,7 +92,7 @@ const deleteSalesman = (id_salesman) => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <a data-id_salesman="${id_salesman}"  onclick="deleteSalesman(event)" name="btn" id="btn" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></a>   
                 </div>
             </form>
@@ -114,8 +114,8 @@ const modalAddManager = (id_salesman) => {
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="exampleModalLabel">Enlace al gerente </h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -128,7 +128,7 @@ const modalAddManager = (id_salesman) => {
                     </div> 
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button data-id_salesman="${id_salesman}" type="submit" onclick="AddManager(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Enlace</i></button>   
                 </div>
             </form>

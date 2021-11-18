@@ -1,3 +1,4 @@
+const Repositorie = require('../repositories/item')
 const RepositorieHbs = require('../repositories/hbs')
 const RepositoriePrice = require('../repositories/itemprice')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
@@ -47,6 +48,13 @@ class Item {
         }
     }
 
+    listUnion(){
+        try {
+            return Repositorie.listUnion()
+        } catch (error) {
+            throw new InternalServerError('No se pude listar los items.')
+        }
+    }
 }
 
 module.exports = new Item

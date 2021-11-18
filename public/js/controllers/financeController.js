@@ -8,17 +8,14 @@ btnFinance.addEventListener('click', async (event) => {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+    loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         modal.innerHTML = " "
@@ -29,12 +26,11 @@ btnFinance.addEventListener('click', async (event) => {
             $('#dataTable').dataTable().fnDestroy();
             $('#dataTable').empty();
         }
-
+        
+        cardHistory.style.display = 'none';
         title.innerHTML = "Cobranza"
         title.appendChild(ViewFinance.buttonsearchstock())
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
-        cardHistory.style.display = 'none';
 
         const clients = await Connection.noBody('clients', 'GET')
 
@@ -69,9 +65,9 @@ btnFinance.addEventListener('click', async (event) => {
         document.getElementById("overdueyes").checked = true;
         $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
-        loading.innerHTML = ``
+        loading.style.display = "none";
         alert(error)
     }
 })
@@ -151,17 +147,14 @@ async function listFinance(event) {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-<div class="spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
+    loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         modal.innerHTML = " "
@@ -176,7 +169,7 @@ async function listFinance(event) {
         title.innerHTML = "Finanzas"
         title.appendChild(ViewFinance.buttonsearchstock())
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
+        loading.style.display = "none"
         cardHistory.style.display = 'none';
 
         const clients = await Connection.noBody('clients', 'GET')
@@ -199,7 +192,7 @@ async function listFinance(event) {
             inlineIcon: false,
             onChange: event => {
                 cleanPlaceholder(event)
-             }
+            }
         });
 
         // document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
@@ -214,9 +207,9 @@ async function listFinance(event) {
         document.getElementById("overdueyes").checked = true;
         $('#selectoffice').selectpicker();
         $('#searchfinance').modal('show')
-        loading.innerHTML = ``
+        loading.style.display = "none";
     } catch (error) {
-        loading.innerHTML = ``
+        loading.style.display = "none";
         alert(error)
     }
 }
@@ -228,22 +221,24 @@ async function searchFinance(event) {
     $('#searchfinance').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+    loading.style.display = "block";
     try {
 
         const selectclients = document.querySelectorAll('.select-pure__option--selected')
         const clients = Array.from(selectclients).map(el => `'${el.getAttribute('data-value')}'`);
         if (clients.length === 0) clients[0] = "ALL"
 
-        const selectoffice = document.querySelectorAll('#selectoffice option:checked')
-        const offices = Array.from(selectoffice).map(el => `'${el.value}'`);
-        if (offices.length === 0) offices[0] = "ALL"
+        let offices
+        let selectoffice = document.querySelectorAll('#selectoffice option:checked')
+        offices = Array.from(selectoffice).map(el => `'${el.value}'`);
+
+        if (offices.length === 0) {
+            let selectofficedefault = document.querySelectorAll('#selectoffice option')
+            offices = Array.from(selectofficedefault).map(el => `'${el.value}'`);
+        }
 
         const overdue = document.querySelector('input[name="overdue"]:checked').value;
+        const type = document.querySelector('input[name="type"]:checked').value;
 
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
@@ -251,7 +246,7 @@ async function searchFinance(event) {
             $('#dataTable').empty();
         }
 
-        const data = await Connection.noBody(`finance/${clients}/${offices}/${overdue}`, 'GET')
+        const data = await Connection.noBody(`finance/${clients}/${offices}/${overdue}/${type}`, 'GET')
         let dtview = [];
 
         data.forEach(obj => {
@@ -549,9 +544,9 @@ async function searchFinance(event) {
             }
         });
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }
@@ -667,7 +662,7 @@ function viewFinance(title, invoices) {
             `<strong>${invoice.SalesMan}</strong>`,
             `${invoice.date}`,
             `${invoice.amount}`,
-            `<input tabindex="${index}" data-SerNr="${invoice.SerNr}" value="${invoice.contactdate}" data-type="contactdate" class="form-control finance datepicker" type="datetime-local" name="contactdate" id="contactdate">`,
+            `<input tabindex="${index}" data-SerNr="${invoice.SerNr}" value="${invoice.contactdate}" data-type="contactdate" class="form-control finance datepicker" type="date" name="contactdate" id="contactdate">`,
             `<input tabindex="${index + 1}" data-SerNr="${invoice.SerNr}" value="${invoice.responsible}" data-type="responsible" class="form-control finance" type="text" name="responsible" id="responsible">`,
             `<input tabindex="${index + 2}" data-SerNr="${invoice.SerNr}" value="${invoice.contact}" data-type="contact" class="form-control finance" type="text" name="contact" id="contact">`,
             `<textarea tabindex="${index + 3}" data-SerNr="${invoice.SerNr}" data-type="comment" class="form-control finance" type="text" name="comment" id="comment">${invoice.comment}</textarea>`,
@@ -679,7 +674,7 @@ function viewFinance(title, invoices) {
                 <option value="2">Pago Programado</option>
                 <option value="3">Reenviar al gerente</option>
              </select>`,
-            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-success finance" onclick="saveFinance(event)" disabled>Guardar</button>`
+            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-lg btn-success" onclick="saveFinance(event)" disabled>Guardar</button>`
         ]
         index += 7
 

@@ -35,7 +35,7 @@ const noBody = async (url, method) => {
                         if (newresult.ok) {
                             return newresult.json()
                         } else {
-                            alert('Error del Servidor.')
+                            alert(newresult.msg)
                             return result.json()
                         }
                     } catch (error) {
@@ -47,12 +47,14 @@ const noBody = async (url, method) => {
             }
 
             if (result.status === 404) {
-                alert('No se ha encontrado.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
 
             if (result.status === 500) {
-                alert('Error del Servidor.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
         }
@@ -109,12 +111,14 @@ const body = async (url, data, method) => {
             }
 
             if (result.status === 404) {
-                alert('No se ha encontrado.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
 
             if (result.status === 500) {
-                alert('Error del Servidor.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
         }
@@ -158,7 +162,7 @@ const bodyMultipart = async (url, data, method) => {
                         if (newresult.ok) {
                             return newresult.json()
                         } else {
-                            alert('Error del Servidor.')
+                            alert(result.msg)
                             return result.json()
                         }
                     } catch (error) {
@@ -170,12 +174,14 @@ const bodyMultipart = async (url, data, method) => {
             }
 
             if (result.status === 404) {
-                alert('No se ha encontrado.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
 
             if (result.status === 500) {
-                alert('Error del Servidor.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
         }
@@ -271,7 +277,7 @@ const backFile = async (url, method) => {
                         if (newresult.ok) {
                             return newresult
                         } else {
-                            alert('Error del Servidor.')
+                            alert(result.msg)
                             return result
                         }
                     } catch (error) {
@@ -283,12 +289,14 @@ const backFile = async (url, method) => {
             }
 
             if (result.status === 404) {
-                alert('No se ha encontrado.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
 
             if (result.status === 500) {
-                alert('Error del Servidor.')
+                const obj = await result.json()
+                alert(obj.msg)
                 return result.json()
             }
         }

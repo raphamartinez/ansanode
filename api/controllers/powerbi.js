@@ -56,18 +56,10 @@ module.exports = app => {
         }
     })
 
-    app.all('/admin/*', Middleware.bearer, async (req, res, next) => {
-        try {
-            next()
-        } catch (err) {
-            next(err)
-        }
-    });
-
-    app.get('/powerbisuser/:id', [Middleware.bearer, Authorization('powerbi', 'read')], async (req, res, next) => {
+    app.get('/powerbisuser/:id_login', [Middleware.bearer, Authorization('powerbi', 'read')], async (req, res, next) => {
 
         try {
-            const id_login = req.params.id
+            const id_login = req.params.id_login
             const powerbis = await PowerBi.listPowerBis(id_login)
             res.json(powerbis)
         } catch (err) {
@@ -89,11 +81,11 @@ module.exports = app => {
     app.post('/powerbi', [Middleware.bearer, Authorization('powerbi', 'create')], async (req, res, next) => {
         try {
             const powerbi = req.body.powerbi
-            const id_powerbi = await PowerBi.insertPowerBi(powerbi)
+            const id = await PowerBi.insertPowerBi(powerbi)
 
             cachelist.delPrefix('powerbi')
 
-            res.status(201).json(id_powerbi)
+            res.status(201).json({msg: 'PowerBi agregado con éxito.', id})
         } catch (err) {
             next(err)
         }
@@ -108,7 +100,7 @@ module.exports = app => {
 
             cachelist.delPrefix('powerbi')
 
-            res.json({msg: `PowerBi editado con éxito!`})
+            res.json({msg: `PowerBi editado con éxito.`})
         } catch (err) {
             next(err)
         }
@@ -121,7 +113,7 @@ module.exports = app => {
 
             cachelist.delPrefix('powerbi')
 
-            res.json({msg: `PowerBi excluido con éxito!`})
+            res.json({msg: `PowerBi excluido con éxito.`})
         } catch (err) {
             next(err)
         }

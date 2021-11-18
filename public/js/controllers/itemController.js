@@ -6,26 +6,23 @@ window.listItems = listItems
 async function listItems() {
 
     let loading = document.querySelector('[data-loading]')
-
     try {
 
         const fields = await Connection.noBody('stockuser', 'GET')
-        
-        if(fields === false){
+
+        if (fields === false) {
             return alert("No tiene acceso a ningún stock, solicite acceso a un administrador.")
         }
 
-        loading.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        `
+        loading.style.display = "block"
+
 
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = ''
         modal.innerHTML = " "
@@ -40,7 +37,6 @@ async function listItems() {
         View.buttonsearchstock(title)
 
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
         cardHistory.style.display = 'none';
 
         modal.appendChild(View.showModalSearch())
@@ -63,6 +59,9 @@ async function listItems() {
         autocompletecod(document.getElementById("artcode"), items);
         autocompletename(document.getElementById("itemname"), items);
 
+        loading.style.display = "none"
+        $('#search').modal('show')
+
     } catch (error) {
 
     }
@@ -75,11 +74,7 @@ async function search(event) {
     $('#search').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
+    loading.style.display = "block";
     try {
 
         const btn = event.currentTarget
@@ -201,10 +196,10 @@ async function search(event) {
         $('#artcode').val('')
         $('#itemname').val('')
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
         console.log(error);
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }
@@ -215,12 +210,9 @@ async function listStocks(event) {
     event.preventDefault()
 
     let loading = document.querySelector('[data-loading]')
+    loading.style.display = "block"
+
     let modal = document.querySelector('[data-modal]')
-    loading.innerHTML = `
-<div class="d-flex justify-content-center align-items-center spinner-border text-primary" role="status">
-  <span class="sr-only">Loading...</span>
-</div>
-`
     const btn = event.currentTarget
     const artcode = btn.getAttribute("data-artcode")
     const artname = btn.getAttribute("data-artname")
@@ -239,13 +231,12 @@ async function listStocks(event) {
         tbodystock.appendChild(View.newLine(obj))
     });
 
-    $('#modalstock').modal('show')
-
-    loading.innerHTML = " "
-
     const items = await Connection.noBody('itemscomplete', 'GET')
     autocompletecod(document.getElementById("artcode"), items);
     autocompletename(document.getElementById("itemname"), items);
+
+    loading.style.display = "none"
+    $('#modalstock').modal('show')
 }
 
 
@@ -254,25 +245,21 @@ window.listPrice = listPrice
 async function listPrice() {
 
     let loading = document.querySelector('[data-loading]')
-
     try {
 
         const fields = await Connection.noBody('stockuser', 'GET')
-        if(fields === false){
+        if (fields === false) {
             return alert("No tiene acceso a ningún stock para ver los artículos, solicite acceso a un administrador.")
         }
 
-        loading.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        `
+        loading.style.display = "block"
 
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         modal.innerHTML = " "
         modal.appendChild(View.showModalPrice())
@@ -286,7 +273,6 @@ async function listPrice() {
         title.innerHTML = "Lista de Precios y Saldos"
         View.buttonsearchprice(title)
         powerbi.innerHTML = " "
-        loading.innerHTML = " "
         cardHistory.style.display = 'none';
         settings.innerHTML = " "
 
@@ -302,6 +288,9 @@ async function listPrice() {
         autocompletecod(document.getElementById("artcode"), items);
         autocompletename(document.getElementById("itemname"), items);
 
+        loading.style.display = "none"
+        $('#searchPrice').modal('show')
+
     } catch (error) {
 
     }
@@ -314,12 +303,8 @@ async function searchPrice(event) {
     $('#searchPrice').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
+    loading.style.display = "block";
 
-    loading.innerHTML = `
-    <div class="spinner-border text-primary" role="status">
-      <span class="sr-only">Loading...</span>
-    </div>
-    `
     try {
 
         const btn = event.currentTarget
@@ -329,7 +314,7 @@ async function searchPrice(event) {
 
         const artcode = btn.form.artcode.value
         const itemname = btn.form.itemname.value
- 
+
         const search = {
             pricelist: pricelist,
             itemgroup: itemgroup,
@@ -436,10 +421,10 @@ async function searchPrice(event) {
             $('#artcode').val('')
             $('#itemname').val('')
         }
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
         console.log(error);
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }
@@ -449,15 +434,21 @@ window.listGoodyear = listGoodyear
 
 async function listGoodyear() {
 
+    let loading = document.querySelector('[data-loading]')
+    loading.style.display = "block";
+
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
         const cardHistory = document.querySelector('[data-card]')
         let modal = document.querySelector('[data-modal]')
         let settings = document.querySelector('[data-settings]');
+        document.querySelector('[data-features]').innerHTML = ""
 
         settings.innerHTML = " "
         modal.innerHTML = " "
+        powerbi.innerHTML = " "
+        cardHistory.style.display = 'none';
         modal.appendChild(View.showModalGoodyear())
 
         const offices = await Connection.noBody('offices', 'GET')
@@ -477,8 +468,8 @@ async function listGoodyear() {
         title.innerHTML = "Informe Goodyear"
         View.buttonsearchgoodyear(title)
 
-        powerbi.innerHTML = " "
-        cardHistory.style.display = 'none';
+        loading.style.display = "none"
+        $('#searchGoodyear').modal('show')
     } catch (error) {
     }
 }
@@ -506,16 +497,12 @@ async function searchGoodyear(event) {
             itemgroup: itemgroup
         }
 
-        if(!datestart || !dateend) return alert("¡El período es obligatorio!")
+        if (!datestart || !dateend) return alert("¡El período es obligatorio!")
 
         $('#searchGoodyear').modal('hide')
 
         let loading = document.querySelector('[data-loading]')
-        loading.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        `
+        loading.style.display = "block";
 
         const data = await Connection.body('goodyear', { search: search }, 'POST')
         let dtview = [];
@@ -609,10 +596,10 @@ async function searchGoodyear(event) {
             })
         }
 
-        loading.innerHTML = " "
+        loading.style.display = "none"
     } catch (error) {
         console.log(error);
-        loading.innerHTML = " "
+        loading.style.display = "none"
         alert(error)
     }
 }

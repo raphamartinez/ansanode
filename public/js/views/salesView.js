@@ -22,13 +22,13 @@ const modalsearch = () => {
     const div = document.createElement('div')
 
     const content = `
-    <div class="modal fade" id="searchSalesOrder" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal fade" id="searchSalesOrder" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Listado de Orden de Ventas</h5>
-                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">x</span>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">x</span>
                 </button>
             </div>
             <form>
@@ -56,7 +56,7 @@ const modalsearch = () => {
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" onclick="listSales(event)" class="btn btn-success"><i class="fas fa-search"> Buscar</i></button>   
                 </div>
             </form>

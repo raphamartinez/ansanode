@@ -28,9 +28,9 @@ module.exports = app => {
                 }
             }
 
-            const crms = await Crm.list(search)
+            const { crms, types, days, clients } = await Crm.list(search)
 
-            res.json(crms)
+            res.json({crms, types, days, clients})
         } catch (err) {
             next(err)
         }

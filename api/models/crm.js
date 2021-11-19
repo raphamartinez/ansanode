@@ -38,15 +38,24 @@ class Crm {
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la sucursal.')
         }
-    } 
+    }
 
-    list(search) {
+    async list(search) {
         try {
-            return Repositorie.list(search)
+
+            const crms = await Repositorie.list(search)
+
+            const types = await Repositorie.listProductsType(search)
+
+            const days = await Repositorie.listProductsDay(search)
+
+            const clients = await Repositorie.listProductsClient(search)
+
+            return { crms, types, days, clients }
         } catch (error) {
             console.log(error);
 
-            throw new InternalServerError('No se pudieron enumerar las sucursales.')
+            throw new InternalServerError('No se pudieron enumerar.')
         }
     }
 

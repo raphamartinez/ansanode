@@ -128,6 +128,38 @@ const table = () => {
         </div>
     </div>
 </div> 
+
+
+
+<div data-div-chart-crms class="d-none row justify-content-md-center" >
+    <div class="col-10">
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="form-row align-items-center">
+                    <div class="col-4 text-center">
+                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-client ></canvas>
+                    </div>
+                    <div class="col-4 text-center">
+                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-date ></canvas>
+                    </div>
+                    <div class="col-4 text-center">
+                        <canvas style="max-height: 300px;" class="flex d-inline"  data-chart-type ></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+            <div class="form-row text-center align-items-center">
+                <div class="col-6">
+                    <h5>Productos Ofrecidos</h5>
+                </div>
+                <div class="col-6">
+                    <h5>Tipo de Productos</h5>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
         
 <div data-div-table-crms class="d-none row justify-content-md-center" >
     <div class="col-10" >
@@ -140,14 +172,6 @@ const table = () => {
                 </div>
             </div>
             <div class="card-body">
-                <div class="form-group text-center offset-5 col-2">
-                    <select class="form-control" id="status" name="status" required style="display:none;"
-                        data-status>
-                        <option value="0" selected>Todos los status</option>
-                        <option value="1">De Acuerdo</option>
-                        <option value="2">Atención</option>
-                    </select>
-                </div>
                 <table class="table table-bordered text-center" id="dataCrm" width="100%" cellspacing="0"></table>
             </div>
         </div>

@@ -90,6 +90,71 @@ class Crm {
             throw new InternalServerError('')
         }
     }
+
+    listProductsDay(search) {
+        try {
+            let sql = `SELECT COUNT(cp.id) as products, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
+            FROM ansa.crm cr
+            LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
+            WHERE cr.contactdate BETWEEN ? and ? `
+
+            if (search.id) sql += ` AND cr.id_login = ${search.id} `
+
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${search.offices})) `
+
+            sql += ` GROUP BY cr.contactdate; `
+
+            return query(sql, [search.start, search.end])
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('')
+        }
+    }
+
+    listProductsType(search) {
+        try {
+            let sql = `SELECT COUNT(cp.id) as products, cp.type
+            FROM ansa.crm cr
+            LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
+            WHERE cr.contactdate BETWEEN ? and ? `
+
+            if (search.id) sql += ` AND cr.id_login = ${search.id} `
+
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${search.offices})) `
+
+            sql += ` GROUP BY cp.type; `
+
+            return query(sql, [search.start, search.end])
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('')
+        }
+    }
+
+    listProductsClient(search) {
+        try {
+            let sql = `SELECT COUNT(cr.client) as client, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
+            FROM ansa.crm cr
+            WHERE cr.contactdate BETWEEN ? and ? `
+
+            if (search.id) sql += ` AND cr.id_login = ${search.id} `
+
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${search.offices})) `
+
+            sql += ` GROUP BY cr.contactdate; `
+
+            return query(sql, [search.start, search.end])
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('')
+        }
+    }
 }
 
 module.exports = new Crm()

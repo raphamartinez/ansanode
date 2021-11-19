@@ -181,7 +181,7 @@ const table = async (data) => {
         $('#dataCrm').empty();
     }
 
-    const table = $("#dataCrm").DataTable({
+    $("#dataCrm").DataTable({
         destroy: true,
         data: crms,
         columns: [
@@ -214,13 +214,6 @@ const table = async (data) => {
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
     })
-
-    document.querySelector('#dataCrm').addEventListener('click', (event) => {
-        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
-            if (event.target.classList[0] === 'btn-view') return view(event)
-        }
-    })
-
 }
 //
 const view = async (event) => {
@@ -310,6 +303,122 @@ const view = async (event) => {
     }
 }
 
+const graphClient = (clients) => {
+
+    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+
+
+    const ctxclient = document.querySelector('[data-chart-client]')
+
+    const days = Array.from(clients).map(obj => obj.date)
+    const client = Array.from(clients).map(obj => obj.client)
+
+    const chartclient = new Chart(ctxclient, {
+        type: 'line',
+        data: {
+            labels: days,
+            datasets: [{
+                label: 'Productos ofrecidos por dia',
+                data: client,
+                backgroundColor: [
+                    'rgba(30, 139, 195, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(137, 196, 244, 1)',
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+}
+
+const graphDate = (dates) => {
+
+    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+
+
+    const ctxdate = document.querySelector('[data-chart-date]')
+
+    const days = Array.from(dates).map(obj => obj.date)
+    const products = Array.from(dates).map(obj => obj.products)
+
+    const chartdate = new Chart(ctxdate, {
+        type: 'bar',
+        data: {
+            labels: days,
+            datasets: [{
+                label: 'Productos ofrecidos por dia',
+                data: products,
+                backgroundColor: [
+                    'rgba(30, 139, 195, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(137, 196, 244, 1)',
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+}
+
+const graphType = (types) => {
+
+    const ctxtype = document.querySelector('[data-chart-type]')
+
+    const type = Array.from(types).map(obj => obj.type)
+    const products = Array.from(types).map(obj => obj.products)
+
+    const charttype = new Chart(ctxtype, {
+        type: 'doughnut',
+        data: {
+            labels: type,
+            datasets: [{
+                label: 'Tipos de Productos',
+                data: products,
+                backgroundColor: [
+                    'rgba(30, 139, 195, 0.5)',
+                    'rgba(3, 201, 169, 0.5)',
+                    'rgba(245, 229, 27, 0.5)',
+                ],
+                borderColor: [
+                    'rgba(137, 196, 244, 1)',
+                    'rgba(183, 244, 216, 1)',
+                    'rgba(255, 255, 204, 1)',
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            legend: {
+                labels: {
+                    fontColor: "#000",
+                    fontSize: 18,
+                    fontStyle: "bold"
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+        }
+    });
+}
+
 const search = async (event) => {
     event.preventDefault()
 
@@ -335,7 +444,16 @@ const search = async (event) => {
     document.querySelector('[data-loading]').style.display = "block"
 
     const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
-    table(data)
+    table(data.crms)
+    graphClient(data.clients)
+    graphType(data.types)
+    graphDate(data.days)
+
+
+    $('html,body').animate({
+        scrollTop: $('[data-div-chart-crms]').offset().top - 100
+    }, 'slow');
+
 
     document.querySelector('[data-loading]').style.display = "none"
 }
@@ -358,6 +476,12 @@ const dashboard = async () => {
     document.querySelector('[data-add-product]').addEventListener('click', addProduct, false)
     document.querySelector('[data-form-crm]').addEventListener('submit', create, false)
     document.querySelector('[data-search-crm]').addEventListener('submit', search, false)
+
+    document.querySelector('#dataCrm').addEventListener('click', (event) => {
+        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
+            if (event.target.classList[0] === 'btn-view') return view(event)
+        }
+    })
 }
 
 document.querySelector('[data-menu-crm]').addEventListener('click', dashboard, false)

@@ -57,7 +57,7 @@ const header = () => {
 
 const table = () => {
     const div = document.createElement('div')
-    div.innerHTML = `<div data-div-travels class="row justify-content-md-center">
+    div.innerHTML = `<div data-div-travels class="row justify-content-md-center d-none">
     <div class="col-10">
         <div class="card shadow mb-4">
             <div class="card-header">
@@ -69,7 +69,7 @@ const table = () => {
             </div>
             <div class="card-body">
                 <div class="form-group text-center offset-5 col-2">
-                    <select class="form-control" id="status" name="status" required style="display:none;"
+                    <select class="form-control" id="status" name="status" required
                         data-status>
                         <option value="0" selected>Todos los status</option>
                         <option value="1">En horário</option>

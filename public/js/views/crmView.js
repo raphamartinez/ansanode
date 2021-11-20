@@ -136,24 +136,27 @@ const table = () => {
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="form-row align-items-center">
-                    <div class="col-4 text-center">
-                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-client ></canvas>
+                    <div class="col-4 text-center" div-chart-client>
+                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-client></canvas>
                     </div>
-                    <div class="col-4 text-center">
-                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-date ></canvas>
+                    <div class="col-4 text-center" div-chart-date>
+                        <canvas style="max-height: 600px;" class="flex d-inline" data-chart-date></canvas>
                     </div>
-                    <div class="col-4 text-center">
-                        <canvas style="max-height: 300px;" class="flex d-inline"  data-chart-type ></canvas>
+                    <div class="col-4 text-center" div-chart-type>
+                        <canvas style="max-height: 300px;" class="flex d-inline"  data-chart-type></canvas>
                     </div>
                 </div>
             </div>
             <div class="card-footer">
             <div class="form-row text-center align-items-center">
-                <div class="col-6">
+                <div class="col-4">
+                    <h5>Clientes contactados</h5>
+                </div>
+                <div class="col-4">
                     <h5>Productos Ofrecidos</h5>
                 </div>
-                <div class="col-6">
-                    <h5>Tipo de Productos</h5>
+                <div class="col-4">
+                    <h5>Tipos de Productos</h5>
                 </div>
             </div>
         </div>

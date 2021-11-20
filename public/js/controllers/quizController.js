@@ -38,11 +38,11 @@ const chartRadar = () => {
             scales: {
                 r: {
                     pointLabels: {
-                      font: {
-                        size: 15,
-                        color: "#000",
-                        style: "bold"
-                      }
+                        font: {
+                            size: 15,
+                            color: "#000",
+                            style: "bold"
+                        }
                     }
                 }
             }
@@ -379,7 +379,7 @@ const chartcomparation = () => {
         }
 
         document.querySelector('[data-confusion]').innerHTML = ""
-        if(positive === negative) document.querySelector('[data-confusion]').innerHTML = `<h5 class="text-warning">En caso de contradicciónes y/o confusiónes a la hora de responder el cuestionario, existe la posibilidad que las personalidades en Condición Favorable y Condición de Estrés sean iguales.</h5>`
+        if (positive === negative) document.querySelector('[data-confusion]').innerHTML = `<h5 class="text-warning">En caso de contradicciónes y/o confusiónes a la hora de responder el cuestionario, existe la posibilidad que las personalidades en Condición Favorable y Condición de Estrés sean iguales.</h5>`
 
         chartcomparation.data.datasets[0].data = positivedt
         chartcomparation.data.datasets[1].data = negativedt
@@ -395,110 +395,27 @@ const chartcomparation = () => {
 }
 
 
-
-const send = async (event) => {
-    event.preventDefault()
-
-    const quiz = event.currentTarget.quiz
-
-    document.querySelector('[data-loading]').style.display = "block"
-
-    const date = new Date()
-    const user = {
-        name: event.currentTarget.name.value,
-        mail: event.currentTarget.mail.value,
-        datereg: `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-        status: 0
-    }
-
-    const rowNode = $('#dataQuiz').DataTable()
-        .row.add([
-            user.name,
-            user.mail,
-            user.datereg,
-            user.status
-        ])
-        .draw()
-        .node();
-
-    $(rowNode)
-        .css('color', 'black')
-        .animate({ color: '#4e73df' });
-
-    const obj = await Connection.body('quiz', { user, quiz }, 'POST')
-
-    document.querySelector('[data-loading]').style.display = "none"
-
-    alert(obj.msg)
-
-    document.querySelector('[data-form-send]').removeEventListener('submit', send, false)
-}
-
-const fields = (event) => {
-    if (event.target && event.target.className == "form-range") {
-        try {
-            let int = parseInt(event.target.value)
-
-            if (int > 0 && int < 0) return event.target.value = 0
-
-            event.target.parentElement.nextElementSibling.children[0].value = int
-        } catch (error) {
-            alert("Carácter no válido, ingrese solo números.")
-        }
-    }
-
-    if (event.target && event.target.className == "form-control border-3") {
-        try {
-            let int = parseInt(event.target.value)
-
-            if (int > 10 || int < 0) return event.target.value = 0
-
-            event.target.parentElement.previousElementSibling.children[0].value = int
-        } catch (error) {
-            alert("Carácter no válido, ingrese solo números.")
-        }
-    }
-
-    if (event.target && event.target.className == "form-control-color me-1") {
-        try {
-            let int = parseInt(event.target.value)
-            let index = event.target.getAttribute('data-index')
-
-            if (int > 4 || int < 0) return event.target.value = 0
-
-            const lis = event.path[2].children
-
-            let li1 = lis[0].children[0].getAttribute('data-index')
-            if (index !== li1) if (event.target.value === lis[0].children[0].value) lis[0].children[0].value = 0
-            let li2 = lis[1].children[0].getAttribute('data-index')
-            if (index !== li2) if (event.target.value === lis[1].children[0].value) lis[1].children[0].value = 0
-            let li3 = lis[2].children[0].getAttribute('data-index')
-            if (index !== li3) if (event.target.value === lis[2].children[0].value) lis[2].children[0].value = 0
-            let li4 = lis[3].children[0].getAttribute('data-index')
-            if (index !== li4) if (event.target.value === lis[3].children[0].value) lis[3].children[0].value = 0
-
-        } catch (error) {
-            alert("Carácter no válido, ingrese solo números.")
-        }
-    }
-
-}
-
 const listQuiz = async () => {
+
+    if ($.fn.DataTable.isDataTable('#dataQuiz')) {
+        $('#dataQuiz').dataTable().fnClearTable();
+        $('#dataQuiz').dataTable().fnDestroy();
+        $('#dataQuiz').empty();
+    }
 
     const quiz = await Connection.noBody('quiz', 'GET')
 
     let dtquiz = [];
 
     await quiz.forEach(obj => {
-        let options = `<a btn-quiz-view data-title="${obj.title}" data-id="${obj.id}"><i class="fas fa-eye" style="color:#cbccce;"></i></a>
-        <a btn-quiz-send data-title="${obj.title}" data-id="${obj.id}"><i class="fas fa-envelope" style="color:#00BFFF;"></i></a>`
+        let options = `<a><i data-action data-title="${obj.title}" data-id="${obj.id}" class="btn-view fas fa-eye"></i></a>
+        <a><i data-action data-title="${obj.title}" data-id="${obj.id}" class="btn-send fas fa-envelope" style="color:#00BFFF;"></i></a>`
 
         const field = [options, obj.title, obj.interviews, obj.datereg]
         dtquiz.push(field)
     });
 
-    await $("#dataTable").DataTable({
+    await $("#dataQuiz").DataTable({
         destroy: true,
         data: dtquiz,
         columns: [
@@ -525,6 +442,125 @@ const listQuiz = async () => {
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
+    })
+
+    const send = (event) => {
+        const quiz = {
+            id_quiz: event.target.getAttribute('data-id'),
+            title: event.target.getAttribute('data-title')
+        }
+
+        document.querySelector('[data-modal]').appendChild(View.send())
+
+        $('#send').modal('show')
+
+        document.querySelector('[data-form-send]').addEventListener('submit', async (event) => {
+            event.preventDefault()
+
+            document.querySelector('[data-loading]').style.display = "block"
+
+            const date = new Date()
+            const user = {
+                name: event.currentTarget.name.value,
+                mail: event.currentTarget.mail.value,
+                datereg: `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                status: 0
+            }
+
+            const obj = await Connection.body('quiz', { user, quiz }, 'POST')
+
+            document.querySelector('[data-loading]').style.display = "none"
+
+            alert(obj.msg)
+        })
+    }
+
+    const view = async (event) => {
+        const id_quiz = event.target.getAttribute("data-id")
+        const title = event.target.getAttribute("data-title")
+
+        document.querySelector('[data-loading]').style.display = "block"
+
+        const quiz = await Connection.noBody(`viewquiz/${id_quiz}`, 'GET')
+        document.querySelector('[data-view-quiz]').innerHTML = ""
+
+        const div = document.createElement('div')
+        div.classList.add('mb-2', 'col-lg-12', 'text-center')
+        div.innerHTML = `<h5> Cuestionario - ${title}</h5><div data-quiz class="row justify-content-md-center"></div>`
+
+        document.querySelector('[data-view-quiz]').appendChild(div)
+
+        $('html,body').animate({
+            scrollTop: $('[data-view-quiz]').offset().top - 100
+        }, 'slow');
+
+        await quiz.forEach(question => {
+
+            if (question.type === "range") {
+                document.querySelector('[data-quiz]').appendChild(View.range(question))
+            }
+
+            if (question.type === "int") {
+                document.querySelector('[data-quiz]').appendChild(View.int(question))
+            }
+        })
+        document.querySelector('[data-loading]').style.display = "none"
+
+        document.querySelector('[data-view-quiz]').addEventListener('change', (event) => {
+            if (event.target && event.target.className == "form-range") {
+                try {
+                    let int = parseInt(event.target.value)
+
+                    if (int > 0 && int < 0) return event.target.value = 0
+
+                    event.target.parentElement.nextElementSibling.children[0].value = int
+                } catch (error) {
+                    alert("Carácter no válido, ingrese solo números.")
+                }
+            }
+
+            if (event.target && event.target.className == "form-control border-3") {
+                try {
+                    let int = parseInt(event.target.value)
+
+                    if (int > 10 || int < 0) return event.target.value = 0
+
+                    event.target.parentElement.previousElementSibling.children[0].value = int
+                } catch (error) {
+                    alert("Carácter no válido, ingrese solo números.")
+                }
+            }
+
+            if (event.target && event.target.className == "form-control-color me-1") {
+                try {
+                    let int = parseInt(event.target.value)
+                    let index = event.target.getAttribute('data-index')
+
+                    if (int > 4 || int < 0) return event.target.value = 0
+
+                    const lis = event.path[2].children
+
+                    let li1 = lis[0].children[0].getAttribute('data-index')
+                    if (index !== li1) if (event.target.value === lis[0].children[0].value) lis[0].children[0].value = 0
+                    let li2 = lis[1].children[0].getAttribute('data-index')
+                    if (index !== li2) if (event.target.value === lis[1].children[0].value) lis[1].children[0].value = 0
+                    let li3 = lis[2].children[0].getAttribute('data-index')
+                    if (index !== li3) if (event.target.value === lis[2].children[0].value) lis[2].children[0].value = 0
+                    let li4 = lis[3].children[0].getAttribute('data-index')
+                    if (index !== li4) if (event.target.value === lis[3].children[0].value) lis[3].children[0].value = 0
+
+                } catch (error) {
+                    alert("Carácter no válido, ingrese solo números.")
+                }
+            }
+        })
+    }
+
+    document.querySelector('#dataQuiz').addEventListener('click', (event) => {
+        if (event.target && event.target.nodeName === "I" && event.target.matches("[data-action]")) {
+            if (event.target.classList[0] === 'btn-view') return view(event)
+            if (event.target.classList[0] === 'btn-send') return send(event)
+        }
     })
 }
 
@@ -569,72 +605,22 @@ const clean = () => {
 }
 
 
-document.querySelector('[data-btn-quiz]').addEventListener('click', async () => {
+document.querySelector('[data-btn-quiz]').addEventListener('click', () => {
     clean()
-    await listQuiz()
+
+    document.querySelector('[data-features]').appendChild(View.table())
+
+    listQuiz()
 
     document.querySelector('[data-features]').appendChild(View.view())
 
-    await listInterview()
+    listInterview()
 
     chartRadar()
     chartcomparation()
 
     $('#nameone').selectpicker();
     $('#nametwo').selectpicker();
-
-
-    const btnsSend = document.querySelectorAll('[btn-quiz-send]')
-    Array.from(btnsSend).forEach(btnSend => {
-        btnSend.addEventListener('click', (event) => {
-            const quiz = {
-                id_quiz: event.currentTarget.getAttribute('data-id'),
-                title: event.currentTarget.getAttribute('data-title')
-            }
-
-            document.querySelector('[data-modal]').appendChild(View.send())
-
-            $('#send').modal('show')
-
-            document.querySelector('[data-form-send]').addEventListener('submit', send, false)
-            document.querySelector('[data-form-send]').quiz = quiz
-        })
-    })
-
-    const btnsView = document.querySelectorAll('[btn-quiz-view]')
-    Array.from(btnsView).forEach(btnView => {
-        btnView.addEventListener('click', async (event) => {
-
-            const id_quiz = event.currentTarget.getAttribute("data-id")
-            const title = event.currentTarget.getAttribute("data-title")
-            document.querySelector('[data-loading]').style.display = "block"
-
-            const quiz = await Connection.noBody(`viewquiz/${id_quiz}`, 'GET')
-            document.querySelector('[data-features]').innerHTML = ""
-
-            const div = document.createElement('div')
-            div.classList.add('mb-2', 'col-lg-12', 'text-center')
-            div.innerHTML = `<h5> Cuestionario - ${title}</h5><div data-quiz class="row justify-content-md-center"></div>`
-
-            document.querySelector('[data-features]').appendChild(div)
-
-            document.querySelector('[data-features]').removeEventListener('change', fields, false)
-
-            await quiz.forEach(question => {
-
-                if (question.type === "range") {
-                    document.querySelector('[data-quiz]').appendChild(View.range(question))
-                }
-
-                if (question.type === "int") {
-                    document.querySelector('[data-quiz]').appendChild(View.int(question))
-                }
-            })
-            document.querySelector('[data-loading]').style.display = "none"
-
-            document.querySelector('[data-features]').addEventListener('change', fields, false)
-        })
-    })
 
     document.querySelector('[data-print-first]').addEventListener('click', async () => {
 

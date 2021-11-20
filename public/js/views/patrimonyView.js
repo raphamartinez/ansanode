@@ -22,7 +22,7 @@ const header = () => {
     <div class="col-10">
         <div class="card shadow mb-4">
             <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                <h6 class="m-0 font-weight-bold text-primary">Buscar los patrimonios</h6>
             </div>
             <div class="card-body">
                 <form data-search-patrimony >
@@ -49,13 +49,13 @@ const header = () => {
 
 const table = () => {
     const div = document.createElement('div')
-    div.innerHTML = `<div data-div-travels class="row justify-content-md-center">
+    div.innerHTML = `<div div-table-patrimony class="d-none row justify-content-md-center">
     <div class="col-10">
         <div class="card shadow mb-4">
             <div class="card-header">
                 <div class="form-row">
-                    <div class="form-group text-center col-12">
-                        <h6 class="m-0 font-weight-bold text-primary">Listado </h6>
+                    <div class="form-group col-12">
+                        <h6 class="m-0 font-weight-bold text-primary">Listado del patrimonio</h6>
                     </div>
                 </div>
             </div>

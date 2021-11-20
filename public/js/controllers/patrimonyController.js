@@ -172,7 +172,7 @@ const edit = async (event) => {
             div.classList.add('form-group', 'col-md-6')
 
             let required = ''
-            if(detail.description) required = 'required'
+            if (detail.description) required = 'required'
 
             div.innerHTML = `
             <label>${detail.title}</label>
@@ -199,7 +199,7 @@ const edit = async (event) => {
         event2.preventDefault()
 
         let details = ''
-    
+
         if (event2.currentTarget.detail) {
             let selectdetails = document.querySelectorAll('#detailedit')
             details = Array.from(selectdetails).map(el => {
@@ -207,7 +207,7 @@ const edit = async (event) => {
                     description: el.value,
                     id: el.getAttribute('data-id')
                 }
-    
+
                 return obj
             });
         }
@@ -459,7 +459,16 @@ const search = async (event) => {
 
     const patrimonys = await Connection.noBody(`patrimonys/${offices}/${types}`, 'GET')
 
+    if(!patrimonys) return alert('No se encontraron patrimonios.')
+
+    document.querySelector('[div-table-patrimony]').classList.remove('d-none')
+
     await list(patrimonys)
+
+    $('html,body').animate({
+        scrollTop: $('[div-table-patrimony]').offset().top - 100
+    }, 'slow');
+
 
     document.querySelector('[data-loading]').style.display = "none"
 }
@@ -636,7 +645,7 @@ const menu = async () => {
     document.querySelector('[data-features]').appendChild(View.add())
 
 
-    document.querySelector('[data-title]').appendChild(View.header())
+    document.querySelector('[data-features]').appendChild(View.header())
     document.querySelector('[data-features]').appendChild(View.table())
 
     const offices = await Connection.noBody('offices', 'GET')

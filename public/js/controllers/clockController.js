@@ -128,6 +128,8 @@ const search = async (event) => {
         return line
     })
 
+    document.querySelector('[div-table-patrimony]').classList.remove('d-none')
+
     if ($.fn.DataTable.isDataTable('#dataClock')) {
         $('#dataClock').dataTable().fnClearTable();
         $('#dataClock').dataTable().fnDestroy();
@@ -164,8 +166,6 @@ const search = async (event) => {
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
     })
-
-    document.querySelector('[data-status]').style.display = "flex"
 
     const status = (event) => {
 

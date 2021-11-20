@@ -158,6 +158,30 @@ const send = () => {
     return div
 }
 
+const table = () => {
+    const div = document.createElement('div')
+    div.innerHTML = `
+<div div-table-quiz class="row justify-content-md-center">
+    <div class="col-8">
+        <div class="card shadow mb-4">
+            <div class="card-header">
+                <div class="form-row">
+                    <div class="form-group col-12">
+                        <h6 class="m-0 font-weight-bold text-primary">Cuestionarios</h6>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered text-center" id="dataQuiz" width="100%" cellspacing="0"></table>
+            </div>
+        </div>
+    </div>
+</div>`
+
+    return div
+}
+
+
 const view = () => {
     const div = document.createElement('div')
 
@@ -470,7 +494,9 @@ const view = () => {
             </div>
         </div>
     </div>
-</div>`
+</div>
+
+<div data-view-quiz></div></div>`
 
     return div
 }
@@ -516,6 +542,7 @@ const title2 = () => {
 }
 
 export const View = {
+    table,
     time,
     range,
     int,

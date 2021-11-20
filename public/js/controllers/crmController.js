@@ -156,8 +156,6 @@ const viewSearch = async () => {
 
 const table = async (data) => {
 
-    document.querySelector('[data-div-table-crms]').classList.remove('d-none')
-
     let crms = data.map(crm => {
         let options = `<a><i data-action data-id="${crm.id}" class="btn-view fas fa-eye"></i></a>`
         let line = [
@@ -215,7 +213,7 @@ const table = async (data) => {
         ]
     })
 }
-//
+
 const view = async (event) => {
 
     document.querySelector('[data-loading]').style.display = "block"
@@ -305,26 +303,34 @@ const view = async (event) => {
 
 const graphClient = (clients) => {
 
-    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+    const canvas = document.createElement('canvas')
+    canvas.style.maxHeight = "600px"
+    canvas.classList.add('flex', 'd-inline')
+    canvas.setAttribute('data-chart-client', '0')
 
+    document.querySelector('[div-chart-client]').innerHTML = ''
+    document.querySelector('[div-chart-client]').appendChild(canvas)
 
     const ctxclient = document.querySelector('[data-chart-client]')
 
-    const days = Array.from(clients).map(obj => obj.date)
-    const client = Array.from(clients).map(obj => obj.client)
+    let days = Array.from(clients).map(obj => obj.date)
+    let client = Array.from(clients).map(obj => obj.client)
+
+    if (days.length < 1) days = 'Sin clientes'
+    if (client.length < 1) client = 0
 
     const chartclient = new Chart(ctxclient, {
         type: 'line',
         data: {
             labels: days,
             datasets: [{
-                label: 'Productos ofrecidos por dia',
+                label: 'Clientes por dia',
                 data: client,
                 backgroundColor: [
-                    'rgba(30, 139, 195, 0.5)',
+                    'rgba(89, 171, 227, 1)',
                 ],
                 borderColor: [
-                    'rgba(137, 196, 244, 1)',
+                    'rgba(44, 130, 201, 1)',
                 ],
                 borderWidth: 3
             }]
@@ -337,24 +343,38 @@ const graphClient = (clients) => {
             }
         }
     });
+
+    const update = () => {
+        chartclient.data.datasets[0].data = client
+        chartclient.data.datasets[0].label = days
+        chartclient.update();
+    }
 }
 
 const graphDate = (dates) => {
 
-    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+    const canvas = document.createElement('canvas')
+    canvas.style.maxHeight = "600px"
+    canvas.classList.add('flex', 'd-inline')
+    canvas.setAttribute('data-chart-date', '0')
 
+    document.querySelector('[div-chart-date]').innerHTML = ''
+    document.querySelector('[div-chart-date]').appendChild(canvas)
 
     const ctxdate = document.querySelector('[data-chart-date]')
 
-    const days = Array.from(dates).map(obj => obj.date)
-    const products = Array.from(dates).map(obj => obj.products)
+    let days = Array.from(dates).map(obj => obj.date)
+    let products = Array.from(dates).map(obj => obj.products)
+
+    if (days.length < 1) days = 'Sin productos'
+    if (products.length < 1) products = 0
 
     const chartdate = new Chart(ctxdate, {
         type: 'bar',
         data: {
             labels: days,
             datasets: [{
-                label: 'Productos ofrecidos por dia',
+                label: 'Productos por dia',
                 data: products,
                 backgroundColor: [
                     'rgba(30, 139, 195, 0.5)',
@@ -373,21 +393,33 @@ const graphDate = (dates) => {
             }
         }
     });
+
 }
 
 const graphType = (types) => {
 
+    const canvas = document.createElement('canvas')
+    canvas.style.maxHeight = "300px"
+    canvas.classList.add('flex', 'd-inline')
+    canvas.setAttribute('data-chart-type', '0')
+
+    document.querySelector('[div-chart-type]').innerHTML = ''
+    document.querySelector('[div-chart-type]').appendChild(canvas)
+
     const ctxtype = document.querySelector('[data-chart-type]')
 
-    const type = Array.from(types).map(obj => obj.type)
-    const products = Array.from(types).map(obj => obj.products)
+    let type = Array.from(types).map(obj => obj.type)
+    let products = Array.from(types).map(obj => obj.products)
+
+    if (type.length < 1) type = 'Sin productos'
+    if (products.length < 1) products = 0
 
     const charttype = new Chart(ctxtype, {
         type: 'doughnut',
         data: {
             labels: type,
             datasets: [{
-                label: 'Tipos de Productos',
+                label: 'Productos por Tipo',
                 data: products,
                 backgroundColor: [
                     'rgba(30, 139, 195, 0.5)',
@@ -444,10 +476,21 @@ const search = async (event) => {
     document.querySelector('[data-loading]').style.display = "block"
 
     const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
+    
+    if(data.crms.length < 1) {
+        document.querySelector('[data-div-table-crms]').classList.add('d-none')
+        document.querySelector('[data-div-chart-crms]').classList.add('d-none')
+
+        return alert('No hay contactos en el período informado.')
+    }
+
     table(data.crms)
     graphClient(data.clients)
     graphType(data.types)
     graphDate(data.days)
+
+    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+    document.querySelector('[data-div-table-crms]').classList.remove('d-none')
 
 
     $('html,body').animate({

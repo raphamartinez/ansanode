@@ -406,17 +406,6 @@ const list = async (patrimonys) => {
         ]
     }
     )
-
-
-    document.querySelector('#dataPatrimony').addEventListener('click', async (event) => {
-        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
-            if (event.target.classList[0] === 'btn-delete') return drop(event)
-            if (event.target.classList[0] === 'btn-delete-image') return dropImage(event)
-            if (event.target.classList[0] === 'btn-edit') return edit(event)
-            if (event.target.classList[0] === 'btn-view') return view(event)
-            if (event.target.classList[0] === 'btn-upload') return upload(event)
-        }
-    })
 }
 
 
@@ -459,7 +448,7 @@ const search = async (event) => {
 
     const patrimonys = await Connection.noBody(`patrimonys/${offices}/${types}`, 'GET')
 
-    if(!patrimonys) return alert('No se encontraron patrimonios.')
+    if (!patrimonys) return alert('No se encontraron patrimonios.')
 
     document.querySelector('[div-table-patrimony]').classList.remove('d-none')
 
@@ -585,6 +574,8 @@ const changeType = (event) => {
 const add = async (event) => {
     event.preventDefault()
 
+    document.querySelector('[data-loading]').style.display = "block"
+
     let details = ''
     let type = ''
 
@@ -633,7 +624,40 @@ const add = async (event) => {
 
     const obj = await Connection.bodyMultipart(`patrimony`, formData, 'POST')
 
-    event.currentTarget.reset()
+    if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
+        const table = $('#dataTable').DataTable()
+
+        let a = `
+        <a><i data-action data-view="${obj.id}" data-id="${obj.id}" data-plate="${patrimoy.plate}" data-name="${patrimoy.name}" data-desc="${patrimoy.description}" data-office="${patrimoy.office}" data-type="${patrimoy.type}" data-note="${patrimoy.note}" class="btn-view fas fa-eye"></i></a>
+        <a><i data-action data-id="${obj.id}" class="btn-upload fas fa-upload" ></i></a>
+        <a><i data-id="${obj.id}" data-plate="${patrimoy.plate}" data-name="${patrimoy.name}" data-description="${patrimoy.description}" data-office="${patrimoy.office}" data-type="${patrimoy.type}" data-note="${patrimoy.note}" data-action class="btn-edit fas fa-edit"></i></a>
+        <a><i data-action data-id="${obj.id}" class="btn-delete fas fa-trash"></i></a>
+        `
+
+        const rowNode = table
+            .row
+            .add(
+                [
+                    a,
+                    patrimoy.plate,
+                    patrimoy.name,
+                    patrimoy.type,
+                    patrimoy.office,
+                    patrimoy.description,
+                    patrimoy.note,
+
+                ])
+            .draw()
+            .node();
+
+        $(rowNode)
+            .css('color', 'black')
+            .animate({ color: '#4e73df' });
+    }
+
+    document.querySelector('[data-add-patrimony]').reset()
+
+    document.querySelector('[data-loading]').style.display = "none"
 
     alert(obj.msg)
 }
@@ -688,12 +712,19 @@ const menu = async () => {
     document.querySelector('[data-loading]').style.display = "none"
 
 
-
     document.querySelector('[data-type-add]').addEventListener('change', changeType, false)
-
     document.querySelector('[data-search-patrimony]').addEventListener('submit', search, false)
     document.querySelector('[data-add-patrimony]').addEventListener('submit', add, false)
 
+    document.querySelector('#dataPatrimony').addEventListener('click', async (event) => {
+        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
+            if (event.target.classList[0] === 'btn-delete') return drop(event)
+            if (event.target.classList[0] === 'btn-delete-image') return dropImage(event)
+            if (event.target.classList[0] === 'btn-edit') return edit(event)
+            if (event.target.classList[0] === 'btn-view') return view(event)
+            if (event.target.classList[0] === 'btn-upload') return upload(event)
+        }
+    })
 }
 
 document.querySelector('[data-menu-company-assets]').addEventListener('click', menu, false)

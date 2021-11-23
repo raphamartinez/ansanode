@@ -544,7 +544,6 @@ loading.style.display = "block";
         formData.append('file', file)
 
         const obj = await Connection.bodyMultipart('goalexcel', formData, 'POST')
-        console.log(obj);
 
         loading.style.display = "none";
     } catch (error) {

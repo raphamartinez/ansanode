@@ -134,7 +134,7 @@ class Tables {
 
   createTableAnswer() {
     const sql = `CREATE TABLE IF NOT EXISTS ansa.answer (id int NOT NULL AUTO_INCREMENT, 
-      title VARCHAR (250), id_question int, FOREIGN KEY (id_question) REFERENCES question (id),  
+      title VARCHAR (250), id_question int, classification int, FOREIGN KEY (id_question) REFERENCES question (id),  
       PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -160,8 +160,7 @@ class Tables {
 
   createTableQuiz() {
     const sql = `CREATE TABLE IF NOT EXISTS ansa.quiz (id int NOT NULL AUTO_INCREMENT, 
-      title VARCHAR(500), id_question int,
-      PRIMARY KEY (id))`
+      title VARCHAR(500), datereg DATETIME, status int, PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
       if (error) {

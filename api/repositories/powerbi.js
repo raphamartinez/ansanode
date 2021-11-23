@@ -57,14 +57,14 @@ class PowerBi {
         }
     }
 
-    async delete(id_powerbi) {
+    async delete(id) {
         try {
 
-            const sqlView = `DELETE from ansa.viewpowerbi WHERE id_powerbi = ${id_powerbi}`
-            await query(sqlView)
+            const sqlView = `DELETE from ansa.viewpowerbi WHERE id_powerbi = ?`
+            await query(sqlView, id)
 
-            const sql = `DELETE from ansa.powerbi WHERE id_powerbi = ${id_powerbi}`
-            await query(sql)
+            const sql = `DELETE from ansa.powerbi WHERE id_powerbi = ?`
+            await query(sql, id)
 
             return true
         } catch (error) {

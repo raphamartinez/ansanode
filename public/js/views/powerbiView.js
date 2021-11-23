@@ -148,8 +148,8 @@ const showModalPbiInsert = () => {
     const div = document.createElement('div')
 
     const content = `
-<div class="modal fade" id="addpowerbi" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-<div class="modal-dialog" role="document">
+<div class="modal fade" id="addpbx" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
         <div class="modal-header">
             <h5 class="modal-title">Agregar informe</h5>
@@ -157,14 +157,14 @@ const showModalPbiInsert = () => {
                 <span aria-hidden="true">x</span>
             </button>
         </div>
-        <form>
+        <form data-add-pbx>
             <div class="modal-body">
                 <div class="form-row">      
                 <div class="form-group col-md-6">
                         <input type="text" placeholder="Título" class="form-control" name="title" id="title" required>
                         </div>  
                         <div class="form-group col-md-6">
-                    <select class="form-control" name="type" id="type" required>
+                    <select class="form-control" name="type" id="typeadd" required>
                     <option value="" disabled selected>Tipo</option>
                     <option value="1" >Informe</option>
                     <option value="2">Personal</option>
@@ -180,8 +180,8 @@ const showModalPbiInsert = () => {
                 </div> 
                 </div> 
             <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" name="btn" id="idinsertnewbi" class="btn btn-success" onclick="addPowerBi(event)"><i class="fas fa-check"> Confirmar</i></button>   
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                <button type="submit" name="btn" class="btn btn-success"><i class="fas fa-check"> Confirmar</i></button>   
             </div>
         </form>
     </div>
@@ -256,7 +256,7 @@ const buttons = () => {
     const content = `    
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div class="col-md-12 text-left">
-            <button type="button" data-toggle="modal" onclick="addModalPowerBi(event)" class="btn btn-success">
+            <button type="button" data-toggle="modal" data-target="#addpbx" class="btn btn-success">
             Registrar Informe
             </button>
         </div>

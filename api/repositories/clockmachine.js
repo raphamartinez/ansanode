@@ -4,54 +4,21 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 
 class Clock {
 
-    async insertClockMachine(data) {
+    async list(office, period, type, code) {
         try {
-            const sql = `INSERT INTO ansa.clockmachine set ?`
-            await query(sql, data)
-
-            return true
-        } catch (error) {
-            throw new InvalidArgumentError('No se pudo ingresar el clockmachine en la base de datos')
-        }
-    }
-
-    async lastClockMachine(code) {
-        try {
-            const sql = `SELECT DATE_FORMAT(TimestampDate, '%m-%d-%Y %H:%i:%s') as date FROM ansa.clockmachine WHERE EmployeeCode = ? ORDER BY TimestampDate DESC LIMIT 1`
-            const data = await query(sql, code)
-
-            return data[0].date
-        } catch (error) {
-            throw new InternalServerError('La última lista de control de punto falló')
-        }
-    }
-
-    listClockMachineHbs() {
-        try {
-            const sql = `SELECT cl.EmployeeCode, CONCAT(DATE_FORMAT(cl.Date, '%d/%m/%Y')," ",cl.TIME) AS Date, CONCAT(cl.Date," ",cl.TIME) AS TimestampDate, cl.InOutType AS Type, cl.Office, wo.Name
+            let sql = `SELECT cl.EmployeeCode, cl.Date, cl.Time, IF(cl.InOutType = 1, "Entrada", "Salida") as type, cl.Office, wo.Name
             FROM ClockMachineRecord cl
             INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code
-            WHERE cl.Date > '2021-06-01'`
+            WHERE cl.EmployeeCode != 0 `
 
-            return queryhbs(sql)
+            if (office != 0) sql += ` AND cl.Office IN (${office}) `
+            if (type != 0 ) sql += ` AND cl.InOutType = ${type} `
+            if (code != 0) sql += ` AND cl.EmployeeCode IN (${code}) `
+            if (period && period.start != 0 && period.end != 0) sql += ` AND cl.Date BETWEEN '${period.start}' AND '${period.end}' `
 
-        } catch (error) {
-            console.log(error);
-        }
-    }
+            const data = await queryhbs(sql)
 
-    list(office, period, type, code) {
-        try {
-            let sql = `SELECT id, EmployeeCode, DATE_FORMAT(TimestampDate, '%H:%i %d/%m/%Y') as date, TimestampDate, IF(Type = 1, "Entrada", "Salida") as type, Office, Name 
-            FROM ansa.clockmachine 
-            WHERE EmployeeCode != 0 `
-
-            if (office != 0) sql += ` AND office IN (${office}) `
-            if (type != 0 ) sql += ` AND type = ${type} `
-            if (code != 0) sql += ` AND code IN (${code}) `
-            if (period && period.start != 0 && period.end != 0) sql += ` AND TimestampDate BETWEEN '${period.start}' AND '${period.end}' `
-
-            return query(sql)
+            return data
         } catch (error) {
             console.log(error);
         }
@@ -59,11 +26,13 @@ class Clock {
 
     listWorkers(offices) {
         try {
-            let sql = `SELECT DISTINCT EmployeeCode as id, Name as name FROM ansa.clockmachine `
+            let sql = `SELECT DISTINCT cl.EmployeeCode as id, wo.Name as name 
+            FROM ClockMachineRecord cl
+            INNER JOIN Workers wo ON cl.EmployeeCode = wo.Code `
 
-            if (offices) sql += ` WHERE Office IN (${offices})`
+            if (offices) sql += ` WHERE cl.Office IN (${offices})`
 
-            return query(sql)
+            return queryhbs(sql)
         } catch (error) {
             console.log(error);
         }

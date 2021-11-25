@@ -16,7 +16,7 @@ class Crm {
 
     async insertProduct(product) {
         try {
-            const sql = `INSERT INTO ansa.crmproducts (code, name, type, classification, id_crm ) VALUES (?, ?, ?, ?, ?)`
+            const sql = `INSERT INTO ansa.crmproducts (code, name, type, classification, id_crm, dateReg) VALUES (?, ?, ?, ?, ?, NOW() - interval 3 hour)`
             const result = await query(sql, [product.code, product.name, product.type, product.classification, product.id_crm])
 
             return result.insertId
@@ -34,8 +34,8 @@ class Crm {
             throw new InternalServerError('')
         }
     }
-
-    async update() {
+    
+    async update() {  
         try {
             const sql = ''
             const result = await query(sql, [])
@@ -45,17 +45,27 @@ class Crm {
         }
     }
 
+    async updateProduct(value, id) {  
+        try {
+            const sql = 'UPDATE ansa.crmproducts SET classification = ? WHERE id = ?'
+            const result = await query(sql, [value, id])
+            return result[0]
+        } catch (error) {
+            throw new InvalidArgumentError('')
+        }
+    }
+
     listProducts(id) {
         try {
-            const sql = `SELECT id, code, name, type, 
+            const sql = `SELECT id, code, name, type, dateReg, IF(dateReg < NOW() - interval 1 day, classification, "0") as classification,
             CASE
                         WHEN classification = 1 THEN "-50%"
                         WHEN classification = 2 THEN "50%"
                         WHEN classification = 3 THEN "75%"
                         WHEN classification = 4 THEN "100%"
                         ELSE "no clasificado"
-            END as classification
-            FROM ansa.crmproducts WHERE id_crm = ?`
+            END as classificationdesc
+            FROM ansa.crmproducts `
 
             return query(sql, id)
 

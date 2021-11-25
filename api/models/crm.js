@@ -31,6 +31,15 @@ class Crm {
         }
     }
 
+    async updateProduct(value, id) {
+        try {
+            const result = await Repositorie.updateProduct(value, id)
+            return result
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo actualizar el sucursal.')
+        }
+    }
+
     async delete(id) {
         try {
             const result = await Repositorie.delete(id)

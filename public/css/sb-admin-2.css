@@ -10742,3 +10742,6 @@ body.sidebar-toggled footer.sticky-footer {
     display: block;
   }
 }
+.dataTables_scrollHeadInner, .table{
+  width:100%!important
+     };

@@ -18,18 +18,9 @@ module.exports = app => {
             let office = req.params.offices
 
             if (req.access.all.allowed) {
-                // const cached = await cachelist.searchValue(`clock/${req.params}`)
-
-                // if (cached) {
-                //     return res.json(JSON.parse(cached))
-                // }
-
                 clocks = await Clock.list(office, period, type, code)
-                cachelist.addCache(`clock/${req.params}`, JSON.stringify(clocks), 60 * 60 * 2)
-
             } else {
                 if(!office) office = req.login.offices
-
                 clocks = await Clock.list(office, period, type, code)
             }
 

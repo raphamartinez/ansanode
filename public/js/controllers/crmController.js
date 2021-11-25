@@ -93,7 +93,7 @@ const viewCreate = async () => {
         document.querySelector('[data-product]').appendChild(line)
     })
 
-    const clients = await Connection.noBody('clients', 'GET')
+    const clients = await Connection.noBody('clients/hbs', 'GET')
     clients.forEach(client => {
         const line = document.createElement('option')
         line.value = client.CustName
@@ -212,7 +212,19 @@ const table = async (data) => {
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
     })
+
+    $("#dataCrm").DataTable().columns.adjust();
 }
+
+const changeProbability = async (event) => {
+    if (event.target && event.target.matches('[data-classification-edit]')) {
+        const id = event.target.getAttribute('data-classification-edit')
+        const value = event.target.value
+
+        await Connection.body(`crm/products/${id}`, {value}, "PUT")
+    }
+}
+window.changeProbability = changeProbability
 
 const view = async (event) => {
 
@@ -257,13 +269,25 @@ const view = async (event) => {
         row.child(div).show()
 
         let productsdata = products.map(product => {
+
+            let classification = product.classificationdesc
+            if (product.classification != "0") classification = `<select onchange="changeProbability(event)" data-classification-edit="${product.id}" class="form-control" id="classificationedit">
+            <option value="" disabled>Editar</option>
+            <option value="1">-50%</option>
+            <option value="2">50%</option>
+            <option value="3">75%</option>
+            <option value="4">100%</option>
+            <option value="${product.classification}" disabled selected>${product.classificationdesc} - Selecionado</option>
+            </select>`
+
             return [
                 product.code,
                 product.name,
                 product.type,
-                product.classification
+                classification
             ]
         })
+
 
         if ($.fn.DataTable.isDataTable(`[data-products-${id}]`)) {
             $(`[data-products-${id}]`).dataTable().fnClearTable();
@@ -319,7 +343,7 @@ const graphClient = (clients) => {
     if (days.length < 1) days = 'Sin clientes'
     if (client.length < 1) client = 0
 
-    const chartclient = new Chart(ctxclient, {
+    new Chart(ctxclient, {
         type: 'line',
         data: {
             labels: days,
@@ -343,12 +367,6 @@ const graphClient = (clients) => {
             }
         }
     });
-
-    const update = () => {
-        chartclient.data.datasets[0].data = client
-        chartclient.data.datasets[0].label = days
-        chartclient.update();
-    }
 }
 
 const graphDate = (dates) => {
@@ -369,7 +387,7 @@ const graphDate = (dates) => {
     if (days.length < 1) days = 'Sin productos'
     if (products.length < 1) products = 0
 
-    const chartdate = new Chart(ctxdate, {
+    new Chart(ctxdate, {
         type: 'bar',
         data: {
             labels: days,
@@ -414,7 +432,7 @@ const graphType = (types) => {
     if (type.length < 1) type = 'Sin productos'
     if (products.length < 1) products = 0
 
-    const charttype = new Chart(ctxtype, {
+    new Chart(ctxtype, {
         type: 'doughnut',
         data: {
             labels: type,
@@ -476,8 +494,8 @@ const search = async (event) => {
     document.querySelector('[data-loading]').style.display = "block"
 
     const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
-    
-    if(data.crms.length < 1) {
+
+    if (data.crms.length < 1) {
         document.querySelector('[data-div-table-crms]').classList.add('d-none')
         document.querySelector('[data-div-chart-crms]').classList.add('d-none')
 
@@ -497,17 +515,13 @@ const search = async (event) => {
         scrollTop: $('[data-div-chart-crms]').offset().top - 100
     }, 'slow');
 
-
     document.querySelector('[data-loading]').style.display = "none"
 }
 
 const dashboard = async () => {
     document.querySelector('[data-loading]').style.display = "block"
-
-    //clean the page
     clean()
 
-    // let user = JSON.parse(sessionStorage.getItem('user'))
     document.querySelector('[data-features]').appendChild(View.header())
     document.querySelector('[data-features]').appendChild(View.table())
 

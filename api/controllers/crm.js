@@ -73,6 +73,20 @@ module.exports = app => {
         }
     })
 
+    app.put('/crm/products/:id', [Middleware.bearer, Authorization('crm', 'update')], async (req, res, next) => {
+        try {
+            const value = req.body.value
+            const id = req.params.id
+
+            await Crm.updateProduct(value, id)
+            cachelist.delPrefix('crm')
+
+            res.json({ msg: 'Crm actualizada con éxito.' })
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.delete('/crm/:id', [Middleware.bearer, Authorization('crm', 'delete')], async (req, res, next) => {
         try {
             const id_crm = req.params.id

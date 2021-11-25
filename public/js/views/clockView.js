@@ -57,7 +57,7 @@ const header = () => {
 
 const table = () => {
     const div = document.createElement('div')
-    div.innerHTML = `<div data-div-travels class="row justify-content-md-center d-none">
+    div.innerHTML = `<div data-div-clock class="row justify-content-md-center d-none">
     <div class="col-10">
         <div class="card shadow mb-4">
             <div class="card-header">

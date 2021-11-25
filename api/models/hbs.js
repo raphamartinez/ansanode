@@ -8,7 +8,6 @@ class Hbs {
 
     async init() {
         try {
-            // await this.listReceivables()
             await this.listSalary()
             await this.listUsers()
 
@@ -30,7 +29,6 @@ class Hbs {
     async listUsers() {
         try {
             await Repositorie.dropUsers()
-            await Repositorie.createTableUsersHbs()
 
             const data = await Repositorie.listUsers()
 

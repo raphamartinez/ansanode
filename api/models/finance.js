@@ -208,15 +208,6 @@ let dview
 
     }
 
-    listDistinctClients() {
-
-        try {
-            return Repositorie.listDistinctClients()
-        } catch (error) {
-            throw new InternalServerError('No se pude listar los goals.')
-        }
-    }
-
     listSalesOrders(search){
         try {
             return RepositorieHbs.listSalesOrder(search)

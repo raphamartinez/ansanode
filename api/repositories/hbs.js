@@ -61,7 +61,7 @@ class Hbs {
 
     dropUsers() {
         try {
-            const sql = `drop table IF EXISTS ansa.userhbs`
+            const sql = `DELETE FROM ansa.userhbs`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la tabla userhbs')
@@ -72,7 +72,7 @@ class Hbs {
 
     dropReceivable() {
         try {
-            const sql = `delete from ansa.receivable`
+            const sql = `DELETE FROM ansa.receivable`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la tabla receivable')

@@ -39,20 +39,6 @@ class Finance {
         }
     }
 
-    listDistinctClients() {
-        try {
-            let sql = `SELECT DISTINCT(re.CustCode), re.CustName
-            FROM ansa.receivable re
-            GROUP BY CustCode 
-            ORDER BY re.CustName ASC`
-
-            return query(sql)
-        } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar los login')
-        }
-    }
-
-
     async listClient(client, d1, d2) {
         try {
             let sql = `SELECT t.SalesMan, t.date, t.CustCode, t.CustName, t.SerNr, t.daysOverdue, t.DueDate, t.amount, t.payday, t.comment, t.responsible, t.contact, t.contactdate, t.dateReg, t.status

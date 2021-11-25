@@ -53,10 +53,18 @@ const search = async (event) => {
     document.querySelector('[data-loading]').style.display = "block"
     document.querySelector('[data-status]').selectedIndex = 0
 
-    const data = await Connection.noBody(`clock/${search.type}/${search.period.start}/${search.period.end}/${search.codes}/${search.offices}`, 'GET')
+    let data
+    try { 
+         data = await Connection.noBody(`clock/${search.type}/${search.period.start}/${search.period.end}/${search.codes}/${search.offices}`, 'GET')
+    } catch (error) {
+        document.querySelector('[data-loading]').style.display = "hide"
+    }
 
     const clocks = data.map(clock => {
-        const date = new Date(clock.TimestampDate)
+        const date = new Date(clock.Date)
+        const time = clock.Time.split(":")
+        date.setHours(time[0], time[1], time[2])
+
         let dayweek
         let status
         let timeAccept
@@ -119,7 +127,7 @@ const search = async (event) => {
         let line = [
             status,
             dayweek,
-            clock.date,
+            `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
             clock.Name,
             clock.type,
             clock.Office
@@ -128,7 +136,7 @@ const search = async (event) => {
         return line
     })
 
-    document.querySelector('[div-table-patrimony]').classList.remove('d-none')
+    document.querySelector('[data-div-clock]').classList.remove('d-none')
 
     if ($.fn.DataTable.isDataTable('#dataClock')) {
         $('#dataClock').dataTable().fnClearTable();
@@ -148,7 +156,7 @@ const search = async (event) => {
             { title: "Sucursal" }
         ],
         paging: false,
-        ordering: false,
+        ordering: true,
         info: true,
         scrollY: false,
         scrollCollapse: true,
@@ -156,7 +164,7 @@ const search = async (event) => {
         autoHeight: true,
         pagingType: "numbers",
         searchPanes: true,
-        searching: false,
+        searching: true,
         fixedHeader: false,
         dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
             "<'row'<'col-sm-12'tr>>" +

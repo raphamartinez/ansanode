@@ -176,6 +176,8 @@ const search = async (event) => {
     })
 
     const status = (event) => {
+        document.querySelector('[data-status]').disabled = true
+        document.querySelector('[data-loading]').style.display = "block"
 
         table.rows().every(function (index, element) {
             let row = $(this.node());
@@ -188,6 +190,9 @@ const search = async (event) => {
 
             if (event.target.value == "0") row[0].style.display = ''
         });
+
+        document.querySelector('[data-loading]').style.display = "none"
+        document.querySelector('[data-status]').disabled = false
     }
 
     document.querySelector('[data-status]').addEventListener('change', status, false)

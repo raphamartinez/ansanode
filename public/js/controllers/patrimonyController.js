@@ -552,7 +552,7 @@ const changeType = (event) => {
             const div = document.createElement('div')
             div.classList.add('form-group', 'col-md-12')
 
-            div.innerHTML = `<input placeholder="Describe el tipo" class="form-control" id="type" name="type" type="text" required >`
+            div.innerHTML = `<input placeholder="Describe el tipo" class="form-control" id="othertype" name="othertype" type="text" required >`
 
             document.querySelector('[data-add-desc]').appendChild(div)
             break
@@ -574,6 +574,8 @@ const changeType = (event) => {
 const add = async (event) => {
     event.preventDefault()
 
+    document.querySelector('#btnadd').disabled = true 
+
     document.querySelector('[data-loading]').style.display = "block"
 
     let details = ''
@@ -591,10 +593,10 @@ const add = async (event) => {
         });
     }
 
-    if (event.currentTarget.type[1]) {
-        type = event.currentTarget.type[1].value
+    if (event.currentTarget.othertype) {
+        type = document.querySelector("#othertype").value
     } else {
-        type = event.currentTarget.type.value
+        type = document.querySelector('#type :checked').value
     }
 
     const patrimony = {
@@ -622,44 +624,55 @@ const add = async (event) => {
     formData.append('description', patrimony.description)
     formData.append('note', patrimony.note)
 
-    const obj = await Connection.bodyMultipart(`patrimony`, formData, 'POST')
+    try {
 
-    if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
-        const table = $('#dataTable').DataTable()
+        const obj = await Connection.bodyMultipart(`patrimony`, formData, 'POST')
 
-        let a = `
-        <a><i data-action data-view="${obj.id}" data-id="${obj.id}" data-plate="${patrimoy.plate}" data-name="${patrimoy.name}" data-desc="${patrimoy.description}" data-office="${patrimoy.office}" data-type="${patrimoy.type}" data-note="${patrimoy.note}" class="btn-view fas fa-eye"></i></a>
+        if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
+            const table = $('#dataPatrimony').DataTable();
+
+            let a = `
+        <a><i data-action data-view="${obj.id}" data-id="${obj.id}" data-plate="${patrimony.plate}" data-name="${patrimony.name}" data-desc="${patrimony.description}" data-office="${patrimony.office}" data-type="${patrimony.type}" data-note="${patrimony.note}" class="btn-view fas fa-eye"></i></a>
         <a><i data-action data-id="${obj.id}" class="btn-upload fas fa-upload" ></i></a>
-        <a><i data-id="${obj.id}" data-plate="${patrimoy.plate}" data-name="${patrimoy.name}" data-description="${patrimoy.description}" data-office="${patrimoy.office}" data-type="${patrimoy.type}" data-note="${patrimoy.note}" data-action class="btn-edit fas fa-edit"></i></a>
+        <a><i data-id="${obj.id}" data-plate="${patrimony.plate}" data-name="${patrimony.name}" data-description="${patrimony.description}" data-office="${patrimony.office}" data-type="${patrimony.type}" data-note="${patrimony.note}" data-action class="btn-edit fas fa-edit"></i></a>
         <a><i data-action data-id="${obj.id}" class="btn-delete fas fa-trash"></i></a>
         `
 
-        const rowNode = table
-            .row
-            .add(
-                [
-                    a,
-                    patrimoy.plate,
-                    patrimoy.name,
-                    patrimoy.type,
-                    patrimoy.office,
-                    patrimoy.description,
-                    patrimoy.note,
+            const rowNode = table
+                .row
+                .add(
+                    [
+                        a,
+                        patrimony.plate,
+                        patrimony.name,
+                        patrimony.type,
+                        patrimony.office,
+                        patrimony.description,
+                        patrimony.note,
 
-                ])
-            .draw()
-            .node();
+                    ])
+                .draw()
+                .node();
 
-        $(rowNode)
-            .css('color', 'black')
-            .animate({ color: '#4e73df' });
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
+        }
+
+        document.querySelector("#filename").innerHTML = "Insertar archivos"
+        document.querySelector('[data-add-patrimony]').reset()
+        document.querySelector('#btnadd').disabled = false 
+
+        document.querySelector('[data-loading]').style.display = "none"
+
+        alert(obj.msg)
+
+    } catch (error) {
+        document.querySelector('#btnadd').disabled = false 
+
+        document.querySelector('[data-loading]').style.display = "none"
+
     }
-
-    document.querySelector('[data-add-patrimony]').reset()
-
-    document.querySelector('[data-loading]').style.display = "none"
-
-    alert(obj.msg)
 }
 
 const menu = async () => {
@@ -723,6 +736,19 @@ const menu = async () => {
             if (event.target.classList[0] === 'btn-edit') return edit(event)
             if (event.target.classList[0] === 'btn-view') return view(event)
             if (event.target.classList[0] === 'btn-upload') return upload(event)
+        }
+    })
+
+    document.querySelector('#file').addEventListener('click', () => {
+        document.querySelector("#filename").innerHTML = "Insertar archivos"
+    })
+
+    document.querySelector('#file').addEventListener('change', (event) => {
+
+        if (event.target.files.length > 1) {
+            document.querySelector("#filename").innerHTML = `${event.target.files.length} Archivos selecionados`
+        } else {
+            document.querySelector("#filename").innerHTML = event.target.files[0].name
         }
     })
 }

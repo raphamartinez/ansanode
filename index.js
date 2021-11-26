@@ -9,7 +9,7 @@ const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = requi
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 // const Hbs = require('./api/models/hbs')
 // const Web = require('./api/models/webscraping')
-// Web.listProsegurPowerandStop()
+// Web.listProsegurOffice()
 
 process.setMaxListeners(100)
 const app = customExpress()

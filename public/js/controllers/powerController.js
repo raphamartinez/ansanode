@@ -990,12 +990,7 @@ async function addPowerBisUser(event) {
         event.preventDefault()
         $('#addpowerbi').modal('hide')
 
-        let loading = document.querySelector('[data-loading]')
-        loading.innerHTML = `
-        <div class="spinner-border text-primary" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-        `
+        document.querySelector('[data-loading]').style.display = "block"
 
         const btn = event.currentTarget
         const id_login = btn.getAttribute("data-id_login")
@@ -1023,10 +1018,10 @@ async function addPowerBisUser(event) {
         })
 
 
-        loading.style.display = "none"
+        document.querySelector('[data-loading]').style.display = "none"
         alert(obj.msg)
     } catch (error) {
-        loading.style.display = "none"
+        document.querySelector('[data-loading]').style.display = "none"
         alert('Algo salió mal, informa al sector de TI')
     }
 }

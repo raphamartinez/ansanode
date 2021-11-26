@@ -29,30 +29,13 @@ async function secondToTime(secs) {
     return sign + z(secs / 3600 | 0) + ':' + z((secs % 3600) / 60 | 0) + ':' + z(secs % 60);
 }
 
-async function formatStringDate(data) {
-    var dia = data.split("/")[0];
-    var mes = data.split("/")[1];
-    var ano = data.split("/")[2];
-
-    return ("0" + dia).slice(-2) + '-' + ("0" + mes).slice(-2) + '-' + ano;
-}
-
-
-async function formatStringDatetoCompare(data) {
-    var ano = data.split("-")[2];
-    var mes = data.split("-")[1];
-    var dia = data.split("-")[0];
-
-    return ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2) + '-' + ano;
-}
-
 class WebScraping {
 
     async init() {
         try {
             await this.listProsegurPowerandStop()
             await this.listProsegurMaintenance()
-            await this.listProsegurOffice()
+            // await this.listProsegurOffice()
             await this.listInviolavel()
             await this.listProsegurDistance()
             await Repositorie.insertHistory('Actualizado con éxito')
@@ -301,6 +284,7 @@ class WebScraping {
     }
 
     async listProsegurOffice() {
+        let file = []
         try {
             const browser = await puppeteer.launch({
                 args: ['--lang=pt-BR', '--no-sandbox'],
@@ -325,68 +309,81 @@ class WebScraping {
                 });
             });
 
-            await page.goto('https://smart.prosegur.com/smart-web-min/smart-login/#/negocios', { waitUntil: 'networkidle0' })
-            await page.type('#txt_user_name', process.env.PROSEGUR_MAIL)
-            await page.type('#txt_user_pass', process.env.PROSEGUR_PASSWORD)
-            await page.click('#btn_enter')
+            let reqPath = path.join(__dirname, '../../')
+            await page._client.send('Page.setDownloadBehavior', { behavior: 'allow', downloadPath: reqPath });
+            await page.goto('https://smart.prosegur.com/smart-individuo/login.html#!/', { waitUntil: 'networkidle0' })
+            await page.type('#username', process.env.PROSEGUR_MAIL)
+            await page.type('#password', process.env.PROSEGUR_PASSWORD)
+            await page.click('#btnLogin')
 
             await page.waitForNavigation()
 
-            await page.goto('https://smart.prosegur.com/smart-web-min/smart-multisede/#/event-console', { waitUntil: 'networkidle0' })
+            await page.goto('https://smart.prosegur.com/smart-individuo/#!/activities', { waitUntil: 'networkidle0' })
+            await page.waitForTimeout(2000)
 
-            const data = await page.evaluate(() => {
-                const tdsNeumaticos = Array.from(document.querySelectorAll('body > div.container > div > div.main-content.ng-scope > div.table-responsive.ng-scope > div'),
-                    row => Array.from(row.querySelectorAll('div >.table-row, div'),
-                        cell => cell.innerText))
-                return tdsNeumaticos
-            })
+            await page.click('body > div.container-fluid.after-navbar > div.row.with-margin-top > ng-view > div > div > div > legend > div.col-lg-12.col-md-12.col-sm-12.col-xs-12.export.text-right > a')
+            await page.waitForTimeout(2000)
+
+            await page.click('body > div.modal.fade.in > div > div > div.modal-footer > div > div > button:nth-child(2)')
+
+            await page.waitForTimeout(10000)
+
             await browser.close()
 
-            data.forEach(async obj => {
-
-                const chunk = (array) =>
-                    array.reduce((acc, _, i) => {
-                        if (i % 8 === 0) acc.push(array.slice(i, i + 8))
-                        return acc
-                    }, [])
-
-                const chunked = chunk(obj, 8)
-
-                const tires = chunked.slice(1)
-
-                if (tires.length !== 1) {
-                    tires.forEach(async line => {
-
-                        const lastInsert = await Repositorie.listOffice(line[5])
-
-                        var date1 = await timeToSecond(line[3])
-                        var date2 = await timeToSecond("04:00:00") // gmt -4
-
-                        var diff = date1 - date2
-
-                        const timeFinal = await secondToTime(diff)
-                        const newDate = await formatStringDate(line[2])
-
-                        var ano = newDate.split("-")[2];
-                        var mes = newDate.split("-")[1];
-                        var dia = newDate.split("-")[0];
-
-                        const date = ano + '-' + ("0" + mes).slice(-2) + '-' + ("0" + dia).slice(-2);
-                        const time = `${date} ${timeFinal}`
-
-                        const newdate1 = moment(time)
-
-                        const newdate2 = moment(lastInsert)
-
-                        if (newdate1.isAfter(newdate2)) {
-                            const date = moment(time).format("YYYY-MM-DD HH:mm")
-                            Repositorie.insertOffice(date, line[4], line[5], line[6])
-                        }
-                    })
+            fs.readdirSync(reqPath).forEach(fil => {
+                if (fil.match(/MELISSA.WINCKLER@AMERICANEUMATICOS.COM.*/)) {
+                    file.push(fil)
                 }
-            })
+            });
+
+            const arrData = excelToJson({
+                sourceFile: file[0]
+            });
+
+            for (const line of arrData["Reporte de Eventos"]) {
+                if (line["F"]) {
+
+                    let offices = [
+                        ["RUTA 9 TRANSCHACO KM 17.5 ESQ. AVDA. GRAL. DIAZ -", "13"],
+                        ["AVENIDA INTERNACIONAL ESQ JOSE DIAZ, ., CAPITAN BADO", "07"],
+                        ["CALLE PITIANTUTA C/ 1RO DE DICIEMBRE, ., PEDRO JUAN", "01"],
+                        ["RUTA 3 ESQ GENERAL DIAZ -, ., BELLA VISTA NORTE (1400-002", "03"],
+                        ["CALLE RUTA INTERNACIONAL AV. LUIS MARIA ARGAÑA-", "NO DEFINIDO"],
+                        ["AVENIDA PARAGUAY C/MCAL. LOPEZ, ., CIUDAD DEL ESTE", "02"],
+                        ["RUTA 6 KM. 3 - FRENTE A GOROSTIAGA AL LADO DE", "04"],
+                        ["RUTA 6TA KM 40, ., SANTA RITA (2000-003 ALTO PARANA)", "12"],
+                        ["AVENIDA SAN BLAS KM. 5 - DEPOSITO -, ., CIUDAD DEL", "02"],
+                        ["AVENIDA SAN BLAS KM. 5 - SALON PRINCIPAL -, ., CIUDAD", "02"],
+                        ["AVDA. PARAGUAY C/PANLO VI", "05"],
+                    ]
+
+                    let event = {
+                        date: line["A"],
+                        type: line["B"],
+                        address: line["E"],
+                        user: line["F"],
+                        office: '00'
+                    }
+
+                    let obj = offices.find(office => event.address == office[0])
+
+                    if (obj) event.office = obj[1]
+
+                    const lastInsert = await Repositorie.listOffice(event.office)
+
+                    let date1 = new Date(lastInsert)
+                    let date2 = new Date(event.date)
+
+                    if (date1.getTime() < date2.getTime()) {
+                        console.log(event);
+                        // await Repositorie.insertOffice(event)
+                    }
+                }
+            }
+            fs.unlinkSync(file[0])
         } catch (error) {
-            throw new InternalServerError('No se pudo ejecutar el robot de seguridad de la prosegur.')
+            fs.unlinkSync(file[0])
+            throw new InternalServerError(error)
         }
     }
 

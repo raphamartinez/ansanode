@@ -227,7 +227,7 @@ const add = () => {
                         <div class="form-group col-md-12">
                             <div class="custom-file">
                                 <input type="file" class="custom-file-input" id="file" required multiple>
-                                <label class="custom-file-label" for="file">Insertar archivos</label>
+                                <label id="filename" class="custom-file-label" for="file">Insertar archivos</label>
                             </div>
                         </div>
                         <div class="form-row col-md-12" data-add-desc>
@@ -240,7 +240,7 @@ const add = () => {
                             <textarea placeholder="Notas" class="form-control" name="note" id="note" rows="2"></textarea>
                         </div>
                         <div class="form-group col-md-12 text-right">
-                        <button type="submit" class="btn btn-success"><i class="fas fa-check"> Agregar</i></button>  
+                        <button id="btnadd" type="submit" class="btn btn-success"><i class="fas fa-check"> Agregar</i></button>  
                         </div> 
                         </div>
                     </div>

@@ -142,8 +142,8 @@ class Prosegur {
 
     async listInviolavel(office) {
         try {
-            const sql = `SELECT DATE_FORMAT(date, '%m-%d-%Y %H:%i:%s') as date FROM ansa.inviolaveloffice WHERE office = '${office}' ORDER BY date DESC LIMIT 1 `
-            const result = await query(sql)
+            const sql = `SELECT DATE_FORMAT(date, '%m-%d-%Y %H:%i:%s') as date FROM ansa.inviolaveloffice WHERE office = ? ORDER BY date DESC LIMIT 1 `
+            const result = await query(sql, office)
 
             if (!result[0]) {
                 return '01-01-1999 00:00:00'
@@ -155,28 +155,28 @@ class Prosegur {
         }
     }
 
-    async insertOffice(time, codconnection, contract, description) {
+    async insertOffice(event) {
         try {
-            const sql = 'INSERT INTO ansa.proseguroffice (dateTime, codconnection, contract, description) values (?, ?, ?, ?)'
-            const result = await query(sql, [time, codconnection, contract, description])
+            const sql = 'INSERT INTO ansa.proseguroffice (date, office, type, address, user) values (?, ?, ?, ?, ?)'
+            const result = await query(sql, [event.date, event.office, event.type, event.address, event.user])
             return result[0]
         } catch (error) {
             return error
         }
     }
 
-    async listOffice(contract) {
+    async listOffice(office) {
         try {
-            const sql = `SELECT DATE_FORMAT(dateTime, '%m-%d-%Y %H:%i:%s') as dateTime FROM ansa.proseguroffice WHERE contract = '${contract}' ORDER BY dateTime DESC LIMIT 1 `
-            const result = await query(sql)
+            const sql = `SELECT DATE_FORMAT(date, '%m-%d-%Y %H:%i:%s') as date FROM ansa.proseguroffice WHERE office = ? ORDER BY date DESC LIMIT 1 `
+            const result = await query(sql, office)
 
             if (!result[0]) {
                 return '01-01-1999 00:00:00'
             }
 
-            return result[0].dateTime
+            return result[0].date
         } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar la sucursal')
+            throw new InternalServerError('No se pudieron enumerar los datos')
         }
     }
 }

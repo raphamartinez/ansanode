@@ -6,7 +6,7 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/clients', [Middleware.bearer, Authorization('clients', 'read')], async (req, res, next) => {
+    app.get('/clients', [Middleware.authenticatedMiddleware, Authorization('clients', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue('clients')
@@ -26,7 +26,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/clients/hbs', [Middleware.bearer, Authorization('clients', 'read')], async (req, res, next) => {
+    app.get('/clients/hbs', [Middleware.authenticatedMiddleware, Authorization('clients', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue('clients/hbs')

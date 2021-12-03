@@ -1,182 +1,123 @@
 import { ViewStock } from "../views/stockView.js"
 import { Connection } from '../services/connection.js'
 
-window.addModalStock = addModalStock
 
-async function addModalStock(event) {
-    try {
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]');
-        document.querySelector('[data-features]').innerHTML = ""
 
-        modal.innerHTML = ``
-        settings.innerHTML = " "
-        const btn = event.currentTarget
-        const id_login = btn.getAttribute("data-id_login")
 
-        modal.appendChild(ViewStock.modaladd(id_login))
+const list = (items) => {
 
-        const selectstock = document.getElementById('stockselect')
-
-        const fields = await Connection.noBody('stockandgroup','GET')
-
-        fields.stocks.forEach(obj => {
-            selectstock.appendChild(ViewStock.listOption(obj.StockDepo))
-        });
-
-        $('#stockselect').selectpicker();
-        $('#addstock').modal('show')
-
-    } catch (error) {
-        alert('Algo salió mal, informa al sector de TI')
+    if ($.fn.DataTable.isDataTable('#dataStock')) {
+        $('#dataStock').dataTable().fnClearTable();
+        $('#dataStock').dataTable().fnDestroy();
+        $('#dataStock').empty();
     }
+
+    $("#dataStock").DataTable({
+        data: items,
+        columns: [
+            { title: "Opciones" },
+            { title: "Grupo" },
+            { title: "Cod Articulo" },
+            { title: "Nombre" },
+            { title: "Cant Stock" }
+        ],
+        paging: true,
+        ordering: true,
+        info: true,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false,
+        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+            "<'row'<'col-sm-12'B>>",
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    })
 }
 
-window.addstock = addstock
-
-async function addstock(event) {
+const search = async (event) => {
     event.preventDefault()
-    $('#addstock').modal('hide')
 
-    let loading = document.querySelector('[data-loading]')
-loading.style.display = "block";
-    try {
+    let code = event.currentTarget.code.value
+    if (code === "") code = "ALL"
 
-        const btn = event.currentTarget
-        const id_login = btn.getAttribute("data-id_login")
-        const arrstock = document.querySelectorAll('#stockselect option:checked')
-        const stock = Array.from(arrstock).map(el => `${el.value}`);
+    let name = event.currentTarget.name.value
+    if (name === "") name = "ALL"
 
-        await Connection.body('stock', { stock, id_login }, 'POST')
-       
-        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
+    const arritemgroup = document.querySelectorAll('#itemgroup option:checked')
+    let itemgroup = Array.from(arritemgroup).map(el => `'${el.value}'`);
+    if (itemgroup.length === 0) itemgroup = "ALL"
+    const arrstock = document.querySelectorAll('#stock option:checked')
+    let stock = Array.from(arrstock).map(el => `'${el.value}'`);
+    if (stock.length === 0) stock = "ALL"
+    const empty = document.querySelector('input[name="empty"]:checked').value;
 
-        let dtstock = [];
+    const data = await Connection.noBody(`stock/items/${name}/${code}/${stock}/${itemgroup}/${empty}`, 'GET')
 
-        stocks.forEach(obj => {
-            const fieldstock = ViewStock.listStock(obj, id_login)
-            dtstock.push(fieldstock)
-        });
+    const items = data.map(item => {
+        return [
+            `<a><i data-view data-artcode="${item.ArtCode}" data-artname="${item.ItemName}" data-cant="${item.StockQty}" class="fas fa-eye" style="color:#cbccce;"></i></a>`,
+            `${item.ItemGroup}`,
+            `${item.ArtCode}`,
+            `${item.ItemName}`,
+            `${item.StockQty}`,
+        ]
+    })
 
-        if ($.fn.DataTable.isDataTable('#stock')) {
-            $('#stock').dataTable().fnClearTable();
-            $('#stock').dataTable().fnDestroy();
-            $('#stock').empty();
-        }
-
-        $(document).ready(function () {
-            $("#stock").DataTable({
-                data: dtstock,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Depósito" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false
-            })
-        })
-
-
-        loading.style.display = "none"
-        alert('Acceso al depósito agregado con éxito!')
-    } catch (error) {
-        loading.style.display = "none"
-        alert('Algo salió mal, informa al sector de TI')
-    }
+    list(items)
 }
 
-window.modalDeleteStock = modalDeleteStock
+const stock = async () => {
 
-async function modalDeleteStock(event) {
-    event.preventDefault()
-    try {
-        let modal = document.querySelector('[data-modal]')
-        modal.innerHTML = ``
+    const fields = await Connection.noBody('stockuser', 'GET')
 
-
-        const btn = event.currentTarget
-        const id_stock = btn.getAttribute("data-id_stock")
-        const id_login = btn.getAttribute("data-id_login")
-
-        modal.appendChild(ViewStock.modaldelete(id_stock, id_login))
-
-        $('#deletestock').modal('show')
-    } catch (error) {
-        alert('Algo salió mal, informa al sector de TI')
+    if (fields === false) {
+        return alert("No tiene acceso a ningún stock, solicite acceso a un administrador.")
     }
+
+    fields.stocks.forEach(stock => {
+        const option = document.createElement('option')
+        option.value = stock.StockDepo
+        option.innerHTML = stock.StockDepo
+        document.querySelector('#stock').appendChild(option)
+    });
+
+    fields.groups.forEach(group => {
+        const option = document.createElement('option')
+        option.value = group.Name
+        option.innerHTML = group.Name
+        document.querySelector('#itemgroup').appendChild(option)
+    });
+
+    $('#stock').selectpicker("refresh");
+    $('#itemgroup').selectpicker("refresh");
+
+    document.querySelector("#stockartsi").checked = true;
+
+    const items = await Connection.noBody('itemscomplete', 'GET')
+    items.forEach(item => {
+        const line = document.createElement('option')
+        line.value = item.ItemName
+        line.innerHTML = item.ItemName
+
+        const line2 = document.createElement('option')
+        line2.value = item.ArtCode
+        line2.innerHTML = item.ArtCode
+
+        document.querySelector('[data-namelist]').appendChild(line)
+        document.querySelector('[data-codelist]').appendChild(line2)
+
+    })
 }
 
+list()
+stock()
 
-
-window.deletestock = deletestock
-
-async function deletestock(event) {
-    event.preventDefault()
-    $('#deletestock').modal('hide')
-
-    let loading = document.querySelector('[data-loading]')
-loading.style.display = "block";
-
-    try {
-
-        const form = event.currentTarget
-        const id_stock = form.getAttribute("data-id_stock")
-        const id_login = form.getAttribute("data-id_login")
-
-        await Connection.noBody(`stock/${id_stock}`, 'DELETE')
-
-        const stocks = await Connection.noBody(`stocks/${id_login}`, 'GET')
-
-        let dtstock = [];
-
-        stocks.forEach(obj => {
-            const fieldstock = ViewStock.listStock(obj, id_login)
-            dtstock.push(fieldstock)
-        });
-
-        if ($.fn.DataTable.isDataTable('#stock')) {
-            $('#stock').dataTable().fnClearTable();
-            $('#stock').dataTable().fnDestroy();
-            $('#stock').empty();
-        }
-
-
-        $(document).ready(function () {
-            $("#stock").DataTable({
-                data: dtstock,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Depósito" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false
-            })
-        })
-
-
-        loading.style.display = "none"
-        alert('Acceso al depósito eliminado con éxito!')
-    } catch (error) {
-        loading.style.display = "none"
-        alert('Algo salió mal, informa al sector de TI')
-
-    }
-}
+document.querySelector('[data-form-search]').addEventListener('submit', search, false)

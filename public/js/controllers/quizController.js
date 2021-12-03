@@ -365,7 +365,7 @@ const chartcomparation = () => {
                 document.querySelector('[data-letter-application-n]').innerHTML = `Sin respuesta`
                 document.querySelector('[data-letter-advice-n]').innerHTML = `Sin respuesta`
                 break
-        }
+        };
 
         if (positive) {
             document.querySelector('[data-title-max-positive]').innerHTML = `${positive}<span div-max-positive class="badge bg-success rounded-pill text-white">${maxpositive}</span>`
@@ -381,17 +381,17 @@ const chartcomparation = () => {
         document.querySelector('[data-confusion]').innerHTML = ""
         if (positive === negative) document.querySelector('[data-confusion]').innerHTML = `<h5 class="text-warning">En caso de contradicciónes y/o confusiónes a la hora de responder el cuestionario, existe la posibilidad que las personalidades en Condición Favorable y Condición de Estrés sean iguales.</h5>`
 
-        chartcomparation.data.datasets[0].data = positivedt
-        chartcomparation.data.datasets[1].data = negativedt
+        chartcomparation.data.datasets[0].data = positivedt;
+        chartcomparation.data.datasets[1].data = negativedt;
         chartcomparation.update();
 
-        chartpositive.data.datasets[0].data = positivedt
-        chartpositive.data.datasets[1].data = negativedt
+        chartpositive.data.datasets[0].data = positivedt;
+        chartpositive.data.datasets[1].data = negativedt;
         chartpositive.update();
     }
 
 
-    document.querySelector('[data-names-two]').addEventListener('change', viewInterview, false)
+    document.querySelector('[data-names-two]').addEventListener('change', viewInterview, false);
 }
 
 
@@ -401,9 +401,9 @@ const listQuiz = async () => {
         $('#dataQuiz').dataTable().fnClearTable();
         $('#dataQuiz').dataTable().fnDestroy();
         $('#dataQuiz').empty();
-    }
+    };
 
-    const quiz = await Connection.noBody('quiz', 'GET')
+    const quiz = await Connection.noBody('quiz', 'GET');
 
     let dtquiz = [];
 
@@ -442,223 +442,200 @@ const listQuiz = async () => {
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ]
-    })
+    });
+}
 
-    const send = (event) => {
-        const quiz = {
-            id_quiz: event.target.getAttribute('data-id'),
-            title: event.target.getAttribute('data-title')
+
+const view = async (event) => {
+    const id_quiz = event.target.getAttribute("data-id");
+    const title = event.target.getAttribute("data-title");
+
+    document.querySelector('[data-loading]').style.display = "block";
+
+    const quiz = await Connection.noBody(`viewquiz/${id_quiz}`, 'GET');
+    document.querySelector('[data-view-quiz]').innerHTML = "";
+
+    const div = document.createElement('div');
+    div.classList.add('mb-2', 'col-lg-12', 'text-center');
+    div.innerHTML = `<h5> Cuestionario - ${title}</h5><div data-quiz class="row justify-content-md-center"></div>`;
+
+    document.querySelector('[data-view-quiz]').appendChild(div);
+
+    $('html,body').animate({
+        scrollTop: $('[data-view-quiz]').offset().top - 100
+    }, 'slow');
+
+    await quiz.forEach(question => {
+
+        if (question.type === "range") {
+            document.querySelector('[data-quiz]').appendChild(View.range(question));
         }
 
-        document.querySelector('[data-modal]').appendChild(View.send())
+        if (question.type === "int") {
+            document.querySelector('[data-quiz]').appendChild(View.int(question));
+        }
+    })
+    document.querySelector('[data-loading]').style.display = "none";
 
-        $('#send').modal('show')
+    document.querySelector('[data-view-quiz]').addEventListener('change', (event) => {
+        if (event.target && event.target.className == "form-range") {
+            try {
+                let int = parseInt(event.target.value);
 
-        document.querySelector('[data-form-send]').addEventListener('submit', async (event) => {
-            event.preventDefault()
+                if (int > 0 && int < 0) return event.target.value = 0;
 
-            document.querySelector('[data-loading]').style.display = "block"
-
-            const date = new Date()
-            const user = {
-                name: event.currentTarget.name.value,
-                mail: event.currentTarget.mail.value,
-                datereg: `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
-                status: 0
+                event.target.parentElement.nextElementSibling.children[0].value = int;
+            } catch (error) {
+                alert("Carácter no válido, ingrese solo números.")
             }
+        }
 
-            const obj = await Connection.body('quiz', { user, quiz }, 'POST')
+        if (event.target && event.target.className == "form-control border-3") {
+            try {
+                let int = parseInt(event.target.value);
 
-            document.querySelector('[data-loading]').style.display = "none"
+                if (int > 10 || int < 0) return event.target.value = 0;
 
-            alert(obj.msg)
-        })
-    }
-
-    const view = async (event) => {
-        const id_quiz = event.target.getAttribute("data-id")
-        const title = event.target.getAttribute("data-title")
-
-        document.querySelector('[data-loading]').style.display = "block"
-
-        const quiz = await Connection.noBody(`viewquiz/${id_quiz}`, 'GET')
-        document.querySelector('[data-view-quiz]').innerHTML = ""
-
-        const div = document.createElement('div')
-        div.classList.add('mb-2', 'col-lg-12', 'text-center')
-        div.innerHTML = `<h5> Cuestionario - ${title}</h5><div data-quiz class="row justify-content-md-center"></div>`
-
-        document.querySelector('[data-view-quiz]').appendChild(div)
-
-        $('html,body').animate({
-            scrollTop: $('[data-view-quiz]').offset().top - 100
-        }, 'slow');
-
-        await quiz.forEach(question => {
-
-            if (question.type === "range") {
-                document.querySelector('[data-quiz]').appendChild(View.range(question))
+                event.target.parentElement.previousElementSibling.children[0].value = int;
+            } catch (error) {
+                alert("Carácter no válido, ingrese solo números.");
             }
+        }
 
-            if (question.type === "int") {
-                document.querySelector('[data-quiz]').appendChild(View.int(question))
+        if (event.target && event.target.className == "form-control-color me-1") {
+            try {
+                let int = parseInt(event.target.value);
+                let index = event.target.getAttribute('data-index');
+
+                if (int > 4 || int < 0) return event.target.value = 0;
+
+                const lis = event.path[2].children;
+
+                let li1 = lis[0].children[0].getAttribute('data-index');
+                if (index !== li1) if (event.target.value === lis[0].children[0].value) lis[0].children[0].value = 0;
+                let li2 = lis[1].children[0].getAttribute('data-index');
+                if (index !== li2) if (event.target.value === lis[1].children[0].value) lis[1].children[0].value = 0;
+                let li3 = lis[2].children[0].getAttribute('data-index');
+                if (index !== li3) if (event.target.value === lis[2].children[0].value) lis[2].children[0].value = 0;
+                let li4 = lis[3].children[0].getAttribute('data-index');
+                if (index !== li4) if (event.target.value === lis[3].children[0].value) lis[3].children[0].value = 0;
+
+            } catch (error) {
+                alert("Carácter no válido, ingrese solo números.");
             }
-        })
-        document.querySelector('[data-loading]').style.display = "none"
-
-        document.querySelector('[data-view-quiz]').addEventListener('change', (event) => {
-            if (event.target && event.target.className == "form-range") {
-                try {
-                    let int = parseInt(event.target.value)
-
-                    if (int > 0 && int < 0) return event.target.value = 0
-
-                    event.target.parentElement.nextElementSibling.children[0].value = int
-                } catch (error) {
-                    alert("Carácter no válido, ingrese solo números.")
-                }
-            }
-
-            if (event.target && event.target.className == "form-control border-3") {
-                try {
-                    let int = parseInt(event.target.value)
-
-                    if (int > 10 || int < 0) return event.target.value = 0
-
-                    event.target.parentElement.previousElementSibling.children[0].value = int
-                } catch (error) {
-                    alert("Carácter no válido, ingrese solo números.")
-                }
-            }
-
-            if (event.target && event.target.className == "form-control-color me-1") {
-                try {
-                    let int = parseInt(event.target.value)
-                    let index = event.target.getAttribute('data-index')
-
-                    if (int > 4 || int < 0) return event.target.value = 0
-
-                    const lis = event.path[2].children
-
-                    let li1 = lis[0].children[0].getAttribute('data-index')
-                    if (index !== li1) if (event.target.value === lis[0].children[0].value) lis[0].children[0].value = 0
-                    let li2 = lis[1].children[0].getAttribute('data-index')
-                    if (index !== li2) if (event.target.value === lis[1].children[0].value) lis[1].children[0].value = 0
-                    let li3 = lis[2].children[0].getAttribute('data-index')
-                    if (index !== li3) if (event.target.value === lis[2].children[0].value) lis[2].children[0].value = 0
-                    let li4 = lis[3].children[0].getAttribute('data-index')
-                    if (index !== li4) if (event.target.value === lis[3].children[0].value) lis[3].children[0].value = 0
-
-                } catch (error) {
-                    alert("Carácter no válido, ingrese solo números.")
-                }
-            }
-        })
-    }
-
-    document.querySelector('#dataQuiz').addEventListener('click', (event) => {
-        if (event.target && event.target.nodeName === "I" && event.target.matches("[data-action]")) {
-            if (event.target.classList[0] === 'btn-view') return view(event)
-            if (event.target.classList[0] === 'btn-send') return send(event)
         }
     })
 }
 
+const send = (event) => {
+    const quiz = {
+        id_quiz: event.target.getAttribute('data-id'),
+        title: event.target.getAttribute('data-title')
+    }
+
+    document.querySelector('[data-modal]').appendChild(View.send());
+
+    $('#send').modal('show');
+
+    document.querySelector('[data-form-send]').addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        document.querySelector('[data-loading]').style.display = "block";
+
+        const date = new Date();
+        const user = {
+            name: event.currentTarget.name.value,
+            mail: event.currentTarget.mail.value,
+            datereg: `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+            status: 0
+        };
+
+        const obj = await Connection.body('quiz', { user, quiz }, 'POST');
+
+        $('#send').modal('hide');
+
+        document.querySelector('[data-loading]').style.display = "none";
+
+        alert(obj.msg);
+    })
+}
+
+document.querySelector('#dataQuiz').addEventListener('click', (event) => {
+    if (event.target && event.target.nodeName === "I" && event.target.matches("[data-action]")) {
+        if (event.target.classList[0] === 'btn-view') return view(event);
+        if (event.target.classList[0] === 'btn-send') return send(event);
+    }
+})
+
 const listInterview = async () => {
 
-    const interviews = await Connection.noBody('interviews', 'GET')
+    const interviews = await Connection.noBody('interviews', 'GET');
 
     interviews.forEach(interview => {
         let select
         switch (interview.id_quiz) {
             case 7:
-                select = document.querySelector('[data-names-one]')
+                select = document.querySelector('[data-names-one]');
                 break;
             case 8:
-                select = document.querySelector('[data-names-two]')
+                select = document.querySelector('[data-names-two]');
                 break;
         }
 
-        const option = document.createElement('option')
-        option.value = interview.id
-        option.dataset.id_quiz = interview.id_quiz
-        option.innerHTML = interview.name
-        select.appendChild(option)
+        const option = document.createElement('option');
+        option.value = interview.id;
+        option.dataset.id_quiz = interview.id_quiz;
+        option.innerHTML = interview.name;
+        select.appendChild(option);
     })
+
+    $('#nameone').selectpicker("refresh");
+    $('#nametwo').selectpicker("refresh");
 }
 
+listQuiz();
+listInterview();
 
-const clean = () => {
-    document.querySelector('[data-card]').style.display = 'none';
+chartRadar();
+chartcomparation();
 
-    document.querySelector('[data-title]').innerHTML = `Listado de Cuestionarios`;
-    document.querySelector('[data-powerbi]').innerHTML = ""
-    document.querySelector('[data-modal]').innerHTML = ""
-    document.querySelector('[data-settings]').innerHTML = ""
-    document.querySelector('[data-features]').innerHTML = ""
+document.querySelector('[data-print-first]').addEventListener('click', async () => {
 
-    if ($.fn.DataTable.isDataTable('#dataTable')) {
-        $('#dataTable').dataTable().fnClearTable();
-        $('#dataTable').dataTable().fnDestroy();
-        $('#dataTable').empty();
-    }
-}
+    const option = document.querySelector('[data-names-one] option:checked');
 
+    if (!option.value) return alert("Seleccione uno nombre.");
 
-document.querySelector('[data-btn-quiz]').addEventListener('click', () => {
-    clean()
-
-    document.querySelector('[data-features]').appendChild(View.table())
-
-    listQuiz()
-
-    document.querySelector('[data-features]').appendChild(View.view())
-
-    listInterview()
-
-    chartRadar()
-    chartcomparation()
-
-    $('#nameone').selectpicker();
-    $('#nametwo').selectpicker();
-
-    document.querySelector('[data-print-first]').addEventListener('click', async () => {
-
-        const option = document.querySelector('[data-names-one] option:checked')
-
-        if (!option.value) return alert("Seleccione uno nombre.")
-
-        await $("#imgLogo,[data-div-chart-radar], [data-quiz-two-row-two], #break_page, [data-quiz-two-row-three], [data-text-desc-quiz-one]").printThis({
-            header: `<div class="sticky-top text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>
+    await $("#imgLogo,[data-div-chart-radar], [data-quiz-two-row-two], #break_page, [data-quiz-two-row-three], [data-text-desc-quiz-one]").printThis({
+        header: `<div class="sticky-top text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>
             <div class="row-fluid mb-2 pt-2 text-center text-primary"><div class="col-12 text-center">
             <h1>Cuestionário de Vida - ${document.querySelector('[data-names-one] :checked').innerHTML}</h1>
             </div></div>`,
-            footer: `<div class="fixed-bottom text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>`,
-            pageTitle: `Cuestionário de Vida - ${document.querySelector('[data-names-one] :checked').innerHTML}`,
-            importStyle: true,
-            importCSS: true,
-            loadCSS: ['https://informes.americaneumaticos.com.py/css/sb-admin-2.css', 'https://informes.americaneumaticos.com.py/css/style.css', 'https://informes.americaneumaticos.com.py/css/dataTables.bootstrap4.min.css'],
-            canvas: true,
-        })
-    })
+        footer: `<div class="fixed-bottom text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>`,
+        pageTitle: `Cuestionário de Vida - ${document.querySelector('[data-names-one] :checked').innerHTML}`,
+        importStyle: true,
+        importCSS: true,
+        loadCSS: ['https://informes.americaneumaticos.com.py/css/sb-admin-2.css', 'https://informes.americaneumaticos.com.py/css/style.css', 'https://informes.americaneumaticos.com.py/css/dataTables.bootstrap4.min.css'],
+        canvas: true,
+    });
+});
 
-    document.querySelector('[data-print-second]').addEventListener('click', () => {
+document.querySelector('[data-print-second]').addEventListener('click', () => {
 
-        const option = document.querySelector('[data-names-two] option:checked')
+    const option = document.querySelector('[data-names-two] option:checked');
 
-        if (!option.value) return alert("Seleccione uno nombre.")
+    if (!option.value) return alert("Seleccione uno nombre.");
 
-        $("[data-div-quiz-two-graph], #break_page_two, [data-div-quiz-two-person], #break_page_three, [data-div-quiz-two-style]").printThis({
-            header: `<div class="sticky-top text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>
+    $("[data-div-quiz-two-graph], #break_page_two, [data-div-quiz-two-person], #break_page_three, [data-div-quiz-two-style]").printThis({
+        header: `<div class="sticky-top text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>
             <div class="row-fluid mb-2 pt-2 text-center text-primary"><div class="col-12 text-center">
             <h1>Cuestionário de Personalidad - ${document.querySelector('[data-names-two] :checked').innerHTML}</h1>
             </div></div>`,
-            footer: `<div class="fixed-bottom text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>`,
-            pageTitle: `Cuestionário de Personalidad - ${document.querySelector('[data-names-two] :checked').innerHTML}`,
-            importStyle: true,
-            importCSS: true,
-            loadCSS: ['https://informes.americaneumaticos.com.py//css/sb-admin-2.css', 'https://informes.americaneumaticos.com.py//css/style.css', 'https://informes.americaneumaticos.com.py//css/dataTables.bootstrap4.min.css'],
-            canvas: true,
-        })
-    })
-})
+        footer: `<div class="fixed-bottom text-center"><img src="https://informes.americaneumaticos.com.py/img/ansalogomin.png" alt="Logo ANSA"></div>`,
+        pageTitle: `Cuestionário de Personalidad - ${document.querySelector('[data-names-two] :checked').innerHTML}`,
+        importStyle: true,
+        importCSS: true,
+        loadCSS: ['https://informes.americaneumaticos.com.py//css/sb-admin-2.css', 'https://informes.americaneumaticos.com.py//css/style.css', 'https://informes.americaneumaticos.com.py//css/dataTables.bootstrap4.min.css'],
+        canvas: true,
+    });
+});
+

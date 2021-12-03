@@ -14,46 +14,7 @@ const showModalEdit = () => {
     const div = document.createElement('div')
 
     const content = `
-<div class="modal fade" id="editpowerbi" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
-<div class="modal-dialog" role="document">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5 class="modal-title">Editar</h5>
-            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-            </button>
-        </div>
-        <form>
-            <div class="modal-body">
-                <div class="form-row">
-                <div class="form-group col-md-6">
-                    <input type="text" placeholder="Título" class="form-control" name="title" id="titleedit" required>
-                    </div> 
-                    <div class="form-group col-md-6">
-                    <select class="form-control" name="type" id="typeedit" required>
-                    <option value="" disabled selected>Tipo</option>
-                    <option value="1" >Informe</option>
-                    <option value="2">Personal</option>
-                    <option value="3">Seguridad - Vehículos</option>
-                    <option value="4">Seguridad - Sucursales</option>
-                </select>
-                </div> 
-                <div class="form-group col-md-12">          
-                <input type="text" placeholder="Url" class="form-control" name="url" id="urledit" required>
-            </div>
-            <div class="form-group col-md-12">
-            <textarea placeholder="Descripción del informe..." id="descriptionedit" name="description" class="form-control"></textarea>
-            </div> 
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                <button type="submit" name="btn" id="ideditpowerbi" onclick="editPowerBi(event)" class="btn btn-warning"><i class="fas fa-edit"> Confirmar</i></button>   
-            </div>
-        </form>
-    </div>
-</div>
-</div>
+
 
 `
     div.innerHTML = content
@@ -65,31 +26,7 @@ const showModalDelete = (id_powerbi, id_login) => {
     const div = document.createElement('div')
 
     const content = `
-    <div class="modal fade" id="deletepowerbi" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Quieres eliminar este informe?</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-                </button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class=" col-md-12">
-                            <h8>Si lo borra no podrá recuperarlo de nuevo.</h8>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" name="btn" onclick="deletePowerBi(event)" data-id_powerbi="${id_powerbi}" data-id_login="${id_login}" id="iddeletepowerbi" class="btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>   
-                </div>
-            </form>
-        </div>
-    </div>
-</div>`
+`
 
     div.innerHTML = content
 
@@ -114,10 +51,7 @@ const listPowerBiAdmin = (powerbi, id_login) => {
 
     const content =  [
         `
-        <a onclick="viewBi(event)" href="" data-id_login="${id_login}" data-title="${powerbi.title}" data-url="${powerbi.url}"><i class="fas fa-eye" style="color:#666600; padding: 2px;"></i></a>
-        <a data-toggle="modal" data-target="#editpowerbi" onclick="modalEditBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-description="${powerbi.description}" data-type="${powerbi.type}"><i class="fas fa-edit" style="color:#32CD32; padding: 2px;"></i></a>
-        <a data-toggle="modal" data-target="#deletepowerbi" onclick="modalDeleteBi(event)" href="" data-id_login="${id_login}" data-id_powerbi="${powerbi.id_powerbi}"><i class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>
-        <a onclick="modalAddBiUser(event)" data-id_powerbi="${powerbi.id_powerbi}" ><i class="fas fa-users" style="color:#000000; padding: 2px;"><span id="row${powerbi.id_powerbi}"  class="badge badge-dark">${powerbi.count}</span></i></a>
+        
         `,
         `${powerbi.title}`,
         `${powerbi.typedesc}`,

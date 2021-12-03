@@ -5,7 +5,17 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/clock/:type/:start/:end/:code/:offices', [Middleware.bearer, Authorization('clock', 'read')], async (req, res, next) => {
+    app.get('/punto', [Middleware.authenticatedMiddleware, Authorization('clock', 'read')], async (req, res, next) => {
+        try {
+            res.render('punto',{
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/clock/:type/:start/:end/:code/:offices', [Middleware.authenticatedMiddleware, Authorization('clock', 'read')], async (req, res, next) => {
         try {
             let clocks
 
@@ -30,7 +40,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/clock/workers', [Middleware.bearer, Authorization('clock', 'read')], async (req, res, next) => {
+    app.get('/clock/workers', [Middleware.authenticatedMiddleware, Authorization('clock', 'read')], async (req, res, next) => {
         try {
             let workers
 

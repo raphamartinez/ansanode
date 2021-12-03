@@ -34,7 +34,7 @@ const adm = async () => {
         document.querySelector('[data-office]').appendChild(line)
     })
 
-    $('[data-office]').selectpicker();
+    $('[data-office]').selectpicker("refresh");
 
     const workers = await Connection.noBody('clock/workers', 'GET')
     workers.forEach(worker => {
@@ -45,8 +45,8 @@ const adm = async () => {
         document.querySelector('[data-code]').appendChild(line)
     })
 
-    $('[data-code]').selectpicker();
-    $('[data-type]').selectpicker();
+    $('[data-code]').selectpicker("refresh");
+    $('[data-type]').selectpicker("refresh");
 }
 
 const addProduct = (event) => {
@@ -139,7 +139,7 @@ const viewSearch = async () => {
         document.querySelector('[data-office]').appendChild(line)
     })
 
-    $('[data-office]').selectpicker();
+    $('[data-office]').selectpicker("refresh");
 
     const workers = await Connection.noBody('clock/workers', 'GET')
     workers.forEach(worker => {
@@ -150,7 +150,7 @@ const viewSearch = async () => {
         document.querySelector('[data-code]').appendChild(line)
     })
 
-    $('[data-code]').selectpicker();
+    $('[data-code]').selectpicker("refresh");
 
 }
 
@@ -491,8 +491,6 @@ const search = async (event) => {
         return alert("¡El período es obligatorio!")
     }
 
-    document.querySelector('[data-loading]').style.display = "block"
-
     const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
 
     if (data.crms.length < 1) {
@@ -514,21 +512,13 @@ const search = async (event) => {
     $('html,body').animate({
         scrollTop: $('[data-div-chart-crms]').offset().top - 100
     }, 'slow');
-
-    document.querySelector('[data-loading]').style.display = "none"
 }
 
-const dashboard = async () => {
-    document.querySelector('[data-loading]').style.display = "block"
-    clean()
 
-    document.querySelector('[data-features]').appendChild(View.header())
-    document.querySelector('[data-features]').appendChild(View.table())
 
     viewCreate()
     viewSearch()
 
-    document.querySelector('[data-loading]').style.display = "none"
 
     document.querySelector('[data-add-product]').addEventListener('click', addProduct, false)
     document.querySelector('[data-form-crm]').addEventListener('submit', create, false)
@@ -539,6 +529,5 @@ const dashboard = async () => {
             if (event.target.classList[0] === 'btn-view') return view(event)
         }
     })
-}
 
-document.querySelector('[data-menu-crm]').addEventListener('click', dashboard, false)
+

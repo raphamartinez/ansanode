@@ -7,7 +7,17 @@ const multerConfig = require('../config/multer')
 
 module.exports = app => {
 
-    app.get('/patrimony/files/:id', [Middleware.bearer, Authorization('patrimony', 'read')], async (req, res, next) => {
+    app.get('/patrimonio', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
+        try {
+            res.render('patrimonio', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/patrimony/files/:id', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
         try {
             const id = req.params.id
             const images = await Patrimony.listImages(id)
@@ -18,7 +28,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/patrimony/details/:id', [Middleware.bearer, Authorization('patrimony', 'read')], async (req, res, next) => {
+    app.get('/patrimony/details/:id', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
         try {
             const id = req.params.id
             const details = await Patrimony.listDetails(id)
@@ -30,7 +40,7 @@ module.exports = app => {
     })
 
 
-    app.get('/patrimonys/:offices/:types', [Middleware.bearer, Authorization('patrimony', 'read')], async (req, res, next) => {
+    app.get('/patrimonys/:offices/:types', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
         try {
 
             let offices = req.params.offices
@@ -52,7 +62,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/patrimony/types', [Middleware.bearer, Authorization('patrimony', 'read')], async (req, res, next) => {
+    app.get('/patrimony/types', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
         try {
             let types
             let offices
@@ -74,7 +84,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/patrimony', [Middleware.bearer, Authorization('patrimony', 'create')],
+    app.post('/patrimony', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'create')],
         multer(multerConfig)
             .array('file', 10), async (req, res, next) => {
                 try {
@@ -89,7 +99,7 @@ module.exports = app => {
                 }
             })
 
-    app.put('/patrimony/:id', [Middleware.bearer, Authorization('patrimony', 'update')], async (req, res, next) => {
+    app.put('/patrimony/:id', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'update')], async (req, res, next) => {
         try {
             const patrimony = req.body.patrimony
 
@@ -102,7 +112,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/patrimony/upload', [Middleware.bearer, Authorization('patrimony', 'create')],
+    app.post('/patrimony/upload', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'create')],
     multer(multerConfig)
         .array('file', 10), async (req, res, next) => {
             try {
@@ -118,7 +128,7 @@ module.exports = app => {
         })
 
 
-        app.delete('/patrimony/:id', [Middleware.bearer, Authorization('patrimony', 'delete')], async ( req, res, next) => {
+        app.delete('/patrimony/:id', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'delete')], async ( req, res, next) => {
             try {
                 await Patrimony.delete(req.params.id)
                 cachelist.delPrefix('patrimony')
@@ -130,7 +140,7 @@ module.exports = app => {
             }
         })
 
-        app.delete('/patrimony/image/:id/:name', [Middleware.bearer, Authorization('patrimony', 'delete')], async ( req, res, next) => {
+        app.delete('/patrimony/image/:id/:name', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'delete')], async ( req, res, next) => {
             try {
                 await Patrimony.deleteImage(req.params.id, req.params.name)
                 

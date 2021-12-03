@@ -5,7 +5,17 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.post('/stock', [Middleware.bearer,  Authorization('stock', 'create')], async ( req, res, next) => {
+    app.get('/stock', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
+        try {
+            res.render('stock', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/stock', [Middleware.authenticatedMiddleware, Authorization('stock', 'create')], async (req, res, next) => {
         try {
             const id_login = req.body.id_login
             const stock = req.body.stock
@@ -20,7 +30,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stocks/:id_login', [Middleware.bearer,  Authorization('stock', 'read')], async ( req, res, next) => {
+    app.get('/stocks/:id_login', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`stock:id_login:${req.params.id_login}`)
 
@@ -38,7 +48,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/stock/:id_stock', [Middleware.bearer,  Authorization('stock', 'delete')], async ( req, res, next) => {
+    app.delete('/stock/:id_stock', [Middleware.authenticatedMiddleware, Authorization('stock', 'delete')], async (req, res, next) => {
         try {
             await Stock.delete(req.params.id_stock)
 

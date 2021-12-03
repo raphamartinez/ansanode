@@ -4,6 +4,10 @@ import { Connection } from '../services/connection.js'
 const btnfiles = document.querySelector('[data-files]')
 const cardHistory = document.querySelector('[data-card]')
 
+const init = () => {
+    
+}
+
 btnfiles.addEventListener('click', async (event) => {
     event.preventDefault()
 

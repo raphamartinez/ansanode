@@ -5,7 +5,7 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/answereds', [Middleware.bearer, Authorization('answered', 'read')], async (req, res, next) => {
+    app.get('/answereds', [Middleware.authenticatedMiddleware, Authorization('answered', 'read')], async (req, res, next) => {
         try {
 
             let offices
@@ -24,7 +24,7 @@ module.exports = app => {
                 offices = await Office.listOffice(req.login.id_login)
             }
 
-            res.json(offices)
+            res.render(offices)
         } catch (err) {
             next(err)
         }

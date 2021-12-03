@@ -5,7 +5,17 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/crm/:start/:end/:offices/:sellers', [Middleware.bearer, Authorization('crm', 'read')], async (req, res, next) => {
+    app.get('/crm', [Middleware.authenticatedMiddleware, Authorization('crm', 'read')], async (req, res, next) => {
+        try {
+          res.render('crm',{
+              perfil: req.login.perfil
+          })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/crm/:start/:end/:offices/:sellers', [Middleware.authenticatedMiddleware, Authorization('crm', 'read')], async (req, res, next) => {
         try {
 
             let search = {
@@ -30,13 +40,13 @@ module.exports = app => {
 
             const { crms, types, days, clients } = await Crm.list(search)
 
-            res.json({crms, types, days, clients})
+            res.json({ crms, types, days, clients })
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/crm/products/:id', [Middleware.bearer, Authorization('crm', 'read')], async (req, res, next) => {
+    app.get('/crm/products/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'read')], async (req, res, next) => {
         try {
 
             const products = await Crm.listProducts(req.params.id)
@@ -47,7 +57,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/crm', [Middleware.bearer, Authorization('crm', 'create')], async (req, res, next) => {
+    app.post('/crm', [Middleware.authenticatedMiddleware, Authorization('crm', 'create')], async (req, res, next) => {
         try {
             const crm = req.body.crm
 
@@ -59,7 +69,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/crm/:id', [Middleware.bearer, Authorization('crm', 'update')], async (req, res, next) => {
+    app.put('/crm/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'update')], async (req, res, next) => {
         try {
             const data = req.body
             const id_crm = req.params.id
@@ -73,7 +83,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/crm/products/:id', [Middleware.bearer, Authorization('crm', 'update')], async (req, res, next) => {
+    app.put('/crm/products/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'update')], async (req, res, next) => {
         try {
             const value = req.body.value
             const id = req.params.id
@@ -87,7 +97,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/crm/:id', [Middleware.bearer, Authorization('crm', 'delete')], async (req, res, next) => {
+    app.delete('/crm/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'delete')], async (req, res, next) => {
         try {
             const id_crm = req.params.id
 

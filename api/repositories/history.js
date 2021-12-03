@@ -28,9 +28,14 @@ class History {
         }
     }
 
-    async countInTheTime() {
+    async count(id_login) {
         try {
-            const sql = `SELECT COUNT(id_history) as count FROM ansa.history WHERE dateReg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY)`
+            let sql = `SELECT COUNT(id_history) as count 
+            FROM ansa.history 
+            WHERE dateReg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) `
+            
+            if(id_login) sql += ` AND id_login = ${id_login} `
+
             const result = await query(sql)
             return result[0]
         } catch (error) {
@@ -38,30 +43,16 @@ class History {
         }
     }
 
-    async lastAccess() {
+    async lastAccess(id_login) {
         try {
-            const sql = `SELECT US.name, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as time  FROM ansa.user US, ansa.history HI, ansa.login LO WHERE HI.id_login = LO.id_login and LO.id_login = US.id_login ORDER BY HI.dateReg DESC LIMIT 1`
-            const result = await query(sql)
-            return result[0]
-        } catch (error) {
-            throw new InternalServerError('No se pudo enumerar el último acceso')
-        }
-    }
+            let sql = `SELECT us.name, DATE_FORMAT(hi.dateReg, '%H:%i %d/%m/%Y') as time  
+            FROM ansa.user us
+            INNER JOIN ansa.history hi ON us.id_login = hi.id_login `
+            
+            if(id_login) sql += ` WHERE us.id_login = ${id_login} `
 
+            sql+= `ORDER BY hi.dateReg DESC LIMIT 1`
 
-    async countInTheTimeUser(id_login) {
-        try {
-            const sql = `SELECT COUNT(id_history) as count FROM ansa.history WHERE id_login = ${id_login} and dateReg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY)`
-            const result = await query(sql)
-            return result[0]
-        } catch (error) {
-            throw new InternalServerError('No se puede enumerar el número de vistas')
-        }
-    }
-
-    async lastAccessUser(id_login) {
-        try {
-            const sql = `SELECT US.name, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as time FROM ansa.user US, ansa.history HI, ansa.login LO WHERE HI.id_login = LO.id_login and LO.id_login = US.id_login and LO.id_login = ${id_login} ORDER BY HI.dateReg DESC LIMIT 1`
             const result = await query(sql)
             return result[0]
         } catch (error) {

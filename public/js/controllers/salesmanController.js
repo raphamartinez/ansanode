@@ -28,62 +28,27 @@ async function salesmanList(event) {
             dtview.push(field)
         });
 
-        let user = JSON.parse(sessionStorage.getItem('user'))
 
-        if (user.perfil !== 1) {
-            $(document).ready(function () {
-                $("#tablesalesman").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Nombre del Vendedor" },
-                        { title: "Gerente" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false
-                }
-                )
-            })
-        } else {
-            $(document).ready(function () {
-                $("#tablesalesman").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Nombre del Vendedor" },
-                        { title: "Gerente" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false,
-                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                        "<'row'<'col-sm-12'B>>",
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                }
-                )
-            })
+        $("#tablesalesman").DataTable({
+            data: dtview,
+            columns: [
+                { title: "Opciones" },
+                { title: "Nombre del Vendedor" },
+                { title: "Gerente" },
+                { title: "Fecha de Registro" }
+            ],
+            paging: true,
+            ordering: true,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: true,
+            fixedHeader: false
         }
+        )
 
     } catch (error) {
         console.log(error);
@@ -95,7 +60,7 @@ window.modalAddSalesman = modalAddSalesman
 
 async function modalAddSalesman(event) {
     let loading = document.querySelector('[data-loading]')
-loading.style.display = "block";
+    loading.style.display = "block";
     event.preventDefault()
 
     try {
@@ -111,7 +76,7 @@ loading.style.display = "block";
         })
         loading.style.display = "none"
 
-        $('#salesmanselect').selectpicker();
+        $('#salesmanselect').selectpicker("refresh");
         $('#modalsalesman').modal('show')
     } catch (error) {
         loading.style.display = "none"
@@ -126,7 +91,7 @@ async function addSalesman(event) {
     $('#modalsalesman').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-loading.style.display = "block";
+    loading.style.display = "block";
 
     try {
         const arrsellers = document.querySelectorAll('#salesmanselect option:checked')

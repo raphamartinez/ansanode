@@ -2,30 +2,41 @@ require('dotenv').config({ path: __dirname + '\\.env', encoding: 'utf8' })
 require('events').EventEmitter.prototype._maxListeners = 100;
 
 const customExpress = require('./api/config/customExpress')
+const appLocals = require("./api/config/app.locals");
 const express = require('express')
 const path = require('path')
 const jwt = require('jsonwebtoken')
 const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = require('./api/models/job')
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
-// const Hbs = require('./api/models/hbs')
-// const Web = require('./api/models/webscraping')
-// Web.listProsegurOffice()
+const Middleware = require('./api/infrastructure/auth/middleware');
+const History = require('./api/models/history');
 
 process.setMaxListeners(100)
-const app = customExpress()
 
-app.set('views', [path.join(__dirname, 'views/public'), path.join(__dirname, 'views/admin'), path.join(__dirname, 'views/quiz')])
-app.engine('html', require('ejs').renderFile)
-app.set('view engine', 'html')
+const app = customExpress()
+app.locals = appLocals;
 
 app.listen(3000, () => {
 
-  app.use(express.static(__dirname + '/public'))
-  app.use(express.static(__dirname + '/views'))
-  app.use(express.static(__dirname + '/tmp'))
+  app.use(express.static(__dirname + '/public'));
+  app.use(express.static(__dirname + '/tmp'));
 
-  app.get('/', function (req, res) {
-    res.render('login');
+  app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/public'), path.join(__dirname, 'views/admin/pages'), path.join(__dirname, 'views/quiz')]);
+  app.set('view engine', 'ejs');
+
+  app.get('/', Middleware.authenticatedMiddleware, async function (req, res) {
+    try {
+      const { count, lastAccess } = await History.dashboard(id);
+
+      res.render('dashboard', {
+        count,
+        lastAccess,
+        perfil: req.login.perfil,
+        name: req.login.name
+      });
+    } catch (error) {
+      res.render('login');
+    }
   });
 
   if (process.env.NODE_ENV !== 'developer') {

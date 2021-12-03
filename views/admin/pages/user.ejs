@@ -1,0 +1,338 @@
+<%- include(partials + 'header.ejs' ) %>
+
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
+
+    <div class="row justify-content-md-center">
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>
+                <%= user.name %>
+            </h1>
+        </div>
+    </div>
+
+    <%- include(partials + 'loading.ejs' ) %>
+
+        <div class="container col-md-12 text-center">
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <div class="col-md-6 text-left">
+                    <a href="/usuarios" class="btn btn-secondary">
+                        <i class="fas fa-chevron-left"></i> Volver a la lista
+                    </a>
+
+                </div>
+                <div class="col-md-6 text-right">
+                    <div class="btn-group" role="group">
+                        <button id="btnGroupDrop1" type="button" class="btn btn-info dropdown-toggle"
+                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Opciones
+                        </button>
+                        <div class="dropdown-menu">
+                            <a class="dropdown-item" data-offices="<%= JSON.stringify(user.offices) %>" data-perfil="<%= user.perfil %>"
+                                data-btn-edit><i class="fas fa-edit" style="color:#3498DB;"></i>
+                                Editar usuario</a>
+                            <a class="dropdown-item" data-toggle="modal" data-target="#delete">
+                                <i class="fas fa-trash" style="color:#CC0000;"></i> Deshabilitar usuario</a>
+                            <a class="dropdown-item" data-toggle="modal" data-target="#modalpassword">
+                                <i class="fas fa-key" style="color:#DAA520;"></i> Editar contraseña</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 p-4 text-center">
+                    <div class="picture-container p-4">
+                        <div class="picture">
+                            <a data-toggle="modal" data-target="#janelaImagem">
+                                <i class="fas fa-user fa-4x text-gray-400 float-center"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <h4 data-view-name>
+                        <%= user.name %>
+                    </h4>
+                </div>
+
+                <div class="col-md-12 p-3">
+                    <div class="card shadow mb-2">
+                        <div class="card-header text-white bg-secondary"><strong>Dados:</strong></div>
+                        <div class="card-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="mail" data-view-mail><strong>Acceso: </strong>
+                                        <%= user.mail %>
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="mailenterprise" data-view-mailenterprise><strong>E-mail Organização:
+                                        </strong>
+                                        <%= user.mailenterpriseDesc %>
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="dateBirthday" data-view-dateBirthday><strong>Fecha de Nacimiento:
+                                        </strong>
+                                        <%= user.dateBirthdayDesc %>
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="dateReg" data-view-dateReg><strong>Fecha de Registro:
+                                        </strong>
+                                        <%= user.dateReg %>
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="office" data-view-office><strong>Sucursal:
+                                        </strong>
+                                        <%= user.office %>
+                                    </label>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="profile" data-view-profile><strong>Perfil:
+                                        </strong>
+                                        <%= user.perfilDesc %>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 p-3 text-left">
+                    <div class="card">
+                        <div class="card-header text-white bg-secondary"><strong>Acceso a PowerBi:</strong></div>
+                        <div class="form-row p-3">
+                            <div class="form-group col-md-1.5">
+                                <button data-toggle="modal" data-target="#powerbi" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Agregar acceso al informe
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="table table-bordered text-center" id="powerbi" width="100%" cellspacing="0"></table>
+                </div>
+                <div class="col-md-6 p-3 text-right">
+                    <div class="card">
+                        <div class="card-header text-white text-left bg-secondary"><strong>Acceso a Depósito:</strong>
+                        </div>
+                        <div class="form-row p-3">
+                            <div class="form-group col-md-1.5">
+                                <button data-toggle="modal" data-target="#stock" class="btn btn-success">
+                                    <i class="fas fa-plus"></i> Agregar acceso al stock
+                                </button>
+                            </div>
+                        </div>
+                        <table class="table table-bordered text-center" id="stock" width="100%" cellspacing="0"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="modalpassword" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Cambiar contraseña</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form action="/changepass/<%= id %>" method="POST" data-form-password>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12 text-center">
+                                    <h8 class="section-subheading text-muted">Contraseña de acceso a la plataforma.</h8>
+                                    <ul class="list-group">
+                                        <li id="min6" class="list-group-item"><small>Mínimo 6 caracteres</small></li>
+                                        <li id="max15" class="list-group-item"><small>Máximo 15 caracteres</small></li>
+                                        <li id="mai1" class="list-group-item"><small>Al menos 1 letra mayúscula</small>
+                                        </li>
+                                        <li id="num1" class="list-group-item"><small>Al menos 1 número</small></li>
+                                        <li id="esp1" class="list-group-item"><small>Al menos 1 personaje
+                                                especial</small></li>
+                                        <li id="conf1" class="list-group-item"><small>Coincidencia de contraseña y
+                                                confirmación</small></li>
+                                    </ul>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="password" placeholder="Contraseña" onkeyup="Check(event)"
+                                        class="form-control" name="password" id="pass" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="password" placeholder="Verificación de Contraseña"
+                                        onkeyup="Check(event)" class="form-control" name="passwordconf"
+                                        id="checkpassword" required>
+                                </div>
+                                <div class="form-group col-md-12 text-center">
+                                    <div id="meter"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                            <button disabled type="submit" class="btn btn-success"><i class="fas fa-key">
+                                    Confirmar</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="delete" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Quieres deshabilitar este usuario?</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/user/delete/<%= id %>">
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="col-md-12">
+                                    <h8>El usuario puede ser activado de nuevo más tarde.</h8>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-danger"><i class="fas fa-times">
+                                    Deshabilitar</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="edit" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Editar usuario</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form method="POST" action="/user/update/<%= id %>">
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="name">Nombre</label>
+                                    <input value="<%= user.name %>" type="text" placeholder="Nombre"
+                                        class="form-control" name="name" id="name" required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="dateBirthday">Fecha de cumpleaños</label>
+                                    <input value="<%= user.dateBirthdayDesc %>" type="date"
+                                        placeholder="Fecha de cumpleaños" class="form-control" name="dateBirthday"
+                                        id="dateBirthday">
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="mailenterprise">Email Organização</label>
+                                    <input value="<%= user.mailenterprise %>" placeholder="Email Organização"
+                                        class="form-control" id="mailenterprise" name="mailenterprise" type="email"
+                                        required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="perfil">Perfil</label>
+                                    <select class="form-control" name="perfil" id="perfiledit" required>
+                                        <option value="0" disabled>Perfil</option>
+                                        <option value="1">Administrador</option>
+                                        <option value="2">Vendedor</option>
+                                        <option value="3">Depositero</option>
+                                        <option value="4">Gerente</option>
+                                        <option value="5">Personal Administrativo</option>
+                                        <option value="6">Encarregado de Sucursal</option>
+                                        <option value="7">Auditor</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="office">Sucursal</label>
+                                    <select title="Sucursal" class="form-control" name="office" id="officeedit" multiple
+                                        required>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12">
+                                    <label for="mail">Acceso</label>
+                                    <input value="<%= user.mail %>" type="text" placeholder="Acceso"
+                                        class="form-control" name="mail" id="mail" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success"><i class="fas fa-edit"> Editar</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="addstock" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar acceso al depósito</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    Seleccione los depósitos a los que el usuario debe tener acceso
+                                    <select multiple title="Depósito" class="selectpicker form-control" name="stock"
+                                        id="stockselect" required>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                            <button data-id_login="${id_login}" type="submit" onclick="addstock(event)"
+                                class="btn btn-success"><i class="fas fa-plus"> Confirmar</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="deletestock" tabindex="-1" role="dialog" aria-labelledby="modal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Eliminar el acceso al depósito</h5>
+                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    El Usuario ya no podrá acceder al depósito y a los artículos que contiene.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                            <button data-id_stock="${id_stock}" data-id_login="${id_login}" type="submit"
+                                onclick="deletestock(event)" class="btn btn-danger"><i class="fas fa-times">
+                                    Eliminar</i></button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <%- include(partials + 'script.ejs' ) %>
+
+            <script type="module" src="../js/controllers/userController.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+            <script src="../js/libs/select-pure.js"></script>
+
+            <%- include(partials + 'footer.ejs' ) %>

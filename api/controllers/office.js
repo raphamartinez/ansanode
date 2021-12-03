@@ -5,7 +5,7 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/offices', [Middleware.bearer, Authorization('office', 'read')], async (req, res, next) => {
+    app.get('/offices', [Middleware.authenticatedMiddleware, Authorization('office', 'read')], async (req, res, next) => {
         try {
 
             let offices
@@ -30,7 +30,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/office', [Middleware.bearer, Authorization('office', 'create')], async (req, res, next) => {
+    app.post('/office', [Middleware.authenticatedMiddleware, Authorization('office', 'create')], async (req, res, next) => {
         try {
             const data = req.body
 
@@ -43,7 +43,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/office/:id', [Middleware.bearer, Authorization('office', 'update')], async (req, res, next) => {
+    app.put('/office/:id', [Middleware.authenticatedMiddleware, Authorization('office', 'update')], async (req, res, next) => {
         try {
             const data = req.body
             const id_office = req.params.id
@@ -57,7 +57,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/office/:id', [Middleware.bearer, Authorization('office', 'delete')], async (req, res, next) => {
+    app.delete('/office/:id', [Middleware.authenticatedMiddleware, Authorization('office', 'delete')], async (req, res, next) => {
         try {
             const id_office = req.params.id
 

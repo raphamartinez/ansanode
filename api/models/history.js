@@ -3,22 +3,14 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('./error
 
 class History {
 
-    async listHistoryDashboard(perfil, id_login) {
+    async dashboard(id_login) {
         try {
-            if (perfil === 1) {
-                const count = await Repositorie.countInTheTime()
-                const lastAccess = await Repositorie.lastAccess()
+            let count = await Repositorie.count(id_login)
+            let lastAccess = await Repositorie.lastAccess(id_login)
 
-                return { count, lastAccess }
-            } else {
-                const count = await Repositorie.countInTheTimeUser(id_login)
-                const lastAccess = await Repositorie.lastAccessUser(id_login)
-
-                return { count, lastAccess }
-            }
-
+            return { count, lastAccess }
         } catch (error) {
-            throw new NotFound('Historial.')
+            throw new InternalServerError('Error al mostrar el historial.')
         }
     }
 
@@ -26,7 +18,7 @@ class History {
         try {
             return Repositorie.list(id_login)
         } catch (error) {
-            throw new NotFound('Historial.')
+            throw new NotFound('Error al mostrar el historial.')
         }
     }
 

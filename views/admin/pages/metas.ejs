@@ -1,0 +1,30 @@
+<%- include(partials + 'header.ejs' ) %>
+
+    <link href="../css/excel-bootstrap-table-filter-style.css" rel="stylesheet">
+
+
+    <%- include(partials + 'loading.ejs' ) %>
+
+        <div id="content">
+            <div class="container-fluid">
+                <div class="row justify-content-md-center">
+                    <div class="col-12 text-center">
+                        <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Metas</h1>
+                    </div>
+                </div>
+                <div class="row" data-card></div>
+                <div class="col-lg-12 text-center">
+                    <div class="form-row" data-powerbi></div>
+                </div>
+                <div data-settings></div>
+                <table class="table table-bordered text-center mb-2" id="dataTable" width="100%" cellspacing="0">
+                </table>
+
+                <div data-features></div>
+            </div>
+        </div>
+
+        <%- include(partials + 'script.ejs' ) %>
+            <script type="module" src="../js/controllers/goalsController.js"></script>
+            <script src="../js/libs/excel-bootstrap-table-filter-bundle.js"></script>
+            <%- include(partials + 'footer.ejs' ) %>

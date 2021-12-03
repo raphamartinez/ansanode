@@ -29,7 +29,7 @@ class User {
         try {
             const sql = `UPDATE ansa.user set status = ? WHERE id_login = ?`
             await query(sql, [status, id_login])
-            
+
             return true
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el usuario en la base de datos')
@@ -38,8 +38,8 @@ class User {
 
     async update(user) {
         try {
-            const sql = 'UPDATE ansa.user SET name = ?, perfil = ?, dateBirthday = ?, mailenterprise = ? WHERE id_user = ?'
-            await query(sql, [user.name, user.perfil, user.dateBirthday, user.mailenterprise, user.id_user])
+            const sql = 'UPDATE ansa.user SET name = ?, perfil = ?, dateBirthday = ?, mailenterprise = ? WHERE id_login = ?'
+            await query(sql, [user.name, user.perfil, user.dateBirthday, user.mailenterprise, user.id_login])
             return true
         } catch (error) {
             throw new InvalidArgumentError('Error al actualizar los datos')
@@ -68,10 +68,26 @@ class User {
         }
     }
 
-    list() {
+    list(id) {
         try {
-            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, US.id_office, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg 
-            FROM ansa.user US, ansa.login LO WHERE LO.id_login = US.id_login and US.status = 1 `
+            let sql = `SELECT us.id_user, us.id_login, us.name, if(us.mailenterprise = null, "", us.mailenterprise) as mailenterprise , us.perfil, lo.mail, us.id_office, if( DATE_FORMAT(us.dateBirthday, '%d/%m/%Y') = "00/00/0000", "", DATE_FORMAT(us.dateBirthday, '%d/%m/%Y')) as dateBirthday, DATE_FORMAT(us.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(us.dateReg, '%H:%i %d/%m/%Y') as dateReg ,
+                        CASE
+                                    WHEN us.perfil = 1 THEN "Admin"
+                                    WHEN us.perfil = 2 THEN "Vendedor"
+                                    WHEN us.perfil = 3 THEN "Depositero"
+                                    WHEN us.perfil = 4 THEN "Gerente"
+                                    WHEN us.perfil = 5 THEN "Personal administrativo"
+                                    WHEN us.perfil = 6 THEN "Encarregado de Sucursal"
+                                    WHEN us.perfil = 7 THEN "Auditor"
+                                    ELSE "Usuario"
+                                END as perfilDesc
+                        FROM ansa.user us
+                        INNER JOIN ansa.login lo ON us.id_login = lo.id_login 
+                        WHERE lo.id_login = us.id_login 
+                        and us.status = 1 `
+
+            if (id) sql += ` and lo.id_login = ${id}`
+
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los usuarios')

@@ -5,7 +5,18 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.post('/finance', [Middleware.bearer, Authorization('finance', 'create')], async (req, res, next) => {
+    app.get('/cobranza', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+        try {
+            res.render('cobranza',{
+                perfil: req.login.perfil
+            })
+            
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/finance', [Middleware.authenticatedMiddleware, Authorization('finance', 'create')], async (req, res, next) => {
         try {
             const finance = req.body.finance
 
@@ -19,7 +30,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/finance/:id_finance', [Middleware.bearer, Authorization('finance', 'update')], async (req, res, next) => {
+    app.put('/finance/:id_finance', [Middleware.authenticatedMiddleware, Authorization('finance', 'update')], async (req, res, next) => {
         try {
             const finance = req.body.finance
             const id_finance = req.params.id_finance
@@ -34,7 +45,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/finance/:id_finance', [Middleware.bearer, Authorization('finance', 'delete')], async (req, res, next) => {
+    app.delete('/finance/:id_finance', [Middleware.authenticatedMiddleware, Authorization('finance', 'delete')], async (req, res, next) => {
         try {
             const id_finance = req.params.id_finance
 
@@ -48,20 +59,20 @@ module.exports = app => {
         }
     })
 
-    app.get('/finance/:clients/:offices/:overdue/:type', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
+    app.get('/finance/:clients/:offices/:overdue/:type', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             let offices = req.params.offices
 
-            // if (req.access.all.allowed) {
-            //     offices = req.params.offices
+            if (req.access.all.allowed) {
+                offices = req.params.offices
 
-            //     const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
+                const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
 
-            //     if (cached) {
-            //         return res.json(JSON.parse(cached))
-            //     }
+                if (cached) {
+                    return res.json(JSON.parse(cached))
+                }
 
-            // }
+            }
 
             const clients = req.params.clients
             const overdue = req.params.overdue
@@ -76,7 +87,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/financehistory/:invoice', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
+    app.get('/financehistory/:invoice', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             let invoice = req.params.invoice
 
@@ -87,7 +98,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/financeclient/:client/:date', [Middleware.bearer, Authorization('finance', 'read')], async (req, res, next) => {
+    app.get('/financeclient/:client/:date', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
             let client = req.params.client
             let date = req.params.date

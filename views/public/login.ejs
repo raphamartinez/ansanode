@@ -32,15 +32,15 @@
                                         <h1 class="h4 text-gray-900 ">¡Bienvenido al Portal de Informes!!</h1>
                                         <img class="" src="../img/ansalogomin.png" alt="">
                                     </div>
-                                    <form id="formLogin" action="#" class="user" data-form>
+                                    <form method="POST" action="/login" class="user" data-form>
                                         <div class="form-group pt-3">
                                             <input type="text" class="form-control form-control-user text-center"
-                                                id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Acceso"
+                                                name="mail" aria-describedby="emailHelp" placeholder="Acceso"
                                                 data-mail>
                                         </div>
                                         <div class="form-group">
                                             <input type="password" class="form-control form-control-user text-center"
-                                                placeholder="Contrasenã" data-password>
+                                                placeholder="Contrasenã" name="password" data-password>
                                         </div>
                                         <div class="form-group">
                                             <div class="custom-control custom-checkbox small">
@@ -51,7 +51,7 @@
                                         </div>
                                         <button class="g-recaptcha btn btn-primary btn-user btn-block
                                         "data-sitekey="6LeJV9UaAAAAAF0VrDRlauTB4KcbVcLSIJYWYAeF"
-                                            data-callback='onSubmit' data-action='submit' id="btnLogin">
+                                            data-callback='onSubmit' data-action='submit'>
                                             Login
                                         </button>
                                     </form>

@@ -16,8 +16,9 @@ class Office {
 
     async delete(id_login) {
         try {
-            const sql = `DELETE from officeuser WHERE id_login = ${id_login}`
-            const result = await query(sql)
+            const sql = `DELETE from officeuser WHERE id_login = ?`
+            const result = await query(sql, id_login)
+
             return result[0]
         } catch (error) {
             console.log(error);

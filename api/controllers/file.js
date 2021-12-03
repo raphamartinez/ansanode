@@ -8,7 +8,7 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.post('/file', [Middleware.bearer, Authorization('file', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
+    app.post('/file', [Middleware.authenticatedMiddleware, Authorization('file', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
         try {
             const file = req.file
             const details = req.body
@@ -26,7 +26,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/fileoffice', [Middleware.bearer, Authorization('file', 'create')], async (req, res, next) => {
+    app.post('/fileoffice', [Middleware.authenticatedMiddleware, Authorization('file', 'create')], async (req, res, next) => {
         try {
             const data = req.body.obj
 
@@ -43,7 +43,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/file/:id_file', [Middleware.bearer, Authorization('file', 'delete')], async (req, res, next) => {
+    app.delete('/file/:id_file', [Middleware.authenticatedMiddleware, Authorization('file', 'delete')], async (req, res, next) => {
         try {
             const id_file = req.params.id_file
 
@@ -59,7 +59,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/files/:type/:title', [Middleware.bearer, Authorization('file', 'read')], async (req, res, next) => {
+    app.get('/files/:type/:title', [Middleware.authenticatedMiddleware, Authorization('file', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue(`file:${JSON.stringify(req.params)}`)
@@ -82,7 +82,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/file/:id_file', [Middleware.bearer, Authorization('file', 'read')], async (req, res, next) => {
+    app.get('/file/:id_file', [Middleware.authenticatedMiddleware, Authorization('file', 'read')], async (req, res, next) => {
         try {
             const id_file = req.params.id_file
 

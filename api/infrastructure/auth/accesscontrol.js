@@ -8,6 +8,32 @@ const controll = new AccessControl()
 // 4 - gerente
 // 5 - personal administrativo
 // 6 - encarregado de Sucursal
+// 7 - Auditor
+// 8 - Patrimonio
+
+controll
+    .grant('7')
+    .readAny('patrimony')
+    .createAny('patrimony')
+    .updateAny('patrimony')
+    .deleteAny('patrimony')
+    .readOwn('history')
+    .readOwn('user')
+    .readOwn('office')
+
+controll
+    .grant('6')
+    .readOwn('finance')
+    .createAny('finance')
+    .updateAny('finance')
+    .deleteAny('finance')
+    .readOwn('clients')
+    .createAny('clients')
+    .updateAny('clients')
+    .deleteAny('clients')
+    .readOwn('history')
+    .readOwn('user')
+    .readOwn('office')
 
 controll
     .grant('5')

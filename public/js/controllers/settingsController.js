@@ -1,5 +1,3 @@
-import { ViewSettings } from "../views/settingsView.js"
-
 
 const btn = document.querySelector('[data-management]')
 
@@ -25,17 +23,11 @@ btn.addEventListener('click', async (event) => {
     settings.prepend(ViewSettings.sidebar())
     cardHistory.style.display = 'none';
 
-    let user = JSON.parse(sessionStorage.getItem('user'))
+    let configSalesman = document.querySelector('[data-config-salesman]')
+    configSalesman.remove()
 
-    if (user.perfil !== 1) {
-
-        let configSalesman = document.querySelector('[data-config-salesman]')
-        configSalesman.remove()
-
-        let configMail = document.querySelector('[data-config-mail]')
-        configMail.remove()
-
-    }
+    let configMail = document.querySelector('[data-config-mail]')
+    configMail.remove()
 
     if ($.fn.DataTable.isDataTable('#tabletypearchive')) {
         $('#tabletypearchive').dataTable().fnClearTable();

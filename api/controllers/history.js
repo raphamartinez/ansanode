@@ -6,7 +6,18 @@ const cachelist = require('../infrastructure/redis/cache')
 const WebScraping = require('../models/webscraping')
 
 module.exports = app => {
-    app.post('/history', Middleware.bearer, async (req, res, next) => {
+
+    app.get('/historial', Middleware.authenticatedMiddleware, async (req, res, next) => {
+        try {
+            res.render('history', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/history', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
             const id_login = req.login.id_login
             const description = req.body.description
@@ -21,7 +32,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/history', [Middleware.bearer, Authorization('history', 'read')], async (req, res, next) => {
+    app.get('/history', [Middleware.authenticatedMiddleware, Authorization('history', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`history:id_login:${req.login.id_login}`)
 
@@ -44,7 +55,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/history/:id', [Middleware.bearer, Authorization('history', 'read')], async (req, res, next) => {
+    app.get('/history/:id', [Middleware.authenticatedMiddleware, Authorization('history', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`history:${JSON.stringify(req.params)}`)
 
@@ -61,7 +72,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/historys', [Middleware.bearer, Authorization('history', 'read')], async (req, res, next) => {
+    app.get('/historys', [Middleware.authenticatedMiddleware, Authorization('history', 'read')], async (req, res, next) => {
         try {
 
             let historys

@@ -164,50 +164,31 @@ class Hbs {
         }
     }
 
-    async listItems(search, id_login) {
+    async listStock(search, id_login) {
         try {
-            let history = `Listado de Artículos `
 
-            if (search.stock.length === 0) {
-                const data = await Repositorie.listStocks(id_login)
-                let resultArray = data.map(v => Object.assign({}, v));
-
-                let stocks = resultArray.map(function (text) {
-                    return `'${text['StockDepo']}'`;
-                });
-
+            if (search.stock === "ALL") {
+                const dataStock = await Repositorie.listStocks(id_login)
+                const stocks = dataStock.map(obj => `'${obj.StockDepo}'`);
                 search.stock = stocks
             }
-            history += `- Deposito: ${search.stock}.`
 
-            if (!search.artcode) {
+            
+            if (search.code === "ALL") {
 
-                const dataitem = await Repositorie.listItemsComplete(search.stock)
-
-                let resultArrayitem = dataitem.map(v => Object.assign({}, v));
-
-                let items = resultArrayitem.map(function (text) {
-                    return `'${text['ArtCode']}'`;
-                });
-
-                search.artcode = items
-
+                const dataItem = await Repositorie.listItemsComplete(search.stock)
+                const items = dataItem.map(obj => `'${obj.ArtCode}'`);
+                search.code = items
+            }else{
+                search.code = `'${search.code}'`
             }
-            history += `- Cod: ${search.artcode} `
 
-            if (search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
-            if (search.itemname) history += `- Nombre: '${search.itemname}' `
-
-
+            let history = `Listado de Deposito: ${search.stock} `
+            if (search.itemgroup && search.itemgroup[0] != "ALL") history += `- Grupo: ${search.itemgroup} `
+            if (search.name != "ALL") history += `- Nombre: '${search.name}' `
             History.insertHistory(history, id_login)
 
-            const data = await Repositorie.listItems(search)
-
-            data.forEach(obj => {
-                if (obj.Reserved > 0) obj.StockQty - obj.Reserved
-            })
-
-            return data
+            return Repositorie.listItems(search)
         } catch (error) {
             throw new InternalServerError('Error')
         }
@@ -292,27 +273,28 @@ class Hbs {
             let history = `Listado de Goodyear `
 
             if (search.datestart && search.dateend) history += `- Fecha: ${search.datestart} hasta que ${search.dateend} `
-            if (search.office.length > 0) history += `- Sucursal: ${search.office}.`
+            if (search.office != "ALL" && search.office.length > 0) history += `- Sucursal: ${search.office}.`
+            if (search.itemgroup != "ALL" && search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
 
             History.insertHistory(history, id_login)
 
             const data = await Repositorie.listGoodyear(search)
             const sales = await Repositorie.listGoodyearSales(search)
 
-            await data.forEach(obj => {
+           const items = await data.map(obj => {
                 let sale = sales.find(sale => sale.ArtCode === obj.ArtCode)
                 if (obj.Reserved > 0) obj.StockQty - obj.Reserved
-                
+
                 if (sale !== undefined) {
                     obj.SalesQty = sale.SalesQty
                 } else {
                     obj.SalesQty = 0
                 }
+
+                return obj
             })
 
-
-            return data
-
+            return items
         } catch (error) {
             console.log(error);
             throw new InternalServerError('Error')
@@ -325,9 +307,9 @@ class Hbs {
             let history = `Listado de precios `
 
             if (search.pricelist) history += `- Promocion: ${search.pricelist} `
-            if (search.artcode) history += `- Cod: ${search.artcode} `
-            if (search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
-            if (search.itemname) history += `- Nombre: '${search.itemname}'.`
+            if (search.artcode != "ALL") history += `- Cod: ${search.artcode} `
+            if (search.itemgroup != "ALL" && search.itemgroup.length > 0) history += `- Grupo: ${search.itemgroup} `
+            if (search.itemname != "ALL") history += `- Nombre: '${search.itemname}'.`
 
             History.insertHistory(history, id_login)
 

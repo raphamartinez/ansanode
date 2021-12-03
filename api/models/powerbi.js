@@ -21,19 +21,9 @@ class PowerBi {
         }
     }
 
-    async updatePowerBi(data, id_powerbi) {
+    async updatePowerBi(report, id) {
         try {
-
-            const powerbi = {
-                id_powerbi: id_powerbi,
-                url: data.powerbi.url,
-                type: data.powerbi.type,
-                token: data.powerbi.token,
-                idreport: data.powerbi.idreport,
-                title: data.powerbi.title
-            }
-
-            const result = await Repositorie.update(powerbi)
+            const result = await Repositorie.update(report, id)
             return result
         } catch (error) {
             throw new InvalidArgumentError('No se pudo actualizar el powerbi.')
@@ -67,19 +57,9 @@ class PowerBi {
         }
     }
 
-    async listPowerBi(id_login, type) {
+    list(id_login, type) {
         try {
-            const data = await Repositorie.listLoginType(id_login, type)
-
-            data.map(powerbi => {
-                if (powerbi.type = 1) {
-                    powerbi.typedesc = 'Informe'
-                } else {
-                    powerbi.typedesc = 'Informe Integrado'
-                }
-            })
-            return data
-
+            return Repositorie.list(id_login, type)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar powerbi.')
         }

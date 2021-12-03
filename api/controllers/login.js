@@ -1,44 +1,84 @@
-const Login = require('../models/login')
-const Middleware = require('../infrastructure/auth/middleware')
-const History = require('../models/history')
-const path = require('path')
+const Login = require('../models/login');
+const Middleware = require('../infrastructure/auth/middleware');
+const History = require('../models/history');
+const path = require('path');
+const passport = require('passport');
 
 module.exports = app => {
 
-    app.all('/admin/*', Middleware.bearer, async function (req, res, next) {
-        try {
-            next()
-        } catch (err) {
-            console.log(err);
-            next(err)
-        }
-    })
+    // app.all('/admin/*', Middleware.authenticatedMiddleware, async function (req, res, next) {
+    //     try {
+    //         next()
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // });
 
-    app.post('/login', Middleware.local, async function (req, res, next) {
+    app.get('/login', async function (req, res, next) {
         try {
-            const id_login = req.login.id_login
-            const token = await Login.generateTokens(id_login)
-            const login = await Login.viewLogin(id_login)
-
-            History.insertHistory('Acceso de usuario', id_login)
-            res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken, url: '../admin/dashboard.html', user: login })
+            if (req.query.fail)
+                res.render('login', { message: `¡Nombre de usuario y/o contraseña inválido!` });
+            else
+                res.render('login');
         } catch (err) {
             next(err)
         }
-    })
+    });
 
-    app.post('/logout', [Middleware.refresh, Middleware.bearer], async function (req, res, next) {
+    app.post('/login', passport.authenticate('local', {
+        successRedirect: '/dashboard',
+        failureRedirect: '/login?fail=true'
+    }));
+
+    app.get('/dashboard', async function (req, res, next) {
         try {
-            const token = req.token
-            await Login.logout(token)
-            res.json({ url: '../public/login.html' })
+            let id_login = false;
+            let id = false;
+
+            if (req.session.passport) {
+                id_login = req.session.passport.user;
+            } else {
+                id_login = req.login.id_login
+            }
+
+            const login = await Login.viewLogin(id_login);
+
+            History.insertHistory('Acceso de usuario', id_login);
+
+            if (req.login.perfil != 1) id = id_login;
+            const { count, lastAccess } = await History.dashboard(id);
+
+
+            switch (login.perfil) {
+                case 6:
+                    return res.redirect('cobranza');
+                case 7:
+                    return res.redirect('patrimonio');
+            }
+
+            res.render('dashboard', {
+                count,
+                lastAccess,
+                perfil: login.perfil,
+                name: login.name
+            });
+
+        } catch (err) {
+            res.redirect('login?fail=true')
+        }
+    });
+
+    app.post('/salir', async function (req, res, next) {
+        try {
+            req.logout();
+            res.redirect('/')
         } catch (err) {
             next(err)
         }
 
     });
 
-    app.post('/insertLogin', Middleware.bearer, async function (req, res, next) {
+    app.post('/insertLogin', Middleware.authenticatedMiddleware, async function (req, res, next) {
         try {
             const data = req.body
             await Login.insertLogin(data)
@@ -82,7 +122,7 @@ module.exports = app => {
         }
     });
 
-    app.post('/refresh', Middleware.refresh, async function (req, res, next) {
+    app.post('/refresh', async function (req, res, next) {
         try {
             const token = await Login.generateTokens(req.login.id_login)
             res.json({ refreshToken: token.refreshToken, accessToken: token.accessToken })
@@ -91,14 +131,16 @@ module.exports = app => {
         }
     });
 
-    app.post('/changepass', Middleware.bearer, async (req, res, next) => {
+    app.post('/changepass/:id_login', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
-            const login = req.body.login
-            await Login.updatePassword(login, login.id_login)
+            const login = req.body
+            const id_login = req.params.id_login
+
+            await Login.updatePassword(login, id_login)
 
             History.insertHistory(`Contraseña alterada del login - ${login.id_login}`, req.login.id_login)
 
-            res.json({ msg: 'Contraseña alterada con éxito.' })
+            res.redirect(`/user/${req.params.id_login}`)
         } catch (err) {
             next(err)
         }

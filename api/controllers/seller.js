@@ -6,7 +6,7 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/sellershbs', [Middleware.bearer, Authorization('salesman', 'read')], async (req, res, next) => {
+    app.get('/sellershbs', [Middleware.authenticatedMiddleware, Authorization('salesman', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue(`sellers`)
@@ -24,7 +24,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellers', [Middleware.bearer, Authorization('salesman', 'read')], async (req, res, next) => {
+    app.get('/sellers', [Middleware.authenticatedMiddleware, Authorization('salesman', 'read')], async (req, res, next) => {
         try {
             const sellers = await Seller.list()
             res.json(sellers)
@@ -33,7 +33,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersgoalline', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellersgoalline', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`goal:sellersgoalline:${req.login.id_login}`)
 
@@ -52,7 +52,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersdashboard', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellersdashboard', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`goal:sellers:${req.login.id_login}`)
 
@@ -71,7 +71,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellergoal/:id_salesman', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellergoal/:id_salesman', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const id_login = req.login.id_login
@@ -83,7 +83,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/salesman', [Middleware.bearer, Authorization('salesman', 'create')], async (req, res, next) => {
+    app.post('/salesman', [Middleware.authenticatedMiddleware, Authorization('salesman', 'create')], async (req, res, next) => {
         try {
             await Seller.insert(req.body.sellers)
 
@@ -95,7 +95,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'update')], async (req, res, next) => {
+    app.put('/salesman/:id_salesman', [Middleware.authenticatedMiddleware, Authorization('salesman', 'update')], async (req, res, next) => {
         try {
             const manager = req.body.manager
             await Seller.update(manager)
@@ -108,7 +108,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/salesman/:id_salesman', [Middleware.bearer, Authorization('salesman', 'delete')], async (req, res, next) => {
+    app.delete('/salesman/:id_salesman', [Middleware.authenticatedMiddleware, Authorization('salesman', 'delete')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             await Seller.delete(id_salesman)

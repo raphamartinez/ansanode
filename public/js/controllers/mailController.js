@@ -28,70 +28,29 @@ async function mailList(event) {
             dtview.push(field)
         });
 
-        let user = JSON.parse(sessionStorage.getItem('user'))
-
-        if (user.perfil !== 1) {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false
-                }
-                )
-            })
-        } else {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false,
-                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                        "<'row'<'col-sm-12'B>>",
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                }
-                )
-            })
-        }
+        $("#tablemail").DataTable({
+            data: dtview,
+            columns: [
+                { title: "Opciones" },
+                { title: "Para" },
+                { title: "Cc" },
+                { title: "Cco" },
+                { title: "Título" },
+                { title: "Corpo" },
+                { title: "Cant Archivos Adjuntos" },
+                { title: "Fecha de Registro" }
+            ],
+            paging: true,
+            ordering: true,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: true,
+            fixedHeader: false
+        })
 
     } catch (error) {
         console.log(error);
@@ -149,15 +108,7 @@ async function modaladdmail(event) {
         })
     })
 
-    let user = JSON.parse(sessionStorage.getItem('user'))
-    let powerbis
-
-    if (user.perfil !== 1) {
-        powerbis = await Connection.noBody('powerbis', 'GET')
-    }else{
-        powerbis = await Connection.noBody('powerbisadmin', 'GET')
-    }
-    
+    let powerbis = await Connection.noBody('powerbis', 'GET')
 
     const bisselect = document.getElementById('bis')
 
@@ -274,70 +225,30 @@ async function newmail(event) {
             dtview.push(field)
         });
 
-        let user = JSON.parse(sessionStorage.getItem('user'))
-
-        if (user.perfil !== 1) {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false
-                }
-                )
-            })
-        } else {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false,
-                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                        "<'row'<'col-sm-12'B>>",
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                }
-                )
-            })
+        $("#tablemail").DataTable({
+            data: dtview,
+            columns: [
+                { title: "Opciones" },
+                { title: "Para" },
+                { title: "Cc" },
+                { title: "Cco" },
+                { title: "Título" },
+                { title: "Corpo" },
+                { title: "Cant Archivos Adjuntos" },
+                { title: "Fecha de Registro" }
+            ],
+            paging: true,
+            ordering: true,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: true,
+            fixedHeader: false
         }
+        )
 
         alert('¡La programación de correo electrónico se agregó correctamente!')
     } catch (error) {
@@ -494,70 +405,29 @@ async function deleteMailSchedule(event) {
             dtview.push(field)
         });
 
-        let user = JSON.parse(sessionStorage.getItem('user'))
-
-        if (user.perfil !== 1) {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false
-                }
-                )
-            })
-        } else {
-            $(document).ready(function () {
-                $("#tablemail").DataTable({
-                    data: dtview,
-                    columns: [
-                        { title: "Opciones" },
-                        { title: "Para" },
-                        { title: "Cc" },
-                        { title: "Cco" },
-                        { title: "Título" },
-                        { title: "Corpo" },
-                        { title: "Cant Archivos Adjuntos" },
-                        { title: "Fecha de Registro" }
-                    ],
-                    paging: true,
-                    ordering: true,
-                    info: true,
-                    scrollY: false,
-                    scrollCollapse: true,
-                    scrollX: true,
-                    autoHeight: true,
-                    pagingType: "numbers",
-                    searchPanes: true,
-                    fixedHeader: false,
-                    dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                        "<'row'<'col-sm-12'tr>>" +
-                        "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                        "<'row'<'col-sm-12'B>>",
-                    buttons: [
-                        'copy', 'csv', 'excel', 'pdf', 'print'
-                    ]
-                }
-                )
-            })
-        }
+        $("#tablemail").DataTable({
+            data: dtview,
+            columns: [
+                { title: "Opciones" },
+                { title: "Para" },
+                { title: "Cc" },
+                { title: "Cco" },
+                { title: "Título" },
+                { title: "Corpo" },
+                { title: "Cant Archivos Adjuntos" },
+                { title: "Fecha de Registro" }
+            ],
+            paging: true,
+            ordering: true,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: true,
+            fixedHeader: false
+        })
 
         $('#deleteMailSchedule').modal('hide')
         alert('Correo electrónico eliminado con éxito!')
@@ -747,7 +617,7 @@ async function modaladdattachment(event) {
         modal.innerHTML = ``
         modal.appendChild(ViewMail.addattachment(id_mailpowerbi))
 
-        const powerbis = await Connection.noBody('powerbisadmin', 'GET')
+        const powerbis = await Connection.noBody('powerbis', 'GET')
         const bisselect = document.getElementById('bis')
 
         powerbis.forEach(obj => {

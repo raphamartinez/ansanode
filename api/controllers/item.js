@@ -6,40 +6,46 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.post('/goodyear', [Middleware.bearer, Authorization('goodyear', 'read')], async (req, res, next) => {
+    app.get('/goodyear', [Middleware.authenticatedMiddleware, Authorization('goodyear', 'read')], async (req, res, next) => {
         try {
-
-            const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
-
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            }
-
-            const id_login = req.login.id_login
-            const search = req.body.search
-
-            const items = await Hbs.listGoodyear(search, id_login)
-            cachelist.addCache(`goodyear:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
-
-            res.status(201).json(items)
+            res.render('goodyear', {
+                perfil: req.login.perfil
+            })
         } catch (err) {
             next(err)
         }
     })
 
-    app.post('/items', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.get('/goodyear/:datestart/:dateend/:itemgroup/:office', [Middleware.authenticatedMiddleware, Authorization('goodyear', 'read')], async (req, res, next) => {
         try {
-            const cached = await cachelist.searchValue(`items:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
+            let search = {
+                datestart: req.params.datestart,
+                dateend: req.params.dateend,
+                itemgroup: req.params.itemgroup,
+                office: req.params.office
             }
 
-            const id_login = req.login.id_login
-            let search = req.body.search
+            console.log(search);
+            const items = await Hbs.listGoodyear(search, req.login.id_login)
+            res.json(items)
+        } catch (err) {
+            next(err)
+        }
+    })
 
-            const items = await Hbs.listItems(search, id_login)
-            cachelist.addCache(`items:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
+    app.get('/stock/items/:name/:code/:stock/:itemgroup/:empty', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
+        try {
+
+            let search = {
+                name: req.params.name,
+                code: req.params.code,
+                stock: req.params.stock,
+                itemgroup: req.params.itemgroup,
+                empty: req.params.empty,
+            }
+            
+            const items = await Hbs.listStock(search, req.login.id_login)
 
             res.json(items)
         } catch (err) {
@@ -47,7 +53,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/itemslabel/:office', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.post('/itemslabel/:office', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
             let code = req.body.code
             let office = req.params.office
@@ -59,7 +65,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemsgroups', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.get('/itemsgroups', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`itemsgroups`)
 
@@ -76,7 +82,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/items/all', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.get('/items/all', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`items/all`)
 
@@ -93,7 +99,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/itemscomplete', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.get('/itemscomplete', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`items:id_login:${req.login.id_login}`)
 
@@ -110,7 +116,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/invoiceitems/:invoice', [Middleware.bearer, Authorization('items', 'read')], async (req, res, next) => {
+    app.get('/invoiceitems/:invoice', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
             const invoice = req.params.invoice
 
@@ -121,28 +127,36 @@ module.exports = app => {
         }
     })
 
-    app.post('/price', [Middleware.bearer, Authorization('price', 'read')], async (req, res, next) => {
+    app.get('/precio', [Middleware.authenticatedMiddleware, Authorization('price', 'read')], async (req, res, next) => {
+        try {
+            res.render("precio",{
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/price/:name/:code/:itemgroup/:pricelist', [Middleware.authenticatedMiddleware, Authorization('price', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`price:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`)
-
-            if (cached) {
-                return res.json(JSON.parse(cached))
+            let search = {
+                name: req.params.name,
+                code: req.params.code,
+                pricelist: req.params.pricelist,
+                itemgroup: req.params.itemgroup
             }
 
-            const id_login = req.login.id_login
-            const search = req.body.search
+            console.log(search);
 
-            const items = await Hbs.listPrice(search, id_login)
-            cachelist.addCache(`price:${JSON.stringify(req.body.search)},id_login:${req.login.id_login}`, JSON.stringify(items), 60 * 60 * 6)
-
+            const items = await Hbs.listPrice(search, req.login.id_login)
             res.json(items)
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/stockandgroup', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
+    app.get('/stockandgroup', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`stockandgroup`)
 
@@ -159,7 +173,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockuser', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
+    app.get('/stockuser', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -170,7 +184,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/stockbyitem/:artcode', [Middleware.bearer, Authorization('stock', 'read')], async (req, res, next) => {
+    app.get('/stockbyitem/:artcode', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const artcode = req.params.artcode
 
@@ -181,7 +195,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sale/:id_salesman/:artcode', Middleware.bearer, async (req, res, next) => {
+    app.get('/sale/:id_salesman/:artcode', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
             const artcode = req.params.artcode
             const id_salesman = req.params.id_salesman
@@ -193,7 +207,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/expectedsellers', Middleware.bearer, async ( req, res, next) => {
+    app.get('/expectedsellers', Middleware.authenticatedMiddleware, async ( req, res, next) => {
         try {
             const cached = await cachelist.searchValue(`goal:id_login:${req.login.id_login}`)
 

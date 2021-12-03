@@ -1,0 +1,32 @@
+<%- include(partials + 'header.ejs' ) %>
+
+    <div class="row justify-content-md-center">
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Historial</h1>
+        </div>
+    </div>
+
+    <%- include('../partials/loading.ejs') %>
+
+        <div class="row justify-content-md-center">
+            <div class="col-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <h6 class="m-0 font-weight-bold text-primary">Listado </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <%- include(partials + 'script.ejs' ) %>
+            <script type="module" src="../js/controllers/historyController.js"></script>
+            <%- include(partials + 'footer.ejs' ) %>

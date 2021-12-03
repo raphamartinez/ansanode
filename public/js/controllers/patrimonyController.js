@@ -1,4 +1,4 @@
-import { View } from "../views/patrimonyView.js"
+ import { View } from "../views/patrimonyView.js"
 import { Connection } from '../services/connection.js'
 
 
@@ -353,8 +353,10 @@ const list = async (patrimonys) => {
         $('#dataPatrimony').dataTable().fnDestroy();
         $('#dataPatrimony').empty();
     }
+    let data
 
-    let data = patrimonys.map(patrimoy => {
+
+    if (patrimonys) data = patrimonys.map(patrimoy => {
 
         let a = `
         <a><i data-action data-view="${patrimoy.id}" data-id="${patrimoy.id}" data-plate="${patrimoy.plate}" data-name="${patrimoy.name}" data-desc="${patrimoy.description}" data-office="${patrimoy.office}" data-type="${patrimoy.type}" data-note="${patrimoy.note}" class="btn-view fas fa-eye"></i></a>
@@ -386,13 +388,13 @@ const list = async (patrimonys) => {
             { title: "Descripción" },
             { title: "Notas" },
         ],
+        responsive: true,
         paging: true,
         ordering: true,
         info: true,
         scrollY: false,
         scrollCollapse: true,
         scrollX: true,
-        lengthMenu: [[25, 50, 100, 150], [25, 50, 100, 150]],
         autoHeight: true,
         pagingType: "numbers",
         searchPanes: true,
@@ -408,28 +410,6 @@ const list = async (patrimonys) => {
     )
 }
 
-
-const clean = () => {
-    document.querySelector('[data-card]').style.display = 'none';
-
-    document.querySelector('[data-title]').innerHTML = `Listado de Patrimonio`;
-    document.querySelector('[data-powerbi]').innerHTML = ""
-    document.querySelector('[data-modal]').innerHTML = ""
-    document.querySelector('[data-settings]').innerHTML = ""
-    document.querySelector('[data-features]').innerHTML = ""
-
-    if ($.fn.DataTable.isDataTable('#dataTable')) {
-        $('#dataTable').dataTable().fnClearTable();
-        $('#dataTable').dataTable().fnDestroy();
-        $('#dataTable').empty();
-    }
-
-    if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
-        $('#dataPatrimony').dataTable().fnClearTable();
-        $('#dataPatrimony').dataTable().fnDestroy();
-        $('#dataPatrimony').empty();
-    }
-}
 
 const search = async (event) => {
     event.preventDefault()
@@ -574,7 +554,7 @@ const changeType = (event) => {
 const add = async (event) => {
     event.preventDefault()
 
-    document.querySelector('#btnadd').disabled = true 
+    document.querySelector('#btnadd').disabled = true
 
     document.querySelector('[data-loading]').style.display = "block"
 
@@ -661,96 +641,91 @@ const add = async (event) => {
 
         document.querySelector("#filename").innerHTML = "Insertar archivos"
         document.querySelector('[data-add-patrimony]').reset()
-        document.querySelector('#btnadd').disabled = false 
+        document.querySelector('#btnadd').disabled = false
 
         document.querySelector('[data-loading]').style.display = "none"
 
         alert(obj.msg)
 
     } catch (error) {
-        document.querySelector('#btnadd').disabled = false 
+        document.querySelector('#btnadd').disabled = false
 
         document.querySelector('[data-loading]').style.display = "none"
 
     }
 }
 
-const menu = async () => {
-    document.querySelector('[data-loading]').style.display = "block"
+const init = async () => {
+    
+document.querySelector('[data-loading]').style.display = "block"
 
-    clean()
-    document.querySelector('[data-features]').appendChild(View.add())
+const offices = await Connection.noBody('offices', 'GET')
+offices.forEach(office => {
+    const line = document.createElement('option')
+    line.value = office.code
+    line.innerHTML = office.name
 
+    const line2 = document.createElement('option')
+    line2.value = office.code
+    line2.innerHTML = office.name
 
-    document.querySelector('[data-features]').appendChild(View.header())
-    document.querySelector('[data-features]').appendChild(View.table())
+    document.querySelector('[data-office]').appendChild(line)
+    document.querySelector('[data-office-add]').appendChild(line2)
+})
 
-    const offices = await Connection.noBody('offices', 'GET')
-    offices.forEach(office => {
-        const line = document.createElement('option')
-        line.value = office.code
-        line.innerHTML = office.name
+$('[data-office]').selectpicker("refresh");
 
-        const line2 = document.createElement('option')
-        line2.value = office.code
-        line2.innerHTML = office.name
+const typesdt = await Connection.noBody('patrimony/types', 'GET')
+const type = typesdt.map(type => {
+    const line = {
+        label: type.name,
+        value: type.name
+    }
 
-        document.querySelector('[data-office]').appendChild(line)
-        document.querySelector('[data-office-add]').appendChild(line2)
-    })
+    return line
+})
 
-    $('[data-office]').selectpicker();
+new SelectPure(".select-pure", {
+    options: type,
+    multiple: true,
+    autocomplete: true,
+    icon: "fa fa-times",
+    inlineIcon: false,
+    placeholder: false
+});
 
-    const typesdt = await Connection.noBody('patrimony/types', 'GET')
-    const type = typesdt.map(type => {
-        const line = {
-            label: type.name,
-            value: type.name
-        }
+document.querySelector('.select-pure__placeholder').innerHTML = "Tipo"
 
-        return line
-    })
+document.querySelector('[data-loading]').style.display = "none"
 
-    new SelectPure(".select-pure", {
-        options: type,
-        multiple: true,
-        autocomplete: true,
-        icon: "fa fa-times",
-        inlineIcon: false,
-        placeholder: false
-    });
-
-    document.querySelector('.select-pure__placeholder').innerHTML = "Tipo"
-
-    document.querySelector('[data-loading]').style.display = "none"
-
-
-    document.querySelector('[data-type-add]').addEventListener('change', changeType, false)
-    document.querySelector('[data-search-patrimony]').addEventListener('submit', search, false)
-    document.querySelector('[data-add-patrimony]').addEventListener('submit', add, false)
-
-    document.querySelector('#dataPatrimony').addEventListener('click', async (event) => {
-        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
-            if (event.target.classList[0] === 'btn-delete') return drop(event)
-            if (event.target.classList[0] === 'btn-delete-image') return dropImage(event)
-            if (event.target.classList[0] === 'btn-edit') return edit(event)
-            if (event.target.classList[0] === 'btn-view') return view(event)
-            if (event.target.classList[0] === 'btn-upload') return upload(event)
-        }
-    })
-
-    document.querySelector('#file').addEventListener('click', () => {
-        document.querySelector("#filename").innerHTML = "Insertar archivos"
-    })
-
-    document.querySelector('#file').addEventListener('change', (event) => {
-
-        if (event.target.files.length > 1) {
-            document.querySelector("#filename").innerHTML = `${event.target.files.length} Archivos selecionados`
-        } else {
-            document.querySelector("#filename").innerHTML = event.target.files[0].name
-        }
-    })
 }
+list()
 
-document.querySelector('[data-menu-company-assets]').addEventListener('click', menu, false)
+init()
+
+document.querySelector('#dataPatrimony').addEventListener('click', async (event) => {
+    if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
+        if (event.target.classList[0] === 'btn-delete') return drop(event)
+        if (event.target.classList[0] === 'btn-delete-image') return dropImage(event)
+        if (event.target.classList[0] === 'btn-edit') return edit(event)
+        if (event.target.classList[0] === 'btn-view') return view(event)
+        if (event.target.classList[0] === 'btn-upload') return upload(event)
+    }
+})
+
+document.querySelector('#file').addEventListener('click', () => {
+    document.querySelector("#filename").innerHTML = "Insertar archivos"
+})
+
+document.querySelector('#file').addEventListener('change', (event) => {
+
+    if (event.target.files.length > 1) {
+        document.querySelector("#filename").innerHTML = `${event.target.files.length} Archivos selecionados`
+    } else {
+        document.querySelector("#filename").innerHTML = event.target.files[0].name
+    }
+})
+
+document.querySelector('[data-type-add]').addEventListener('change', changeType, false)
+document.querySelector('[data-search-patrimony]').addEventListener('submit', search, false)
+document.querySelector('[data-add-patrimony]').addEventListener('submit', add, false)

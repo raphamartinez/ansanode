@@ -1,21 +1,5 @@
-import { View } from "../views/clockView.js"
 import { Connection } from '../services/connection.js'
 
-const clean = () => {
-    document.querySelector('[data-card]').style.display = 'none';
-
-    document.querySelector('[data-title]').innerHTML = `Control de Punto`;
-    document.querySelector('[data-powerbi]').innerHTML = ""
-    document.querySelector('[data-modal]').innerHTML = ""
-    document.querySelector('[data-settings]').innerHTML = ""
-    document.querySelector('[data-features]').innerHTML = ""
-
-    if ($.fn.DataTable.isDataTable('#dataTable')) {
-        $('#dataTable').dataTable().fnClearTable();
-        $('#dataTable').dataTable().fnDestroy();
-        $('#dataTable').empty();
-    }
-}
 
 const search = async (event) => {
     event.preventDefault()
@@ -54,8 +38,8 @@ const search = async (event) => {
     document.querySelector('[data-status]').selectedIndex = 0
 
     let data
-    try { 
-         data = await Connection.noBody(`clock/${search.type}/${search.period.start}/${search.period.end}/${search.codes}/${search.offices}`, 'GET')
+    try {
+        data = await Connection.noBody(`clock/${search.type}/${search.period.start}/${search.period.end}/${search.codes}/${search.offices}`, 'GET')
     } catch (error) {
         document.querySelector('[data-loading]').style.display = "hide"
     }
@@ -209,8 +193,6 @@ const viewFilters = async () => {
         document.querySelector('[data-office]').appendChild(line)
     })
 
-    $('[data-office]').selectpicker();
-
     const workers = await Connection.noBody('clock/workers', 'GET')
     workers.forEach(worker => {
         const line = document.createElement('option')
@@ -220,24 +202,13 @@ const viewFilters = async () => {
         document.querySelector('[data-code]').appendChild(line)
     })
 
-    $('[data-code]').selectpicker();
-    $('[data-type]').selectpicker();
+    $('[data-office]').selectpicker("refresh");
+    $('[data-code]').selectpicker("refresh");
+    $('[data-type]').selectpicker("refresh");
 
 }
 
-const dashboard = async () => {
-    document.querySelector('[data-loading]').style.display = "block"
+viewFilters()
 
-    //clean the page
-    clean()
-    document.querySelector('[data-title]').appendChild(View.header())
-    document.querySelector('[data-features]').appendChild(View.table())
-
-    viewFilters()
-
-    document.querySelector('[data-loading]').style.display = "none"
-    document.querySelector('[data-form-clock]').addEventListener('submit', search, false)
-}
-
-document.querySelector('[data-menu-point]').addEventListener('click', dashboard, false)
+document.querySelector('[data-form-clock]').addEventListener('submit', search, false)
 

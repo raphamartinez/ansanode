@@ -1,0 +1,126 @@
+<%- include(partials + 'header.ejs' ) %>
+    <link rel="stylesheet"
+        href="../css/bootstrap-select.css" />
+
+    <div class="row justify-content-md-center">
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-4 pt-3 font-weight-bold text-primary" data-title>Patrimonio</h1>
+        </div>
+    </div>
+
+    <%- include('../partials/loading.ejs') %>
+
+        <div class="row justify-content-md-center">
+            <div class="col-lg-3">
+                <div class="card shadow mb-3">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Agregar nuevos patrimonios</h6>
+                    </div>
+                    <div class="card-body">
+                        <form data-add-patrimony>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <input placeholder="Nombre" class="form-control" id="name" name="name"
+                                            type="text" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <input placeholder="Plaqueta" class="form-control" id="plate" name="plate"
+                                            type="text" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <select class="form-control" id="type" name="type" data-type-add required>
+                                            <option value="" disabled selected>Tipo</option>
+                                            <option value="Alineadora">Alineadora</option>
+                                            <option value="Balanceadora">Balanceadora</option>
+                                            <option value="Calibrador">Calibrador</option>
+                                            <option value="Cañón de inflado">Cañón de inflado</option>
+                                            <option value="Compressor">Compressor</option>
+                                            <option value="Desmontadora">Desmontadora</option>
+                                            <option value="Elevador">Elevador</option>
+                                            <option value="Gabineta da Alineadora">Gabineta da Alineadora</option>
+                                            <option value="Gato Hidráulico">Gato Hidráulico</option>
+                                            <option value="Lavadora de cubiertas">Lavadora de cubiertas</option>
+                                            <option value="Prensa Hidráulica">Prensa Hidráulica</option>
+                                            <option value="Rampa">Rampa</option>
+                                            <option value="Rectificador (a)">Rectificador (a)</option>
+                                            <option value="Regulador de Farol">Regulador de Farol</option>
+                                            <option value="Caja/mesa de Herramienta">Caja/mesa de Herramienta
+                                            </option>
+                                            <option value="Teléfono">Teléfono</option>
+                                            <option value="Extintor">Extintor</option>
+                                            <option value="Otro">Otro</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <select title="Sucursal" class="form-control" id="officenew" name="office"
+                                            required data-office-add>
+                                            <option value="" disabled selected>Sucursal</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <div class="custom-file">
+                                            <input type="file" class="custom-file-input" id="file" required multiple>
+                                            <label id="filename" class="custom-file-label" for="file">Insertar
+                                                archivos</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-row col-md-12" data-add-desc>
+
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <textarea placeholder="Comentarios adicionales" class="form-control"
+                                            name="description" id="description" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-12">
+                                        <textarea placeholder="Notas" class="form-control" name="note" id="note"
+                                            rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group col-md-12 text-right">
+                                        <button id="btnadd" type="submit" class="btn btn-success"><i
+                                                class="fas fa-check">
+                                                Agregar</i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-8">
+                <div div-table-patrimony class="card shadow mb-4">
+                    <div class="card-header">
+                        <form data-search-patrimony>
+                            <div class="form-row">
+                                <div class="form-group col-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Listado del patrimonio</h6>
+                                </div>
+                                <div class="select-pure form-group col-md-3"></div>
+                                <div class="form-group col-3">
+                                    <select title="Sucursal" class="form-control selectpicker" id="office" name="office" multiple
+                                        data-office></select>
+                                </div>
+                                <div class="form-group text-right col-3">
+                                    <button class="btn btn-info" type="submit">Buscar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-center" id="dataPatrimony" width="100%" cellspacing="0">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <%- include(partials + 'script.ejs' ) %>
+            <script type="module" src="../js/controllers/patrimonyController.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+            <script src="../js/libs/select-pure.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script src="../js/libs/printThis.js"></script>
+
+            <%- include(partials + 'footer.ejs' ) %>

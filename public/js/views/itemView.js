@@ -177,26 +177,7 @@ const showModalGoodyear = () => {
         <form>
             <div class="modal-body">
                 <div class="form-row">
-                    <div class="form-group col-md-6">
-                     <h6 class="text-center">Fecha Inicial</h6>
-                        <input type="date" placeholder="Fecha Inicial" class="form-control" name="datestart" id="datestart">
-                    </div> 
-                    <div class="form-group col-md-6">
-                    <h6 class="text-center">Fecha Final</h6>
-                        <input type="date" placeholder="Fecha Final" class="form-control" name="dateend" id="dateend">
-                    </div> 
-                    <div class="form-group col-md-12">
-                        <select title="Sucursal" class="selectpicker form-control" multiple name="office" id="office" required>
-                    </select>
-                    </div> 
-                    <div class="form-group col-md-12">
-                    <select title="Grupo de Item" class="selectpicker form-control" multiple name="itemgroup" id="itemgroup" required>
-                    <option value="PASSEIO" >Paseo</option>
-                    <option value="UTILITARIO" >Utilitario</option>
-                    <option value="CAMION" >Camion</option>
-                    <option value="AGRICOLA" >Agricola</option>
-                    </select>
-                    </div> 
+
                 </div>
             </div>
             <div class="modal-footer">

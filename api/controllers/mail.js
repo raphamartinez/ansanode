@@ -5,7 +5,7 @@ const Authorization = require('../infrastructure/auth/authorization')
 module.exports = app => {
 
 
-    app.get('/mails', [Middleware.bearer, Authorization('mail', 'read')], async (req, res, next) => {
+    app.get('/mails', [Middleware.authenticatedMiddleware, Authorization('mail', 'read')], async (req, res, next) => {
 
         try {
             let mails
@@ -22,7 +22,7 @@ module.exports = app => {
     })
 
 
-    app.get('/mail/:id_mailpowerbi', [Middleware.bearer, Authorization('mail', 'read')], async (req, res, next) => {
+    app.get('/mail/:id_mailpowerbi', [Middleware.authenticatedMiddleware, Authorization('mail', 'read')], async (req, res, next) => {
         try {
             const id_mailpowerbi = req.params.id_mailpowerbi
             const mail = await Mail.viewMail(id_mailpowerbi)
@@ -33,7 +33,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/mail', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
+    app.post('/mail', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const mail = req.body.mailschedule
             const id_mailpowerbi = await Mail.insertMailPowerBi(mail, req.login.id_login)
@@ -46,7 +46,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/attachment', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
+    app.post('/attachment', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const attachment = req.body.attachment
             const id = await Mail.insertMailAttachment(attachment.urls, attachment.id_mailpowerbi)
@@ -57,7 +57,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/scheduling', [Middleware.bearer, Authorization('mail', 'create')], async (req, res, next) => {
+    app.post('/scheduling', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const scheduling = req.body.scheduling
             const id = await Mail.insertMailScheduling(scheduling.schedule, scheduling.id_mailpowerbi)
@@ -68,7 +68,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/mail/:id_mailpowerbi', [Middleware.bearer, Authorization('mail', 'update')], async (req, res, next) => {
+    app.put('/mail/:id_mailpowerbi', [Middleware.authenticatedMiddleware, Authorization('mail', 'update')], async (req, res, next) => {
 
         try {
             const id_mailpowerbi = req.params.id_mailpowerbi
@@ -83,7 +83,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/attachment/:id_mailattachment', [Middleware.bearer, Authorization('mail', 'update')], async (req, res, next) => {
+    app.put('/attachment/:id_mailattachment', [Middleware.authenticatedMiddleware, Authorization('mail', 'update')], async (req, res, next) => {
 
         try {
             const id_mailattachment = req.params.id_mailattachment
@@ -99,7 +99,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/mail/:id_mailpowerbi', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
+    app.delete('/mail/:id_mailpowerbi', [Middleware.authenticatedMiddleware, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailpowerbi = req.params.id_mailpowerbi
             await Mail.deleteMailPowerBi(id_mailpowerbi)
@@ -110,7 +110,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/attachment/:id_mailattachment', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
+    app.delete('/attachment/:id_mailattachment', [Middleware.authenticatedMiddleware, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailattachment = req.params.id_mailattachment
             await Mail.deleteMailAttachment(id_mailattachment)
@@ -121,7 +121,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/scheduling/:id_mailscheduling', [Middleware.bearer, Authorization('mail', 'delete')], async (req, res, next) => {
+    app.delete('/scheduling/:id_mailscheduling', [Middleware.authenticatedMiddleware, Authorization('mail', 'delete')], async (req, res, next) => {
         try {
             const id_mailscheduling = req.params.id_mailscheduling
             await Mail.deleteMailScheduling(id_mailscheduling)

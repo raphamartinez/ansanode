@@ -1,0 +1,108 @@
+<%- include(partials + 'header.ejs' ) %>
+    <link rel="stylesheet"
+        href="../css/bootstrap-select.css" />
+
+    <div class="row justify-content-md-center">
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Stock</h1>
+        </div>
+    </div>
+
+    <%- include('../partials/loading.ejs') %>
+
+        <div class="row justify-content-md-center">
+            <div class="col-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                    </div>
+                    <div class="card-body">
+                        <form data-form-search>
+                            <div class="form-row">
+                                <div class="form-group col-md-3">
+                                    <h6 class="text-center">Nombre del Articulo</h6>
+                                    <input list="namelist" type="text" placeholder="Agregue solo uno nombre"
+                                        class="form-control" name="name">
+                                    <datalist data-namelist id="namelist"></datalist>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <h6 class="text-center">Codigo del Articulo</h6>
+                                    <input list="codelist" type="text" placeholder="Agregue solo uno codigo"
+                                        class="form-control" name="code">
+                                    <datalist data-codelist id="codelist"></datalist>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <h6 class="text-center">Stock</h6>
+                                    <select title="Seleccione uno stock" class="form-control selectpicker" multiple
+                                        name="stock" id="stock">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-3">
+                                    <h6 class="text-center">Grupo de Articulo</h6>
+                                    <select title="Seleccione uno grupo" class="form-control selectpicker" multiple
+                                        name="itemgroup" id="itemgroup" required>
+                                        <option value="PASSEIO">Paseo</option>
+                                        <option value="UTILITARIO">Utilitario</option>
+                                        <option value="CAMION">Camion</option>
+                                        <option value="CAMARAS">Camaras</option>
+                                        <option value="DOTE">Dote</option>
+                                        <option value="LLANTA">Llanta</option>
+                                        <option value="MOTO">Moto</option>
+                                        <option value="OTR">OTR</option>
+                                        <option value="PICO Y PLOMO">Pico y Plomo</option>
+                                        <option value="PROTECTOR">Protector</option>
+                                        <option value="RECAPADO">Recapado</option>
+                                        <option value="AGRICOLA">Agricola</option>
+                                        <option value="XTIRE">Xtire</option>
+                                    </select>
+                                </div>
+                                <div class="form-group text-center col-md-12">
+                                    <label for="antecedente">¿Artículos con Stock 0?</label>
+                                    <div class="custom-control custom-radio custom-control-inline" color:black="">
+                                        <input type="radio" class="custom-control-input perfil" id="stockartsi"
+                                            name="empty" value="0" required="" control-id="ControlID-9">
+                                        <label class="custom-control-label" for="stockartsi">Sí</label>
+                                    </div>
+                                    <div class="custom-control custom-radio custom-control-inline" color:black="">
+                                        <input type="radio" class="custom-control-input perfil" id="stockartno"
+                                            name="empty" value="1" control-id="ControlID-10">
+                                        <label class="custom-control-label" for="stockartno">No</label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-12 text-center">
+                                    <button type="submit" class="btn btn-info">Buscar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <div class="form-row">
+                            <div class="form-group col-6">
+                                <h6 class="m-0 font-weight-bold text-primary">Listado </h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-center" id="dataStock" width="100%" cellspacing="0">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <%- include(partials + 'script.ejs' ) %>
+            <script type="module" src="../js/controllers/stockController.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+            <!-- <script src="../js/libs/select-pure.js"></script> -->
+
+            <%- include(partials + 'footer.ejs' ) %>

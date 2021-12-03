@@ -1,9 +1,7 @@
 import { View } from "../views/goalsView.js"
 import { Connection } from '../services/connection.js'
 
-window.listGoals = listGoals
-
-async function listGoals() {
+const init = async () => {
 
     try {
         let title = document.querySelector('[data-title]')
@@ -51,6 +49,7 @@ async function listGoals() {
     }
 }
 
+init()
 
 window.addGoalsList = addGoalsList
 
@@ -88,8 +87,8 @@ loading.style.display = "block"
             listgroups.appendChild(View.listGroups(obj))
         })
 
-        $('#listsellers').selectpicker();
-        $('#listgroups').selectpicker();
+        $('#listsellers').selectpicker("refresh");
+        $('#listgroups').selectpicker("refresh");
 
 
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
@@ -150,8 +149,8 @@ loading.style.display = "block"
             $('#tablegoals').empty();
         }
 
-        $('#listsellers').selectpicker();
-        $('#listgroups').selectpicker();
+        $('#listsellers').selectpicker("refresh");
+        $('#listgroups').selectpicker("refresh");
 
         title.innerHTML = "Fijar Metas con Excel"
         powerbi.innerHTML = " "

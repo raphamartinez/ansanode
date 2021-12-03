@@ -5,9 +5,9 @@ const addGoals = () => {
   <div class="container-fluid">
   <div class="d-sm-flex align-items-center justify-content-between mb-4">
       <div class="col-md-12 text-left">
-          <button onclick="listGoals(event)" type="button" class="btn btn-secondary">
+          <a href="/metas" class="btn btn-secondary">
               <i class="fas fa-chevron-left"></i> Volver a la lista
-          </button>
+          </a>
           <button  data-toggle="modal" data-target="#searchGoal" type="button" class="btn btn-success">
               <i class="fas fa-search"></i> Nuevo Filtro
           </button>
@@ -54,9 +54,9 @@ const addGoalsExcel = () => {
     <div class="container-fluid">
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <div class="col-md-12 text-left">
-            <button onclick="listGoals(event)" type="button" class="btn btn-secondary">
+            <a href="/metas" type="button" class="btn btn-secondary">
                 <i class="fas fa-chevron-left"></i> Volver a la lista
-            </button>
+            </a>
             <button data-toggle="modal" data-target="#searchGoal" type="button" class="btn btn-success">
                 <i class="fa fa-file-excel"></i> Descarga Excel
             </button>

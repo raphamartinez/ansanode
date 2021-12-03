@@ -68,22 +68,22 @@ class User {
         }
     }
 
-    async updateUser(data, id_user) {
+    async updateUser(data, id) {
 
         try {
 
             const user = {
-                id_user: id_user,
-                name: data.user.name,
-                mailenterprise: data.user.mailenterprise,
-                perfil: data.user.perfil,
-                dateBirthday: data.user.dateBirthday,
-                offices: data.user.offices
+                id_login: id,
+                name: data.name,
+                mailenterprise: data.mailenterprise,
+                perfil: data.perfil,
+                dateBirthday: data.dateBirthday,
+                offices: data.office
             }
 
             const login = {
-                id_login: data.user.id_login,
-                mail: data.user.mail
+                id_login: id,
+                mail: data.mail
             }
 
             await Repositorie.update(user)
@@ -91,9 +91,7 @@ class User {
 
             await RepositorieOffice.delete(login.id_login)
 
-            console.log(data.user);
-
-            await data.user.offices.forEach(async office => {
+            await user.offices.forEach(async office => {
                 await RepositorieOffice.insert(login.id_login, office)
             })
 
@@ -103,43 +101,9 @@ class User {
         }
     }
 
-    async listUsers() {
+    async listUsers(id) {
         try {
-            let data = await Repositorie.list()
-
-            data.forEach(obj => {
-                switch (obj.perfil) {
-                    case 1: obj.perfilDesc = "Admin"
-                        break
-
-                    case 2: obj.perfilDesc = "Vendedor"
-                        break
-
-                    case 3: obj.perfilDesc = "Depositero"
-                        break
-
-                    case 4: obj.perfilDesc = "Gerente"
-                        break
-
-                    case 5: obj.perfilDesc = "Personal administrativo"
-                        break
-
-                    case 6: obj.perfilDesc = "Encarregado de Sucursal"
-                        break
-
-                    case 7: obj.perfilDesc = "Auditor"
-                        break
-
-                    default: obj.perfilDesc = "Usuario"
-                        break
-                }
-
-                if (!obj.mailenterprise) obj.mailenterprise = ""
-                if (obj.dateBirthday === '00/00/0000') obj.dateBirthday = ""
-            })
-
-            return data
-
+            return Repositorie.list(id)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los usuarios.')
         }
@@ -155,9 +119,10 @@ class User {
         }
     }
 
-    async viewUserAdm(id_login) {
+    async view(id_login) {
         try {
-            const user = await Repositorie.viewAdm(id_login)
+            const data = await Repositorie.list(id_login)
+            const user = data[0]
 
             const offices = await RepositorieOffice.list(id_login)
 
@@ -167,45 +132,12 @@ class User {
                 user.offices = []
             }
 
-            switch (user.perfil) {
-                case 1: user.perfilDesc = "Admin"
-                    break
-
-                case 2: user.perfilDesc = "Vendedor"
-                    break
-
-                case 3: user.perfilDesc = "Depositero"
-                    break
-
-                case 4: user.perfilDesc = "Gerente"
-                    break
-
-                case 5: user.perfilDesc = "Personal administrativo"
-                    break
-                    
-                case 6: obj.perfilDesc = "Encarregado de Sucursal"
-                    break
-
-                case 7: obj.perfilDesc = "Auditor"
-                    break
-
-                default: user.perfilDesc = "Usuario"
-                    break
-            }
-
             if (!user.mailenterprise) {
                 user.mailenterpriseDesc = "No informado"
                 user.mailenterprise = " "
             } else {
                 user.mailenterpriseDesc = user.mailenterprise
             }
-            if (user.dateBirthday === '00/00/0000') {
-                user.dateBirthdayDesc = "No informado"
-                user.dateBirthday = " "
-            } else {
-                user.dateBirthdayDesc = user.dateBirthday
-            }
-
 
             return user
         } catch (error) {

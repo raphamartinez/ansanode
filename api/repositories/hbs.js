@@ -278,7 +278,22 @@ class Hbs {
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
 
-            sql += `) AS sumAmount`
+            sql += `) AS subAmountUsd, `
+
+            sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total))),2)
+                    FROM SalesOrder SO
+                    WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
+                    AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
+
+            if (search.datestart != "ALL" && search.dateend != "ALL") sql += `AND TransDate >= '${search.datestart}' AND TransDate <= '${search.dateend}' `
+
+            if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
+
+            if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            sql += `) AS amountUsd `
+
+            
 
             sql += ` FROM SalesOrder SO 
             INNER JOIN SalesOrderItemRow SOIr ON SOIr.masterId = SO.internalId 
@@ -325,17 +340,17 @@ class Hbs {
     listItems(search) {
         try {
             let sql = `SELECT IG.Name AS ItemGroup, I.Code as ArtCode,
-            I.Name as ItemName, sum(St.Qty) AS StockQty, SUM(St.Reserved) AS Reserved
+            I.Name as ItemName,if(SUM(St.Reserved) > 0, SUM(St.Qty) - SUM(St.Reserved),SUM(St.Qty)) AS StockQty, SUM(St.Reserved) AS Reserved
            FROM Item I
            INNER JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
-           INNER JOIN Stock St ON I.Code = St.ArtCode
-           WHERE (I.Closed = 0 OR I.Closed IS NULL )`
+           LEFT JOIN Stock St ON I.Code = St.ArtCode
+           WHERE (I.Closed = 0 OR I.Closed IS NULL )
+           AND St.StockDepo IN (${search.stock})
+           AND I.Code IN (${search.code}) `
 
-            sql += `AND St.StockDepo IN (${search.stock}) `
-            sql += `AND I.Code IN (${search.artcode}) `
-            if (search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
-            if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
-            if (search.stockart < 1) sql += `AND St.Qty > 0 `
+            if (search.itemgroup && search.itemgroup[0] != "ALL") sql += ` AND IG.Name IN (${search.itemgroup}) `
+            if (search.name != "ALL") sql += ` AND I.Name LIKE '%${search.name}%' `
+            if (search.empty == 0) sql += ` AND St.Qty > 0 `
 
             sql += ` 
             GROUP BY I.Code
@@ -406,27 +421,28 @@ class Hbs {
     listPrice(search) {
         try {
             let sql = `SELECT PDr.PriceList, IG.Name AS ItemGroup, I.Code as ArtCode, 
-            I.Name as ItemName, P.Price
+                       I.Name as ItemName, P.Price
                        FROM PriceDealRow PDr 
                        INNER JOIN Price P ON P.PriceList = PDr.PriceList 
                        INNER JOIN PriceDeal PD ON PD.internalId = PDr.masterId
                        INNER JOIN PriceList PL on PL.Code = PDr.PriceList
                        INNER JOIN Item I ON P.ArtCode = I.Code
                        INNER JOIN ItemGroup IG ON I.ItemGroup = IG.Code
-                       WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
+                       WHERE (I.Closed = 0 OR I.Closed IS NULL ) 
+                       AND PDr.PriceList = '${search.pricelist}' `
 
-            if (search.pricelist) sql += `AND PDr.PriceList = '${search.pricelist}' `
-            if (search.artcode) sql += `AND P.ArtCode LIKE '%${search.artcode}%' `
-            if (search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
-            if (search.itemname) sql += `AND I.Name LIKE '%${search.itemname}%' `
+            if (search.code != "ALL") sql += `AND P.ArtCode LIKE '%${search.code}%' `
+            if (search.itemgroup != "ALL" && search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
+            if (search.name != "ALL") sql += `AND I.Name LIKE '%${search.name}%' `
 
             sql += ` 
             GROUP BY I.Code
             ORDER BY I.Code DESC `
 
+            console.log(sql);
             return queryhbs(sql)
         } catch (error) {
-            throw new InternalServerError('No se pudo enumerar precios')
+            throw new InternalServerError('No se pudo enumerar los precios')
         }
     }
 
@@ -438,18 +454,16 @@ class Hbs {
             INNER JOIN Stock St ON I.Code = St.ArtCode
             INNER JOIN StockDepo Sd ON St.StockDepo = Sd.Code
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
+            WHERE (I.Closed = 0 OR I.Closed IS NULL ) 
+            AND I.SupCode = '331' `
 
-            if (search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
+            if (search.itemgroup != "ALL" && search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
 
-            if (search.office.length > 0) sql += `AND Sd.Office IN (${search.office}) `
+            if (search.office != "ALL" && search.office.length > 0) sql += `AND Sd.Office IN (${search.office}) `
 
-            sql += ` 
-            AND I.SupCode = '331'             
+            sql += `         
             GROUP BY I.Code
             ORDER BY I.Code`
-
-            console.log(sql);
 
             return queryhbs(sql)
         } catch (error) {
@@ -465,18 +479,16 @@ class Hbs {
             LEFT JOIN InvoiceItemRow It ON I.Code = It.ArtCode
             LEFT JOIN Invoice Iv ON Iv.internalId = It.masterId
             INNER JOIN ItemGroup Ig ON Ig.Code = I.ItemGroup
-            WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
+            WHERE (I.Closed = 0 OR I.Closed IS NULL ) 
+            AND I.SupCode = '331'  `
 
-            if (search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
+            if (search.itemgroup != "ALL" && search.itemgroup.length > 0) sql += `AND Ig.Name IN (${search.itemgroup})  `
             if (search.datestart && search.dateend) sql += `AND Iv.TransDate between '${search.datestart}' and '${search.dateend}' `
-            if (search.office.length > 0) sql += `AND Iv.Office IN (${search.office}) `
+            if (search.office != "ALL" && search.office.length > 0) sql += `AND Iv.Office IN (${search.office}) `
 
-            sql += ` 
-            AND I.SupCode = '331'         
+            sql += `       
             GROUP BY I.Code
             ORDER BY I.Code`
-
-            console.log(sql);
 
             return queryhbs(sql)
         } catch (error) {

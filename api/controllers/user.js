@@ -5,29 +5,51 @@ const Authorization = require('../infrastructure/auth/authorization')
 
 module.exports = app => {
 
-    app.get('/users', [Middleware.bearer, Authorization('user', 'read')], async (req, res, next) => {
+    app.get('/usuarios', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
         try {
-            const users = await User.listUsers()
+            res.render('users', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+
+    app.get('/users', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
+        try {
+            const id = req.params.id
 
             History.insertHistory(`Listado de usuarios.`, req.login.id_login)
+
+            const users = await User.listUsers(id)
+
             res.json(users)
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/user/:id_login', [Middleware.bearer, Authorization('user', 'read')], async (req, res, next) => {
+    app.get('/user/:id_login?', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
         try {
-            const user = await User.viewUserAdm(req.params.id_login)
+            let id = req.params.id_login
+            if (!id) id = req.login.id_login
 
-            History.insertHistory(`Visto el usuario ${user.name}.`, req.params.id_login)
-            res.json(user)
+            const user = await User.view(id)
+
+            History.insertHistory(`Visto el usuario ${user.name}.`, id)
+
+            res.render('user', {
+                user,
+                perfil: req.login.perfil,
+                id
+            })
         } catch (err) {
             next(err)
         }
     })
 
-    app.post('/user', [Middleware.bearer, Authorization('user', 'create')], async (req, res, next) => {
+    app.post('/user', [Middleware.authenticatedMiddleware, Authorization('user', 'create')], async (req, res, next) => {
         try {
             const data = req.body
             const user = await User.insertUser(data)
@@ -40,25 +62,27 @@ module.exports = app => {
         }
     })
 
-    app.put('/user/:id', [Middleware.bearer, Authorization('user', 'update')], async (req, res, next) => {
+    app.post('/user/update/:id', [Middleware.authenticatedMiddleware, Authorization('user', 'update')], async (req, res, next) => {
         try {
             const data = req.body
-            const id_user = req.params.id
-            await User.updateUser(data, id_user)
+            const id = req.params.id
 
-            History.insertHistory(`Actualización de datos - ${data.user.name}.`, req.login.id_login)
+            await User.updateUser(data, id)
 
-            res.json({ msg: 'Usuario actualizado con éxito.' })
+            History.insertHistory(`Actualización de datos - ${data.name}.`, req.login.id_login)
+
+            res.redirect(`/user/${req.params.id}`)
         } catch (err) {
             next(err)
         }
     })
 
-    app.delete('/user/:id_login', [Middleware.bearer, Authorization('user', 'delete')], async (req, res, next) => {
+    app.post('/user/delete/:id_login', [Middleware.authenticatedMiddleware, Authorization('user', 'delete')], async (req, res, next) => {
         try {
+            console.log(req.params.id_login);
             await User.deleteStatus(req.params.id_login)
 
-            res.json({ msg: 'Usuario eliminado con éxito.' })
+            res.redirect('/usuarios')
         } catch (err) {
             next(err)
         }

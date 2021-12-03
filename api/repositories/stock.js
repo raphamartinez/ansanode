@@ -36,8 +36,9 @@ class Stock {
 
     list(id_login) {
         try {
-            const sql = `SELECT * FROM ansa.stock where id_login = ${id_login}`
-            return query(sql)
+            const sql = `SELECT * FROM ansa.stock where id_login = ?`
+
+            return query(sql, id_login)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }

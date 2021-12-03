@@ -1,227 +1,344 @@
-import { ViewFinance } from "../views/financeView.js"
+// import { ViewFinance } from "../views/financeView.js"
 import { Connection } from '../services/connection.js'
 
-const btnFinance = document.querySelector('[data-finance]')
+const list = async (dtview) => {
 
-
-btnFinance.addEventListener('click', async (event) => {
-    event.preventDefault()
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block"
-    try {
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
-        const cardHistory = document.querySelector('[data-card]')
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]');
-        document.querySelector('[data-features]').innerHTML = ""
-
-        settings.innerHTML = ''
-        modal.innerHTML = " "
-        modal.appendChild(ViewFinance.modalsearch())
-
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
-        }
-        
-        cardHistory.style.display = 'none';
-        title.innerHTML = "Cobranza"
-        title.appendChild(ViewFinance.buttonsearchstock())
-        powerbi.innerHTML = " "
-
-        const clients = await Connection.noBody('clients', 'GET')
-
-        let dtview = []
-        clients.forEach(client => {
-            let obj = {
-                label: client.CustName,
-                value: `${client.CustCode}`
-            }
-            dtview.push(obj)
-        })
-
-        new SelectPure(".select-pure", {
-            options: dtview,
-            multiple: true,
-            autocomplete: true,
-            icon: "fa fa-times",
-            inlineIcon: false,
-            placeholder: false
-        });
-
-        document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
-
-
-        const selectoffice = document.getElementById('selectoffice')
-        const offices = await Connection.noBody('offices', 'GET')
-
-        offices.forEach(office => {
-            if (office.id_office !== 15) selectoffice.appendChild(ViewFinance.listOffice(office))
-        });
-
-        document.getElementById("overdueyes").checked = true;
-        $('#selectoffice').selectpicker();
-        $('#searchfinance').modal('show')
-        loading.style.display = "none";
-    } catch (error) {
-        loading.style.display = "none";
-        alert(error)
+    if ($.fn.DataTable.isDataTable('#dataTable')) {
+        $('#dataTable').dataTable().fnClearTable();
+        $('#dataTable').dataTable().fnDestroy();
+        $('#dataTable').empty();
     }
-})
+
+    const table = $("#dataTable").DataTable({
+        data: dtview,
+        columns: [
+            {
+                title: "Opciones",
+                className: "finance-control"
+            },
+            { title: "Cod Cliente" },
+            { title: "Nombre" },
+            {
+                title: "d15",
+                className: "finance-control"
+            },
+            {
+                title: "d30",
+                className: "finance-control"
+            },
+            {
+                title: "d60",
+                className: "finance-control"
+            },
+            {
+                title: "d90",
+                className: "finance-control"
+            },
+            {
+                title: "d120",
+                className: "finance-control"
+            },
+            {
+                title: "d120+",
+                className: "finance-control"
+            },
+            { title: "En Abierto" },
+            { title: "TT Vencido" }
+        ],
+        paging: true,
+        ordering: true,
+        info: true,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false,
+        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+            "<'row'<'col-sm-12'B>>",
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+    })
+
+    $('#dataTable tbody').on('click', 'td.finance-control', async function (event) {
+
+        const btn = event.currentTarget.children[0]
+
+        const client = btn.getAttribute("data-client")
+        const date = btn.getAttribute("data-datetype")
+        const title = titleFinance(date)
+
+        let tr = $(this).closest('tr');
+        let row = table.row(tr);
+
+        const i = event.currentTarget.children[0].children[0]
+
+        if (row.child.isShown()) {
+            if (date === "*") {
+                tr[0].classList.remove('bg-info', 'text-white')
+                i.classList.remove('fas', 'fa-angle-up');
+                i.classList.add('fas', 'fa-angle-double-down');
+            } else {
+                tr[0].classList.remove('bg-info', 'text-white')
+                i.classList.remove('fas', 'fa-angle-up');
+                i.classList.add('fas', 'fa-angle-down');
+            }
+
+            row.child.hide();
+            tr.removeClass('shown');
+
+        } else {
+            tr[0].classList.add('bg-info', 'text-white')
+
+            if (date === "*") {
+                i.classList.remove('fas', 'fa-angle-double-down');
+            } else {
+                i.classList.remove('fas', 'fa-angle-down');
+            }
+
+            i.classList.add('spinner-border', 'spinner-border-sm');
+
+            const selectoffice = document.querySelectorAll('#selectoffice option:checked')
+            let offices = Array.from(selectoffice).map(el => `'${el.value}'`);
+            if (offices[0] === "''") offices[0] = "ALL"
+
+            const invoices = await Connection.noBody(`financeclient/${client}/${date}`, "GET")
+
+            if (invoices.length !== 0) {
+
+                if ($.fn.DataTable.isDataTable('#datainvoices')) {
+                    $('#datainvoices').dataTable().fnClearTable();
+                    $('#datainvoices').dataTable().fnDestroy();
+                    $('#datainvoices').empty();
+                }
+
+                let { div, dtview } = viewFinance(title, invoices)
+
+                row.child(div).show();
+
+                const tableinv = $("#datainvoices").DataTable({
+                    data: dtview,
+                    columns: [
+                        {
+                            title: "Opciones",
+                            className: "invoice-control"
+                        },
+                        { title: "Nr Factura" },
+                        { title: "Vendedor" },
+                        { title: "Fecha" },
+                        { title: "Precio" },
+                        { title: "Fecha de Contacto" },
+                        { title: "Responsable" },
+                        { title: "Contacto" },
+                        { title: "Descripción" },
+                        { title: "Fecha de Paga" },
+                        { title: "Status da Cobranza" },
+                        { title: "Guardar contacto" }
+                    ],
+                    paging: false,
+                    ordering: true,
+                    info: false,
+                    scrollY: false,
+                    scrollCollapse: true,
+                    scrollX: true,
+                    autoHeight: true,
+                    pagingType: "numbers",
+                    searchPanes: false,
+                    searching: false,
+                    fixedHeader: false
+                })
+
+                tr.addClass('shown');
+
+                i.classList.add('fas', 'fa-angle-up');
+                i.classList.remove('spinner-border', 'spinner-border-sm');
+
+                $('#datainvoices tbody').on('click', 'a.invoice-control', async function (event) {
+                    const btn = event.currentTarget
+
+                    const invoice = btn.getAttribute("data-invoice")
+                    const type = btn.getAttribute("data-type")
+
+                    let trchild = $(this).closest('tr');
+                    let rowchild = tableinv.row(trchild);
+
+                    const i = event.currentTarget.children[0]
+                    const classList = [i.classList[0], i.classList[1]]
+
+                    if (rowchild.child.isShown()) {
+
+                        switch (type) {
+                            case "0":
+                                trchild[0].classList.remove('bg-primary', 'text-white')
+                                i.classList.remove(classList[0], classList[1]);
+                                i.classList.add("fas", "fa-copy");
+
+                                break
+                            case "1":
+                                trchild[0].classList.remove('bg-primary', 'text-white')
+                                i.classList.remove(classList[0], classList[1]);
+                                i.classList.add("fas", "fa-list-ol");
+
+                                break
+                            case "2":
+                                trchild[0].classList.remove('bg-primary', 'text-white')
+                                i.classList.remove(classList[0], classList[1]);
+                                i.classList.add("fas", "fa-th-large");
+
+                                break
+                        }
+
+                        rowchild.child.hide();
+                        trchild.removeClass('shown');
+
+                    } else {
+                        switch (type) {
+                            case "0":
+                                let currentLine = $(this).closest('tr');
+                                const tablecopy = event.currentTarget.parentNode.parentNode.parentNode
+                                if (currentLine[0].classList[1] !== "copy") {
+                                    currentLine[0].classList.add('copy');
+                                } else {
+                                    currentLine[0].style = "background-color: #fff;"
+                                    currentLine[0].classList.remove('copy');
+                                }
+
+                                for (let index = 0; index < tablecopy.children.length; index++) {
+                                    const element = tablecopy.children[index];
+                                    if (element.classList[1] !== "copy") {
+                                        const cell = element.children[0]
+
+                                        let a1 = cell.children[1]
+                                        let a2 = cell.children[2]
+                                        let a3 = cell.children[3]
+
+                                        if (a1.previousElementSibling.children[0].type === "hidden" && a1.children[0].classList[1] !== "fa-save") {
+                                            a1.previousElementSibling.children[0].removeAttribute("hidden")
+                                            a1.previousElementSibling.children[0].type = "checkbox"
+                                            a1.style = "display:none;"
+                                            a2.style = "display:none;"
+                                            a3.style = "display:none;"
+                                        } else {
+                                            a1.previousElementSibling.children[0].removeAttribute("checkbox")
+                                            a1.previousElementSibling.children[0].type = "hidden"
+                                            a1.children[0].classList.remove("fa-save");
+                                            a1.children[0].classList.add("fa-copy");
+                                            a1.style = "display:inline;"
+                                            a2.style = "display:inline;"
+                                            a3.style = "display:inline;"
+                                        }
+                                    } else {
+                                        currentLine[0].style = "background-color: #caffc9;"
+                                        const cell = element.children[0]
+                                        let a1 = cell.children[1]
+                                        let a2 = cell.children[2]
+                                        let a3 = cell.children[3]
+                                        a1.previousElementSibling.children[0].removeAttribute("hidden")
+                                        a1.previousElementSibling.children[0].type = "checkbox"
+                                        a1.children[0].classList.add("fa-save");
+                                        a1.children[0].classList.remove("fa-copy");
+                                        a2.style = "display:none;"
+                                        a3.style = "display:none;"
+                                    }
+                                }
+
+                                break
+                            case "1":
+                                trchild[0].classList.add('bg-primary', 'text-white')
+                                i.classList.remove(classList[0], classList[1]);
+                                i.classList.add('spinner-border', 'spinner-border-sm');
+
+                                const historys = await Connection.noBody(`financehistory/${invoice}`, "GET")
+                                if (historys.length > 0) {
+                                    rowchild.child(viewFinanceHistory(historys)).show();
+                                    trchild.addClass('shown');
+                                } else {
+                                    trchild[0].classList.remove('bg-primary', 'text-white')
+                                    alert('No hay historial de cobranza para esta factura.')
+                                }
 
 
-function autocompleteclients(inp, arr) {
-    var currentFocus;
-    inp.addEventListener("input", function (e) {
-        var a, b, i, val = this.value;
-        closeAllLists();
-        if (!val) { return false; }
-        currentFocus = -1;
-        a = document.createElement("DIV");
-        a.setAttribute("id", this.id + "autocomplete-list");
-        a.setAttribute("class", "autocomplete-items");
-        this.parentNode.appendChild(a);
-        for (i = 0; i < arr.length; i++) {
-            if (arr[i].CustName.substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                b = document.createElement("DIV");
-                b.innerHTML = "<strong>" + arr[i].CustName.substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].CustName.substr(val.length);
-                b.innerHTML += `<input type='hidden' value='${arr[i].CustCode}'>`;
-                b.addEventListener("click", function (e) {
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    closeAllLists();
-                });
-                a.appendChild(b);
-            }
-        }
-    });
+                                i.classList.remove('spinner-border', 'spinner-border-sm');
+                                i.classList.add(classList[0], classList[1]);
 
-    inp.addEventListener("keydown", function (e) {
-        var x = document.getElementById(this.id + "autocomplete-list");
-        if (x) x = x.getElementsByTagName("div");
-        if (e.keyCode == 40) {
-            currentFocus++;
-            addActive(x);
-        } else if (e.keyCode == 38) {
-            currentFocus--;
-            addActive(x);
-        } else if (e.keyCode == 13) {
-            e.preventDefault();
-            if (currentFocus > -1) {
-                if (x) x[currentFocus].click();
+                                break
+                            case "2":
+                                trchild[0].classList.add('bg-primary', 'text-white')
+                                i.classList.remove(classList[0], classList[1]);
+                                i.classList.add('spinner-border', 'spinner-border-sm');
+
+                                const items = await Connection.noBody(`invoiceitems/${invoice}`, "GET")
+                                rowchild.child(viewItems(items)).show();
+                                trchild.addClass('shown');
+
+                                i.classList.remove('spinner-border', 'spinner-border-sm');
+                                i.classList.add(classList[0], classList[1]);
+                                break
+                        }
+                    }
+                })
+            } else {
+                alert('No hay facturas en este período para mostrar')
+                i.classList.remove('spinner-border');
+
+                if (date === "*") {
+                    tr[0].classList.remove('bg-info', 'text-white')
+                    i.classList.remove('fas', 'fa-angle-up');
+                    i.classList.add('fas', 'fa-angle-double-down');
+                } else {
+                    tr[0].classList.remove('bg-info', 'text-white')
+                    i.classList.remove('fas', 'fa-angle-up');
+                    i.classList.add('fas', 'fa-angle-down');
+                }
             }
         }
-    });
-    function addActive(x) {
-        if (!x) return false;
-        removeActive(x);
-        if (currentFocus >= x.length) currentFocus = 0;
-        if (currentFocus < 0) currentFocus = (x.length - 1);
-        x[currentFocus].classList.add("autocomplete-active");
-    }
-    function removeActive(x) {
-        for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-        }
-    }
-    function closeAllLists(elmnt) {
-        var x = document.getElementsByClassName("autocomplete-items");
-        for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-                x[i].parentNode.removeChild(x[i]);
-            }
-        }
-    }
-    document.addEventListener("click", function (e) {
-        closeAllLists(e.target);
     });
 }
 
+const init = async () => {
 
-window.listFinance = listFinance
-
-async function listFinance(event) {
-    event.preventDefault()
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block"
-    try {
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
-        const cardHistory = document.querySelector('[data-card]')
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]');
-        document.querySelector('[data-features]').innerHTML = ""
-
-        settings.innerHTML = ''
-        modal.innerHTML = " "
-        modal.appendChild(ViewFinance.modalsearch())
-
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
+    const clients = await Connection.noBody('clients', 'GET')
+    let dtview = clients.map(client => {
+        return {
+            label: client.CustName,
+            value: `${client.CustCode}`
         }
+    })
 
-        title.innerHTML = "Finanzas"
-        title.appendChild(ViewFinance.buttonsearchstock())
-        powerbi.innerHTML = " "
-        loading.style.display = "none"
-        cardHistory.style.display = 'none';
+    new SelectPure(".select-pure", {
+        options: dtview,
+        multiple: true,
+        autocomplete: true,
+        icon: "fa fa-times",
+        inlineIcon: false,
+        placeholder: false
+    });
 
-        const clients = await Connection.noBody('clients', 'GET')
+    document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
 
-        let dtview = []
-        clients.forEach(client => {
-            let obj = {
-                label: client.CustName,
-                value: `${client.CustCode}`
-            }
-            dtview.push(obj)
-        })
+    const offices = await Connection.noBody('offices', 'GET')
+    offices.forEach(office => {
+        const option = document.createElement('option')
+        option.value = office.code
+        option.innerHTML = office.name
 
-        new SelectPure(".select-pure", {
-            placeholder: "Clientes",
-            options: dtview,
-            multiple: true,
-            autocomplete: true,
-            icon: "fa fa-times",
-            inlineIcon: false,
-            onChange: event => {
-                cleanPlaceholder(event)
-            }
-        });
+        if (office.id_office !== 15) document.getElementById('selectoffice').appendChild(option)
+    });
 
-        // document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
-
-        const selectoffice = document.getElementById('selectoffice')
-        const offices = await Connection.noBody('offices', 'GET')
-
-        offices.forEach(office => {
-            selectoffice.appendChild(ViewFinance.listOffice(office))
-        });
-
-        document.getElementById("overdueyes").checked = true;
-        $('#selectoffice').selectpicker();
-        $('#searchfinance').modal('show')
-        loading.style.display = "none";
-    } catch (error) {
-        loading.style.display = "none";
-        alert(error)
-    }
+    document.getElementById("overdueyes").checked = true;
+    $('#selectoffice').selectpicker("refresh");
 }
 
-window.searchFinance = searchFinance
+init()
 
-async function searchFinance(event) {
+
+const search = async (event) => {
     event.preventDefault()
-    $('#searchfinance').modal('hide')
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block";
     try {
 
         const selectclients = document.querySelectorAll('.select-pure__option--selected')
@@ -240,316 +357,38 @@ async function searchFinance(event) {
         const overdue = document.querySelector('input[name="overdue"]:checked').value;
         const type = document.querySelector('input[name="type"]:checked').value;
 
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
+        if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
             $('#dataTable').empty();
         }
 
         const data = await Connection.noBody(`finance/${clients}/${offices}/${overdue}/${type}`, 'GET')
-        let dtview = [];
 
-        data.forEach(obj => {
-            const field = ViewFinance.listFinance(obj)
-            dtview.push(field)
-        });
-
-        const table = $("#dataTable").DataTable({
-            data: dtview,
-            columns: [
-                {
-                    title: "Opciones",
-                    className: "finance-control"
-                },
-                { title: "Cod Cliente" },
-                { title: "Nombre" },
-                {
-                    title: "d15",
-                    className: "finance-control"
-                },
-                {
-                    title: "d30",
-                    className: "finance-control"
-                },
-                {
-                    title: "d60",
-                    className: "finance-control"
-                },
-                {
-                    title: "d90",
-                    className: "finance-control"
-                },
-                {
-                    title: "d120",
-                    className: "finance-control"
-                },
-                {
-                    title: "d120+",
-                    className: "finance-control"
-                },
-                { title: "En Abierto" },
-                { title: "TT Vencido" }
-            ],
-            paging: true,
-            ordering: true,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
-            pagingType: "numbers",
-            searchPanes: true,
-            fixedHeader: false,
-            dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
-                "<'row'<'col-sm-12'B>>",
-            buttons: [
-                'copy', 'csv', 'excel', 'pdf', 'print'
+        let dtview = data.map(obj => {
+            return [
+                `<a data-toggle="popover" title="Ver todas las facturas vencidas" data-datetype="*" data-client="${obj.CustCode}"><i class="fas fa-angle-double-down" style="color:#cbccce;"></i></a>`,
+                obj.CustCode,
+                obj.CustName,
+               `<a data-toggle="popover" title="Ver facturas vencidas 15 días" data-datetype="15" data-client="${obj.CustCode}">${obj.d15}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+               `<a data-toggle="popover" title="Ver facturas vencidas de 16 a 30 días" data-datetype="30" data-client="${obj.CustCode}">${obj.d30}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+               `<a data-toggle="popover" title="Ver facturas vencidas de 31 a 60 días" data-datetype="60" data-client="${obj.CustCode}">${obj.d60}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+               `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+               `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,   
+               `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                obj.AmountOpen,
+                obj.AmountBalance,
             ]
-        })
-
-        $('#dataTable tbody').on('click', 'td.finance-control', async function (event) {
-
-            const btn = event.currentTarget.children[0]
-
-            const client = btn.getAttribute("data-client")
-            const date = btn.getAttribute("data-datetype")
-            const title = titleFinance(date)
-
-            let tr = $(this).closest('tr');
-            let row = table.row(tr);
-
-            const i = event.currentTarget.children[0].children[0]
-
-            if (row.child.isShown()) {
-                if (date === "*") {
-                    tr[0].classList.remove('bg-info', 'text-white')
-                    i.classList.remove('fas', 'fa-angle-up');
-                    i.classList.add('fas', 'fa-angle-double-down');
-                } else {
-                    tr[0].classList.remove('bg-info', 'text-white')
-                    i.classList.remove('fas', 'fa-angle-up');
-                    i.classList.add('fas', 'fa-angle-down');
-                }
-
-                row.child.hide();
-                tr.removeClass('shown');
-
-            } else {
-                tr[0].classList.add('bg-info', 'text-white')
-
-                if (date === "*") {
-                    i.classList.remove('fas', 'fa-angle-double-down');
-                } else {
-                    i.classList.remove('fas', 'fa-angle-down');
-                }
-
-                i.classList.add('spinner-border', 'spinner-border-sm');
-
-                const selectoffice = document.querySelectorAll('#selectoffice option:checked')
-                let offices = Array.from(selectoffice).map(el => `'${el.value}'`);
-                if (offices[0] === "''") offices[0] = "ALL"
-
-                const invoices = await Connection.noBody(`financeclient/${client}/${date}`, "GET")
-
-                if (invoices.length !== 0) {
-
-                    if ($.fn.DataTable.isDataTable('#datainvoices')) {
-                        $('#datainvoices').dataTable().fnClearTable();
-                        $('#datainvoices').dataTable().fnDestroy();
-                        $('#datainvoices').empty();
-                    }
-
-                    let { div, dtview } = viewFinance(title, invoices)
-
-                    row.child(div).show();
-
-                    const tableinv = $("#datainvoices").DataTable({
-                        data: dtview,
-                        columns: [
-                            {
-                                title: "Opciones",
-                                className: "invoice-control"
-                            },
-                            { title: "Nr Factura" },
-                            { title: "Vendedor" },
-                            { title: "Fecha" },
-                            { title: "Precio" },
-                            { title: "Fecha de Contacto" },
-                            { title: "Responsable" },
-                            { title: "Contacto" },
-                            { title: "Descripción" },
-                            { title: "Fecha de Paga" },
-                            { title: "Status da Cobranza" },
-                            { title: "Guardar contacto" }
-                        ],
-                        paging: false,
-                        ordering: true,
-                        info: false,
-                        scrollY: false,
-                        scrollCollapse: true,
-                        scrollX: true,
-                        autoHeight: true,
-                        pagingType: "numbers",
-                        searchPanes: false,
-                        searching: false,
-                        fixedHeader: false
-                    })
-
-                    tr.addClass('shown');
-
-                    i.classList.add('fas', 'fa-angle-up');
-                    i.classList.remove('spinner-border', 'spinner-border-sm');
-
-                    $('#datainvoices tbody').on('click', 'a.invoice-control', async function (event) {
-                        const btn = event.currentTarget
-
-                        const invoice = btn.getAttribute("data-invoice")
-                        const type = btn.getAttribute("data-type")
-
-                        let trchild = $(this).closest('tr');
-                        let rowchild = tableinv.row(trchild);
-
-                        const i = event.currentTarget.children[0]
-                        const classList = [i.classList[0], i.classList[1]]
-
-                        if (rowchild.child.isShown()) {
-
-                            switch (type) {
-                                case "0":
-                                    trchild[0].classList.remove('bg-primary', 'text-white')
-                                    i.classList.remove(classList[0], classList[1]);
-                                    i.classList.add("fas", "fa-copy");
-
-                                    break
-                                case "1":
-                                    trchild[0].classList.remove('bg-primary', 'text-white')
-                                    i.classList.remove(classList[0], classList[1]);
-                                    i.classList.add("fas", "fa-list-ol");
-
-                                    break
-                                case "2":
-                                    trchild[0].classList.remove('bg-primary', 'text-white')
-                                    i.classList.remove(classList[0], classList[1]);
-                                    i.classList.add("fas", "fa-th-large");
-
-                                    break
-                            }
-
-                            rowchild.child.hide();
-                            trchild.removeClass('shown');
-
-                        } else {
-                            switch (type) {
-                                case "0":
-                                    let currentLine = $(this).closest('tr');
-                                    const tablecopy = event.currentTarget.parentNode.parentNode.parentNode
-                                    if (currentLine[0].classList[1] !== "copy") {
-                                        currentLine[0].classList.add('copy');
-                                    } else {
-                                        currentLine[0].style = "background-color: #fff;"
-                                        currentLine[0].classList.remove('copy');
-                                    }
-
-                                    for (let index = 0; index < tablecopy.children.length; index++) {
-                                        const element = tablecopy.children[index];
-                                        if (element.classList[1] !== "copy") {
-                                            const cell = element.children[0]
-
-                                            let a1 = cell.children[1]
-                                            let a2 = cell.children[2]
-                                            let a3 = cell.children[3]
-
-                                            if (a1.previousElementSibling.children[0].type === "hidden" && a1.children[0].classList[1] !== "fa-save") {
-                                                a1.previousElementSibling.children[0].removeAttribute("hidden")
-                                                a1.previousElementSibling.children[0].type = "checkbox"
-                                                a1.style = "display:none;"
-                                                a2.style = "display:none;"
-                                                a3.style = "display:none;"
-                                            } else {
-                                                a1.previousElementSibling.children[0].removeAttribute("checkbox")
-                                                a1.previousElementSibling.children[0].type = "hidden"
-                                                a1.children[0].classList.remove("fa-save");
-                                                a1.children[0].classList.add("fa-copy");
-                                                a1.style = "display:inline;"
-                                                a2.style = "display:inline;"
-                                                a3.style = "display:inline;"
-                                            }
-                                        } else {
-                                            currentLine[0].style = "background-color: #caffc9;"
-                                            const cell = element.children[0]
-                                            let a1 = cell.children[1]
-                                            let a2 = cell.children[2]
-                                            let a3 = cell.children[3]
-                                            a1.previousElementSibling.children[0].removeAttribute("hidden")
-                                            a1.previousElementSibling.children[0].type = "checkbox"
-                                            a1.children[0].classList.add("fa-save");
-                                            a1.children[0].classList.remove("fa-copy");
-                                            a2.style = "display:none;"
-                                            a3.style = "display:none;"
-                                        }
-                                    }
-
-                                    break
-                                case "1":
-                                    trchild[0].classList.add('bg-primary', 'text-white')
-                                    i.classList.remove(classList[0], classList[1]);
-                                    i.classList.add('spinner-border', 'spinner-border-sm');
-
-                                    const historys = await Connection.noBody(`financehistory/${invoice}`, "GET")
-                                    if (historys.length > 0) {
-                                        rowchild.child(viewFinanceHistory(historys)).show();
-                                        trchild.addClass('shown');
-                                    } else {
-                                        trchild[0].classList.remove('bg-primary', 'text-white')
-                                        alert('No hay historial de cobranza para esta factura.')
-                                    }
-
-
-                                    i.classList.remove('spinner-border', 'spinner-border-sm');
-                                    i.classList.add(classList[0], classList[1]);
-
-                                    break
-                                case "2":
-                                    trchild[0].classList.add('bg-primary', 'text-white')
-                                    i.classList.remove(classList[0], classList[1]);
-                                    i.classList.add('spinner-border', 'spinner-border-sm');
-
-                                    const items = await Connection.noBody(`invoiceitems/${invoice}`, "GET")
-                                    rowchild.child(viewItems(items)).show();
-                                    trchild.addClass('shown');
-
-                                    i.classList.remove('spinner-border', 'spinner-border-sm');
-                                    i.classList.add(classList[0], classList[1]);
-                                    break
-                            }
-                        }
-                    })
-                } else {
-                    alert('No hay facturas en este período para mostrar')
-                    i.classList.remove('spinner-border');
-
-                    if (date === "*") {
-                        tr[0].classList.remove('bg-info', 'text-white')
-                        i.classList.remove('fas', 'fa-angle-up');
-                        i.classList.add('fas', 'fa-angle-double-down');
-                    } else {
-                        tr[0].classList.remove('bg-info', 'text-white')
-                        i.classList.remove('fas', 'fa-angle-up');
-                        i.classList.add('fas', 'fa-angle-down');
-                    }
-                }
-            }
         });
 
-        loading.style.display = "none"
+        list(dtview)
+
     } catch (error) {
-        loading.style.display = "none"
-        alert(error)
+
     }
 }
+
+document.querySelector('[data-form-search]').addEventListener('submit', search, false)
 
 function titleFinance(date) {
 

@@ -10,7 +10,18 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/goals', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/metas', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
+            res.render('metas', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+
+    app.get('/goals', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_login = req.login.id_login
 
@@ -21,7 +32,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)
@@ -44,7 +55,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalslineexcel/:id_salesman/:groups', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalslineexcel/:id_salesman/:groups', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             const id_salesman = req.params.id_salesman
             const groups = req.params.groups
@@ -58,7 +69,7 @@ module.exports = app => {
     })
 
 
-    app.post('/goal', [Middleware.bearer, Authorization('goal', 'create')], async (req, res, next) => {
+    app.post('/goal', [Middleware.authenticatedMiddleware, Authorization('goal', 'create')], async (req, res, next) => {
         try {
             const goal = req.body.goal
 
@@ -72,7 +83,7 @@ module.exports = app => {
         }
     })
 
-    app.post('/goalexcel', [Middleware.bearer, Authorization('goal', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
+    app.post('/goalexcel', [Middleware.authenticatedMiddleware, Authorization('goal', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
         try {
             const file = req.file
 
@@ -86,7 +97,7 @@ module.exports = app => {
         }
     })
 
-    app.put('/goal/:id_goal', [Middleware.bearer, Authorization('goal', 'update')], async (req, res, next) => {
+    app.put('/goal/:id_goal', [Middleware.authenticatedMiddleware, Authorization('goal', 'update')], async (req, res, next) => {
         try {
             const goal = req.body
             const id_goal = req.params.id_goal
@@ -101,7 +112,7 @@ module.exports = app => {
         }
     })
 
-    app.delete('/goal/:id_goal', [Middleware.bearer, Authorization('goal', 'delete')], async (req, res, next) => {
+    app.delete('/goal/:id_goal', [Middleware.authenticatedMiddleware, Authorization('goal', 'delete')], async (req, res, next) => {
         try {
             const id_goal = req.params.id_goal
 
@@ -115,7 +126,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalexpected/:id_salesman', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalexpected/:id_salesman', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)
@@ -135,7 +146,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalexpectedmonth/:id_salesman/:date', [Middleware.bearer, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalexpectedmonth/:id_salesman/:date', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
             const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)

@@ -1,18 +1,22 @@
 const Finance = require('../models/finance')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
-const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.bearer, Authorization('sales', 'read')], async (req, res, next) => {
+    app.get('/ventas', [Middleware.authenticatedMiddleware, Authorization('sales', 'read')], async (req, res, next) => {
         try {
 
-            // const cached = await cachelist.searchValue(`salesorder:${JSON.stringify(req.params)}`)
+            res.render('salesorder', {
+                perfil: req.login.perfil
+            })
+        } catch (err) {
+            next(err)
+        }
+    })
 
-            // if (cached) {
-            //     return res.json(JSON.parse(cached))
-            // }
+    app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.authenticatedMiddleware, Authorization('sales', 'read')], async (req, res, next) => {
+        try {
 
             let search = {
                 datestart: req.params.datestart,
@@ -22,7 +26,6 @@ module.exports = app => {
             }
 
             const salesorders = await Finance.listSalesOrders(search)
-            cachelist.addCache(`salesorder:${JSON.stringify(req.params)}`, JSON.stringify(salesorders), 60 * 30)
 
             res.json(salesorders)
         } catch (err) {

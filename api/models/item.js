@@ -26,12 +26,10 @@ class Item {
     async listExpectedSellers() {
 
         try {
-            // let sellers = await RepositorieSeller.list(id_login)
             const prices = await RepositorieHbs.listItemPrice()
 
             prices.forEach(async obj => {
                 const data = await RepositoriePrice.insert(obj)
-
             })
 
             return prices

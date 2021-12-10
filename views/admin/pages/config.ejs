@@ -1,14 +1,16 @@
 <%- include(partials + 'header.ejs' ) %>
+
     <link href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1581152092/smartwizard/smart_wizard.min.css"
         rel="stylesheet" type="text/css" />
     <link href="https://res.cloudinary.com/dxfq3iotg/raw/upload/v1581152092/smartwizard/smart_wizard_theme_dots.min.css"
         rel="stylesheet" type="text/css" />
     <link href="../css/modal_wizard.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
 
-    <div class="container-fluid">
         <div class="col-12 text-center">
             <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Ajustes</h1>
         </div>
+
         <div class="row gutters-sm">
             <div class="col-md-4 d-none d-md-block">
                 <div class="card">
@@ -53,7 +55,7 @@
                                 </svg>
                                 Notificaciones
                             </a>
-                            <a data-config-salesman onclick="salesmanList(event)" href="#salesman" data-toggle="tab"
+                            <a data-config-salesman href="#salesman" data-toggle="tab"
                                 class="nav-item nav-link has-icon nav-link-faded">
                                 <i class="fas fa-users"></i>
                                 Vendedores
@@ -222,8 +224,9 @@
                             <h6>Ajustes de Vendedores</h6>
                             <hr>
                             <div class="form-group">
-                                <button onclick="modalAddSalesman(event)" type="button" class="btn btn-success">Nuevo
-                                    Vendedor</button>
+                                <a data-toggle="modal" data-target="#addsalesman" type="button"
+                                    class="btn btn-success text-white">Nuevo
+                                    Vendedor</a>
                             </div>
                             <div class="form-group">
                                 <table class="table table-bordered" id="tablesalesman"></table>
@@ -232,10 +235,100 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade" id="dropmodal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">¿Eliminar el Vendedor?</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                        <form data-drop-salesman>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class=" col-md-12">
+                                        <h8>Ya no se puede vincular al vendedor para establecer objetivos y otras
+                                            actividades.</h8>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="addManager" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">Enlace al gerente </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                        <form data-add-manager>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-12">
+                                        <select title="Usuarios" class="form-control selectpicker" name="managerselect"
+                                            id="managerselect" required>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button"
+                                        data-dismiss="modal">Cancelar</button>
+                                    <button type="submit" class=" btn btn-success"><i class="fas fa-plus">
+                                            Enlace</i></button>
+                                </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="d-flex justify-content-center align-items-center" data-loading></div>
-    </div>
+
+        <div class="modal fade" id="addsalesman" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Agregar vendedor al sistema </h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">x</span>
+                        </button>
+                    </div>
+                    <form data-add-salesman>
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group col-md-12">
+                                    <select title="Seleccione un vendedor para agregar al sistema"
+                                        class="selectpicker form-control" name="salesmanselect" id="salesmanselect" multiple
+                                        required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                <button type="submit" name="btn" class=" btn btn-success"><i class="fas fa-plus">
+                                        Agregar</i></button>
+                            </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
     <%- include(partials + 'script.ejs' ) %>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+        <script src="../js/libs/select-pure.js"></script>
+
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/1000hz-bootstrap-validator/0.11.9/validator.min.js"></script>
         <script src="../js/libs/modal_wizard.js"></script>
@@ -245,3 +338,5 @@
         <script type="module" src="../js/controllers/salesmanController.js"></script>
 
         <%- include(partials + 'footer.ejs' ) %>
+
+

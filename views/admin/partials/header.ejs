@@ -31,11 +31,11 @@
                             <img id="imgLogo" src="../img/ansalogowhite.min.png" alt="Ansa Logo">
                         </div>
                     </a>
-                    <hr class="sidebar-divider my-0">
+                    <hr data-divider class="sidebar-divider my-0">
+                    <div data-menu-sec></div>
                     <a class="menuPrincipal navbar-toggler-icon" type="button" data-toggle="collapse"
                         data-bs-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
                         aria-expanded="false" data-selector-menu></a>
-
                     <form data-topbar-search
                         class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
                         <div class="input-group">
@@ -62,7 +62,7 @@
                             </a>
                             <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
                                 aria-labelledby="searchDropdown">
-                                <form  class="form-inline mr-auto w-100 navbar-search">
+                                <form class="form-inline mr-auto w-100 navbar-search">
                                     <div class="input-group">
                                         <input type="text" class="form-control bg-light border-0 small"
                                             placeholder="Nombre del informe..." aria-label="Search"
@@ -169,60 +169,43 @@
                                     </svg>
                                     Historial de Acceso
                                 </a>
-                                <% if(perfil == 1) {%>
-                                    <%- include(components + 'dropmenu/admin.ejs') %>
-                                    <% }%>
-                                <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                        class="bi bi-box-arrow-right" viewBox="0 0 16 16">
-                                        <path fill-rule="evenodd"
-                                            d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
-                                        <path fill-rule="evenodd"
-                                            d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
-                                    </svg>
-                                    Salir
-                                </a>
+                                <% if(perfil==1) {%>
+                                    <%- include(components + 'dropmenu/admin.ejs' ) %>
+                                        <% }%>
+                                            <div class="dropdown-divider"></div>
+                                            <a class="dropdown-item" href="#" data-toggle="modal"
+                                                data-target="#logoutModal">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-box-arrow-right"
+                                                    viewBox="0 0 16 16">
+                                                    <path fill-rule="evenodd"
+                                                        d="M10 12.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v2a.5.5 0 0 0 1 0v-2A1.5 1.5 0 0 0 9.5 2h-8A1.5 1.5 0 0 0 0 3.5v9A1.5 1.5 0 0 0 1.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-2a.5.5 0 0 0-1 0v2z" />
+                                                    <path fill-rule="evenodd"
+                                                        d="M15.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 0 0-.708.708L14.293 7.5H5.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z" />
+                                                </svg>
+                                                Salir
+                                            </a>
                             </div>
                         </li>
                     </ul>
                 </nav>
             </header>
 
-             <% switch(perfil) {
-                case 1:
-                %>
-                <%- include(components + 'menu/admin.ejs') %>
-                <%
-                break;
-                case 2:
-                %>
-                <%- include(components + 'menu/salesman.ejs') %>
-                <%
-                break;
-                case 3:
-                %>
-                <%- include(components + 'menu/depositor.ejs') %>
-                <%
-                break;
-                case 4:
-                %>
-                <%- include(components + 'menu/manager.ejs') %>
-                <%
-                break;
-                case 5:
-                %>
-                <%- include(components + 'menu/administrativeStaff.ejs') %>
-                <%
-                break;
-                case 6:
-                %>
-                <%- include(components + 'menu/finance.ejs') %>
-                <%
-                break;
-                case 7:
-                %>
-                <%- include(components + 'menu/patrimony.ejs') %>
-                <%
-                break;
-            }%> 
+            <% switch(perfil) { case 1: %>
+                <%- include(components + 'menu/admin.ejs' ) %>
+                    <% break; case 2: %>
+                        <%- include(components + 'menu/salesman.ejs' ) %>
+                            <% break; case 3: %>
+                                <%- include(components + 'menu/depositor.ejs' ) %>
+                                    <% break; case 4: %>
+                                        <%- include(components + 'menu/manager.ejs' ) %>
+                                            <% break; case 5: %>
+                                                <%- include(components + 'menu/administrativeStaff.ejs' ) %>
+                                                    <% break; case 6: %>
+                                                        <%- include(components + 'menu/finance.ejs' ) %>
+                                                            <% break; case 7: %>
+                                                                <%- include(components + 'menu/patrimony.ejs' ) %>
+                                                                    <% break; case 8: %>
+                                                                        <%- include(components + 'menu/logistic.ejs' )
+                                                                            %>
+                                                                            <% break; }%>

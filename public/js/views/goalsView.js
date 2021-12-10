@@ -13,7 +13,7 @@ const addGoals = () => {
           </button>
       </div>
   </div>
-  <div class="row gutters-sm">
+  <div class="row">
       <div class="col-md-12">
           <div class="card">
               <div class="tab-pane">
@@ -125,7 +125,8 @@ const opcionesGoals = () => {
 }
 
 
-const lineaddgoal = (goal, index, id_salesman) => {
+const lineaddgoal = (goal, index, id_salesman, disabled) => {
+
     const content = [
         `${goal.provider}`,
         `${goal.application}`,
@@ -133,19 +134,19 @@ const lineaddgoal = (goal, index, id_salesman) => {
         `${goal.itemname}`,
         `${goal.CityQty}`,
         `${goal.Qty}`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index}" data-date="${goal.d1}-01" name="goal" value="${goal.g1}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 1}" data-date="${goal.d2}-01" name="goal" value="${goal.g2}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 2}" data-date="${goal.d3}-01" name="goal" value="${goal.g3}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 3}" data-date="${goal.d4}-01" name="goal" value="${goal.g4}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 4}" data-date="${goal.d5}-01" name="goal" value="${goal.g5}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 5}" data-date="${goal.d6}-01" name="goal" value="${goal.g6}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 6}" data-date="${goal.d7}-01" name="goal" value="${goal.g7}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 7}" data-date="${goal.d8}-01" name="goal" value="${goal.g8}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 8}" data-date="${goal.d9}-01" name="goal" value="${goal.g9}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 9}" data-date="${goal.d10}-01" name="goal" value="${goal.g10}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 10}" data-date="${goal.d11}-01" name="goal" value="${goal.g11}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 11}" data-date="${goal.d12}-01" name="goal" value="${goal.g12}" type="number" class="form-control goal text-center">`,
-        `<input data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 12}" data-date="${goal.d13}-01" name="goal" value="${goal.g13}" type="number" class="form-control goal text-center">`
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index}" data-date="${goal.d1}-01" name="goal" value="${goal.g1}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 1}" data-date="${goal.d2}-01" name="goal" value="${goal.g2}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 2}" data-date="${goal.d3}-01" name="goal" value="${goal.g3}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 3}" data-date="${goal.d4}-01" name="goal" value="${goal.g4}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 4}" data-date="${goal.d5}-01" name="goal" value="${goal.g5}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 5}" data-date="${goal.d6}-01" name="goal" value="${goal.g6}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 6}" data-date="${goal.d7}-01" name="goal" value="${goal.g7}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 7}" data-date="${goal.d8}-01" name="goal" value="${goal.g8}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 8}" data-date="${goal.d9}-01" name="goal" value="${goal.g9}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 9}" data-date="${goal.d10}-01" name="goal" value="${goal.g10}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 10}" data-date="${goal.d11}-01" name="goal" value="${goal.g11}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 11}" data-date="${goal.d12}-01" name="goal" value="${goal.g12}" type="number" class="form-control goal text-center">`,
+        `<input ${disabled} data-itemcode="${goal.itemcode}" data-id_salesman="${id_salesman}" tabindex="${index + 12}" data-date="${goal.d13}-01" name="goal" value="${goal.g13}" type="number" class="form-control goal text-center">`
 
     ]
 
@@ -223,7 +224,7 @@ const modalAdd = () => {
           </div>
           <hr>
           <div class="form-group text-center col-md-12 d-none d-md-block">
-              <select title="Vendedor" id="listsellers" class="form-control">
+              <select title="Vendedor" id="listsellers" class="form-control selectpicker">
               </select>
           </div>
           <div class="form-group text-center col-md-12 d-none d-md-block">

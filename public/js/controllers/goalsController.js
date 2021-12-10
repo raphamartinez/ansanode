@@ -26,24 +26,6 @@ const init = async () => {
 
         settings.appendChild(View.opcionesGoals())
 
-        let goals = await Connection.noBody('sellersdashboard', 'GET')
-
-        settings.appendChild(View.showGoals())
-
-        const goalsshow = document.getElementById('goalsshow')
-
-        goals.forEach(goal => {
-            goalsshow.appendChild(View.sellers(goal))
-        })
-
-        const expectedsshow = document.getElementById('expectedsshow')
-
-        let expecteds = await Connection.noBody('expectedsellers', 'GET')
-
-        expecteds.forEach(expected => {
-            expectedsshow.appendChild(View.expecteds(expected))
-        })
-
     } catch (error) {
 
     }
@@ -51,12 +33,30 @@ const init = async () => {
 
 init()
 
+const filter = (event) => {
+    const value = event.target.value;
+
+    document.querySelectorAll('[data-display]').forEach(display => {
+        const office = display.getAttribute('data-display') 
+        if (office != value) {
+            display.style.display = 'none'
+        } else {
+            display.style.display = ''
+        }
+
+
+        if (event.target.value == "TODOS") display.style.display = ''
+    })
+}
+
+document.querySelector('[data-filter-office]').addEventListener('change', filter, false)
+
 window.addGoalsList = addGoalsList
 
 async function addGoalsList() {
 
     let loading = document.querySelector('[data-loading]')
-loading.style.display = "block"
+    loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
@@ -68,14 +68,14 @@ loading.style.display = "block"
         settings.innerHTML = ''
         powerbi.innerHTML = " "
         modal.innerHTML = " "
-        settings.appendChild(View.addGoals())
+        document.querySelector('[data-settings]').appendChild(View.addGoals())
         modal.appendChild(View.modalAdd())
 
 
         const listsellers = document.getElementById('listsellers')
         const listgroups = document.getElementById('listgroups')
 
-        const sellers = await Connection.noBody('sellersgoalline', 'GET')
+        const sellers = await Connection.noBody('sellers/goal', 'GET')
 
         const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
 
@@ -111,7 +111,7 @@ window.addGoalsListExcel = addGoalsListExcel
 async function addGoalsListExcel() {
 
     let loading = document.querySelector('[data-loading]')
-loading.style.display = "block"
+    loading.style.display = "block"
     try {
         let title = document.querySelector('[data-title]')
         let powerbi = document.querySelector('[data-powerbi]')
@@ -130,7 +130,7 @@ loading.style.display = "block"
         const listsellers = document.getElementById('listsellers')
         const listgroups = document.getElementById('listgroups')
 
-        const sellers = await Connection.noBody('sellersgoalline', 'GET')
+        const sellers = await Connection.noBody('sellers/goal', 'GET')
 
         const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
 
@@ -271,8 +271,13 @@ async function listGoalsLine(salesman, group, stock) {
 
         let dtview = [];
         let index = 1
+
+        const profile = document.querySelector('#profile').value
+        let disabled;
+        if(profile == 8) disabled = "disabled"
+
         goalsline.forEach(goal => {
-            const field = View.lineaddgoal(goal, index, salesman.id_salesman)
+            const field = View.lineaddgoal(goal, index, salesman.id_salesman, disabled)
             index += 12
             dtview.push(field)
         });
@@ -350,11 +355,12 @@ async function listGoalsLine(salesman, group, stock) {
             scrollY: false,
             scrollCollapse: true,
             scrollX: true,
+            autoHeight: true,
             autoWidth: true,
             lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
             pagingType: "numbers",
             fixedHeader: false,
-            order: false
+            order: true
         })
 
         $('#tablegoals').excelTableFilter();
@@ -532,7 +538,7 @@ async function uploadGoals(event) {
     $('#uploadGoals').modal('hide')
 
     let loading = document.querySelector('[data-loading]')
-loading.style.display = "block";
+    loading.style.display = "block";
     try {
         const btn = event.currentTarget
 

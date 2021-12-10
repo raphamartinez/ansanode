@@ -177,26 +177,35 @@ document.querySelector('[data-modal-menu]').addEventListener('click', (event) =>
 })
 
 const btnMenu = document.querySelector('[data-selector-menu]')
-btnMenu.addEventListener('mouseenter', (event) => {
-    $('#navbarResponsive').collapse('show');
-})
+if (btnMenu) {
+    btnMenu.addEventListener('mouseenter', (event) => {
+        $('#navbarResponsive').collapse('show');
+    })
+}
 
 const modalMenu = document.querySelector('[data-modal-menu]')
-modalMenu.addEventListener('mouseleave', (event) => {
-    $('#navbarResponsive').collapse('hide');
-})
+if (modalMenu) {
+    modalMenu.addEventListener('mouseleave', (event) => {
+        $('#navbarResponsive').collapse('hide');
+    })
+}
 
 const closeMenu = document.querySelector('[data-close-menu]')
-closeMenu.addEventListener('click', (event) => {
-    $('#navbarResponsive').collapse('hide');
-})
+if (closeMenu) {
+    closeMenu.addEventListener('click', (event) => {
+        $('#navbarResponsive').collapse('hide');
+    })
+}
 
 const itemMenu = document.querySelectorAll('[menu-item]')
-Array.from(itemMenu).forEach(item => {
-    item.addEventListener('mouseenter', (event) => {
-        event.target
+if(itemMenu){
+    Array.from(itemMenu).forEach(item => {
+        item.addEventListener('mouseenter', (event) => {
+            event.target
+        })
     })
-})
+}
+
 
 
 

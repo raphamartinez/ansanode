@@ -30,8 +30,6 @@ class Goal {
             });
 
             let date = [
-                goals.Meta[3].J.replace("/", "-"),
-                goals.Meta[3].K.replace("/", "-"),
                 goals.Meta[3].L.replace("/", "-"),
                 goals.Meta[3].M.replace("/", "-"),
                 goals.Meta[3].N.replace("/", "-"),
@@ -42,7 +40,9 @@ class Goal {
                 goals.Meta[3].S.replace("/", "-"),
                 goals.Meta[3].T.replace("/", "-"),
                 goals.Meta[3].U.replace("/", "-"),
-                goals.Meta[3].V.replace("/", "-")
+                goals.Meta[3].V.replace("/", "-"),
+                goals.Meta[3].W.replace("/", "-"),
+                goals.Meta[3].X.replace("/", "-")
             ]
             let table = []
 
@@ -79,8 +79,7 @@ class Goal {
 
                     let i = { itemcode: line[1], date: `${year}-${month}-01` }
                     const id_goalline = await Repositorie.search(i)
-                    console.log(id_goalline);
-console.log(i);
+ 
                     if (id_goalline) {
                         let item = {
                             id_goalline: id_goalline,

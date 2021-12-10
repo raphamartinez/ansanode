@@ -370,11 +370,11 @@ class Hbs {
             INNER JOIN Item I ON P.ArtCode = I.CODE
             INNER JOIN Stock St ON St.ArtCode = I.Code
              WHERE (I.Closed = 0 OR I.Closed IS NULL )
-             and St.StockDepo IN (${stocks})
+             and St.StockDepo IN (?)
              GROUP BY P.ArtCode
              ORDER BY P.ArtCode DESC`
 
-            return queryhbs(sql)
+            return queryhbs(sql, stocks)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar articulos')
         }
@@ -401,14 +401,14 @@ class Hbs {
     async listItemsStock(code, arrstock) {
         try {
             let sql = `SELECT sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved,
-            (SELECT sum(St.Qty) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (${arrstock}) AND I.Code = "${code}") AS CityQty,
-            (SELECT sum(St.Reserved) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (${arrstock}) AND I.Code = "${code}") AS CityReserved
+            (SELECT sum(St.Qty) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (?) AND I.Code = ?) AS CityQty,
+            (SELECT sum(St.Reserved) FROM Item I INNER JOIN Stock St ON I.Code = St.ArtCode WHERE St.StockDepo IN (?) AND I.Code = ?) AS CityReserved
             FROM Item I
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
             INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE I.Code = "${code}"`
-            const data = await queryhbs(sql)
+            WHERE I.Code = ?`
+            const data = await queryhbs(sql, [arrstock, code, arrstock, code, code])
 
             if (data[0].Qty > 0) return data[0]
 

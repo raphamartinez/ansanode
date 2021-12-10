@@ -33,18 +33,33 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersgoalline', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellers/goal', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
-            const cached = await cachelist.searchValue(`goal:sellersgoalline:${req.login.id_login}`)
+            let id_login = false;
+            let office = false;
+            let sellers;
 
+            const cached = await cachelist.searchValue(`goal:sellers:goal:${req.login.id_login}`)
             if (cached) {
                 return res.json(JSON.parse(cached))
             }
 
-            const id_login = req.login.id_login
+            if (req.access.all.allowed) {
+                sellers = await Seller.list(id_login, office)
+            } else {
+                if (req.login.perfil == 4 || req.login.perfil == 8) {
+                    let offices = req.login.offices
 
-            const sellers = await Seller.list(id_login)
-            cachelist.addCache(`goal:sellersgoalline:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
+                        office = offices.map(of => {
+                            return of.code
+                        })
+                 }else{
+                    id_login = req.login.id_login
+                 }
+                 sellers = await Seller.list(id_login, office)
+            }
+
+            cachelist.addCache(`goal:sellers:goal:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
 
             res.json(sellers)
         } catch (err) {
@@ -52,20 +67,38 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellersdashboard', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellers/dashboard', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
+            let id_login = false;
+            let office = false;
+            let code = false;
+
+            let sellers;
+            let expected;
+
             const cached = await cachelist.searchValue(`goal:sellers:${req.login.id_login}`)
 
             if (cached) {
                 return res.json(JSON.parse(cached))
             }
 
-            const id_login = req.login.id_login
+            if (req.access.all.allowed) {
+                sellers = await Seller.dashboard(id_login, office, code)
+                sellers = await Seller.listExpected(id_login, office, code)
 
-            const sellers = await Seller.listDashboard(id_login)
+            } else {
+                if (req.login.perfil == 4) {
+                    office = req.login.offices
+                } else {
+                    id_login = req.login.id_login
+                }
+                sellers = await Seller.dashboard(id_login)
+            }
+
             cachelist.addCache(`goal:sellers:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
 
             res.json(sellers)
+
         } catch (err) {
             next(err)
         }
@@ -85,11 +118,13 @@ module.exports = app => {
 
     app.post('/salesman', [Middleware.authenticatedMiddleware, Authorization('salesman', 'create')], async (req, res, next) => {
         try {
-            await Seller.insert(req.body.sellers)
+            const sellers = req.body.sellers;
 
-            cachelist.delPrefix('sellers')
+            const newSellers = await Seller.insert(sellers);
 
-            res.status(201).json({ msg: 'Vendedor agregado con éxito.' })
+            cachelist.delPrefix('sellers');
+
+            res.status(201).json({ msg: 'Vendedor agregado con éxito.', sellers: newSellers })
         } catch (err) {
             next(err)
         }

@@ -12,9 +12,49 @@ module.exports = app => {
 
     app.get('/metas', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
+
+            let sellers;
+            let amount;
+
+            const cached = false
+            // await cachelist.searchValue(`goal:sellers:${req.login.id_login}`)
+            if (cached) {
+                return res.json(JSON.parse(cached))
+            } else {
+
+                let id_login = false;
+                let office = false;
+                let code = false;
+
+                if (req.access.all.allowed) {
+                    sellers = await Sellers.list(id_login, office);
+                    amount = await Sellers.dashboard(id_login, office, code);
+
+                } else {
+                    if (req.login.perfil == 4 || req.login.perfil == 8) {
+                        let offices = req.login.offices
+
+                        office = offices.map(of => {
+                            return of.code
+                        })
+                    } else {
+                        id_login = req.login.id_login
+                    }
+
+                    sellers = await Sellers.list(id_login, office);
+                    amount = await Sellers.dashboard(id_login, office, code);
+                }
+
+                // cachelist.addCache(`goal:sellers:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
+
+            }
+
             res.render('metas', {
-                perfil: req.login.perfil
+                perfil: req.login.perfil,
+                sellers,
+                amount
             })
+
         } catch (err) {
             next(err)
         }
@@ -77,7 +117,7 @@ module.exports = app => {
 
             cachelist.delPrefix('goal')
 
-            res.status(201).json({msg: 'Meta agregada con éxito.'})
+            res.status(201).json({ msg: 'Meta agregada con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -91,7 +131,7 @@ module.exports = app => {
 
             cachelist.delPrefix('goal')
 
-            res.json({msg: 'Metas agregadas con éxito.'})
+            res.json({ msg: 'Metas agregadas con éxito.' })
         } catch (err) {
             next(err)
         }

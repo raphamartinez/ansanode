@@ -79,6 +79,7 @@ class User {
                                     WHEN us.perfil = 5 THEN "Personal administrativo"
                                     WHEN us.perfil = 6 THEN "Encarregado de Sucursal"
                                     WHEN us.perfil = 7 THEN "Auditor"
+                                    WHEN us.perfil = 8 THEN "Logistica"
                                     ELSE "Usuario"
                                 END as perfilDesc
                         FROM ansa.user us

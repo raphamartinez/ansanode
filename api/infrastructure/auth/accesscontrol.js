@@ -12,6 +12,15 @@ const controll = new AccessControl()
 // 8 - Patrimonio
 
 controll
+    .grant('8')
+    .readOwn('goal')
+    .readOwn('powerbi')
+    .readOwn('history') 
+    .readOwn('user')
+    .readOwn('office')
+    .readOwn('items')
+    
+controll
     .grant('7')
     .readAny('patrimony')
     .createAny('patrimony')
@@ -23,6 +32,7 @@ controll
 
 controll
     .grant('6')
+    .extend('7')
     .readOwn('finance')
     .createAny('finance')
     .updateAny('finance')
@@ -71,7 +81,6 @@ controll
     .createOwn('goal')
     .deleteOwn('goal')
     .updateOwn('goal')
-    .readOwn('goal')
     .readOwn('history')
     .readAny('items')
     .readAny('pricelist')
@@ -87,7 +96,6 @@ controll
 controll
     .grant('4')
     .readOwn('clock')
-    .readOwn('goal')
     .createOwn('goal')
     .deleteOwn('goal')
     .updateOwn('goal')

@@ -54,6 +54,8 @@ module.exports = app => {
                     return res.redirect('cobranza');
                 case 7:
                     return res.redirect('patrimonio');
+                case 8:
+                    return res.redirect('metas');
             }
 
             res.render('dashboard', {

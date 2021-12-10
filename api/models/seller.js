@@ -3,35 +3,37 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('./error
 
 class Seller {
 
-    async insert(data) {
+    async insert(sellers) {
         try {
-            data.forEach(obj => {
-                const salesman = JSON.parse(obj.toString())
-                Repositorie.insert(salesman)
-            })
+            let newSellers = []
 
-            return true
+            for (let index = 0; index < sellers.length; index++) {
+                let salesman = await JSON.parse(sellers[index].toString())
+                const id = await Repositorie.insert(salesman)
+                salesman.id_salesman = id
+
+                newSellers.push(salesman)
+            }
+
+            return newSellers
         } catch (error) {
             throw new InvalidArgumentError('No se pudo crear un nuevo vendedor.')
         }
     }
 
-    list(id_login) {
+    async list(id_login, office) {
         try {
-            return Repositorie.list(id_login)
-        } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar los vendedores.')
-        }
-    }
+            const data = await Repositorie.list(id_login, office)
 
-    async listExpected(id_salesman) {
-        try {
-            const data = await Repositorie.listExpected(id_salesman)
-            
-            data.forEach(obj => {
-                obj.expected = obj.expected.toLocaleString('en-US',{style: 'currency', currency: 'USD'})
-            })
-            return data
+            let sellers = []
+            for (let seller of data) {
+                const expected = await Repositorie.listExpected(seller.id_salesman)
+
+                seller.expected = expected
+                sellers.push(seller)
+            }
+
+            return sellers
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }
@@ -42,7 +44,7 @@ class Seller {
             const data = await Repositorie.listExpectedMonth(id_salesman, date)
 
             data.forEach(obj => {
-                obj.expected = obj.expected.toLocaleString('en-US',{style: 'currency', currency: 'USD'})
+                obj.expected = obj.expected.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
             })
             return data
         } catch (error) {
@@ -50,21 +52,21 @@ class Seller {
         }
     }
 
-    async listDashboard(id_login) {
+    async dashboard(id_login, office, code) {
         try {
-            const data = await Repositorie.view(id_login)
+            const goals = await Repositorie.goal(id_login, office, code)
 
-            await data.forEach(obj => {
+            await goals.forEach(obj => {
                 let tmp = obj.name.split(" ")
 
-                if(obj.goalssum === null) obj.goalssum= 0
+                if (obj.goalssum === null) obj.goalssum = 0
 
                 obj.name = `${tmp[0]} ${tmp[1]}`
                 obj.percentage = obj.goals * 100 / obj.countlines
                 obj.percentage = obj.percentage.toFixed(0)
             })
 
-            return data
+            return goals
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }
@@ -74,7 +76,7 @@ class Seller {
         try {
             const data = await Repositorie.listMonth(id_salesman)
             await data.forEach(obj => {
-                if(obj.goalssum === null) obj.goalssum= 0
+                if (obj.goalssum === null) obj.goalssum = 0
 
                 obj.percentage = obj.goals * 100 / obj.countlines
                 obj.percentage = obj.percentage.toFixed(0)

@@ -1,18 +1,47 @@
-import { ViewSalesman } from "../views/salesmanView.js"
 import { Connection } from '../services/connection.js'
 
-window.salesmanList = salesmanList
+const sellers = async () => {
+    try {
+        const sellers = await Connection.noBody('sellershbs', 'GET')
 
-async function salesmanList(event) {
-    event.preventDefault()
+        sellers.forEach(salesman => {
+            const option = document.createElement('option')
+            option.value = `{"name":"${salesman.name}", "code":"${salesman.code}", "office":"${salesman.office}"}`
+            option.innerHTML = `${salesman.code} - ${salesman.name}`
+
+            document.getElementById('salesmanselect').appendChild(option)
+        })
+
+        $('#salesmanselect').selectpicker("refresh");
+
+    } catch (error) {
+        alert(error)
+    }
+}
+
+const managers = async () => {
+    try {
+        const users = await Connection.noBody('users', 'GET')
+
+        users.forEach(user => {
+            const option = document.createElement('option')
+            option.value = user.id_login
+            option.innerHTML = user.name
+
+            document.getElementById('managerselect').appendChild(option)
+        })
+
+        $('#managerselect').selectpicker("refresh");
+
+    } catch (error) {
+        alert(error)
+    }
+}
+
+const list = async () => {
 
     try {
 
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
-        }
 
         if ($.fn.DataTable.isDataTable('#tablesalesman')) {
             $('#tablesalesman').dataTable().fnClearTable();
@@ -22,10 +51,14 @@ async function salesmanList(event) {
 
         const data = await Connection.noBody('sellers', 'GET')
 
-        let dtview = [];
-        data.forEach(obj => {
-            const field = ViewSalesman.newLine(obj)
-            dtview.push(field)
+        let dtview = data.map(salesman => {
+            return [
+                `<a><i data-view data-id="${salesman.id_salesman}" data-name="${salesman.name}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
+                <a><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                salesman.name,
+                salesman.manager,
+                salesman.dateReg
+            ]
         });
 
 
@@ -47,171 +80,154 @@ async function salesmanList(event) {
             pagingType: "numbers",
             searchPanes: true,
             fixedHeader: false
-        }
-        )
-
-    } catch (error) {
-        console.log(error);
-        alert(error)
-    }
-}
-
-window.modalAddSalesman = modalAddSalesman
-
-async function modalAddSalesman(event) {
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block";
-    event.preventDefault()
-
-    try {
-        let modal = document.querySelector('[data-modal]')
-        modal.innerHTML = ''
-        modal.appendChild(ViewSalesman.modalAddSalesman(search))
-
-        const salesmanselect = document.getElementById('salesmanselect')
-        const sellers = await Connection.noBody('sellershbs', 'GET')
-
-        sellers.forEach(salesman => {
-            salesmanselect.appendChild(ViewSalesman.optionSellers(salesman))
         })
-        loading.style.display = "none"
 
-        $('#salesmanselect').selectpicker("refresh");
-        $('#modalsalesman').modal('show')
+        sellers()
+        managers()
+
     } catch (error) {
-        loading.style.display = "none"
         alert(error)
     }
 }
 
-window.addSalesman = addSalesman
+list()
 
-async function addSalesman(event) {
+
+const add = async (event) => {
     event.preventDefault()
-    $('#modalsalesman').modal('hide')
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block";
 
     try {
         const arrsellers = document.querySelectorAll('#salesmanselect option:checked')
         const sellers = Array.from(arrsellers).map(el => `${el.value}`);
 
-        await Connection.body('salesman', { sellers }, 'POST')
+        $('#addsalesman').modal('hide')
+        const obj = await Connection.body('salesman', { sellers }, 'POST')
 
-        salesmanList(event)
+        const rowNode = await $('#tablesalesman').DataTable()
+        const date = new Date()
 
-        loading.style.display = "none"
-        alert('Vendedor agregado con éxito!')
+        obj.sellers.forEach(salesman => {
+            rowNode
+                .row
+                .add([
+                    `<a><i data-view data-id="${salesman.id_salesman}" data-name="${salesman.name}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
+                    <a><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                    salesman.name,
+                    "",
+                    `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+                ])
+                .draw()
+                .node();
 
-    } catch (error) {
-        loading.style.display = "none"
-        alert(error)
-    }
-}
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
 
-window.modalDeleteSalesman = modalDeleteSalesman
-
-async function modalDeleteSalesman(event) {
-    try {
-        event.preventDefault()
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_salesman = btn.getAttribute("data-id_salesman")
-
-        modal.innerHTML = ''
-        modal.appendChild(ViewSalesman.deleteSalesman(id_salesman))
-
-        $('#deleteSalesman').modal('show')
-
-    } catch (error) {
-
-    }
-}
-
-window.deleteSalesman = deleteSalesman
-
-async function deleteSalesman(event) {
-    event.preventDefault()
-
-    try {
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_salesman = btn.getAttribute("data-id_salesman")
-
-        await Connection.noBody(`salesman/${id_salesman}`, 'DELETE')
-
-        salesmanList(event)
-
-        $('#deleteSalesman').modal('hide')
-        modal.innerHTML = ''
-
-        alert('Vendedor eliminado con éxito!')
-    } catch (error) {
-        $('#deleteSalesman').modal('hide')
-        modal.innerHTML = ''
-    }
-}
-
-window.modalAddManager = modalAddManager
-
-async function modalAddManager(event) {
-    try {
-        event.preventDefault()
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_salesman = btn.getAttribute("data-id_salesman")
-
-        modal.innerHTML = ''
-        modal.appendChild(ViewSalesman.modalAddManager(id_salesman))
-
-        const users = await Connection.noBody('users', 'GET')
-        const managerselect = document.getElementById('managerselect')
-
-        users.forEach(obj => {
-            managerselect.appendChild(ViewSalesman.optionManager(obj))
         })
 
-        $('#modalAddManager').modal('show')
+        alert(obj.msg)
 
     } catch (error) {
-
+        console.log(error);
+        $('#addsalesman').modal('hide')
     }
 }
 
-window.AddManager = AddManager
+document.querySelector('[data-add-salesman]').addEventListener('submit', add, false)
 
-async function AddManager(event) {
-    event.preventDefault()
+
+const drop = async (event) => {
+    const tr = event.path[3]
+    if (tr.className === "child") tr = tr.previousElementSibling
+
+    const id = event.target.getAttribute('data-id')
+
+    $('#dropmodal').modal("show")
+
+    const submit = async (event2) => {
+        event2.preventDefault()
+
+        const obj = await Connection.noBody(`salesman/${id}`, 'DELETE')
+
+        $('#tablesalesman').DataTable()
+            .row(tr)
+            .remove()
+            .draw();
+
+        $('#dropmodal').modal('hide')
+
+        document.querySelector('[data-drop-salesman]').removeEventListener('submit', submit, false)
+        alert(obj.msg)
+    }
+
+    document.querySelector('[data-drop-salesman]').addEventListener('submit', submit, false)
+}
+
+const view = async (event) => {
 
     try {
-        let modal = document.querySelector('[data-modal]')
+        const tr = event.path[3]
+        if (tr.className === "child") tr = tr.previousElementSibling
 
-        const btn = event.currentTarget
+        const id = event.target.getAttribute('data-id')
+        const name = event.target.getAttribute('data-name')
 
-        const manager = {
-            id_login: document.getElementById('managerselect').value,
-            id_salesman: btn.getAttribute("data-id_salesman")
+        $('#addManager').modal('show')
+
+        const submit = async (event2) => {
+            event2.preventDefault()
+
+            const manager = {
+                id_salesman: id,
+                name: document.querySelector('#managerselect option:checked').innerHTML,
+                id: event2.currentTarget.managerselect.value
+            }
+
+            $('#addManager').modal('hide')
+
+            let date = new Date()
+
+            const obj = await Connection.body(`salesman/${manager.id_salesman}`, { manager }, 'PUT')
+
+            const rowNode = await $('#tablesalesman').DataTable()
+
+            rowNode
+                .row(tr)
+                .remove()
+                .draw();
+
+            rowNode
+                .row
+                .add([
+                    `<a><i data-view data-id="${id}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
+                    <a><i data-drop data-id="${id}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                    name,
+                    manager.name,
+                    `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+                ])
+                .draw()
+                .node();
+
+            $(rowNode)
+                .css('color', 'black')
+                .animate({ color: '#4e73df' });
+
+
+            document.querySelector('[data-add-manager]').removeEventListener('submit', submit, false)
+            alert(obj.msg)
         }
 
-        await Connection.body(`salesman/${manager.id_salesman}`, { manager }, 'PUT')
+        document.querySelector('[data-add-manager]').addEventListener('submit', submit, false)
 
-        salesmanList(event)
-
-        $('#modalAddManager').modal('hide')
-        modal.innerHTML = ''
-
-        alert('Gerente agregado con éxito!')
     } catch (error) {
-        $('#modalAddManager').modal('hide')
-        modal.innerHTML = ''
+
     }
 }
+
+
+const action = (event) => {
+    if (event.target && event.target.matches('[data-view]')) return view(event)
+    if (event.target && event.target.matches('[data-drop]')) return drop(event)
+}
+
+document.querySelector("#tablesalesman").addEventListener('click', action, false)

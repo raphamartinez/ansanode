@@ -20,7 +20,7 @@ module.exports = app => {
             let id = req.login.id_login
             let type = req.params.type
 
-            if (req.login.perfil === 1) id = false
+            if (req.login.perfil === 1 && type == undefined) id = false
 
             let powerbis = await PowerBi.list(id, type)
 

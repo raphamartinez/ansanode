@@ -172,7 +172,7 @@ const update = (event) => {
 
         const date = new Date()
 
-      const rowNode = await $('#tableReports').DataTable()
+        const rowNode = await $('#tableReports').DataTable()
             .row
             .add([
                 `
@@ -212,12 +212,14 @@ const init = async () => {
 
     let url = 'powerbis'
 
-    if (doc.length >= 5 && typeof doc[4] == 'number') {
+    if (doc.length >= 5) {
+        if (doc[4] == 1) document.querySelector('[data-title]').innerHTML = "Informes"
         if (doc[4] == 2) document.querySelector('[data-title]').innerHTML = "Informes de Personas"
         if (doc[4] == 3) document.querySelector('[data-title]').innerHTML = "Informes de Vehiculos"
 
         url += `/${doc[4]}`
     }
+
     const data = await Connection.noBody(url, 'GET')
     const powerbis = data.powerbis.map(powerbi => {
         let option = `<a><i data-view data-description=${powerbi.description} data-title="${powerbi.title}" data-url="${powerbi.url}" class="fas fa-eye" style="color:#cbccce; padding: 2px;"></i></a>`
@@ -227,7 +229,7 @@ const init = async () => {
             <a><i data-update data-id="${powerbi.id_powerbi}" data-title="${powerbi.title}" data-url="${powerbi.url}" data-description="${powerbi.description}" data-type="${powerbi.type}" data-count="${powerbi.count}" class="fas fa-edit" style="color:#32CD32; padding: 2px;"></i></a>
             <a><i data-drop data-id="${powerbi.id_powerbi}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>
             <a><i data-add data-id="${powerbi.id_powerbi}"  class="fas fa-users" style="color:#000000; padding: 2px;"><span id="row${powerbi.id_powerbi}"  class="badge badge-dark">${powerbi.count}</span></i></a>`
-        } 
+        }
 
         return [
             option,
@@ -246,10 +248,10 @@ const init = async () => {
         if (event.target && event.target.matches('[data-update]')) return update(event)
         if (event.target && event.target.matches('[data-add]')) return user(event)
     }
-    
+
     document.querySelector('#tableReports').addEventListener('click', action, false)
-    
-    
+
+
     const formAdd = document.querySelector('[data-form-add]')
     if (formAdd) formAdd.addEventListener('submit', add, false)
 }

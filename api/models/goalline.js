@@ -1,8 +1,29 @@
 const Repositorie = require('../repositories/label')
+const RepositorieSeller = require('../repositories/seller')
 const RepositorieGoal = require('../repositories/goalline')
 const RepositorieHbs = require('../repositories/hbs')
 const { InvalidArgumentError, InternalServerError } = require('./error')
 const xl = require('excel4node');
+
+const stocks = [
+    ["01AUTOPJC", "1"],
+    ["01CAFE", "11"],
+    ["01DOSRUED", "11"],
+    ["01IMPPJC", "1"],
+    ["02AUTOCDE", "2"],
+    ["03AUTOBVIS", "3"],
+    ["04AUTOENC", "4"],
+    ["05AUTOSAL", "5"],
+    ["06AUTOFDO", "11"],
+    ["06AUTOSHCH", "6"],
+    ["07AUTOBADO", "7"],
+    ["10TRUCK", "10"],
+    ["12AUTORITA", "12"],
+    ["13AUTOMRA", "13"],
+    ["DCCDE", "2"],
+    ["DEPTRANIMP", "11"],
+    ["MATRIZ", "11"],
+]
 
 async function datesGoal() {
 
@@ -46,17 +67,6 @@ async function datesGoal() {
     return datecolumn
 }
 
-async function colorCell(wb, color, pattern) {
-
-    return wb.createStyle({
-        fill: {
-            type: 'pattern',
-            fgColor: color,
-            patternType: pattern || 'solid',
-        }
-    });
-}
-
 class GoalLine {
 
     async create(date) {
@@ -84,7 +94,6 @@ class GoalLine {
                     if (goal.application !== "DESCONSIDERAR") {
                         RepositorieGoal.insert(goal)
                     }
-
                 }
             })
 
@@ -99,26 +108,6 @@ class GoalLine {
     async list(id_salesman, office, group, checkstock) {
         try {
             const data = await RepositorieGoal.list(id_salesman, group)
-
-            const stocks = [
-                ["01AUTOPJC", "1"],
-                ["01CAFE", "11"],
-                ["01DOSRUED", "11"],
-                ["01IMPPJC", "1"],
-                ["02AUTOCDE", "2"],
-                ["03AUTOBVIS", "3"],
-                ["04AUTOENC", "4"],
-                ["05AUTOSAL", "5"],
-                ["06AUTOFDO", "11"],
-                ["06AUTOSHCH", "6"],
-                ["07AUTOBADO", "7"],
-                ["10TRUCK", "10"],
-                ["12AUTORITA", "12"],
-                ["13AUTOMRA", "13"],
-                ["DCCDE", "2"],
-                ["DEPTRANIMP", "11"],
-                ["MATRIZ", "11"],
-            ]
 
             let arrstock = " "
 
@@ -144,8 +133,8 @@ class GoalLine {
                 if (stock.CityReserved > 0) stock.CityQty -= stock.CityReserved
                 if (stock.CityQty === null) stock.CityQty = 0
 
-                obj.CityQty = stock.CityQty
                 obj.Qty = stock.Qty
+                obj.CityQty = stock.CityQty
 
                 if (checkstock === 1) {
                     arr.push(obj)
@@ -162,7 +151,25 @@ class GoalLine {
 
     async listExcel(id_salesman, groups) {
         try {
+            const salesman = await RepositorieSeller.view(false, id_salesman)
             const data = await RepositorieGoal.listExcel(id_salesman, groups)
+
+            let lines = []
+            for (let line of data) {
+
+                let arr = []
+                stocks.forEach(stock => {
+                    if (stock[1] == salesman.office) arr.push(stock[0])
+                })
+
+                const stock = await RepositorieHbs.listItemsStock(line.itemcode, arr);
+
+                line.stockCity = stock.CityQty - stock.CityReserved;
+                line.stockAnsa = stock.Qty - stock.Reserved;
+
+                lines.push(line);
+            }
+
             const wb = new xl.Workbook({
                 author: 'America Neumáticos S.A',
             });
@@ -193,6 +200,8 @@ class GoalLine {
                 "Etiqueta",
                 "Cod Articulo",
                 "Articulo",
+                `Stock Sucursal ${salesman.office}`,
+                "Stock ANSA",
                 dates[0],
                 dates[1],
                 dates[2],
@@ -216,14 +225,14 @@ class GoalLine {
                 path: './public/img/ansalogomin.png',
                 type: 'picture',
                 position: {
-                  type: 'absoluteAnchor',
-                  from: {
-                    col: 1,
-                    row: 1,
-                    rowOff: 0,
-                  },
+                    type: 'absoluteAnchor',
+                    from: {
+                        col: 1,
+                        row: 1,
+                        rowOff: 0,
+                    },
                 },
-              });
+            });
 
             ws.cell(1, 2, 2, 9, true).string(`Establecimiento de Metas - ${data[0].code}`).style(wb.createStyle({
                 font: {
@@ -233,9 +242,9 @@ class GoalLine {
                 }
             }))
 
-            ws.cell(3,2,3,9, true).string(`Fecha de Registro: ${now}`)
-            ws.cell(4,2,4,9, true).string(`Grupos: ${groups}`)
-            ws.cell(5,2,5,9, true)
+            ws.cell(3, 2, 3, 9, true).string(`Fecha de Registro: ${now}`)
+            ws.cell(4, 2, 4, 9, true).string(`Grupos: ${groups}`)
+            ws.cell(5, 2, 5, 9, true).string(`Valores de stock según la fecha de generación del excel: ${now}`)
             ws.column(2).hide()
             ws.row(6).freeze();
             ws.column(5).setWidth(35);
@@ -253,7 +262,7 @@ class GoalLine {
             })
 
             let rowIndex = 7
-            data.forEach(record => {
+            lines.forEach(record => {
                 let columnIndex = 1
                 Object.keys(record).forEach(columnName => {
                     switch (columnIndex) {
@@ -262,7 +271,7 @@ class GoalLine {
                             break
                         default:
                             if (columnIndex > 9) {
-                             if(typeof record[columnName] === "object") record[columnName] = 0
+                                if (typeof record[columnName] === "object") record[columnName] = 0
                                 ws.cell(rowIndex, columnIndex++).number(parseInt(record[columnName]))
                             } else {
                                 ws.cell(rowIndex, columnIndex++).string(record[columnName])
@@ -272,9 +281,6 @@ class GoalLine {
                 })
                 rowIndex++
             })
-
-            // wb.write('meta.xlsx');
-            // wb.write('meta.xlsx', res); escrever na resposta
 
             return wb
         } catch (error) {

@@ -18,29 +18,46 @@ class MailPowerBi {
         }
     }
 
-    async insertMailAttachment(attachment, id_mailpowerbi) {
+    async insertMailAttachment(mail) {
         try {
+            let objs = []
 
-            attachment.forEach(async obj => {
-                await Repositorie.insertAttachment(obj, id_mailpowerbi)
-            })
+            for (let url of mail.urls) {
+                let id = await Repositorie.insertAttachment(url, mail.id_mailpowerbi)
 
-            return true
+                let attachment = {
+                    id,
+                    url
+                }
+
+                objs.push(attachment)
+            }
+
+            return objs
         } catch (error) {
+            console.log(error);
             throw new InvalidArgumentError('No se pudo crear el attachment.')
         }
     }
 
-    async insertMailScheduling(schedule, id_mailpowerbi) {
+    async insertMailScheduling(mail) {
         try {
-            schedule.forEach(async obj => {
+            let objs = []
+
+            for (let obj of mail.schedule) {
                 const date = new Date(obj)
                 const formatDate = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()} ${date.getHours()}:00:00`
-                console.log(formatDate);
-                await Repositorie.insertScheduling(formatDate, id_mailpowerbi)
-            })
+                let id = await Repositorie.insertScheduling(formatDate, mail.id_mailpowerbi)
 
-            return true
+                let schedule = {
+                    date,
+                    id
+                }
+
+                objs.push(schedule)
+            }
+
+            return objs
         } catch (error) {
             throw new InvalidArgumentError('No se pudo crear el attachment.')
         }

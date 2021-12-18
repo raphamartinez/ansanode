@@ -293,7 +293,7 @@ class Hbs {
 
             sql += `) AS amountUsd `
 
-            
+
 
             sql += ` FROM SalesOrder SO 
             INNER JOIN SalesOrderItemRow SOIr ON SOIr.masterId = SO.internalId 
@@ -338,6 +338,7 @@ class Hbs {
     }
 
     listItems(search) {
+
         try {
             let sql = `SELECT IG.Name AS ItemGroup, I.Code as ArtCode,
             I.Name as ItemName,if(SUM(St.Reserved) > 0, SUM(St.Qty) - SUM(St.Reserved),SUM(St.Qty)) AS StockQty, SUM(St.Reserved) AS Reserved
@@ -345,9 +346,9 @@ class Hbs {
            INNER JOIN ItemGroup IG ON I.ItemGroup = IG.CODE
            LEFT JOIN Stock St ON I.Code = St.ArtCode
            WHERE (I.Closed = 0 OR I.Closed IS NULL )
-           AND St.StockDepo IN (${search.stock})
-           AND I.Code IN (${search.code}) `
+           AND St.StockDepo IN (${search.stock})`
 
+            if (search.code && search.code.length > 0) sql += ` AND I.Code IN (${search.code}) `
             if (search.itemgroup && search.itemgroup[0] != "ALL") sql += ` AND IG.Name IN (${search.itemgroup}) `
             if (search.name != "ALL") sql += ` AND I.Name LIKE '%${search.name}%' `
             if (search.empty == 0) sql += ` AND St.Qty > 0 `

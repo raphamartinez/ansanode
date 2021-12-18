@@ -11,6 +11,9 @@ const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = r
 const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
 
+// const Web = require('./api/models/webscraping');
+// Web.listProsegurOffice()
+
 process.setMaxListeners(100)
 
 const app = customExpress()
@@ -63,8 +66,7 @@ app.use((err, req, res, next) => {
   }
 
   if (err instanceof NotAuthorized) {
-    status = 401
-    body.dateExp = err.dateExp
+   return res.redirect('login?fail=true')
   }
 
   if (err instanceof InvalidArgumentError) {
@@ -84,11 +86,3 @@ app.use((err, req, res, next) => {
   res.json(body)
 
 })
-
-// const su = require('./api/models/patrimony');
-// su.ListResponseFirst()
-
-// const Clock = require('./api/models/clockmachine')
-// Clock.listClockMachineHbs()
-
-// Hbs.listReceivables()

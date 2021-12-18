@@ -71,7 +71,7 @@ class Finance {
             let day = new Date()
             let d1
             let d2
-let dview
+            let dview
             switch (date) {
                 case "*":
                     dview = await Repositorie.listClient(client, 0, 0)
@@ -208,7 +208,7 @@ let dview
 
     }
 
-    listSalesOrders(search){
+    listSalesOrders(search) {
         try {
             return RepositorieHbs.listSalesOrder(search)
         } catch (error) {
@@ -222,7 +222,6 @@ let dview
             const data = await Repositorie.listInvoiceHistory(invoice)
 
             data.forEach(obj => {
-                // obj.name = obj.name.substring(0, (obj.name + " ").indexOf(" "))
 
                 if (obj.comment === null) obj.comment = " "
                 if (obj.responsible === null) obj.responsible = " "
@@ -251,10 +250,20 @@ let dview
 
             return data
         } catch (error) {
-            throw new InternalServerError('No se pude listar los goals.')
+            throw new InternalServerError('No se pude listar los datos.')
         }
     }
 
+    async graphReceivable(id_login, offices, datestart, dateend) {
+        try {
+
+            const data = await Repositorie.graphReceivable(id_login, offices, datestart, dateend);
+
+            return data;
+        } catch (error) {
+            throw new InternalServerError('No se pude listar los datos.')
+        }
+    }
 }
 
 module.exports = new Finance

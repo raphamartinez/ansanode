@@ -7,9 +7,7 @@ module.exports = app => {
 
     app.get('/punto', [Middleware.authenticatedMiddleware, Authorization('clock', 'read')], async (req, res, next) => {
         try {
-            res.render('punto',{
-                perfil: req.login.perfil
-            })
+            res.render('punto')
         } catch (err) {
             next(err)
         }

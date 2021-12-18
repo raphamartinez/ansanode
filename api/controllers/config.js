@@ -5,9 +5,7 @@ module.exports = app => {
     app.get('/ajustes', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
 
-            res.render('config', {
-                perfil: req.login.perfil
-            })
+            res.render('config')
         } catch (err) {
             next(err)
         }

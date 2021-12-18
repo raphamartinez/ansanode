@@ -23,7 +23,7 @@ class Finance {
 
             return result[0]
         } catch (error) {
-            
+
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
         }
     }
@@ -72,7 +72,7 @@ class Finance {
 
     list(clients, offices, overdue, type) {
         try {
-            let sql = `SELECT re.CustCode, re.CustName, 
+            let sql = `SELECT re.CustCode, re.CustName, COUNT(DISTINCT re.OfficialSerNr) as invoices,
 
             TRUNCATE(SUM(IF(re.DueDate <= now() AND re.DueDate >= (now() - interval 15 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
             IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d15,
@@ -107,14 +107,14 @@ class Finance {
             if (clients !== "ALL") sql += `AND re.CustCode IN (${clients}) `
 
             if (type !== '3') {
-                if(type === '1' ){
+                if (type === '1') {
                     sql += `AND re.PayTerm != "Cheque " `
-                }else{
+                } else {
                     sql += `AND re.PayTerm = "Cheque " `
                 }
             }
 
-            if(overdue === '1') sql += `AND re.DueDate <= NOW() `
+            if (overdue === '1') sql += `AND re.DueDate <= NOW() `
 
             sql += `GROUP BY re.CustCode `
 
@@ -137,6 +137,35 @@ class Finance {
             return query(sql, invoice)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los history')
+        }
+    }
+
+    graphReceivable(id_login, offices, datestart, dateend) {
+        try {
+
+            let sql = `SELECT 
+            COUNT(fi.id_financeinvoice) as contact, DATE_FORMAT(fi.contactdate, '%d/%m/%Y') as date
+            FROM ansa.financeinvoice fi
+            WHERE fi.id_financeinvoice > 0  `
+
+            if (offices) sql += ` AND cr.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${offices})) `
+
+            if (id_login) sql += ` AND fi.id_login = ${id_login} `
+
+            if (datestart && dateend) {
+                sql += ` AND fi.contactdate BETWEEN '${search.start}' AND '${search.end}' `
+            }else{
+                sql += ` AND fi.contactdate BETWEEN now() - interval 30 day AND NOW()`
+            }
+
+            sql += ` GROUP BY fi.contactdate
+            ORDER BY fi.contactdate ASC`
+
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los datos')
         }
     }
 }

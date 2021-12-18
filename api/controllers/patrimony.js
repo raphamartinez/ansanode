@@ -9,9 +9,7 @@ module.exports = app => {
 
     app.get('/patrimonio', [Middleware.authenticatedMiddleware, Authorization('patrimony', 'read')], async (req, res, next) => {
         try {
-            res.render('patrimonio', {
-                perfil: req.login.perfil
-            })
+            res.render('patrimonio')
         } catch (err) {
             next(err)
         }

@@ -8,9 +8,7 @@ module.exports = app => {
 
     app.get('/cuestionario', [Middleware.authenticatedMiddleware, Authorization('quiz', 'read')], async (req, res, next) => {
         try {
-            res.render('quiz', {
-                perfil: req.login.perfil
-            })
+            res.render('quiz')
         } catch (err) {
             next(err)
         }

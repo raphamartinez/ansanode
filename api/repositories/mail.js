@@ -2,16 +2,13 @@ const query = require('../infrastructure/database/queries')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
 
 class Mail {
-    async insertMail(mail,id_login) {
+    async insertMail(mail, id_login) {
         try {
             const sql = 'INSERT INTO ansa.mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
-            await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type, id_login])
+            const result = await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type, id_login])
 
-            const result = await query("Select LAST_INSERT_ID() as id_mailpowerbi from ansa.mailpowerbi LIMIT 1")
-
-            return result[0].id_mailpowerbi
+            return result.insertId
         } catch (error) {
-            console.log(error);
             throw new InvalidArgumentError('No se pudo insertar el archivo en la base de datos')
         }
     }
@@ -20,8 +17,8 @@ class Mail {
         try {
             const sql = 'INSERT INTO ansa.mailattachment (url, id_mailpowerbi) values (?, ?)'
             const result = await query(sql, [attachment, id_mailpowerbi])
-
-            return result
+            
+            return result.insertId
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el archivo office en la base de datos')
         }
@@ -32,7 +29,7 @@ class Mail {
             const sql = 'INSERT INTO ansa.mailscheduling (date, id_mailpowerbi) values (?, ?)'
             const result = await query(sql, [formatDate, id_mailpowerbi])
 
-            return result
+            return result.insertId
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el archivo office en la base de datos')
         }
@@ -65,8 +62,8 @@ class Mail {
 
     deleteScheduling(id_mailscheduling) {
         try {
-            const sql = `DELETE from ansa.mailscheduling WHERE id_mailscheduling = ${id_mailscheduling}`
-            return query(sql)
+            const sql = `DELETE from ansa.mailscheduling WHERE id_mailscheduling = ?`
+            return query(sql, id_mailscheduling)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el archivo en la base de datos')
         }
@@ -97,7 +94,7 @@ class Mail {
             LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
             `
 
-            if(id_login) sql+= `WHERE MA.id_login = ${id_login} `
+            if (id_login) sql += `WHERE MA.id_login = ${id_login} `
 
             sql += `GROUP BY MA.id_mailpowerbi`
 

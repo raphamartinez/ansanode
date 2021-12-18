@@ -157,10 +157,11 @@ class Prosegur {
 
     async insertOffice(event) {
         try {
-            const sql = 'INSERT INTO ansa.proseguroffice (date, office, type, address, user) values (?, ?, ?, ?, ?)'
-            const result = await query(sql, [event.date, event.office, event.type, event.address, event.user])
+            const sql = 'INSERT INTO ansa.proseguroffice (date, office, type, contract, user) values (?, ?, ?, ?, ?)'
+            const result = await query(sql, [event.date, event.office, event.type, event.contract, event.user])
             return result[0]
         } catch (error) {
+            console.log(error);
             return error
         }
     }

@@ -44,13 +44,9 @@ module.exports = app => {
                     sellers = await Sellers.list(id_login, office);
                     amount = await Sellers.dashboard(id_login, office, code);
                 }
-
-                // cachelist.addCache(`goal:sellers:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
-
             }
 
             res.render('metas', {
-                perfil: req.login.perfil,
                 sellers,
                 amount
             })

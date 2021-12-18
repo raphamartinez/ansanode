@@ -8,9 +8,7 @@ module.exports = app => {
 
     app.get('/goodyear', [Middleware.authenticatedMiddleware, Authorization('goodyear', 'read')], async (req, res, next) => {
         try {
-            res.render('goodyear', {
-                perfil: req.login.perfil
-            })
+            res.render('goodyear')
         } catch (err) {
             next(err)
         }

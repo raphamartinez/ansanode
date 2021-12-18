@@ -35,12 +35,14 @@ module.exports = app => {
 
     app.post('/mail', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
-            const mail = req.body.mailschedule
-            const id_mailpowerbi = await Mail.insertMailPowerBi(mail, req.login.id_login)
-            await Mail.insertMailAttachment(mail.attachment, id_mailpowerbi)
-            await Mail.insertMailScheduling(mail.schedule, id_mailpowerbi)
+            let mail = req.body.mailschedule
+            let id_mailpowerbi = await Mail.insertMailPowerBi(mail, req.login.id_login)
 
-            res.status(201).json(id_mailpowerbi)
+            mail['id_mailpowerbi'] = id_mailpowerbi
+            await Mail.insertMailAttachment(mail)
+            await Mail.insertMailScheduling(mail)
+
+            res.status(201).json({id:id_mailpowerbi, msg: `¡La programación de correo electrónico se agregó correctamente!`})
         } catch (err) {
             next(err)
         }
@@ -49,9 +51,9 @@ module.exports = app => {
     app.post('/attachment', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const attachment = req.body.attachment
-            const id = await Mail.insertMailAttachment(attachment.urls, attachment.id_mailpowerbi)
+            const attachments = await Mail.insertMailAttachment(attachment)
 
-            res.status(201).send({ id, msg: 'Archivo adjunto agregado con éxito.' })
+            res.status(201).send({ attachments, msg: 'Archivo adjunto agregado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -60,7 +62,7 @@ module.exports = app => {
     app.post('/scheduling', [Middleware.authenticatedMiddleware, Authorization('mail', 'create')], async (req, res, next) => {
         try {
             const scheduling = req.body.scheduling
-            const id = await Mail.insertMailScheduling(scheduling.schedule, scheduling.id_mailpowerbi)
+            const id = await Mail.insertMailScheduling(scheduling)
 
             res.status(201).send({ id, msg: 'Programación de fecha agregada con éxito.' })
         } catch (err) {
@@ -93,7 +95,7 @@ module.exports = app => {
 
             await Mail.updateMailAttachment(data)
 
-            res.json({ msg: 'Archivo adjunto con éxito.' })
+            res.json({ msg: 'Archivo adjunto actualizado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -104,7 +106,7 @@ module.exports = app => {
             const id_mailpowerbi = req.params.id_mailpowerbi
             await Mail.deleteMailPowerBi(id_mailpowerbi)
             
-            res.json({ msg: 'Email eliminado con éxito.' })
+            res.json({ msg: 'Correo electrónico eliminado con éxito!' })
         } catch (err) {
             next(err)
         }
@@ -115,7 +117,7 @@ module.exports = app => {
             const id_mailattachment = req.params.id_mailattachment
             await Mail.deleteMailAttachment(id_mailattachment)
 
-            res.json({ msg: 'Archivo anexo eliminado con éxito.' })
+            res.json({ msg: 'Archivo anexo eliminado con éxito!' })
         } catch (err) {
             next(err)
         }
@@ -126,7 +128,7 @@ module.exports = app => {
             const id_mailscheduling = req.params.id_mailscheduling
             await Mail.deleteMailScheduling(id_mailscheduling)
 
-            res.json({ msg: 'Programación de fecha eliminada con éxito.' })
+            res.json({ msg: 'Programación de fecha eliminada con éxito!' })
         } catch (err) {
             next(err)
         }

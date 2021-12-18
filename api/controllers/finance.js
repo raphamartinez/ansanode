@@ -7,10 +7,38 @@ module.exports = app => {
 
     app.get('/cobranza', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
-            res.render('cobranza',{
-                perfil: req.login.perfil
-            })
-            
+            res.render('cobranza')
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/finance/graph', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+        try {
+            let graphs;
+            if (req.access.all.allowed) {
+                graphs = await Finance.graphReceivable()
+
+            } else {
+                let id_login = false;
+                let offices = false;
+                let datestart =  false;
+                let dateend = false;
+
+                if (req.login.perfil == 4 || req.login.perfil == 8) {
+                    let offices = req.login.offices
+
+                    offices = offices.map(of => {
+                        return of.code
+                    })
+                } else {
+                    id_login = req.login.id_login
+                }
+
+                graphs = await Finance.graphReceivable(id_login, offices, datestart, dateend)
+            }
+
+            res.json(graphs)
         } catch (err) {
             next(err)
         }
@@ -24,7 +52,7 @@ module.exports = app => {
 
             cachelist.delPrefix('finance')
 
-            res.status(201).json({return: 'Comentario agregado con éxito.'})
+            res.status(201).json({ return: 'Comentario agregado con éxito.' })
         } catch (err) {
             next(err)
         }
@@ -39,7 +67,7 @@ module.exports = app => {
 
             cachelist.delPrefix('finance')
 
-            res.json({msg: 'Comentario actualizada con éxito.'})
+            res.json({ msg: 'Comentario actualizada con éxito.' })
         } catch (err) {
             next(err)
         }

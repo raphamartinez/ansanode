@@ -7,9 +7,7 @@ module.exports = app => {
 
     app.get('/informes/:type?', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
-            res.render('informe', {
-                perfil: req.login.perfil
-            })
+            res.render('informe')
         } catch (err) {
             next(err)
         }

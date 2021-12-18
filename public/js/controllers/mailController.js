@@ -1,119 +1,107 @@
 import { ViewMail } from "../views/mailView.js"
 import { Connection } from '../services/connection.js'
 
-window.mailList = mailList
+const init = async () => {
 
-async function mailList(event) {
-    event.preventDefault()
+    const data = await Connection.noBody('mails', 'GET')
 
-    try {
-
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
-        }
-
-        if ($.fn.DataTable.isDataTable('#tablemail')) {
-            $('#tablemail').dataTable().fnClearTable();
-            $('#tablemail').dataTable().fnDestroy();
-            $('#tablemail').empty();
-        }
-
-        const data = await Connection.noBody('mails', 'GET')
-
-        let dtview = [];
-        data.forEach(obj => {
-            const field = ViewMail.listMails(obj)
-            dtview.push(field)
-        });
-
-        $("#tablemail").DataTable({
-            data: dtview,
-            columns: [
-                { title: "Opciones" },
-                { title: "Para" },
-                { title: "Cc" },
-                { title: "Cco" },
-                { title: "Título" },
-                { title: "Corpo" },
-                { title: "Cant Archivos Adjuntos" },
-                { title: "Fecha de Registro" }
-            ],
-            paging: true,
-            ordering: true,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            pagingType: "numbers",
-            searchPanes: true,
-            fixedHeader: false
-        })
-
-    } catch (error) {
-        console.log(error);
-        alert(error)
-    }
-}
-
-window.modaladdmail = modaladdmail
-
-async function modaladdmail(event) {
-    event.preventDefault()
-    let modal = document.querySelector('[data-modal]')
-
-    modal.innerHTML = ``
-
-    modal.appendChild(ViewMail.modaladdmail())
-
-    $(document).ready(function () {
-        $("#tableattachment").DataTable({
-            data: [],
-            columns: [
-                { title: "Opciones" },
-                { title: "URL" }
-            ],
-            paging: false,
-            ordering: true,
-            info: false,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            pagingType: "numbers",
-            searchPanes: false,
-            fixedHeader: false,
-            searching: false
-        })
-
-        $("#tablescheduling").DataTable({
-            data: [],
-            columns: [
-                { title: "Opciones" },
-                { title: "Fecha de Envío" }
-            ],
-            paging: false,
-            ordering: true,
-            info: false,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            pagingType: "numbers",
-            searchPanes: false,
-            fixedHeader: false,
-            searching: false
-        })
+    let dtview = data.map(mail => {
+        return [
+            `<a><i data-view data-id="${mail.id_mailpowerbi}" class="fas fa-eye" style="color:#cbccce;"></i></a>
+            <a><i data-drop data-id="${mail.id_mailpowerbi}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+            `${mail.recipients}`,
+            `${mail.cc}`,
+            `${mail.cco}`,
+            `${mail.title}`,
+            `${mail.body}`,
+            `${mail.countatt}`,
+            `${mail.datereg}`
+        ]
     })
 
-    let powerbis = await Connection.noBody('powerbis', 'GET')
+    $("#tablemail").DataTable({
+        data: dtview,
+        columns: [
+            { title: "Opciones" },
+            { title: "Para" },
+            { title: "Cc" },
+            { title: "Cco" },
+            { title: "Título" },
+            { title: "Corpo" },
+            { title: "Cant Archivos Adjuntos" },
+            { title: "Fecha de Registro" }
+        ],
+        paging: true,
+        ordering: true,
+        info: true,
+        scrollY: false,
+        scrollX: true,
+        autoHeight: true,
+        scrollCollapse: true,
+        responsive: true,
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false
+    })
 
-    const bisselect = document.getElementById('bis')
+    $("#tablemail").DataTable()
+        .columns.adjust();
 
-    powerbis.forEach(obj => {
-        bisselect.appendChild(ViewMail.optionBis(obj))
+    $("#tableattachment").DataTable({
+        data: [],
+        columns: [
+            { title: "Opciones" },
+            { title: "URL" }
+        ],
+        paging: false,
+        ordering: true,
+        info: false,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: false,
+        fixedHeader: false,
+        searching: false
+    })
+
+    $("#tablescheduling").DataTable({
+        data: [],
+        columns: [
+            { title: "Opciones" },
+            { title: "Fecha de Envío" }
+        ],
+        paging: false,
+        ordering: true,
+        info: false,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: false,
+        fixedHeader: false,
+        searching: false
+    })
+
+    let obj = await Connection.noBody('powerbis', 'GET')
+    obj.powerbis.forEach(powerbi => {
+        const option = document.createElement('option')
+
+        option.value = powerbi.url
+
+        let data
+
+        if (powerbi.name !== undefined) {
+            data = `${powerbi.name} - ${powerbi.title}`
+        } else {
+            data = powerbi.title
+        }
+
+        option.innerHTML = data
+
+        document.querySelector('#bis').appendChild(option)
     });
 
     $('#smartwizard').smartWizard({
@@ -131,64 +119,72 @@ async function modaladdmail(event) {
         },
         showStepURLhash: false
     });
-
-    $('#modalmailschedule').modal('show')
 }
 
+document.querySelector('[data-config-mail]').addEventListener('click', init, false)
 
-window.addoptionschedule = addoptionschedule
-function addoptionschedule(event) {
-    event.preventDefault()
-
-    const scheduleselect = document.getElementById('schedule')
-
-    const date = document.getElementById('date').value
-
-    scheduleselect.appendChild(ViewMail.optionSchedule(date))
-}
-
-window.addbimail = addbimail
-
-function addbimail(event) {
-    event.preventDefault()
-
+const addBi = () => {
     const bis = document.querySelectorAll('#bis option:checked')
+
+    if (!bis) return alert('Seleccione uno Informe.')
+
     const value = Array.from(bis).map(el => el.value)
     const innerHTML = Array.from(bis).map(el => el.innerHTML)
 
     const url = document.getElementById('url')
 
-    url.appendChild(ViewMail.optionURL(value, innerHTML))
+    const option = document.createElement('option')
+    option.value = value
+    option.innerHTML = innerHTML
+
+    url.appendChild(option)
 
     $('#bis option').prop('selected', function () {
         return this.defaultSelected;
     });
-
 }
 
-window.addurlmail = addurlmail
+document.querySelector('[data-add-report]').addEventListener('click', addBi, false)
 
-function addurlmail(event) {
-    event.preventDefault()
+const addUrl = () => {
+    const value = document.getElementById('urlinput').value
 
-    const urlinput = document.getElementById('urlinput').value
+    if (!value) return alert('Insira uno Informe.')
 
     const url = document.getElementById('url')
 
-    url.appendChild(ViewMail.optionURL(urlinput, `URL - ${urlinput}`))
+    const option = document.createElement('option')
+    option.value = value
+    option.innerHTML = `URL - ${value}`
+
+    url.appendChild(option)
 
     document.getElementById('urlinput').value = ``
     document.getElementById('urlinput').placeholder = `URL del Informe`
 }
 
-window.newmail = newmail
+document.querySelector('[data-add-url]').addEventListener('click', addUrl, false)
 
-async function newmail(event) {
+const addTimer = () => {
+    const date = document.getElementById('date').value
+    if (!date) return alert('Seleccione una fecha valida.')
+    let dt = new Date(date)
+
+    const option = document.createElement('option')
+
+    option.value = date
+
+    option.innerHTML = `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`
+
+    document.getElementById('schedule').appendChild(option)
+}
+
+document.querySelector('[data-add-timer]').addEventListener('click', addTimer, false)
+
+const addMail = async (event) => {
     event.preventDefault()
 
     try {
-        const btn = event.currentTarget
-
         const scheduleoption = document.querySelectorAll('#schedule option')
         const attachmentoption = document.querySelectorAll('#url option')
 
@@ -196,96 +192,58 @@ async function newmail(event) {
         const attachment = Array.from(attachmentoption).map(el => `${el.value}`)
 
         const mailschedule = {
-            for: btn.form.for.value,
-            cc: btn.form.cc.value,
-            cco: btn.form.cco.value,
-            title: btn.form.title.value,
-            body: btn.form.message.value,
-            type: btn.form.type.value,
+            for: event.currentTarget.for.value,
+            cc: event.currentTarget.cc.value,
+            cco: event.currentTarget.cco.value,
+            title: event.currentTarget.title.value,
+            body: event.currentTarget.message.value,
+            type: event.currentTarget.type.value,
             schedule: schedule,
-            attachment: attachment
+            urls: attachment
         }
 
-        const result = await Connection.body('mail', { mailschedule }, 'POST')
+        if(!mailschedule.for || !mailschedule.title || !mailschedule.body) return alert('Complete todos los campos del correo electrónico.')
+
+        const obj = await Connection.body('mail', { mailschedule }, 'POST')
+
         $('#modalmailschedule').modal('hide')
-        let modal = document.querySelector('[data-modal]')
-        modal.innerHTML = ``
 
-        if ($.fn.DataTable.isDataTable('#tablemail')) {
-            $('#tablemail').dataTable().fnClearTable();
-            $('#tablemail').dataTable().fnDestroy();
-            $('#tablemail').empty();
-        }
-
-        const data = await Connection.noBody('mails', 'GET')
-
-        let dtview = [];
-        data.forEach(obj => {
-            const field = ViewMail.listMails(obj)
-            dtview.push(field)
-        });
-
-        $("#tablemail").DataTable({
-            data: dtview,
-            columns: [
-                { title: "Opciones" },
-                { title: "Para" },
-                { title: "Cc" },
-                { title: "Cco" },
-                { title: "Título" },
-                { title: "Corpo" },
-                { title: "Cant Archivos Adjuntos" },
-                { title: "Fecha de Registro" }
-            ],
-            paging: true,
-            ordering: true,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            pagingType: "numbers",
-            searchPanes: true,
-            fixedHeader: false
-        }
-        )
-
-        alert('¡La programación de correo electrónico se agregó correctamente!')
+        alert(obj.msg)
     } catch (error) {
         alert(error)
     }
 }
 
-window.ViewMailPowerbi = ViewMailPowerbi
+document.querySelector('[data-form-mail]').addEventListener('submit', addMail, false)
 
-async function ViewMailPowerbi(event) {
-    event.preventDefault()
-
+const view = async (event) => {
     try {
-        let modal = document.querySelector('[data-modal]')
-        modal.innerHTML = ``
+        const id = event.target.getAttribute("data-id")
+        const mail = await Connection.noBody(`mail/${id}`, 'GET')
 
-        const btn = event.currentTarget
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
+        document.querySelector('[data-detail-for]').innerHTML = `<strong>Para:</strong> ${mail.details[0].recipients}`
+        document.querySelector('[data-detail-cc]').innerHTML = `<strong>Cc:</strong> ${mail.details[0].cc}`
+        document.querySelector('[data-detail-cco]').innerHTML = `<strong>Cco:</strong> ${mail.details[0].cco}`
+        document.querySelector('[data-detail-title]').innerHTML = `<strong>Título del E-mail:</strong> ${mail.details[0].title}`
+        document.querySelector('[data-detail-body]').innerHTML = mail.details[0].body
+        document.querySelector('[data-detail-type]').innerHTML = `Se envían archivos adjuntos: ${mail.details[0].type}`
+        document.querySelector('[data-detail-btn-att]').dataset['id_mailpowerbi'] = mail.details[0].id_mailpowerbi
+        document.querySelector('[data-detail-btn-timer]').dataset['id_mailpowerbi'] = mail.details[0].id_mailpowerbi
 
-        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
-
-        modal.appendChild(ViewMail.viewMail(mail))
-
-        let dtview = [];
-
-        mail.attachment.forEach(obj => {
-            const field = ViewMail.lineAttachment(obj)
-            dtview.push(field)
+        let dtview = mail.attachment.map(attachment => {
+            return [
+                `<a><i data-view data-id_mailattachment="${attachment.id_mailattachment}" data-url="${attachment.url}" data-id_mailpowerbi="${attachment.id_mailpowerbi}" class="fas fa-eye" style="color:#cbccce;"></i></a>
+                <a><i data-drop data-id_mailattachment="${attachment.id_mailattachment}" data-id_mailpowerbi="${attachment.id_mailpowerbi}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+                `${attachment.url}`
+            ]
         });
 
-        let dtscheduling = [];
-
-        mail.scheduling.forEach(obj => {
-            const field = ViewMail.lineSchedule(obj)
-            dtscheduling.push(field)
+        let dtscheduling = mail.scheduling.map(schedule => {
+            return [
+                `<a><i data-drop data-id_mailscheduling="${schedule.id_mailscheduling}" data-id_mailpowerbi="${schedule.id_mailpowerbi}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+                `${schedule.date}`
+            ]
         });
-
 
         $('#viewmail').modal('show')
 
@@ -295,61 +253,306 @@ async function ViewMailPowerbi(event) {
             $('#tableattachment').empty();
         }
 
+        $("#tableattachment").DataTable({
+            data: dtview,
+            columns: [
+                { title: "Opciones" },
+                { title: "URL" }
+            ],
+            paging: false,
+            ordering: true,
+            info: false,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: false,
+            fixedHeader: false,
+            searching: false,
+            responsive: true
+        })
+
         if ($.fn.DataTable.isDataTable('#tablescheduling')) {
             $('#tablescheduling').dataTable().fnClearTable();
             $('#tablescheduling').dataTable().fnDestroy();
             $('#tablescheduling').empty();
         }
 
-
-        $(document).ready(function () {
-            $("#tableattachment").DataTable({
-                data: dtview,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "URL" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false,
-                responsive: true
-            })
-
-            $("#tablescheduling").DataTable({
-                data: dtscheduling,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Fecha de Envío" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false,
-                responsive: true
-            })
+        $("#tablescheduling").DataTable({
+            data: dtscheduling,
+            columns: [
+                { title: "Opciones" },
+                { title: "Fecha de Envío" }
+            ],
+            paging: false,
+            ordering: true,
+            info: false,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            pagingType: "numbers",
+            searchPanes: false,
+            fixedHeader: false,
+            searching: false,
+            responsive: true
         })
 
         adjustModalDatatable()
 
     } catch (error) {
-        alert(error)
+
     }
 }
+
+const dropTimer = (event) => {
+    try {
+        const tr = event.path[3]
+        if (tr.className === "child") tr = tr.previousElementSibling
+
+        const id_mailscheduling = event.target.getAttribute("data-id_mailscheduling")
+
+        $('#dropTimer').modal('show')
+
+        const submit = async (event2) => {
+            event2.preventDefault()
+
+            const obj = await Connection.noBody(`scheduling/${id_mailscheduling}`, 'DELETE')
+
+            $('#dropTimer').modal('hide')
+
+            $('#tablescheduling').DataTable()
+                .row(tr)
+                .remove()
+                .draw();
+
+            alert(obj.msg)
+            document.querySelector('[data-drop-timer]').removeEventListener('submit', submit, false)
+        }
+
+        document.querySelector('[data-drop-timer]').addEventListener('submit', submit, false)
+
+    } catch (error) {
+
+    }
+}
+
+document.querySelector('#tablescheduling').addEventListener('click', dropTimer, false)
+
+const dropAttachment = (event) => {
+    try {
+        const tr = event.path[3]
+        if (tr.className === "child") tr = tr.previousElementSibling
+
+        const id_mailattachment = event.target.getAttribute("data-id_mailattachment")
+
+        $('#dropAttachment').modal('show')
+
+        const submit = async (event2) => {
+            event2.preventDefault()
+
+            const obj = await Connection.noBody(`attachment/${id_mailattachment}`, 'DELETE')
+
+            $('#dropAttachment').modal('hide')
+
+            $('#tableattachment').DataTable()
+                .row(tr)
+                .remove()
+                .draw();
+
+            alert(obj.msg)
+            document.querySelector('[data-drop-attachment]').removeEventListener('submit', submit, false)
+        }
+
+        document.querySelector('[data-drop-attachment]').addEventListener('submit', submit, false)
+    } catch (error) {
+
+    }
+}
+
+const viewAttachment = (event) => {
+    const url = event.target.getAttribute("data-url")
+
+    document.querySelector('[data-attachment-image]').src = url
+
+    $('#viewAttachment').modal('show')
+}
+
+const actionAttachment = (event) => {
+    if (event.target && event.target.matches('[data-view]')) return viewAttachment(event)
+    if (event.target && event.target.matches('[data-drop]')) return dropAttachment(event)
+}
+
+document.querySelector('#tableattachment').addEventListener('click', actionAttachment, false)
+
+const addAttachment = async (event) => {
+    try {
+        const id_mailpowerbi = event.target.getAttribute("data-id_mailpowerbi")
+
+        const obj = await Connection.noBody('powerbis', 'GET')
+
+        obj.powerbis.forEach(powerbi => {
+            const option = document.createElement('option')
+
+            option.value = powerbi.url
+
+            let data
+
+            if (powerbi.name !== undefined) {
+                data = `${powerbi.name} - ${powerbi.title}`
+            } else {
+                data = powerbi.title
+            }
+
+            option.innerHTML = data
+
+            document.querySelector('#newbis').appendChild(option)
+        });
+
+        $('#addattachment').modal('show')
+
+        const addBi = () => {
+            const bis = document.querySelectorAll('#newbis option:checked')
+
+            if (!bis) return alert('Seleccione uno Informe.')
+
+            const value = Array.from(bis).map(el => el.value)
+            const innerHTML = Array.from(bis).map(el => el.innerHTML)
+
+            const url = document.getElementById('urlnew')
+
+            const option = document.createElement('option')
+            option.value = value
+            option.innerHTML = innerHTML
+
+            url.appendChild(option)
+
+            $('#newbis option').prop('selected', function () {
+                return this.defaultSelected;
+            });
+        }
+
+        document.querySelector('[data-new-report]').addEventListener('click', addBi, false)
+
+        const addUrl = () => {
+            const value = document.getElementById('newurlinput').value
+
+            if (!value) return alert('Insira uno Informe.')
+
+            const url = document.getElementById('urlnew')
+
+            const option = document.createElement('option')
+            option.value = value
+            option.innerHTML = `URL - ${value}`
+
+            url.appendChild(option)
+
+            document.getElementById('newurlinput').value = ``
+            document.getElementById('newurlinput').placeholder = `URL del Informe`
+        }
+
+        document.querySelector('[data-new-url]').addEventListener('click', addUrl, false)
+
+        const submit = async (event2) => {
+            event2.preventDefault()
+
+            const attachmentoption = document.querySelectorAll('#urlnew option')
+            const attachment = {
+                urls: Array.from(attachmentoption).map(el => `${el.value}`),
+                id_mailpowerbi
+            }
+
+            const obj = await Connection.body('attachment', { attachment }, 'POST')
+            const rowNode = $('#tableattachment').DataTable()
+
+            obj.attachments.forEach(att => {
+                rowNode
+                    .row
+                    .add([
+                        `<a><i data-view data-id_mailattachment="${att.id}" data-url="${att.url}" data-id_mailpowerbi="${id_mailpowerbi}" class="fas fa-eye" style="color:#cbccce;"></i></a>
+                    <a><i data-drop data-id_mailattachment="${att.id}" data-id_mailpowerbi="${id_mailpowerbi}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+                        `${att.url}`
+                    ])
+                    .draw()
+                    .node();
+
+                $(rowNode)
+                    .css('color', 'black')
+                    .animate({ color: '#4e73df' });
+            })
+
+            alert(obj.msg)
+            document.querySelector('[data-mail-add-reports]').removeEventListener('submit', submit, false)
+
+            $('#addattachment').modal('hide')
+        }
+
+        document.querySelector('[data-mail-add-reports]').addEventListener('submit', submit, false)
+
+    } catch (error) {
+
+    }
+}
+
+document.querySelector('[data-mail-add-attachment]').addEventListener('click', addAttachment, false)
+
+const newTimer = (event) => {
+
+    const id_mailpowerbi = event.target.getAttribute("data-id_mailpowerbi")
+    $('#addschedule').modal('show')
+
+    const click = () => {
+        const date = document.getElementById('datenew').value
+        let dt = new Date(date)
+
+        const option = document.createElement('option')
+        option.value = date
+        option.innerHTML = `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`
+
+        document.getElementById('newschedule').appendChild(option)
+    }
+
+    document.querySelector('[data-add-new-timer]').addEventListener('click', click, false)
+
+    const submit = async (event2) => {
+        event2.preventDefault()
+
+        const scheduleoption = document.querySelectorAll('#newschedule option')
+        const schedule = Array.from(scheduleoption).map(el => `${el.value}`)
+        let dt = new Date(schedule)
+
+        const scheduling = {
+            schedule,
+            id_mailpowerbi
+        }
+
+        const obj = await Connection.body('scheduling', { scheduling }, 'POST')
+
+        const rowNode = $('#tablescheduling').DataTable()
+            .row
+            .add([
+                `<a><i data-drop data-id_mailscheduling="${obj.id}" data-id_mailpowerbi="${id_mailpowerbi}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+                `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`
+            ])
+            .draw()
+            .node();
+
+        $(rowNode)
+            .css('color', 'black')
+            .animate({ color: '#4e73df' });
+
+
+        $('#addschedule').modal('hide')
+        alert(obj.msg)
+        document.querySelector('[data-mail-add-timer]').removeEventListener('submit', submit, false)
+    }
+
+    document.querySelector('[data-mail-add-timer]').addEventListener('submit', submit, false)
+}
+
+document.querySelector('[data-btn-add-timer]').addEventListener('click', newTimer, false)
+
 
 function adjustModalDatatable() {
     $('#viewmail').on('shown.bs.modal', function () {
@@ -357,377 +560,44 @@ function adjustModalDatatable() {
     })
 }
 
-window.modaldeleteMailSchedule = modaldeleteMailSchedule
-
-async function modaldeleteMailSchedule(event) {
-    try {
-        event.preventDefault()
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-
-        modal.innerHTML = ''
-        modal.appendChild(ViewMail.deleteMailSchedule(id_mailpowerbi))
-
-        $('#deleteMailSchedule').modal('show')
-
-    } catch (error) {
-
-    }
-}
-
-window.deleteMailSchedule = deleteMailSchedule
-
-async function deleteMailSchedule(event) {
+const drop = (event) => {
     event.preventDefault()
-
     try {
-        const btn = event.currentTarget
+        const tr = event.path[3]
+        if (tr.className === "child") tr = tr.previousElementSibling
 
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
+        const id = event.target.getAttribute("data-id")
 
-        await Connection.noBody(`mail/${id_mailpowerbi}`, 'DELETE')
+        $('#deleteMail').modal('show')
 
-        if ($.fn.DataTable.isDataTable('#tablemail')) {
-            $('#tablemail').dataTable().fnClearTable();
-            $('#tablemail').dataTable().fnDestroy();
-            $('#tablemail').empty();
+        const submit = async (event2) => {
+            event2.preventDefault()
+
+            const obj = await Connection.noBody(`mail/${id}`, 'DELETE')
+
+            $('#tablemail').DataTable()
+                .row(tr)
+                .remove()
+                .draw();
+
+            $('#deleteMail').modal('hide')
+
+            document.querySelector('[data-drop-mail]').removeEventListener('submit', submit, false)
+            alert(obj.msg)
         }
 
-        const data = await Connection.noBody('mails', 'GET')
-
-        let dtview = [];
-        data.forEach(obj => {
-            const field = ViewMail.listMails(obj)
-            dtview.push(field)
-        });
-
-        $("#tablemail").DataTable({
-            data: dtview,
-            columns: [
-                { title: "Opciones" },
-                { title: "Para" },
-                { title: "Cc" },
-                { title: "Cco" },
-                { title: "Título" },
-                { title: "Corpo" },
-                { title: "Cant Archivos Adjuntos" },
-                { title: "Fecha de Registro" }
-            ],
-            paging: true,
-            ordering: true,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            pagingType: "numbers",
-            searchPanes: true,
-            fixedHeader: false
-        })
-
-        $('#deleteMailSchedule').modal('hide')
-        alert('Correo electrónico eliminado con éxito!')
-    } catch (error) {
-
-    }
-}
-
-
-
-window.modaldeleteSchedule = modaldeleteSchedule
-
-async function modaldeleteSchedule(event) {
-    try {
-        event.preventDefault()
-
-        $('#viewmail').modal('hide')
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_mailscheduling = btn.getAttribute("data-id_mailscheduling")
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-        modal.innerHTML = ``
-        modal.appendChild(ViewMail.deleteSchedule(id_mailscheduling, id_mailpowerbi))
-
-        $('#deleteSchedule').modal('show')
+        document.querySelector('[data-drop-mail]').addEventListener('submit', submit, false)
 
     } catch (error) {
 
     }
 }
 
-window.deleteSchedule = deleteSchedule
-
-async function deleteSchedule(event) {
-    event.preventDefault()
-
-    try {
-        const btn = event.currentTarget
-
-        const id_mailscheduling = btn.getAttribute("data-id_mailscheduling")
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-
-        await Connection.noBody(`scheduling/${id_mailscheduling}`, 'DELETE')
-
-        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
-
-        let dtscheduling = [];
-
-        mail.scheduling.forEach(obj => {
-            const field = ViewMail.lineSchedule(obj)
-            dtscheduling.push(field)
-        });
-
-        if ($.fn.DataTable.isDataTable('#tablescheduling')) {
-            $('#tablescheduling').dataTable().fnClearTable();
-            $('#tablescheduling').dataTable().fnDestroy();
-            $('#tablescheduling').empty();
-        }
-
-        $(document).ready(function () {
-
-            $("#tablescheduling").DataTable({
-                data: dtscheduling,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "Fecha de Envío" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false
-            })
-        })
-
-        $('#deleteSchedule').modal('hide')
-        alert('Calendario de correo electrónico eliminado con éxito!')
-    } catch (error) {
-
-    }
+const action = (event) => {
+    if (event.target && event.target.matches('[data-view]')) return view(event)
+    if (event.target && event.target.matches('[data-drop]')) return drop(event)
 }
 
+document.querySelector('#tablemail').addEventListener('click', action, false)
 
-window.modaldeleteAttachment = modaldeleteAttachment
 
-async function modaldeleteAttachment(event) {
-    try {
-        event.preventDefault()
-
-        $('#viewmail').modal('hide')
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_mailattachment = btn.getAttribute("data-id_mailattachment")
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-        modal.innerHTML = ``
-        modal.appendChild(ViewMail.deleteAttachment(id_mailattachment, id_mailpowerbi))
-
-        $('#deleteAttachment').modal('show')
-
-    } catch (error) {
-
-    }
-}
-
-window.deleteAttachment = deleteAttachment
-
-async function deleteAttachment(event) {
-    event.preventDefault()
-
-    try {
-        const btn = event.currentTarget
-
-        const id_mailattachment = btn.getAttribute("data-id_mailattachment")
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-
-        await Connection.noBody(`attachment/${id_mailattachment}`, 'DELETE')
-
-        const mail = await Connection.noBody(`mail/${id_mailpowerbi}`, 'GET')
-
-        let dt = [];
-
-        mail.attachment.forEach(obj => {
-            const field = ViewMail.lineAttachment(obj)
-            dt.push(field)
-        });
-
-        if ($.fn.DataTable.isDataTable('#tableattachment')) {
-            $('#tableattachment').dataTable().fnClearTable();
-            $('#tableattachment').dataTable().fnDestroy();
-            $('#tableattachment').empty();
-        }
-
-        $(document).ready(function () {
-
-            $("#tableattachment").DataTable({
-                data: dt,
-                columns: [
-                    { title: "Opciones" },
-                    { title: "URL" }
-                ],
-                paging: false,
-                ordering: true,
-                info: false,
-                scrollY: false,
-                scrollCollapse: true,
-                scrollX: true,
-                autoHeight: true,
-                pagingType: "numbers",
-                searchPanes: false,
-                fixedHeader: false,
-                searching: false
-            })
-        })
-
-        $('#deleteAttachment').modal('hide')
-        alert('Archivo adjunto eliminado con éxito!')
-    } catch (error) {
-
-    }
-}
-
-window.modaladdattachment = modaladdattachment
-
-async function modaladdattachment(event) {
-    try {
-        event.preventDefault()
-
-        $('#viewmail').modal('hide')
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-        modal.innerHTML = ``
-        modal.appendChild(ViewMail.addattachment(id_mailpowerbi))
-
-        const powerbis = await Connection.noBody('powerbis', 'GET')
-        const bisselect = document.getElementById('bis')
-
-        powerbis.forEach(obj => {
-            bisselect.appendChild(ViewMail.optionBis(obj))
-        });
-
-        $('#addattachment').modal('show')
-
-    } catch (error) {
-
-    }
-}
-
-window.addattachment = addattachment
-
-async function addattachment(event) {
-    event.preventDefault()
-
-    try {
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-
-        const attachmentoption = document.querySelectorAll('#url option')
-        const attachment = {
-            urls: Array.from(attachmentoption).map(el => `${el.value}`),
-            id_mailpowerbi: id_mailpowerbi
-        }
-
-        await Connection.body('attachment', { attachment }, 'POST')
-
-        $('#addattachment').modal('hide')
-        alert('Archivo adjunto agregado con éxito!')
-
-        modal.innerHTML = ``
-    } catch (error) {
-        alert(error)
-    }
-}
-
-window.modaladdschedule = modaladdschedule
-
-async function modaladdschedule(event) {
-    try {
-        event.preventDefault()
-
-        $('#viewmail').modal('hide')
-
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-        modal.innerHTML = ``
-        modal.appendChild(ViewMail.addschedule(id_mailpowerbi))
-
-        $('#addschedule').modal('show')
-
-    } catch (error) {
-
-    }
-}
-
-
-window.addschedule = addschedule
-
-async function addschedule(event) {
-    event.preventDefault()
-
-    try {
-        let modal = document.querySelector('[data-modal]')
-
-        const btn = event.currentTarget
-        const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-
-        const scheduleoption = document.querySelectorAll('#schedule option')
-        const schedule = Array.from(scheduleoption).map(el => `${el.value}`)
-
-        const scheduling = {
-            schedule: schedule,
-            id_mailpowerbi: id_mailpowerbi
-        }
-
-        await Connection.body('scheduling', { scheduling }, 'POST')
-
-        $('#addschedule').modal('hide')
-        alert('Correo electrónico programado con éxito!')
-
-        modal.innerHTML = ``
-    } catch (error) {
-        alert(error)
-    }
-}
-
-window.modalviewAttachment = modalviewAttachment
-
-function modalviewAttachment(event) {
-    event.preventDefault()
-
-    $('#viewmail').modal('hide')
-
-    let modal = document.querySelector('[data-modal]')
-    const btn = event.currentTarget
-    const url = btn.getAttribute("data-url")
-    const id_mailpowerbi = btn.getAttribute("data-id_mailpowerbi")
-    const id_mailattachment = btn.getAttribute("data-id_mailattachment")
-
-    modal.innerHTML = ``
-    modal.appendChild(ViewMail.viewAttachment(url, id_mailpowerbi, id_mailattachment))
-    $('#viewAttachment').modal('show')
-
-}

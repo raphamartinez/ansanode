@@ -9,9 +9,7 @@ module.exports = app => {
 
     app.get('/historial', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
-            res.render('history', {
-                perfil: req.login.perfil
-            })
+            res.render('history')
         } catch (err) {
             next(err)
         }

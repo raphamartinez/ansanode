@@ -7,9 +7,7 @@ module.exports = app => {
 
     app.get('/usuarios', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
         try {
-            res.render('users', {
-                perfil: req.login.perfil
-            })
+            res.render('users')
         } catch (err) {
             next(err)
         }
@@ -41,7 +39,6 @@ module.exports = app => {
 
             res.render('user', {
                 user,
-                perfil: req.login.perfil,
                 id
             })
         } catch (err) {
@@ -79,7 +76,6 @@ module.exports = app => {
 
     app.post('/user/delete/:id_login', [Middleware.authenticatedMiddleware, Authorization('user', 'delete')], async (req, res, next) => {
         try {
-            console.log(req.params.id_login);
             await User.deleteStatus(req.params.id_login)
 
             res.redirect('/usuarios')

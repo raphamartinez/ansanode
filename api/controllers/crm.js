@@ -7,9 +7,7 @@ module.exports = app => {
 
     app.get('/crm', [Middleware.authenticatedMiddleware, Authorization('crm', 'read')], async (req, res, next) => {
         try {
-          res.render('crm',{
-              perfil: req.login.perfil
-          })
+          res.render('crm')
         } catch (err) {
             next(err)
         }

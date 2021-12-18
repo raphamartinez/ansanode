@@ -62,7 +62,7 @@ module.exports = app => {
                 count,
                 lastAccess,
                 perfil: login.perfil,
-                name: login.name
+                username: login.name
             });
 
         } catch (err) {

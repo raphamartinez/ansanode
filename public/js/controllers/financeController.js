@@ -1,6 +1,78 @@
 // import { ViewFinance } from "../views/financeView.js"
 import { Connection } from '../services/connection.js'
 
+const chart = (graph) => {
+
+    const dtabel = graph.map(obj => {
+        return obj.date
+    });
+
+    const dtvalue = graph.map(obj => {
+        return parseFloat(obj.contact)
+    });
+
+    const data = {
+        labels: dtabel,
+        datasets: [{
+            label: `Historial de contactos`,
+            data: dtvalue,
+            backgroundColor: [
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(201, 203, 207, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+            ],
+            borderColor: [
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+                'rgb(201, 203, 207)',
+                'rgb(75, 192, 192)',
+                'rgb(54, 162, 235)',
+                'rgb(153, 102, 255)',
+            ],
+            borderWidth: 1
+        }]
+    };
+
+    const ctx = document.querySelector('[data-chart]')
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            legend: {
+                labels: {
+                    fontColor: "#000",
+                    fontSize: 18,
+                    fontStyle: "bold"
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    pointLabels: {
+                        font: {
+                            size: 15,
+                            color: "#000",
+                            style: "bold"
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+
 const list = async (dtview) => {
 
     if ($.fn.DataTable.isDataTable('#dataTable')) {
@@ -332,6 +404,34 @@ const init = async () => {
 
     document.getElementById("overdueyes").checked = true;
     $('#selectoffice').selectpicker("refresh");
+
+    $("#tableHistory").DataTable({
+        data: [],
+        columns: [
+            { title: "Cliente" },
+            { title: "Vencido USD" },
+            { title: "Total Cobrado" },
+
+        ],
+        paging: false,
+        ordering: true,
+        info: false,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: false,
+        searching: false,
+        fixedHeader: false
+    })
+
+    let dt = []
+    list(dt)
+
+    const graph = await Connection.noBody('finance/graph', 'GET')
+
+    chart(graph)
 }
 
 init()
@@ -365,17 +465,29 @@ const search = async (event) => {
 
         const data = await Connection.noBody(`finance/${clients}/${offices}/${overdue}/${type}`, 'GET')
 
+        document.querySelector('[data-view-client]').innerHTML = data.length
+
+        const invoices = data.reduce((a, b) => a + b.invoices, 0)
+        document.querySelector('[data-view-invoice]').innerHTML = invoices
+
+        const due = data.reduce((a, b) => a + b.AmountOpen, 0)
+        document.querySelector('[data-view-due]').innerHTML = due.toLocaleString('us')
+
+        const odue = data.reduce((a, b) => a + b.AmountBalance, 0)
+        document.querySelector('[data-view-overdue]').innerHTML = odue.toLocaleString('us')
+
+
         let dtview = data.map(obj => {
             return [
                 `<a data-toggle="popover" title="Ver todas las facturas vencidas" data-datetype="*" data-client="${obj.CustCode}"><i class="fas fa-angle-double-down" style="color:#cbccce;"></i></a>`,
                 obj.CustCode,
                 obj.CustName,
-               `<a data-toggle="popover" title="Ver facturas vencidas 15 días" data-datetype="15" data-client="${obj.CustCode}">${obj.d15}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-               `<a data-toggle="popover" title="Ver facturas vencidas de 16 a 30 días" data-datetype="30" data-client="${obj.CustCode}">${obj.d30}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-               `<a data-toggle="popover" title="Ver facturas vencidas de 31 a 60 días" data-datetype="60" data-client="${obj.CustCode}">${obj.d60}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-               `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-               `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,   
-               `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas 15 días" data-datetype="15" data-client="${obj.CustCode}">${obj.d15}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 16 a 30 días" data-datetype="30" data-client="${obj.CustCode}">${obj.d30}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 31 a 60 días" data-datetype="60" data-client="${obj.CustCode}">${obj.d60}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 obj.AmountOpen,
                 obj.AmountBalance,
             ]

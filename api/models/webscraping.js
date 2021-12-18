@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer')
 const Repositorie = require('../repositories/prosegur')
+const RepositorieUser = require('../repositories/proseguruser')
 const xlsx = require('read-excel-file/node')
 const excelToJson = require('convert-excel-to-json')
 const path = require('path')
@@ -340,43 +341,73 @@ class WebScraping {
                 sourceFile: file[0]
             });
 
+            const users = await RepositorieUser.list()
+
             for (const line of arrData["Reporte de Eventos"]) {
-                if (line["F"]) {
+                if (line["F"] && line["E"] != 'Instalação') {
 
                     let offices = [
-                        ["RUTA 9 TRANSCHACO KM 17.5 ESQ. AVDA. GRAL. DIAZ -", "13"],
-                        ["AVENIDA INTERNACIONAL ESQ JOSE DIAZ, ., CAPITAN BADO", "07"],
-                        ["CALLE PITIANTUTA C/ 1RO DE DICIEMBRE, ., PEDRO JUAN", "01"],
-                        ["RUTA 3 ESQ GENERAL DIAZ -, ., BELLA VISTA NORTE (1400-002", "03"],
-                        ["CALLE RUTA INTERNACIONAL AV. LUIS MARIA ARGAÑA-", "NO DEFINIDO"],
-                        ["AVENIDA PARAGUAY C/MCAL. LOPEZ, ., CIUDAD DEL ESTE", "02"],
-                        ["RUTA 6 KM. 3 - FRENTE A GOROSTIAGA AL LADO DE", "04"],
-                        ["RUTA 6TA KM 40, ., SANTA RITA (2000-003 ALTO PARANA)", "12"],
-                        ["AVENIDA SAN BLAS KM. 5 - DEPOSITO -, ., CIUDAD DEL", "02"],
-                        ["AVENIDA SAN BLAS KM. 5 - SALON PRINCIPAL -, ., CIUDAD", "02"],
-                        ["AVDA. PARAGUAY C/PANLO VI", "05"],
+                        ["33182", "13"],
+                        ["33183", "13"],
+                        ["30829", "13"],
+                        ["33181", "13"],
+                        ["33180", "13"],
+                        ["E0885", "13"],
+                        ["23", "07"],
+                        ["27383", "01"],
+                        ["23108", "03"],
+                        ["CALLE RUTA INTERNACIONAL AV. LUIS MARIA ARGAÑA-", "N/D"],
+                        ["31606", "02"],
+                        ["24735", "04"],
+                        ["31602", "02"],
+                        ["PWSSA1792", "05"],
+                        ["PWSSA1810", "05"],
+                    ]
+
+                    let months = [
+                        ["jan", "01"],
+                        ["fev", "02"],
+                        ["mar", "03"],
+                        ["abr", "04"],
+                        ["mai", "05"],
+                        ["jun", "06"],
+                        ["jul", "07"],
+                        ["ago", "08"],
+                        ["set", "09"],
+                        ["out", "10"],
+                        ["nov", "11"],
+                        ["dez", "12"],
                     ]
 
                     let event = {
                         date: line["A"],
                         type: line["B"],
-                        address: line["E"],
+                        contract: line["E"],
                         user: line["F"],
                         office: '00'
                     }
 
-                    let obj = offices.find(office => event.address == office[0])
+                    const user = users.find(user => user.code == event.user && user.contract == event.contract)
+                    if (user) event.user = user.name
 
-                    if (obj) event.office = obj[1]
+                    const office = offices.find(office => office[0] == event.contract)
 
                     const lastInsert = await Repositorie.listOffice(event.office)
 
+                    let splice = event.date.split("/")
+                    const month = months.find(month => month[0] == splice[1])
+                    let splice2 = splice[2].split(" ")
+                    let date = `${splice2[0]}-${month[1]}-${splice[0]} ${splice2[1]}`
+
                     let date1 = new Date(lastInsert)
-                    let date2 = new Date(event.date)
+                    let date2 = new Date(date)
 
                     if (date1.getTime() < date2.getTime()) {
+                        event.date = date
+                        event.office = office[1]
+
                         console.log(event);
-                        // await Repositorie.insertOffice(event)
+                        await Repositorie.insertOffice(event)
                     }
                 }
             }

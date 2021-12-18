@@ -42,8 +42,22 @@ class Tables {
     this.createTablePatrimonyDetails()
     this.createTableCrm()
     this.createTableCrmProducts()
+    this.createTableProsegurUser()
     
     return true
+  }
+
+  createTableProsegurUser() {
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.prosegurusers (id int NOT NULL AUTO_INCREMENT, 
+      code int, name VARCHAR(250), office VARCHAR(5),
+      PRIMARY KEY (id))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableCrmProducts() {

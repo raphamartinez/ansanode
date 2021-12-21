@@ -14,13 +14,28 @@ module.exports = app => {
     })
 
 
-    app.get('/users', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
+    app.get('/users/:perfil?', [Middleware.authenticatedMiddleware, Authorization('user', 'read')], async (req, res, next) => {
         try {
-            const id = req.params.id
+            let id;
+            let users;
+            let offices = req.login.offices
+            let perfil = req.params.perfil
 
             History.insertHistory(`Listado de usuarios.`, req.login.id_login)
 
-            const users = await User.listUsers(id)
+            if (req.access.all.allowed) {
+                users = await User.listUsers(perfil, id)
+            } else {
+                if (req.login.perfil == 4) {
+                    offices = offices.map(of => {
+                        return of.code
+                    })
+
+                    users = await User.listUsers(perfil, id, offices)
+                } else {
+                    users = await User.listUsers(perfil, req.login.id_login)
+                }
+            }
 
             res.json(users)
         } catch (err) {

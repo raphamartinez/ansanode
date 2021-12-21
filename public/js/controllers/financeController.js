@@ -1,6 +1,59 @@
 // import { ViewFinance } from "../views/financeView.js"
 import { Connection } from '../services/connection.js'
 
+const detail = (details) => {
+    document.querySelector(`[data-view-status-0]`).innerHTML = 0
+    document.querySelector(`[data-view-status-1]`).innerHTML = 0
+    document.querySelector(`[data-view-status-2]`).innerHTML = 0
+    document.querySelector(`[data-view-status-3]`).innerHTML = 0
+    document.querySelector(`[data-view-status-4]`).innerHTML = 0
+
+    details.forEach(dtt => {
+        let overdue = dtt.AmountBalance
+        let due = dtt.AmountOpen
+
+        if (dtt.status == 2) {
+            let now = new Date()
+            let payday = new Date(dtt.payday)
+
+            if (now.getTime() < payday.getTime()) {
+                let div = document.querySelector(`[data-view-status-3]`);
+
+                let now = parseFloat(div.innerHTML)
+
+                div.innerHTML = due + now
+            } else {
+                let div = document.querySelector(`[data-view-status-4]`);
+
+                let now = parseFloat(div.innerHTML)
+
+                div.innerHTML = overdue + now
+            }
+
+        } else {
+            if(!dtt.status || dtt.status == 0){
+                let div = document.querySelector(`[data-view-status-0]`);
+
+                let now = parseFloat(div.innerHTML)
+    
+                div.innerHTML = overdue + now
+            }else{
+                let div = document.querySelector(`[data-view-status-${dtt.status}]`);
+
+                let now = parseFloat(div.innerHTML)
+    
+                div.innerHTML = overdue + due + now
+            }
+        }
+    })
+
+    document.querySelector(`[data-view-status-0]`).innerHTML = parseFloat(document.querySelector(`[data-view-status-0]`).innerHTML).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    document.querySelector(`[data-view-status-1]`).innerHTML = parseFloat(document.querySelector(`[data-view-status-1]`).innerHTML).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    document.querySelector(`[data-view-status-2]`).innerHTML = parseFloat(document.querySelector(`[data-view-status-2]`).innerHTML).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    document.querySelector(`[data-view-status-3]`).innerHTML = parseFloat(document.querySelector(`[data-view-status-3]`).innerHTML).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    document.querySelector(`[data-view-status-4]`).innerHTML = parseFloat(document.querySelector(`[data-view-status-4]`).innerHTML).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+}
+
 const chart = (graph) => {
 
     const dtabel = graph.map(obj => {
@@ -14,34 +67,20 @@ const chart = (graph) => {
     const data = {
         labels: dtabel,
         datasets: [{
-            label: `Historial de contactos`,
+            label: `Historial de contactos por dia`,
             data: dtvalue,
-            backgroundColor: [
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(201, 203, 207, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-            ],
-            borderColor: [
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-                'rgb(201, 203, 207)',
-                'rgb(75, 192, 192)',
-                'rgb(54, 162, 235)',
-                'rgb(153, 102, 255)',
-            ],
-            borderWidth: 1
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderWidth: 2,
+            fill: false,
+            borderColor: 'rgb(54, 162, 235)',
+            tension: 0.2
         }]
     };
 
     const ctx = document.querySelector('[data-chart]')
 
-    new Chart(ctx, {
-        type: 'bar',
+    const chart = new Chart(ctx, {
+        type: 'line',
         data: data,
         options: {
             responsive: true,
@@ -70,8 +109,37 @@ const chart = (graph) => {
             }
         }
     });
-}
 
+
+    const changeGraph = async () => {
+        let office = document.querySelector('[data-filter-office]').value;
+        let user = document.querySelector('[data-filter-user]').value;
+
+        const obj = await Connection.noBody(`finance/graph/${office}/${user}`, 'GET')
+
+        detail(obj.details, obj.amountPending)
+
+        const newValue = obj.graphs.map(obj => {
+            return parseFloat(obj.contact)
+        });
+
+        const newLabel = obj.graphs.map(obj => {
+            return obj.date
+        });
+
+        chart.data.datasets[0].data = newValue
+        chart.data.labels = newLabel
+        chart.update();
+    }
+
+    const divOffice = document.querySelector('[data-filter-office]')
+    const divUser = document.querySelector('[data-filter-user]')
+
+    if (divUser && divOffice) {
+        divOffice.addEventListener('change', changeGraph, false)
+        divUser.addEventListener('change', changeGraph, false)
+    }
+}
 
 const list = async (dtview) => {
 
@@ -400,7 +468,24 @@ const init = async () => {
         option.innerHTML = office.name
 
         if (office.id_office !== 15) document.getElementById('selectoffice').appendChild(option)
+
+        const option2 = document.createElement('option')
+        option2.value = `'${office.code}'`
+        option2.innerHTML = office.name
+
+        if (office.id_office !== 15 && document.querySelector('[data-filter-office]')) document.querySelector('[data-filter-office]').appendChild(option2)
     });
+
+    if (document.querySelector('[data-filter-user]')) {
+        const users = await Connection.noBody('users/6', 'GET')
+
+        users.forEach(user => {
+            const option = document.createElement('option')
+            option.value = `'${user.id_login}'`
+            option.innerHTML = user.name
+            document.querySelector('[data-filter-user]').appendChild(option)
+        })
+    }
 
     document.getElementById("overdueyes").checked = true;
     $('#selectoffice').selectpicker("refresh");
@@ -429,13 +514,13 @@ const init = async () => {
     let dt = []
     list(dt)
 
-    const graph = await Connection.noBody('finance/graph', 'GET')
+    const obj = await Connection.noBody('finance/graph', 'GET')
 
-    chart(graph)
+    chart(obj.graphs)
+    if (obj.details.length > 0) detail(obj.details, obj.amountPending)
 }
 
 init()
-
 
 const search = async (event) => {
     event.preventDefault()
@@ -457,7 +542,7 @@ const search = async (event) => {
         const overdue = document.querySelector('input[name="overdue"]:checked').value;
         const type = document.querySelector('input[name="type"]:checked').value;
 
-        if ($.fn.DataTable.isDataTable('#dataPatrimony')) {
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
             $('#dataTable').empty();
@@ -838,3 +923,64 @@ function saveFinance(event) {
 
     alert("!Registro de contacto guardado correctamente!")
 }
+
+
+const view = async (event) => {
+    try {
+
+        let office = document.querySelector('[data-filter-office]').value;
+        let user = document.querySelector('[data-filter-user]').value;
+        let status = event.currentTarget.getAttribute('data-action-view')
+
+
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        }
+
+        const data = await Connection.noBody(`financeview/${office}/${user}/${status}`, 'GET')
+
+        document.querySelector('[data-view-client]').innerHTML = data.length
+
+        const invoices = data.reduce((a, b) => a + b.invoices, 0)
+        document.querySelector('[data-view-invoice]').innerHTML = invoices
+
+        const due = data.reduce((a, b) => a + b.AmountOpen, 0)
+        document.querySelector('[data-view-due]').innerHTML = due.toLocaleString('us')
+
+        const odue = data.reduce((a, b) => a + b.AmountBalance, 0)
+        document.querySelector('[data-view-overdue]').innerHTML = odue.toLocaleString('us')
+
+
+        let dtview = data.map(obj => {
+            return [
+                `<a data-toggle="popover" title="Ver todas las facturas vencidas" data-datetype="*" data-client="${obj.CustCode}"><i class="fas fa-angle-double-down" style="color:#cbccce;"></i></a>`,
+                obj.CustCode,
+                obj.CustName,
+                `<a data-toggle="popover" title="Ver facturas vencidas 15 días" data-datetype="15" data-client="${obj.CustCode}">${obj.d15}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 16 a 30 días" data-datetype="30" data-client="${obj.CustCode}">${obj.d30}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 31 a 60 días" data-datetype="60" data-client="${obj.CustCode}">${obj.d60}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                obj.AmountOpen,
+                obj.AmountBalance,
+            ]
+        });
+
+        list(dtview)
+
+
+        $('html,body').animate({
+            scrollTop: $('#dataTable').offset().top - 100
+        }, 'slow');
+
+    } catch (error) {
+
+    }
+}
+
+Array.from(document.querySelectorAll('[data-action-view]')).forEach(action => {
+    action.addEventListener('click', view, false)
+})

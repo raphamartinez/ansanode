@@ -17,8 +17,8 @@ class User {
 
     async delete(id_user) {
         try {
-            const sql = `DELETE from ansa.user WHERE id_user = ${id_user}`
-            await query(sql)
+            const sql = `DELETE from ansa.user WHERE id_user = ?`
+            await query(sql, id_user)
             return true
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el usuario en la base de datos')
@@ -49,8 +49,8 @@ class User {
     async view(id_user) {
         try {
             const sql = `SELECT US.name, US.mailenterprise, US.perfil, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US WHERE 
-            US.id_login = LO.id_login and LO.id_login = ${id_user}`
-            const result = await query(sql)
+            US.id_login = LO.id_login and LO.id_login = ?`
+            const result = await query(sql, id_user)
             return result[0]
         } catch (error) {
             throw new NotFound('Error en la vista previa del usuario')
@@ -60,15 +60,15 @@ class User {
     async viewAdm(id_login) {
         try {
             const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthdayDesc, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US WHERE 
-            US.id_login = LO.id_login  and LO.id_login = ${id_login}`
-            const result = await query(sql)
+            US.id_login = LO.id_login  and LO.id_login = ?`
+            const result = await query(sql, id_login)
             return result[0]
         } catch (error) {
             throw new NotFound('Error en la vista previa del usuario')
         }
     }
 
-    list(id) {
+    list(perfil, id, offices) {
         try {
             let sql = `SELECT us.id_user, us.id_login, us.name, if(us.mailenterprise = null, "", us.mailenterprise) as mailenterprise , us.perfil, lo.mail, us.id_office, if( DATE_FORMAT(us.dateBirthday, '%d/%m/%Y') = "00/00/0000", "", DATE_FORMAT(us.dateBirthday, '%d/%m/%Y')) as dateBirthday, DATE_FORMAT(us.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(us.dateReg, '%H:%i %d/%m/%Y') as dateReg ,
                         CASE
@@ -87,7 +87,15 @@ class User {
                         WHERE lo.id_login = us.id_login 
                         and us.status = 1 `
 
-            if (id) sql += ` and lo.id_login = ${id}`
+            if (perfil) sql += `and us.perfil = ${perfil} `
+
+            if (id) sql += ` and lo.id_login = ${id} `
+
+            if (offices) sql += ` AND lo.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
+                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+                WHERE oi.code IN (${offices})) `
+
+            sql+= ` order by us.name ASC`
 
             return query(sql)
         } catch (error) {

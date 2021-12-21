@@ -1,4 +1,5 @@
 const query = require('../infrastructure/database/queries')
+const queryhbs = require('../infrastructure/database/querieshbs')
 const { InvalidArgumentError, InternalServerError, NotFound } = require('../models/error')
 
 class Finance {
@@ -102,9 +103,9 @@ class Finance {
             WHERE re.CustCode <> 1
             `
 
-            if (offices !== "ALL") sql += `AND re.Office IN (${offices}) `
+            if (offices && offices !== "ALL") sql += ` AND re.Office IN (${offices}) `
 
-            if (clients !== "ALL") sql += `AND re.CustCode IN (${clients}) `
+            if (clients && clients !== "ALL") sql += ` AND re.CustCode IN (${clients}) `
 
             if (type !== '3') {
                 if (type === '1') {
@@ -148,7 +149,7 @@ class Finance {
             FROM ansa.financeinvoice fi
             WHERE fi.id_financeinvoice > 0  `
 
-            if (offices) sql += ` AND cr.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
+            if (offices) sql += ` AND fi.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
                 INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${offices})) `
 
@@ -156,7 +157,7 @@ class Finance {
 
             if (datestart && dateend) {
                 sql += ` AND fi.contactdate BETWEEN '${search.start}' AND '${search.end}' `
-            }else{
+            } else {
                 sql += ` AND fi.contactdate BETWEEN now() - interval 30 day AND NOW()`
             }
 
@@ -166,6 +167,104 @@ class Finance {
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los datos')
+        }
+    }
+
+    detailsReceivable(id_login, offices, datestart = "", dateend = "") {
+
+        try {
+            let sql = `SELECT fi.* , 
+            TRUNCATE(SUM(IF(re.DueDate > now(), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountOpen,
+                
+            TRUNCATE(SUM(IF(re.DueDate <= now(),IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountBalance
+
+            FROM ansa.receivable re 
+            LEFT JOIN ansa.financeinvoice fi on re.SerNr = fi.invoicenr  
+            WHERE re.CustCode <> 1 `
+
+            if (id_login) sql += ` AND fi.id_login = ${id_login} `
+
+            if (offices) sql += ` AND re.Office IN (${offices}) `
+
+            sql += ` GROUP BY re.id_receivable`
+
+            return query(sql)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los datos')
+        }
+    }
+
+    view(office, user, status) {
+        try {
+            let sql = `SELECT re.CustCode, re.CustName, COUNT(DISTINCT re.OfficialSerNr) as invoices,
+
+            TRUNCATE(SUM(IF(re.DueDate <= now() AND re.DueDate >= (now() - interval 15 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d15,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 15 day) AND re.DueDate >= (now() - interval 30 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d30,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 30 day) AND re.DueDate >= (now() - interval 60 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d60,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 60 day) AND re.DueDate >= (now() - interval 90 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d90,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 90 day) AND re.DueDate >= (now() - interval 120 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d120,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 120 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d120more,
+            
+            TRUNCATE(SUM(IF(re.DueDate > now(), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountOpen,
+            
+            TRUNCATE(SUM(IF(re.DueDate <= now(),IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountBalance
+            
+            FROM ansa.receivable re
+            
+            `
+
+            if (status == "0") {
+                sql += `LEFT JOIN ansa.financeinvoice fi ON re.SerNr = fi.invoicenr 
+                WHERE re.CustCode <> 1  `
+            } else {
+                sql += `INNER JOIN ansa.financeinvoice fi ON re.SerNr = fi.invoicenr 
+                WHERE re.CustCode <> 1 `
+            }
+
+            if (user && user != "TODOS") sql += ` AND fi.id_login = ${user} `
+
+            if (office && office != "TODOS") sql += ` AND re.Office = ${office} `
+
+            switch (status) {
+                case "0":
+                    sql += ` AND (fi.status IS NULL OR fi.status = 0) `
+                    break;
+                case "1":
+                    sql += ` AND fi.status = 1 `
+                    break;
+                case "2":
+                    sql += ` AND fi.status = 2 AND fi.payday > NOW() `
+                    break;
+                case "3":
+                    sql += ` AND fi.status = 3 `
+                    break;
+                case "4":
+                    sql += ` AND fi.status = 2 AND fi.payday <= NOW() `
+                    break;
+            }
+
+            sql += ` GROUP BY re.CustCode `
+
+            return query(sql)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los login')
         }
     }
 }

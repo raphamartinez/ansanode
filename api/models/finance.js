@@ -44,7 +44,7 @@ class Finance {
             const data = await Repositorie.list(clients, offices, overdue, type)
             let invoices = []
 
-            await data.forEach(obj => {
+            await data.map(obj => {
                 if (obj.AmountOpen < 0) obj.AmountOpen = 0
                 if (obj.AmountBalance < 0) obj.AmountBalance = 0
 
@@ -58,10 +58,20 @@ class Finance {
             return invoices
 
         } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar los goals.')
+            throw new InternalServerError('No se pudieron enumerar las facturas.')
         }
     }
 
+    async view(office, user, status) {
+        try {
+            const invoices = await Repositorie.view(office, user, status)
+
+            return invoices
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las facturas.')
+        }
+    }
 
     async listClients(client, date) {
 
@@ -104,7 +114,6 @@ class Finance {
                     })
 
                     return dview
-                    break;
                 case "15":
                     lastday.setDate(lastday.getDate() - 15)
                     day.setDate(day.getDate())
@@ -166,8 +175,6 @@ class Finance {
                     })
 
                     return dview
-
-                    break;
             }
 
             d1 = `${lastday.getFullYear()}-${lastday.getMonth() + 1}-${lastday.getDate()}`
@@ -257,9 +264,13 @@ class Finance {
     async graphReceivable(id_login, offices, datestart, dateend) {
         try {
 
-            const data = await Repositorie.graphReceivable(id_login, offices, datestart, dateend);
+            // const obj = await Repositorie.list(false, offices, '1', '3');
+            const graphs = await Repositorie.graphReceivable(id_login, offices, datestart, dateend);
+            const details = await Repositorie.detailsReceivable(id_login, offices, datestart, dateend);
+            // const amountPending = obj.filter(({ AmountBalance }) => AmountBalance > 0)
+            //     .reduce((a, b) => a + b.AmountBalance, 0);
 
-            return data;
+            return { graphs, details };
         } catch (error) {
             throw new InternalServerError('No se pude listar los datos.')
         }

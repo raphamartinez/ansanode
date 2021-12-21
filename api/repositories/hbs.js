@@ -614,8 +614,11 @@ class Hbs {
 
     listInvoiceItems(invoice) {
         try {
-            const sql = `SELECT ir.Artcode AS code, ir.Name AS name, ir.Labels AS label, ir.Qty AS qty, TRUNCATE(ir.Price,2) AS price, TRUNCATE(ir.Qty * ir.Price,2) as priceamount FROM InvoiceItemRow ir
-            INNER JOIN Invoice iv ON iv.internalId = ir.masterId
+            const sql = `SELECT iv.SerNr as invoicenr, ir.Artcode AS code, ir.Name AS name, ir.Labels AS label, ir.Qty AS qty, TRUNCATE(ir.Price,2) AS price, TRUNCATE(ir.Qty * ir.Price,2) as priceamount ,
+            TRUNCATE(IF(iv.Currency = "GS", iv.Total / iv.BaseRate, IF(iv.Currency = "RE", iv.Total  * iv.FromRate / iv.BaseRate, iv.Total)),2) AS totalUsd,
+            TRUNCATE(IF(iv.Currency = "GS", iv.SubTotal / iv.BaseRate, IF(iv.Currency = "RE", iv.SubTotal  * iv.FromRate / iv.BaseRate, iv.SubTotal)),2) AS subtotalUsd
+            FROM InvoiceItemRow ir
+            INNER JOIN Invoice iv ON iv.internalId = ir.masterId 
             WHERE iv.SerNr = ?`
             return queryhbs(sql, invoice)
         } catch (error) {

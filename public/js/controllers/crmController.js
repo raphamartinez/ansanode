@@ -1,52 +1,10 @@
-import { View } from "../views/crmView.js"
 import { Connection } from '../services/connection.js'
+import { View } from '../views/crmView.js'
 
 const adjustModalDatatable = () => {
     $('#dataCrm').on('shown.bs.modal', function () {
         $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
     })
-}
-
-
-const clean = () => {
-    document.querySelector('[data-card]').style.display = 'none';
-
-    document.querySelector('[data-title]').innerHTML = `CRM - Gestión de relaciones con el cliente`;
-    document.querySelector('[data-powerbi]').innerHTML = ""
-    document.querySelector('[data-modal]').innerHTML = ""
-    document.querySelector('[data-settings]').innerHTML = ""
-    document.querySelector('[data-features]').innerHTML = ""
-
-    if ($.fn.DataTable.isDataTable('#dataTable')) {
-        $('#dataTable').dataTable().fnClearTable();
-        $('#dataTable').dataTable().fnDestroy();
-        $('#dataTable').empty();
-    }
-}
-
-const adm = async () => {
-    const offices = await Connection.noBody('offices', 'GET')
-    offices.forEach(office => {
-        const line = document.createElement('option')
-        line.value = office.code
-        line.innerHTML = office.name
-
-        document.querySelector('[data-office]').appendChild(line)
-    })
-
-    $('[data-office]').selectpicker("refresh");
-
-    const workers = await Connection.noBody('clock/workers', 'GET')
-    workers.forEach(worker => {
-        const line = document.createElement('option')
-        line.value = worker.code
-        line.innerHTML = worker.name
-
-        document.querySelector('[data-code]').appendChild(line)
-    })
-
-    $('[data-code]').selectpicker("refresh");
-    $('[data-type]').selectpicker("refresh");
 }
 
 const addProduct = (event) => {
@@ -157,7 +115,10 @@ const viewSearch = async () => {
 const table = async (data) => {
 
     let crms = data.map(crm => {
-        let options = `<a><i data-action data-id="${crm.id}" class="btn-view fas fa-eye"></i></a>`
+        let options = `
+        <a><i data-action data-id="${crm.id}" class="btn-view fas fa-eye"></i></a>
+        <a><i data-action data-id="${crm.id}" class="btn-edit fas fa-edit"></i></a>
+        <a><i data-action data-id="${crm.id}" class="btn-delete fas fa-trash"></i></a>`
         let line = [
             options,
             crm.contactdate,
@@ -221,7 +182,7 @@ const changeProbability = async (event) => {
         const id = event.target.getAttribute('data-classification-edit')
         const value = event.target.value
 
-        await Connection.body(`crm/products/${id}`, {value}, "PUT")
+        await Connection.body(`crm/products/${id}`, { value }, "PUT")
     }
 }
 window.changeProbability = changeProbability
@@ -516,18 +477,64 @@ const search = async (event) => {
 
 
 
-    viewCreate()
-    viewSearch()
+viewCreate()
+viewSearch()
 
 
-    document.querySelector('[data-add-product]').addEventListener('click', addProduct, false)
-    document.querySelector('[data-form-crm]').addEventListener('submit', create, false)
-    document.querySelector('[data-search-crm]').addEventListener('submit', search, false)
+document.querySelector('[data-add-product]').addEventListener('click', addProduct, false)
+document.querySelector('[data-form-crm]').addEventListener('submit', create, false)
+document.querySelector('[data-search-crm]').addEventListener('submit', search, false)
 
-    document.querySelector('#dataCrm').addEventListener('click', (event) => {
-        if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
-            if (event.target.classList[0] === 'btn-view') return view(event)
-        }
-    })
+const edit = (event) => {
+
+    let tr = event.path[3]
+    if (tr.className === "child") tr = tr.previousElementSibling
+
+    const crm = {
+        id: event.target.getAttribute('data-id')
+    }
+
+}
+
+const drop = (event) => {
+    const tr = event.path[3];
+    if (tr.className === "child") tr = tr.previousElementSibling;
+
+    const id = event.target.getAttribute('data-id');
+    document.querySelector('[data-modal]').innerHTML = ""
+
+    document.querySelector('[data-modal]').appendChild(View.drop())
+
+    $('#drop').modal('show');
+
+    const submit = async (event2) => {
+        event2.preventDefault();
+
+        document.querySelector('[data-delete-crm]').removeEventListener('submit', submit, false);
+
+        const obj = await Connection.noBody(`crm/${id}`, 'DELETE');
+
+        $('#dataCrm').DataTable()
+            .row(tr)
+            .remove()
+            .draw();
+
+        $("#drop").modal('hide');
+
+        document.querySelector('[data-modal]').innerHTML = ""
+
+        alert(obj.msg);
+    }
+
+    document.querySelector('[data-delete-crm]').addEventListener('submit', submit, false);
+}
+
+document.querySelector('#dataCrm').addEventListener('click', (event) => {
+    if (event.target && (event.target.nodeName === "I" || event.target.nodeName === "SPAN") && event.target.matches("[data-action]")) {
+        if (event.target.classList[0] === 'btn-view') return view(event)
+        if (event.target.classList[0] === 'btn-edit') return edit(event)
+        if (event.target.classList[0] === 'btn-delete') return drop(event)
+    }
+})
 
 

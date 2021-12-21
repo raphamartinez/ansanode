@@ -1,115 +1,118 @@
 <%- include(partials + 'header.ejs' ) %>
-<link rel="stylesheet"
-href="../css/bootstrap-select.css" />
-
-    <div class="row justify-content-md-center">
-        <div class="col-12 text-center">
-            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Control de Sucursal</h1>
-        </div>
-    </div>
-
-    <%- include('../partials/loading.ejs') %>
-
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
+    <div class="container-fluid">
         <div class="row justify-content-md-center">
-            <div class="col-10">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
-                    </div>
-                    <div class="card-body">
-                        <form data-form-office>
-                            <div class="form-row">
-                                <div class="form-group col-12 text-center align-items-bottom">
-                                    <h6>Filtrar Período</h6>
-                                </div>
-                                <div class="form-group offset-md-3 col-md-3">
-                                    <h6>Fecha Inicial</h6>
-                                    <input data-datestart type="date" name="start" id="start" class="form-control"
-                                        required>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <h6>Fecha Final</h6>
-                                    <input data-dateend type="date" name="end" id="end" class="form-control" required>
-                                </div>
-                                <div class="form-group offset-md-3 col-md-3">
-                                    <select title="Tipo" class="form-control selectpicker" id="type" name="type"
-                                        data-type>
-                                        <option value="ALL" selected>Todos los tipos</option>
-                                        <option value="Evento de alarme na zona">Evento de alarme na zona</option>
-                                        <option value="Painel totalmente armado">Painel totalmente armado</option>
-                                        <option value="Painel desarmado">Painel desarmado</option>
-                                        <option value="Bateria restaurada">Bateria restaurada</option>
-                                        <option value="Falha de linha de comunicação">Falha de linha de comunicação</option>
-                                        <option value="Bateria baixa">Bateria baixa</option>
-                                        <option value="Aviso de painel não armado">Aviso de painel não armado</option>
-                                        <option value="Restauração falha de energia">Restauração falha de energia</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-3">
-                                    <select title="Sucursal" class="form-control selectpicker" id="office" name="office"
-                                        multiple data-office>
-                                        <option value="01">PJC AUTOCENTRO</option>
-                                        <option value="04">ENCARNACION</option>
-                                        <option value="06">AUTOCENTRO SHOPPING CHINA</option>
-                                        <option value="02">CDE AUTOCENTRO</option>
-                                        <option value="03">BELLA VISTA</option>
-                                        <option value="05">SALTO DEL GUAIRA</option>
-                                        <option value="07">CAPITAN BADO</option>
-                                        <option value="08">PINDOTY</option>
-                                        <option value="09">CDE ATACADO</option>
-                                        <option value="10">PJC TRUCK CENTER</option>
-                                        <option value="11">MATRIZ</option>
-                                        <option value="12">SANTA RITA</option>
-                                        <option value="13">MARIANO ROQUE ALONSO</option>
-                                    </select>
-                                </div>
-                                <!-- <div class="form-group col-md-2">
+            <div class="col-12 text-center">
+                <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Control de Sucursal</h1>
+            </div>
+        </div>
+
+        <%- include('../partials/loading.ejs') %>
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                        </div>
+                        <div class="card-body">
+                            <form data-form-office>
+                                <div class="form-row">
+                                    <div class="form-group col-md-12 text-center align-items-bottom">
+                                        <h6>Filtrar Período</h6>
+                                    </div>
+                                    <div class="form-group offset-md-3 col-md-3">
+                                        <h6>Fecha Inicial</h6>
+                                        <input data-datestart type="date" name="start" id="start" class="form-control"
+                                            required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6>Fecha Final</h6>
+                                        <input data-dateend type="date" name="end" id="end" class="form-control"
+                                            required>
+                                    </div>
+                                    <div class="form-group offset-md-3 col-md-3">
+                                        <select title="Tipo" class="form-control selectpicker" id="type" name="type"
+                                            data-type>
+                                            <option value="ALL" selected>Todos los tipos</option>
+                                            <option value="Evento de alarme na zona">Evento de alarme na zona</option>
+                                            <option value="Painel totalmente armado">Painel totalmente armado</option>
+                                            <option value="Painel desarmado">Painel desarmado</option>
+                                            <option value="Bateria restaurada">Bateria restaurada</option>
+                                            <option value="Falha de linha de comunicação">Falha de linha de comunicação
+                                            </option>
+                                            <option value="Bateria baixa">Bateria baixa</option>
+                                            <option value="Aviso de painel não armado">Aviso de painel não armado
+                                            </option>
+                                            <option value="Restauração falha de energia">Restauração falha de energia
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <select title="Sucursal" class="form-control selectpicker" id="office"
+                                            name="office" multiple data-office>
+                                            <option value="01">PJC AUTOCENTRO</option>
+                                            <option value="04">ENCARNACION</option>
+                                            <option value="06">AUTOCENTRO SHOPPING CHINA</option>
+                                            <option value="02">CDE AUTOCENTRO</option>
+                                            <option value="03">BELLA VISTA</option>
+                                            <option value="05">SALTO DEL GUAIRA</option>
+                                            <option value="07">CAPITAN BADO</option>
+                                            <option value="08">PINDOTY</option>
+                                            <option value="09">CDE ATACADO</option>
+                                            <option value="10">PJC TRUCK CENTER</option>
+                                            <option value="11">MATRIZ</option>
+                                            <option value="12">SANTA RITA</option>
+                                            <option value="13">MARIANO ROQUE ALONSO</option>
+                                        </select>
+                                    </div>
+                                    <!-- <div class="form-group col-md-2">
                                     <select title="Empleados" class="form-control selectpicker" id="code" name="code"
                                         multiple data-code>
                                     </select>
                                 </div> -->
+                                    <div class="form-group text-center col-md-12">
+                                        <button class="btn btn-success" type="submit">Buscar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-div-clock class="row justify-content-md-center d-none">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-header">
+                            <div class="form-row">
                                 <div class="form-group text-center col-md-12">
-                                    <button class="btn btn-success" type="submit">Buscar</button>
+                                    <h6 class="m-0 font-weight-bold text-primary">Listado </h6>
                                 </div>
                             </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div data-div-clock class="row justify-content-md-center d-none">
-            <div class="col-10">
-                <div class="card shadow mb-4">
-                    <div class="card-header">
-                        <div class="form-row">
-                            <div class="form-group text-center col-12">
-                                <h6 class="m-0 font-weight-bold text-primary">Listado </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-group text-center offset-md-5 col-md-2">
+                                <select class="form-control" id="status" name="status" required data-status>
+                                    <option value="0" selected>Todos los tipos</option>
+                                    <option value="Evento de alarme na zona">Evento de alarme na zona</option>
+                                    <option value="Painel totalmente armado">Painel totalmente armado</option>
+                                    <option value="Painel desarmado">Painel desarmado</option>
+                                    <option value="Bateria restaurada">Bateria restaurada</option>
+                                    <option value="Falha de linha de comunicação">Falha de linha de comunicação</option>
+                                    <option value="Bateria baixa">Bateria baixa</option>
+                                    <option value="Aviso de painel não armado">Aviso de painel não armado</option>
+                                    <option value="Restauração falha de energia">Restauração falha de energia</option>
+                                </select>
                             </div>
+                            <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+                            </table>
                         </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group text-center offset-5 col-2">
-                            <select class="form-control" id="status" name="status" required data-status>
-                                <option value="0" selected>Todos los tipos</option>
-                                <option value="Evento de alarme na zona">Evento de alarme na zona</option>
-                                <option value="Painel totalmente armado">Painel totalmente armado</option>
-                                <option value="Painel desarmado">Painel desarmado</option>
-                                <option value="Bateria restaurada">Bateria restaurada</option>
-                                <option value="Falha de linha de comunicação">Falha de linha de comunicação</option>
-                                <option value="Bateria baixa">Bateria baixa</option>
-                                <option value="Aviso de painel não armado">Aviso de painel não armado</option>
-                                <option value="Restauração falha de energia">Restauração falha de energia</option>
-                            </select>
-                        </div>
-                        <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
-                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <%- include(partials + 'script.ejs' ) %>
+    </div>
+    <%- include(partials + 'script.ejs' ) %>
         <script type="module" src="../js/controllers/officeController.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
         <script

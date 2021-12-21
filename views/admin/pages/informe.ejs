@@ -1,152 +1,157 @@
 <%- include(partials + 'header.ejs' ) %>
-
-    <div class="row justify-content-md-center">
-        <div class="col-12 text-center">
-            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Informes</h1>
-        </div>
-    </div>
-
-    <%- include(partials + 'loading.ejs' ) %>
-
+    <div class="container-fluid">
         <div class="row justify-content-md-center">
-            <div class="col-lg-10" data-view-report>
-
+            <div class="col-md-12 text-center">
+                <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Informes</h1>
             </div>
-            <div class="col-10 text-center">
-                <div class="card shadow mb-3">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Listado de Informes</h6>
-                    </div>
-                    <div class="card-body">
-                        <table class="table table-bordered text-center mb-2" id="tableReports" width="100%"
-                            cellspacing="0"></table>
+        </div>
+
+        <%- include(partials + 'loading.ejs' ) %>
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-10" data-view-report>
+
+                </div>
+                <div class="col-md-10 text-center">
+                    <div class="card shadow mb-3">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Listado de Informes</h6>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered text-center mb-2" id="tableReports" width="100%"
+                                cellspacing="0"></table>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <% if(perfil==1) {%>
                 <%- include(components + 'report/admin.ejs' ) %>
                     <% }%>
-        </div>
 
-
-
-        <div class="modal fade" id="add" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Agregar nuevo informe</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-form-add>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <input type="text" placeholder="Título" class="form-control" name="title" id="title"
-                                        required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <select class="form-control" name="type" id="typeadd" required>
-                                        <option value="" disabled selected>Tipo</option>
-                                        <option value="1">Informe</option>
-                                        <option value="2">Personal</option>
-                                        <option value="3">Seguridad - Vehículos</option>
-                                        <option value="4">Seguridad - Sucursales</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <input type="url" placeholder="Url" class="form-control" name="url" id="url"
-                                        required>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <textarea placeholder="Descripción del informe..." id="description"
-                                        name="description" class="form-control"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class="btn btn-success"><i
-                                        class="fas fa-check">Agregar</i></button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="editmodal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar informe</h5>
-                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-form-edit>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <input type="text" placeholder="Título" class="form-control" name="title"
-                                        id="titleedit" required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <select class="form-control" name="type" id="typeedit" required>
-                                        <option value="" disabled selected>Tipo</option>
-                                        <option value="1">Informe</option>
-                                        <option value="2">Personal</option>
-                                        <option value="3">Seguridad - Vehículos</option>
-                                        <option value="4">Seguridad - Sucursales</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <input type="text" placeholder="Url" class="form-control" name="url" id="urledit"
-                                        required>
-                                </div>
-                                <div class="form-group col-md-12">
-                                    <textarea placeholder="Descripción del informe..." id="descriptionedit"
-                                        name="description" class="form-control"></textarea>
+                        <div class="modal fade" id="add" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Agregar nuevo informe</h5>
+                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">x</span>
+                                        </button>
+                                    </div>
+                                    <form data-form-add>
+                                        <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <input type="text" placeholder="Título" class="form-control"
+                                                        name="title" id="title" required>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <select class="form-control" name="type" id="typeadd" required>
+                                                        <option value="" disabled selected>Tipo</option>
+                                                        <option value="1">Informe</option>
+                                                        <option value="2">Personal</option>
+                                                        <option value="3">Seguridad - Vehículos</option>
+                                                        <option value="4">Seguridad - Sucursales</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <input type="url" placeholder="Url" class="form-control" name="url"
+                                                        id="url" required>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <textarea placeholder="Descripción del informe..." id="description"
+                                                        name="description" class="form-control"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button"
+                                                    data-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-success"><i
+                                                        class="fas fa-check">Agregar</i></button>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-warning"><i class="fas fa-edit"> Editar</i></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
 
-        <div class="modal fade" id="dropmodal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Quieres eliminar este informe?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-form-drop>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <h8>Si lo borra no podrá recuperarlo de nuevo.</h8>
+                        <div class="modal fade" id="editmodal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Editar informe</h5>
+                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">x</span>
+                                        </button>
+                                    </div>
+                                    <form data-form-edit>
+                                        <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <input type="text" placeholder="Título" class="form-control"
+                                                        name="title" id="titleedit" required>
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <select class="form-control" name="type" id="typeedit" required>
+                                                        <option value="" disabled selected>Tipo</option>
+                                                        <option value="1">Informe</option>
+                                                        <option value="2">Personal</option>
+                                                        <option value="3">Seguridad - Vehículos</option>
+                                                        <option value="4">Seguridad - Sucursales</option>
+                                                    </select>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <input type="text" placeholder="Url" class="form-control" name="url"
+                                                        id="urledit" required>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <textarea placeholder="Descripción del informe..."
+                                                        id="descriptionedit" name="description"
+                                                        class="form-control"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button"
+                                                data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-warning"><i class="fas fa-edit">
+                                                    Editar</i></button>
+                                        </div>
+                                    </form>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class="btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+
+                        <div class="modal fade" id="dropmodal" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Quieres eliminar este informe?</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">x</span>
+                                        </button>
+                                    </div>
+                                    <form data-form-drop>
+                                        <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-12">
+                                                    <h8>Si lo borra no podrá recuperarlo de nuevo.</h8>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button"
+                                                data-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger"><i class="fas fa-times">
+                                                    Eliminar</i></button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    </div>
+    <%- include(partials + 'script.ejs' ) %>
 
-        <%- include(partials + 'script.ejs' ) %>
+        <script type="module" src="../js/controllers/reportController.js"></script>
 
-            <script type="module" src="../js/controllers/reportController.js"></script>
-
-            <%- include(partials + 'footer.ejs' ) %>
+        <%- include(partials + 'footer.ejs' ) %>

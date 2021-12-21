@@ -101,9 +101,9 @@ class User {
         }
     }
 
-    async listUsers(id) {
+    async listUsers(perfil, id, offices) {
         try {
-            return Repositorie.list(id)
+            return Repositorie.list(perfil, id, offices)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los usuarios.')
         }

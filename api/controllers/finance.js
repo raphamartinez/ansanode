@@ -13,16 +13,22 @@ module.exports = app => {
         }
     })
 
-    app.get('/finance/graph', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+    app.get('/finance/graph/:office?/:user?', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
-            let graphs;
-            if (req.access.all.allowed) {
-                graphs = await Finance.graphReceivable()
+            let office = req.params.office
+            let user = req.params.user
 
+            if (req.access.all.allowed) {
+                
+                if(office && office == "TODOS") office = false
+                if(user && user == "TODOS") user = false
+
+                let { graphs, details }  = await Finance.graphReceivable(user, office)
+                res.json({ graphs, details })
             } else {
                 let id_login = false;
                 let offices = false;
-                let datestart =  false;
+                let datestart = false;
                 let dateend = false;
 
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
@@ -31,14 +37,18 @@ module.exports = app => {
                     offices = offices.map(of => {
                         return of.code
                     })
+
+                    if(office && office != "TODOS") offices = office
+                    if(user && user != "TODOS") id_login = user
+
                 } else {
                     id_login = req.login.id_login
                 }
 
-                graphs = await Finance.graphReceivable(id_login, offices, datestart, dateend)
+                let { graphs, details } = await Finance.graphReceivable(id_login, offices, datestart, dateend)
+                res.json({ graphs, details })
             }
-
-            res.json(graphs)
+   
         } catch (err) {
             next(err)
         }
@@ -94,11 +104,11 @@ module.exports = app => {
             if (req.access.all.allowed) {
                 offices = req.params.offices
 
-                const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
+                // const cached = await cachelist.searchValue(`finance:${JSON.stringify(req.params)}`)
 
-                if (cached) {
-                    return res.json(JSON.parse(cached))
-                }
+                // if (cached) {
+                //     return res.json(JSON.parse(cached))
+                // }
 
             }
 
@@ -108,6 +118,28 @@ module.exports = app => {
 
             const finances = await Finance.list(clients, offices, overdue, type)
             cachelist.addCache(`finance:${JSON.stringify(req.params)}`, JSON.stringify(finances), 60 * 60 * 3)
+
+            res.json(finances)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/financeview/:office/:user/:status', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+        try {
+
+            // const cached = await cachelist.searchValue(`financeview:${JSON.stringify(req.params)}`)
+
+            // if (cached) {
+            //     return res.json(JSON.parse(cached))
+            // }
+
+            const office = req.params.office
+            const user = req.params.user
+            const status = req.params.status
+
+            const finances = await Finance.view(office, user, status)
+            cachelist.addCache(`financeview:${JSON.stringify(req.params)}`, JSON.stringify(finances), 60 * 60 * 3)
 
             res.json(finances)
         } catch (err) {

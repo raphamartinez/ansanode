@@ -95,9 +95,36 @@ class User {
                 INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${offices})) `
 
-            sql+= ` order by us.name ASC`
+            sql += ` order by us.name ASC`
 
             return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los usuarios')
+        }
+    }
+
+    async view(id) {
+        try {
+            let sql = `SELECT us.id_user, us.id_login, us.name, if(us.mailenterprise = null, "", us.mailenterprise) as mailenterprise , us.perfil, lo.mail, us.id_office, if( DATE_FORMAT(us.dateBirthday, '%d/%m/%Y') = "00/00/0000", "", DATE_FORMAT(us.dateBirthday, '%d/%m/%Y')) as dateBirthday, DATE_FORMAT(us.dateBirthday, '%Y-%m-%d') as dateBirthdayDesc, DATE_FORMAT(us.dateReg, '%H:%i %d/%m/%Y') as dateReg ,
+                        CASE
+                                    WHEN us.perfil = 1 THEN "Admin"
+                                    WHEN us.perfil = 2 THEN "Vendedor"
+                                    WHEN us.perfil = 3 THEN "Depositero"
+                                    WHEN us.perfil = 4 THEN "Gerente"
+                                    WHEN us.perfil = 5 THEN "Personal administrativo"
+                                    WHEN us.perfil = 6 THEN "Encarregado de Sucursal"
+                                    WHEN us.perfil = 7 THEN "Auditor"
+                                    WHEN us.perfil = 8 THEN "Logistica"
+                                    ELSE "Usuario"
+                                END as perfilDesc
+                        FROM ansa.user us
+                        INNER JOIN ansa.login lo ON us.id_login = lo.id_login 
+                        WHERE lo.id_login = us.id_login 
+                        and us.status = 1 and lo.id_login = ?`
+
+            const result = await query(sql, id)
+
+            return result[0]
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los usuarios')
         }

@@ -121,9 +121,7 @@ class User {
 
     async view(id_login) {
         try {
-            const data = await Repositorie.list(id_login)
-            const user = data[0]
-
+            const user = await Repositorie.view(id_login)
             const offices = await RepositorieOffice.list(id_login)
 
             if (offices.length > 0) {

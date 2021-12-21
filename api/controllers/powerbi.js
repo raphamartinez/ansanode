@@ -32,7 +32,8 @@ module.exports = app => {
     app.get('/powerbis/id_login/:id_login', [Middleware.authenticatedMiddleware, Authorization('powerbi', 'read')], async (req, res, next) => {
 
         try {
-            const id_login = req.params.id_login
+            let id_login = req.params.id_login;
+            if(id_login) id_login = req.login.id_login;
             const powerbis = await PowerBi.list(id_login, false)
             res.json(powerbis)
         } catch (err) {

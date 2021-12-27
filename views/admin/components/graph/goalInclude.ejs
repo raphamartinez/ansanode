@@ -1,0 +1,131 @@
+<div class="card shadow mt-4">
+    <div class="card-body">
+        <div class="container text-center mb-4">
+            <h5 class="mb-2"><strong>Información de la meta</strong></h5>
+            <ul class="list-group">
+                <li class="text-left">La meta del mes debe ingresarse de acuerdo con la columna correspondiente, por
+                    defecto se muestran
+                    12 meses.</li>
+                <li class="text-left">Para guardar la meta, presione la tecla "Enter", después del cual el sistema lo
+                    dirigirá a la siguiente línea.</li>
+                <li class="text-left">Use filtros de columna para ayudar con la tarea.</li>
+            </ul>
+        </div>
+        <button button-goal-online data-toggle="collapse" data-target="#goalCollapse" aria-expanded="false"
+            aria-controls="goalCollapse" type="button" class="btn btn-primary btn-lg btn-block mb-4">Fijar metas
+            Online</button>
+
+        <div class="collapse" id="goalCollapse">
+            <div class="card card-body">
+                <form data-online-goal>
+                    <div class="form-row">
+                        <div class="form-group text-center col-md-6">
+                            <select id="onsellers" required class="form-control">
+                                <option value="" disabled selected>Vendedor</option>
+                            </select>
+                        </div>
+                        <div class="form-group text-center col-md-6">
+                            <select id="ongroups" class="form-control" required>
+                                <option value="" disabled selected>Grupo del Articulo</option>
+                            </select>
+                        </div>
+                        <div class="form-group text-center col-md-12">
+                            <label for="stockno">Buscar Articulos sin stock?</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1">
+                                <label class="form-check-label" for="stocksi">
+                                    Sí
+                                </label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="stock" id="stockno" value="2"
+                                    checked>
+                                <label class="form-check-label" for="stockno">
+                                    No
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group text-center col-md-12 mb-4">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-search"> Buscar</i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-bordered text-center" id="tablegoals" width="100%" cellspacing="0">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-body">
+        <div class="container text-center mb-4">
+            <h5 class="mb-2"><strong>Información de la meta</strong></h5>
+            <ul class=" list-group">
+                <li class="text-left">La meta del mes debe ingresarse de acuerdo con la columna correspondiente, por
+                    defecto se muestran 12 meses.</li>
+                <li class="text-left">Para guardar la meta, presione la tecla "Enter", después del cual el sistema lo
+                    dirigirá a la siguiente línea.</li>
+                <li class="text-left">Use filtros de columna para ayudar con la tarea.</li>
+                <li class="text-left">No realice cambios en las celdas de la hoja de cálculo, excepto en las columnas
+                    destinadas a la inserción de la meta.</li>
+                <li class="text-left">Sube la hoja de cálculo y los valores se registrarán automáticamente en la base de
+                    datos.</li>
+            </ul>
+        </div>
+        <button button-goal-excel data-toggle="collapse" data-target="#downloadCollapse" aria-expanded="false"
+            aria-controls="downloadCollapse" type="button" class="btn btn-success btn-lg btn-block mb-4">Fijar Metas
+            Excel</button>
+
+        <div class="collapse" id="downloadCollapse">
+            <div class="card card-body">
+                <form data-generate-excel>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <select id="exsellers" class="form-control" required>
+                                <option value="" disabled selected>Vendedor</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <select title="Grupo del Articulo" id="exgroups" required class="form-control selectpicker"
+                                multiple>
+                            </select>
+                        </div>
+                        <div class="form-group text-center col-md-12">
+                            <button type="submit" class="btn btn-success"><i class="fas fa-file-excel"> Descarga
+                                    Excel</i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow mt-4">
+    <div class="card-body">
+        <button data-toggle="collapse" data-target="#uploadCollapse" aria-expanded="false"
+            aria-controls="uploadCollapse" type="button" class="btn btn-info btn-lg btn-block mb-4">Subir
+            Excel</button>
+
+        <div class="collapse" id="uploadCollapse">
+            <form data-form-upload>
+                <div class="form-row">
+                    <div class="form-group col-md-12 text-center">
+                        <h5 class="mb-2"><strong>Seleccione el Excel que desea importar al sistema</strong></h5>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" data-file id="file" required>
+                            <label class="custom-file-label" id="filename" for="validatedCustomFile">Buscar
+                                archivo...</label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-12 text-center">
+                        <button type="submit" class="btn btn-info"><i class="fas fa-file-excel"> Subir Excel</i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

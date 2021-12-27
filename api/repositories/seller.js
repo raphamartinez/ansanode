@@ -36,15 +36,15 @@ class Seller {
         }
     }
 
-    list(id_login, office) {
+    list(salesman, office) {
         try {
-            let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, SA.name, SA.office, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg 
+            let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, UPPER(SA.name) as name, SA.office, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg 
             FROM ansa.salesman SA
             LEFT JOIN ansa.login LO ON SA.id_login = LO.id_login 
             LEFT JOIN ansa.user US ON LO.id_login = US.id_login 
             WHERE SA.status = 1 `
 
-            if (id_login) sql += ` AND LO.id_login = ${id_login}`
+            if (salesman) sql += ` AND SA.id_salesman = '${salesman}'`
             if (office) sql += ` AND SA.office IN (${office}) `
 
             sql+= ` GROUP BY SA.id_salesman

@@ -264,12 +264,9 @@ class Finance {
     async graphReceivable(id_login, offices, datestart, dateend) {
         try {
 
-            // const obj = await Repositorie.list(false, offices, '1', '3');
             const graphs = await Repositorie.graphReceivable(id_login, offices, datestart, dateend);
             const details = await Repositorie.detailsReceivable(id_login, offices, datestart, dateend);
-            // const amountPending = obj.filter(({ AmountBalance }) => AmountBalance > 0)
-            //     .reduce((a, b) => a + b.AmountBalance, 0);
-
+ 
             return { graphs, details };
         } catch (error) {
             throw new InternalServerError('No se pude listar los datos.')

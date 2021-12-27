@@ -24,16 +24,7 @@ module.exports = app => {
         }
     })
 
-    app.get('/sellers', [Middleware.authenticatedMiddleware, Authorization('salesman', 'read')], async (req, res, next) => {
-        try {
-            const sellers = await Seller.list()
-            res.json(sellers)
-        } catch (err) {
-            next(err)
-        }
-    })
-
-    app.get('/sellers/goal', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/sellers/:office?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             let id_login = false;
             let office = false;
@@ -45,24 +36,26 @@ module.exports = app => {
             }
 
             if (req.access.all.allowed) {
-                sellers = await Seller.list(id_login, office)
+                office = req.params.office;
+                sellers = await Seller.list(id_login, office);
             } else {
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
-                    let offices = req.login.offices
+                    let offices = req.login.offices;
 
                         office = offices.map(of => {
                             return of.code
-                        })
+                        });
                  }else{
-                    id_login = req.login.id_login
+                    id_login = req.login.id_login;
                  }
-                 sellers = await Seller.list(id_login, office)
+                 sellers = await Seller.list(id_login, office);
             }
 
             cachelist.addCache(`goal:sellers:goal:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)
 
             res.json(sellers)
         } catch (err) {
+            console.log(err);
             next(err)
         }
     })
@@ -74,7 +67,6 @@ module.exports = app => {
             let code = false;
 
             let sellers;
-            let expected;
 
             const cached = await cachelist.searchValue(`goal:sellers:${req.login.id_login}`)
 

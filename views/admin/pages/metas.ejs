@@ -1,140 +1,107 @@
 <%- include(partials + 'header.ejs' ) %>
-
     <link href="../css/excel-bootstrap-table-filter-style.css" rel="stylesheet">
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
 
-
-    <%- include(partials + 'loading.ejs' ) %>
-
-        <div id="content">
-            <div class="container-fluid">
-                <div class="row ">
-                    <div class="col-md-12 text-center">
-                        <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Metas</h1>
-                    </div>
-
-                    <div class="row" data-card></div>
-                    <div class="col-md-12 text-center">
-                        <div class="form-row" data-powerbi></div>
-                    </div>
-
-
-                    <div data-features></div>
-
-                    <div class="col-md-12 text-center mb-4">
-                        <div data-settings></div>
-
-                        <div class="card shadow text-grey bg-light">
-                            <div class="card-header bg-light">
-                                <div class="form-row">
-                                    <div class="form-group col-md-3">
-                                        <div class="text-xl font-weight-bold text-uppercase mb-1">Listado de Metas -
-                                            Expectativa
-                                        </div>
-                                    </div>
-                                    <% if(perfil==1 || perfil==4 || perfil==8) {%>
-                                        <div class="form-group offset-md-7 col-md-2">
-                                            <select class="form-control" data-filter-office>
-                                                <option value="TODOS" selected>Todas las sucursal</option>
-                                                <option value="1">PJC AUTOCENTRO</option>
-                                                <option value="4">ENCARNACION</option>
-                                                <option value="6">AUTOCENTRO SHOPPING CHINA</option>
-                                                <option value="2">CDE AUTOCENTRO</option>
-                                                <option value="3">BELLA VISTA</option>
-                                                <option value="5">SALTO DEL GUAIRA</option>
-                                                <option value="7">CAPITAN BADO</option>
-                                                <option value="8">PINDOTY</option>
-                                                <option value="9">CDE ATACADO</option>
-                                                <option value="10">PJC TRUCK CENTER</option>
-                                                <option value="11">MATRIZ</option>
-                                                <option value="12">SANTA RITA</option>
-                                                <option value="13">MARIANO ROQUE ALONSO</option>
-                                            </select>
-                                        </div>
-                                        <% }%>
-                                </div>
-                            </div>
-                            <div class="card-body text-left">
-                                <div class="row no-gutters align-items-left">
-                                    <div class="col mr-2">
-                                        <div class="col-md-12 mb-2" style="line-height: 10px;">
-                                            <a>
-                                                <div class="form-row">
-                                                    <div class="form-group text-left col-md-2">
-                                                        Nombre
-                                                    </div>
-                                                    <div class="form-group col-md-5 text-center">
-                                                        Progresso
-                                                    </div>
-                                                    <div class="form-group col-md-2 text-center">
-                                                        Expectativa vendas
-                                                    </div>
-                                                    <div class="form-group col-md-3 text-center">
-                                                        Expectativa faturamento
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </div>
-
-                                        <% amount.forEach(seller=> { %>
-                                            <% let classprogress='bg-danger' ; if(seller.percentage>= 25 &&
-                                                seller.percentage < 50) classprogress='bg-warning' ;
-                                                    if(seller.percentage>= 50 && seller.percentage < 75)
-                                                        classprogress='bg-info' ; if(seller.percentage>= 75 &&
-                                                        seller.percentage < 100) classprogress='bg-success' ; %>
-
-                                                            <div class="col-md-12 mb-2 border-bottom "
-                                                                style="line-height: 10px;"
-                                                                data-display="<%= seller.office %>">
-                                                                <a data-id_salesman="<%= seller.id_salesman %>">
-                                                                    <div class="form-row align-items-center">
-                                                                        <div class="form-group text-left col-md-2">
-                                                                            <p><strong>
-                                                                                    <%= seller.name %>
-                                                                                </strong>
-                                                                            <p>
-                                                                        </div>
-                                                                        <div class="form-group col-md-5">
-                                                                            <div class="progress">
-                                                                                <div style="color:#000000;"
-                                                                                    class="progress-bar progress-bar-striped <%= classprogress %>"
-                                                                                    role="progressbar"
-                                                                                    style="width: 100%;"
-                                                                                    aria-valuenow="<%= seller.percentage %>"
-                                                                                    aria-valuemin="0"
-                                                                                    aria-valuemax="100">
-                                                                                    <%= seller.percentage %> %
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <div class="form-group col-md-2 text-center">
-                                                                            <%= seller.goalssum %>
-                                                                        </div>
-                                                                        <div class="form-group col-md-3 text-center">
-                                                                            <% if(seller.expected){ %>
-                                                                                <%= seller.expected.toLocaleString('en-US',
-                                                                                    { style: 'currency' ,
-                                                                                    currency: 'USD' })%>
-                                                                                    <% } %>
-                                                                        </div>
-                                                                    </div>
-                                                                </a>
-                                                            </div>
-
-                                                            <%}); %>
-                                                                <div class="col-auto text-grey">
-                                                                    Cumplimiento de objetivos para los próximos 12 meses
-                                                                </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+    <style>
+        .column {
+            min-height: 300px;
+            min-width: 300px;
+            display: flex;
+            flex-grow: 1
+        }
+    </style>
+    <div class="container-fluid">
+        <div class="row justify-content-md-center">
+            <div class="col-md-12 text-center">
+                <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Metas</h1>
             </div>
         </div>
 
-        <input type="hidden" name="profile" id="profile" value="<%=perfil%>">
-        <%- include(partials + 'script.ejs' ) %>
-            <script type="module" src="../js/controllers/goalsController.js"></script>
-            <script src="../js/libs/excel-bootstrap-table-filter-bundle.js"></script>
+        <%- include(partials + 'loading.ejs' ) %>
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <ul class="nav justify-content-center nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="sellers-tab" data-toggle="tab" href="#sellers" role="tab"
+                                aria-controls="sellers" aria-selected="true">Individual</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="offices-tab" data-toggle="tab" href="#offices" role="tab"
+                                aria-controls="profile" aria-selected="false">Sucursales</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ansa-tab" data-toggle="tab" href="#ansa" role="tab"
+                                aria-controls="contact" aria-selected="false">ANSA</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
+                                aria-controls="include" aria-selected="false">Fijar Metas</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="sellers" role="tabpanel"
+                            aria-labelledby="sellers-tab">
+                            <%- include(components + './graph/goalSellers.ejs' ) %>
+                        </div>
+                        <div class="tab-pane fade" id="offices" role="tabpanel" aria-labelledby="offices-tab">
+                            <%- include(components + './graph/goalOffices.ejs' ) %>
+                        </div>
+                        <div class="tab-pane fade" id="ansa" role="tabpanel" aria-labelledby="ansa-tab">
+                            <%- include(components + './graph/goalAnsa.ejs' ) %>
+                        </div>
+                        <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
+                            <%- include(components + './graph/goalInclude.ejs' ) %>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="uploadGoals" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">Importar Excel</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">x</span>
+                                    </button>
+                                </div>
+                                <form>
+                                    <div class="modal-body">
+                                        <div class="form-group col-md-12 text-center">
+                                            <label>
+                                                <h5>Seleccione el Excel que desea importar al sistema.</h5>
+                                            </label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="file"
+                                                    oninput="inputFile()" required>
+                                                <label class="custom-file-label" id="filename"
+                                                    for="validatedCustomFile">Buscar archivo...</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button class="btn btn-secondary" type="button"
+                                            data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" onclick="uploadGoals(event)" class="btn btn-success"><i
+                                                class="fas fa-file-excel"> Importar</i></button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+    </div>
+
+    <input type="hidden" name="profile" id="profile" value="<%=perfil%>">
+    <%- include(partials + 'script.ejs' ) %>
+        <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+        <script type="module" src="../js/controllers/goalsController.js"></script>
+        <script src="../js/libs/excel-bootstrap-table-filter-bundle.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+
             <%- include(partials + 'footer.ejs' ) %>

@@ -97,6 +97,7 @@ class User {
 
             sql += ` order by us.name ASC`
 
+            console.log(sql);
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los usuarios')

@@ -1,30 +1,578 @@
 import { View } from "../views/goalsView.js"
 import { Connection } from '../services/connection.js'
 
+
+const chart = (days, salesAmount, salesPerDay, index, group) => {
+    let label1 = group ? `Ventas por dia - ${group}` : `Ventas por dia`;
+    let label2 = group ? `Montante de Ventas - ${group}` : `Montante de Ventas`;
+
+    const data = {
+        labels: days,
+        datasets: [{
+            type: 'bar',
+            label: label1,
+            data: salesAmount,
+            fill: false,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgb(54, 162, 235)',
+            order: 2
+        }, {
+            type: 'line',
+            label: label2,
+            data: salesPerDay,
+            borderWidth: 2,
+            fill: false,
+            backgroundColor: '#ACF415',
+            borderColor: '#ACF195',
+            tension: 0.2,
+            order: 1
+        }]
+    };
+
+    const ctx = document.querySelector(`[data-chart-amount-${index}]`)
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+                labels: {
+                    fontColor: "#000",
+                    fontSize: 18,
+                    fontStyle: "bold"
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    pointLabels: {
+                        font: {
+                            size: 15,
+                            color: "#000",
+                            style: "bold"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    // const update = (days, salesPerDay, salesAmount, group, goal, index) => {
+
+
+
+    //     const i = chart.data.datasets.length == 2 ? 0 : chart.data.datasets.length;
+    //     chart.data.labels = days;
+    //     chart.data.datasets[i].data = salesPerDay;
+    //     chart.data.datasets[i].label = `Ventas por dia - ${group}`
+    //     chart.data.datasets[i + 1].data = salesAmount;
+    //     chart.data.datasets[i + 1].label = `Montante de Ventas - ${group}`
+
+    //     // if (chart.data.datasets.length == 2) {
+    //     //     var newDataset = {
+    //     //         label: `Meta - ${group}`,
+    //     //         backgroundColor: 'rgba(99, 255, 132, 0.2)',
+    //     //         borderColor: 'rgba(99, 255, 132, 1)',
+    //     //         borderWidth: 1,
+    //     //         data: goal,
+    //     //         type: 'line'
+    //     //     }
+    //     //     chart.data.datasets.push(newDataset);
+
+    //     // } else {
+    //     //     chart.data.datasets[i + 2].type = 'line'
+    //     //     chart.data.datasets[i + 2].backgroundColor = '#AFE000'
+    //     //     chart.data.datasets[i + 2].data = goal;
+    //     //     chart.data.datasets[i + 2].label = `Meta - ${group}`
+    //     // }
+
+    //     chart.update();
+    // }
+
+}
+
+const viewGroup = async (event) => {
+    if (event.target.parentNode.nodeName == "TR") {
+        const index = event.target.parentNode.getAttribute("data-index");
+        const seller = event.target.parentNode.getAttribute("data-id");
+        const group = event.target.parentNode.getAttribute("data-group");
+        const month = event.target.parentNode.getAttribute("data-month");
+        const office = event.target.parentNode.getAttribute("data-office");
+
+        if (event.target.parentNode.getAttribute(`data-active-${index}`)) {
+
+            const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}`, 'GET')
+            sellers.forEach(salesman => {
+                let allSale = 0;
+                let allGoal = 0;
+
+                if (salesman.amount.length > 0) {
+                    salesman.amount.forEach(amount => {
+                        let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
+
+                        if (goal) {
+                            allGoal += goal.amount;
+                            allSale += amount.qty;
+                        }
+                    });
+                } else {
+                    salesman.goals.forEach(goal => {
+                        let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
+
+                        if (amount) {
+                            allGoal += goal.amount;
+                            allSale += amount.qty;
+                        }
+                    });
+                }
+
+                let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+                let color = '#A9A9A9';
+
+                switch (true) {
+                    case (percent == 0):
+                        color = '#A9A9A9';
+                        break;
+        
+                    case (percent > 0 && percent <= 25):
+                        color = '#FB301E';
+                        break;
+        
+
+                    case (percent > 25 && percent <= 50):
+                        color = '#E2D51A';
+                        break;
+
+                    case (percent > 50 && percent <= 75):
+                        color = '#5F9EA0';
+                        break;
+
+                    case (percent > 75):
+                        color = '#00AE4D';
+                        break;
+
+                }
+
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = "";
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
+
+                chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index);
+                updateChartGauge(`Rendimiento %`, color, index, percent, percent, "%");
+            });
+
+            event.target.parentNode.style.backgroundColor = null;
+            event.target.parentNode.removeAttribute(`data-active-${index}`);
+
+        } else {
+
+
+            const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}/${group}`, 'GET')
+
+            document.querySelectorAll(`[data-active-${index}]`).forEach(div => {
+                div.style.backgroundColor = null;
+            })
+
+            sellers.forEach(salesman => {
+                let allGoal = 0;
+                let allSale = 0;
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = ""
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
+
+                if (salesman.goals.length > 0) salesman.goals.forEach(goal => allGoal += goal.amount);
+                if (salesman.amount.length > 0) salesman.amount.forEach(amount => allSale += amount.qty);
+
+                let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+                let color = '#A9A9A9';
+
+                switch (true) {
+                    case (percent == 0):
+                        color = '#A9A9A9';
+                        break;
+
+                    case (percent > 0 && percent <= 25):
+                        color = '#FB301E';
+                        break;
+
+                    case (percent > 25 && percent <= 50):
+                        color = '#E2D51A';
+                        break;
+
+                    case (percent > 50 && percent <= 75):
+                        color = '#5F9EA0';
+                        break;
+
+                    case (percent > 75):
+                        color = '#00AE4D';
+                        break;
+                }
+
+                chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index, group)
+                updateChartGauge(`Rendimiento - Cant Vendida`, color, index, allGoal, allSale)
+            })
+
+            event.target.parentNode.style.backgroundColor = "#c9ffcf7a";
+            event.target.parentNode.dataset[`active-${index}`] = 1;
+        }
+    }
+}
+
+document.querySelector('[data-goal-users]').addEventListener('click', viewGroup, false)
+
+const gaugeChart = (color, porcent, title, index) => {
+    function GaugeChart(value, titleText, backgroundColor) {
+
+        let amount = value > 100 ? 100 : value;
+        let message = value == 0 ? "ND" : `${value} %`;
+
+        return {
+            type: "gauge",
+            title: {
+                text: titleText,
+                "_media-rules": [
+                    {
+                        "max-width": 650,
+                        "visible": false
+                    }
+                ]
+            },
+            scaleR: {
+                aperture: 200,
+                values: "0:100:20",
+                guide: {
+                    backgroundColor: "#E3DEDA",
+                    alpha: 1
+                },
+                ring: {
+                    backgroundColor: "#E3DEDA",
+                    "_media-rules": [
+                        {
+                            "max-width": 650,
+                            "visible": false
+                        }
+                    ]
+                },
+                center: {
+                    size: 50,
+                    borderWidth: 2,
+                    borderColor: "#23211E",
+                    "_media-rules": [
+                        {
+                            "max-width": 650,
+                            "size": 10
+                        }
+                    ]
+                },
+                item: {
+                    offsetR: 0
+                },
+                tick: {
+                    visible: false
+                },
+                markers: [
+                    {
+                        type: "area",
+                        range: [0, amount],
+                        backgroundColor: backgroundColor
+                    }
+                ]
+            },
+            plotarea: {
+                marginTop: "35%"
+            },
+            plot: {
+                csize: "3%",
+                size: "100%"
+            },
+            scale: {
+                sizeFactor: 1.2,
+                "_media-rules": [
+                    {
+                        "max-width": 650,
+                        sizeFactor: 1.6,
+                    }
+                ]
+            },
+            tooltip: {
+                visible: false
+            },
+            series: [
+                {
+                    values: [parseInt(amount)],
+                    backgroundColor: "#23211E",
+                    valueBox: {
+                        text: message,
+                        placement: "center",
+                        fontColor: backgroundColor,
+                        fontSize: 14,
+                        "_media-rules": [
+                            {
+                                "max-width": 650,
+                                "fontSize": 10
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+
+    var gaugeChart = GaugeChart(porcent, title, color);
+
+    zingchart.render({
+        id: `gaugeChart${index}`,
+        data: gaugeChart,
+        height: '100%',
+        width: '100%'
+    });
+}
+
+const updateChartGauge = (title, color, index, goal, sale, string = "") => {
+    let value = sale > goal ? goal : sale;
+    let porcent = value > 100 ? 100 : value;
+    let message = sale == 0 ? "ND" : `${sale} ${string}`;
+
+    zingchart.exec(`gaugeChart${index}`, 'appendseriesdata', {
+        plotindex: 0,
+        update: false,
+        data: {
+            values: [value]
+        }
+    });
+
+    zingchart.exec(`gaugeChart${index}`, 'modify', {
+        update: false,
+        data: {
+            title: {
+                text: title,
+            },
+            scaleR: {
+                values: `0:${string ? 100 : goal}:${string ? 20 : goal / 5}`,
+                markers: [
+                    {
+                        type: "area",
+                        range: [0, porcent],
+                        backgroundColor: color
+                    }
+                ],
+            },
+            series: [
+                {
+                    values: [parseInt(`${string ? goal > 100 ? 100 : goal : goal}`)],
+                    backgroundColor: "#23211E",
+                    valueBox: {
+                        text: message,
+                        placement: "center",
+                        fontColor: color,
+                        fontSize: 14,
+                        "_media-rules": [
+                            {
+                                "max-width": 650,
+                                "fontSize": 10
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    });
+
+    zingchart.exec(`gaugeChart${index}`, 'update');
+}
+
+const changeOffice = (event) => {
+
+    const value = parseInt(event.target.value);
+
+    const options = document.querySelectorAll('[data-seller] option')
+
+    options.forEach(option => {
+        option.getAttribute('data-office') == value ? option.style.display = 'block' : option.style.display = 'none'
+    })
+
+}
+
+document.querySelector('[data-office]').addEventListener('change', changeOffice, false);
+
+const searchOffice = async (event) => {
+    event.preventDefault();
+
+    try {
+        const office = event.currentTarget.office.value;
+        const month = event.currentTarget.month.value;
+        
+        // const offices = await Connection.noBody(`goal/offices/${month}/${office}`, 'GET');
+
+        // offices.forEach(of => {
+
+        // })
+
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+document.querySelector('[data-search-goal-offices]').addEventListener('submit', searchOffice, false);
+
+const searchUnit = async (event) => {
+    event.preventDefault();
+
+    const office = event.currentTarget.office.value;
+    const seller = event.currentTarget.seller.value;
+    const month = event.currentTarget.month.value;
+
+    const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}`, 'GET')
+    document.querySelector('[data-goal-users]').innerHTML = ""
+
+    sellers.forEach((salesman, index) => {
+        let goals = "";
+        let allSale = 0;
+        let allGoal = 0;
+
+        if (salesman.amount.length > 0) {
+            salesman.amount.forEach(amount => {
+
+                let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
+                let porcent = goal ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+
+                if (goal) {
+                    allGoal += goal.amount;
+                    allSale += amount.qty;
+                }
+
+                let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
+
+                goals += `
+                <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
+                    <th scope="row">${amount.name}</th>
+                    <td>${amount.qty}</td>
+                    <td>${descPorcent}</td>
+                </tr>`;
+
+            });
+        } else {
+            salesman.goals.forEach(goal => {
+
+                let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
+                let porcent = amount ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+
+                if (amount) {
+                    allGoal += goal.amount;
+                    allSale += amount.qty;
+                }
+
+                let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
+
+                goals += `
+                <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
+                    <th scope="row">${goal.itemgroup}</th>
+                    <td>0</td>
+                    <td>${descPorcent}</td>
+                </tr>`;
+
+            });
+        }
+
+
+        let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+        let color = '#A9A9A9';
+
+        switch (true) {
+            case (percent == 0):
+                color = '#A9A9A9';
+                break;
+
+            case (percent > 0 && percent <= 25):
+                color = '#FB301E';
+                break;
+
+            case (percent > 25 && percent <= 50):
+                color = '#E2D51A';
+                break;
+
+            case (percent > 50 && percent <= 75):
+                color = '#5F9EA0';
+                break;
+
+            case (percent > 75):
+                color = '#00AE4D';
+                break;
+        }
+
+        document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index));
+        chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index)
+        gaugeChart(color, percent, 'Rendimiento %', index)
+
+    });
+
+}
+
+document.querySelector('[data-search-goal-sellers]').addEventListener('submit', searchUnit, false)
 const init = async () => {
 
     try {
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
-        const cardHistory = document.querySelector('[data-card]')
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]');
-        document.querySelector('[data-features]').innerHTML = ""
 
-        settings.innerHTML = ''
-        modal.innerHTML = " "
-        powerbi.innerHTML = " "
-        cardHistory.style.display = 'none';
+        const sellersgoal = await Connection.noBody('sellers', 'GET');
+        sellersgoal.forEach(salesman => {
+            const option = document.createElement('option');
+            option.value = `{"id_salesman": ${salesman.id_salesman}, "office": "${salesman.office}"}`;
+            option.innerHTML = salesman.name;
 
-        if ($.fn.DataTable.isDataTable('#dataTable')) {
-            $('#dataTable').dataTable().fnClearTable();
-            $('#dataTable').dataTable().fnDestroy();
-            $('#dataTable').empty();
-        }
+            document.getElementById('exsellers').appendChild(option);
 
-        title.innerHTML = "Metas"
+            const option2 = document.createElement('option');
+            option2.value = `{"id_salesman": ${salesman.id_salesman}, "office": "${salesman.office}"}`;
+            option2.innerHTML = salesman.name;
 
-        settings.appendChild(View.opcionesGoals())
+            document.getElementById('onsellers').appendChild(option2);
+
+            const option3 = document.createElement('option');
+            option3.value = salesman.code;
+            option3.innerHTML = salesman.name;
+            option3.dataset.office = salesman.office;
+
+            document.querySelector('[data-seller]').appendChild(option3);
+        });
+
+        const itemsgroups = await Connection.noBody('itemsgroups', 'GET');
+        itemsgroups.forEach(group => {
+            const option = document.createElement('option');
+            option.value = group.Name;
+            option.innerHTML = group.Name;
+
+            document.getElementById('exgroups').appendChild(option);
+
+            const option2 = document.createElement('option');
+            option2.value = group.Name;
+            option2.innerHTML = group.Name;
+
+            document.getElementById('ongroups').appendChild(option2);
+        })
+
+        const offices = await Connection.noBody('offices', 'GET');
+        offices.forEach(office => {
+            const option = document.createElement('option');
+            option.value = office.code;
+            option.innerHTML = office.name;
+
+            if (office.id_office !== 15) document.querySelector('[data-office]').appendChild(option);
+
+            const option2 = document.createElement('option');
+            option2.value = office.code;
+            option2.innerHTML = office.name;
+
+            if (office.id_office !== 15) document.querySelector('#suoffice').appendChild(option2);
+        });
+
+        $('#exgroups').selectpicker("refresh");
 
     } catch (error) {
 
@@ -33,63 +581,9 @@ const init = async () => {
 
 init()
 
-const filter = (event) => {
-    const value = event.target.value;
+const goalOnline = async () => {
 
-    document.querySelectorAll('[data-display]').forEach(display => {
-        const office = display.getAttribute('data-display') 
-        if (office != value) {
-            display.style.display = 'none'
-        } else {
-            display.style.display = ''
-        }
-
-
-        if (event.target.value == "TODOS") display.style.display = ''
-    })
-}
-
-document.querySelector('[data-filter-office]').addEventListener('change', filter, false)
-
-window.addGoalsList = addGoalsList
-
-async function addGoalsList() {
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block"
     try {
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
-        const cardHistory = document.querySelector('[data-card]')
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]')
-        document.querySelector('[data-features]').innerHTML = ""
-
-        settings.innerHTML = ''
-        powerbi.innerHTML = " "
-        modal.innerHTML = " "
-        document.querySelector('[data-settings]').appendChild(View.addGoals())
-        modal.appendChild(View.modalAdd())
-
-
-        const listsellers = document.getElementById('listsellers')
-        const listgroups = document.getElementById('listgroups')
-
-        const sellers = await Connection.noBody('sellers/goal', 'GET')
-
-        const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
-
-        sellers.forEach(obj => {
-            listsellers.appendChild(View.listSalesman(obj))
-        })
-
-        itemsgroups.forEach(obj => {
-            listgroups.appendChild(View.listGroups(obj))
-        })
-
-        $('#listsellers').selectpicker("refresh");
-        $('#listgroups').selectpicker("refresh");
-
 
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
             $('#tablegoals').dataTable().fnClearTable();
@@ -97,135 +591,132 @@ async function addGoalsList() {
             $('#tablegoals').empty();
         }
 
-        title.innerHTML = "Fijar Metas"
-        powerbi.innerHTML = " "
-        loading.style.display = "none"
-        cardHistory.style.display = 'none';
+        const dates = [
+            1,
+            2,
+            3,
+            4,
+            5,
+            6,
+            7,
+            8,
+            9,
+            10,
+            11,
+            12
+        ]
+
+        let datecolumn = dates.map(date => {
+            const today = new Date()
+
+            let month = today.getMonth() + date
+            let year = today.getFullYear()
+
+            if (month > 12) {
+                month -= 12
+                year += 1
+            }
+
+            if (month <= 9) {
+                month = `0${month}`
+            }
+
+            const now = `${month}/${year}`
+
+            return now;
+        })
+
+        const table = $("#tablegoals").DataTable({
+            data: [],
+            columns: [
+                { title: "Linea de Productos" },
+                { title: "Aplicacion" },
+                {
+                    title: "Cod Articulo",
+                    className: "details-control",
+                },
+                { title: "Nombre" },
+                {
+                    title: "Stock Ci",
+                    className: "datatable-grey",
+                },
+                {
+                    title: "Stock TT",
+                    className: "datatable-grey",
+                },
+                { title: datecolumn[0] },
+                { title: datecolumn[1] },
+                { title: datecolumn[2] },
+                { title: datecolumn[3] },
+                { title: datecolumn[4] },
+                { title: datecolumn[5] },
+                { title: datecolumn[6] },
+                { title: datecolumn[7] },
+                { title: datecolumn[8] },
+                { title: datecolumn[9] },
+                { title: datecolumn[10] },
+                { title: datecolumn[11] }
+            ],
+            paging: true,
+            ordering: false,
+            info: true,
+            scrollY: false,
+            scrollCollapse: true,
+            scrollX: true,
+            autoHeight: true,
+            autoWidth: true,
+            lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
+            pagingType: "numbers",
+            fixedHeader: false,
+            order: true
+        })
+
+        $('#goalOnline').modal("show");
+
     } catch (error) {
 
     }
 }
 
-window.addGoalsListExcel = addGoalsListExcel
-
-async function addGoalsListExcel() {
-
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block"
-    try {
-        let title = document.querySelector('[data-title]')
-        let powerbi = document.querySelector('[data-powerbi]')
-        const cardHistory = document.querySelector('[data-card]')
-        let modal = document.querySelector('[data-modal]')
-        let settings = document.querySelector('[data-settings]')
-        document.querySelector('[data-features]').innerHTML = ""
-
-        settings.innerHTML = ''
-        powerbi.innerHTML = " "
-        modal.innerHTML = " "
-        settings.appendChild(View.addGoalsExcel())
-        modal.appendChild(View.modalAddExcel())
-        modal.appendChild(View.modalUploadExcel())
-
-        const listsellers = document.getElementById('listsellers')
-        const listgroups = document.getElementById('listgroups')
-
-        const sellers = await Connection.noBody('sellers/goal', 'GET')
-
-        const itemsgroups = await Connection.noBody('itemsgroups', 'GET')
-
-        sellers.forEach(obj => {
-            listsellers.appendChild(View.listSalesman(obj))
-        })
-
-        itemsgroups.forEach(obj => {
-            listgroups.appendChild(View.listGroups(obj))
-        })
+document.querySelector('[button-goal-online]').addEventListener('click', goalOnline, false)
 
 
-        if ($.fn.DataTable.isDataTable('#tablegoals')) {
-            $('#tablegoals').dataTable().fnClearTable();
-            $('#tablegoals').dataTable().fnDestroy();
-            $('#tablegoals').empty();
-        }
 
-        $('#listsellers').selectpicker("refresh");
-        $('#listgroups').selectpicker("refresh");
-
-        title.innerHTML = "Fijar Metas con Excel"
-        powerbi.innerHTML = " "
-        loading.style.display = "none"
-        cardHistory.style.display = 'none';
-    } catch (error) {
-
-    }
-}
-
-window.listGoalsSalesman = listGoalsSalesman
-
-async function listGoalsSalesman(event) {
-    event.preventDefault()
-    const info = document.getElementById('info')
+const searchGoalOnline = (event) => {
+    event.preventDefault();
 
     try {
-        $('#searchGoal').modal('hide')
 
-
-        const listgroups = document.getElementById('listgroups')
+        const listgroups = document.getElementById('ongroups')
         const group = listgroups.options[listgroups.selectedIndex].value;
 
-        const listsellers = document.getElementById('listsellers')
+        const listsellers = document.getElementById('onsellers')
         const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
 
         const stock = document.querySelector('input[name="stock"]:checked').value;
 
-        if (salesman && group && stock) {
-            info.innerHTML = ``
-            listGoalsLine(salesman, group, stock)
-        } else {
-            alert('Seleccione todos los campos!')
-        }
+        listGoals(salesman, group, stock);
     } catch (error) {
 
     }
 }
 
-window.listGoalsExcel = listGoalsExcel
+document.querySelector('[data-online-goal]').addEventListener('submit', searchGoalOnline, false)
 
-async function listGoalsExcel(event) {
-    event.preventDefault()
+const generateExcel = async (event) => {
+    event.preventDefault();
 
     try {
-        $('#searchGoal').modal('hide')
 
-
-        const arrgroups = document.querySelectorAll('#listgroups option:checked')
+        const arrgroups = document.querySelectorAll('#exgroups option:checked');
         const groups = Array.from(arrgroups).map(el => `'${el.value}'`);
 
-        const listsellers = document.getElementById('listsellers')
-        const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
+        const optionseller = document.querySelector('#exsellers option:checked');
+        const salesman = await JSON.parse(optionseller.value);
 
-        if (salesman && groups != "''") {
-            generateExcelGoals(salesman, groups)
-        } else {
-            alert('Seleccione todos los campos!')
-        }
-    } catch (error) {
-        alert('Seleccione todos los campos!')
-    }
-}
+        const xls = await Connection.backFile(`goalslineexcel/${salesman.id_salesman}/${groups}`, 'GET');
 
-window.generateExcelGoals = generateExcelGoals
-
-async function generateExcelGoals(salesman, groups) {
-
-    const loadinggoals = document.getElementById('loadinggoals')
-    loadinggoals.innerHTML = `<div class="spinner-border text-primary" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>`
-
-    try {
-        const xls = await Connection.backFile(`goalslineexcel/${salesman.id_salesman}/${groups}`, 'GET')
+        document.querySelector('[data-generate-excel]').reset();
 
         const filexls = await xls.blob();
 
@@ -237,28 +728,15 @@ async function generateExcelGoals(salesman, groups) {
         a.click();
         document.body.removeChild(a);
 
-        loadinggoals.innerHTML = ``
     } catch (error) {
-        alert("Error en la generación del excel de meta, por favor contacte o T.I.")
-        loadinggoals.innerHTML = ``
+
     }
 }
 
+document.querySelector('[data-generate-excel]').addEventListener('submit', generateExcel, false)
 
-window.listGoalsLine = listGoalsLine
+const listGoals = async (salesman, group, stock) => {
 
-async function listGoalsLine(salesman, group, stock) {
-
-    if ($.fn.DataTable.isDataTable('#tablegoals')) {
-        $('#tablegoals').dataTable().fnClearTable();
-        $('#tablegoals').dataTable().fnDestroy();
-        $('#tablegoals').empty();
-    }
-
-    const loadinggoals = document.getElementById('loadinggoals')
-    loadinggoals.innerHTML = `<div class="spinner-border text-primary" role="status">
-    <span class="sr-only">Loading...</span>
-  </div>`
     try {
 
         const goalsline = await Connection.noBody(`goalsline/${salesman.id_salesman}/${salesman.office}/${group}/${stock}`, 'GET')
@@ -267,19 +745,18 @@ async function listGoalsLine(salesman, group, stock) {
             $('#tablegoals').dataTable().fnClearTable();
             $('#tablegoals').dataTable().fnDestroy();
             $('#tablegoals').empty();
-        }
+        };
 
-        let dtview = [];
-        let index = 1
+        let index = 1;
 
         const profile = document.querySelector('#profile').value
         let disabled;
-        if(profile == 8) disabled = "disabled"
+        if (profile == 8) disabled = "disabled"
 
-        goalsline.forEach(goal => {
+        let dtview = goalsline.map(goal => {
             const field = View.lineaddgoal(goal, index, salesman.id_salesman, disabled)
             index += 12
-            dtview.push(field)
+            return field
         });
 
         const dates = [
@@ -297,9 +774,7 @@ async function listGoalsLine(salesman, group, stock) {
             12
         ]
 
-        let datecolumn = []
-
-        dates.forEach(date => {
+        let datecolumn = dates.map(date => {
             const today = new Date()
 
             let month = today.getMonth() + date
@@ -315,7 +790,8 @@ async function listGoalsLine(salesman, group, stock) {
             }
 
             const now = `${month}/${year}`
-            datecolumn.push(now)
+
+            return now;
         })
 
         const table = $("#tablegoals").DataTable({
@@ -380,8 +856,8 @@ async function listGoalsLine(salesman, group, stock) {
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                const listsellers = document.getElementById('listsellers')
-                const salesman = JSON.parse(listsellers.options[listsellers.selectedIndex].value);
+                const seller = document.querySelector('#onsellers option:checked');
+                const salesman = JSON.parse(seller.value);
 
                 const sales = await Connection.noBody(`sale/${salesman.id_salesman}/${artcode}`, "GET")
 
@@ -393,9 +869,8 @@ async function listGoalsLine(salesman, group, stock) {
 
         });
 
-        loadinggoals.innerHTML = ``
     } catch (error) {
-        loadinggoals.innerHTML = ``
+
     }
 }
 
@@ -451,78 +926,9 @@ $('#tablegoals tbody').on('click', 'dropdown-filter-item', async function (event
     }
 });
 
-window.listExpectedSalesmanId = listExpectedSalesmanId
-
-async function listExpectedSalesmanId(event) {
-
-    let isExpanded = event.currentTarget.children
-
-    if (isExpanded.length === 1) {
-
-        const card = event.currentTarget
-        const id_salesman = card.getAttribute("data-id_salesman")
-
-        let expecteds = await Connection.noBody(`goalexpected/${id_salesman}`, 'GET')
-
-        let div = document.createElement('div');
-        div.className = "collapse col-md-12 sellerexpected"
-
-        await expecteds.forEach(expected => {
-            div.appendChild(View.expectedsMonth(expected))
-        })
-
-        card.appendChild(div)
-
-        $('.sellerexpected').collapse()
-    } else {
-
-        let btn = event.currentTarget
-        const type = btn.getAttribute("data-type")
-
-        if (type === "1") {
-            $('.sellerexpected').collapse('hide')
-
-            event.currentTarget.children[1].remove()
-        }
-    }
-}
-
-window.listExpectedSalesmanMonth = listExpectedSalesmanMonth
-
-async function listExpectedSalesmanMonth(event) {
-
-    let isExpanded = event.currentTarget.children
-
-    if (isExpanded.length === 1) {
-
-        const card = event.currentTarget
-        const id_salesman = card.getAttribute("data-id_salesman")
-        const date = card.getAttribute("data-date")
-
-        let expecteds = await Connection.noBody(`goalexpectedmonth/${id_salesman}/${date}`, 'GET')
-
-        let div = document.createElement('div');
-        div.className = "col-md-12 sellerexpectedmonth"
-
-        await expecteds.forEach(expected => {
-            div.appendChild(View.expectedsGroups(expected))
-        })
-
-        card.appendChild(div)
-
-        $('.sellerexpectedmonth').collapse()
-    } else {
-        $('.sellerexpectedmonth').collapse('hide')
-
-        event.currentTarget.children[1].remove()
-    }
-}
-
-window.inputFile = inputFile
-
-function inputFile() {
-    var fileName = document.getElementById('file').files[0].name;
-    if (fileName.split('.').pop() === "xlsx") {
+const inputFile = () => {
+    let fileName = document.getElementById('file').files[0].name;
+    if (fileName.split('.').pop() === "xlsx" || fileName.split('.').pop() === "xls") {
         document.getElementById('filename').innerHTML = fileName
     } else {
         document.getElementById('file').value = "";
@@ -531,18 +937,13 @@ function inputFile() {
     }
 }
 
-window.uploadGoals = uploadGoals
+document.querySelector('[data-file]').addEventListener('change', inputFile, false)
 
-async function uploadGoals(event) {
-    event.preventDefault()
-    $('#uploadGoals').modal('hide')
+const uploadFile = async (event) => {
+    event.preventDefault();
 
-    let loading = document.querySelector('[data-loading]')
-    loading.style.display = "block";
     try {
-        const btn = event.currentTarget
-
-        const file = btn.form.file.files[0]
+        const file = event.currentTarget.file.files[0]
 
         const formData = new FormData()
 
@@ -550,9 +951,10 @@ async function uploadGoals(event) {
 
         const obj = await Connection.bodyMultipart('goalexcel', formData, 'POST')
 
-        loading.style.display = "none";
+        alert(obj.msg)
     } catch (error) {
-        alert(error)
-        loading.style.display = "none";
+
     }
 }
+
+document.querySelector('[data-form-upload]').addEventListener('submit', uploadFile, false)

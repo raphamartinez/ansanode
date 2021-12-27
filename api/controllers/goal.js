@@ -12,45 +12,7 @@ module.exports = app => {
 
     app.get('/metas', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
-
-            let sellers;
-            let amount;
-
-            const cached = false
-            // await cachelist.searchValue(`goal:sellers:${req.login.id_login}`)
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            } else {
-
-                let id_login = false;
-                let office = false;
-                let code = false;
-
-                if (req.access.all.allowed) {
-                    sellers = await Sellers.list(id_login, office);
-                    amount = await Sellers.dashboard(id_login, office, code);
-
-                } else {
-                    if (req.login.perfil == 4 || req.login.perfil == 8) {
-                        let offices = req.login.offices
-
-                        office = offices.map(of => {
-                            return of.code
-                        })
-                    } else {
-                        id_login = req.login.id_login
-                    }
-
-                    sellers = await Sellers.list(id_login, office);
-                    amount = await Sellers.dashboard(id_login, office, code);
-                }
-            }
-
-            res.render('metas', {
-                sellers,
-                amount
-            })
-
+            res.render('metas')
         } catch (err) {
             next(err)
         }
@@ -67,6 +29,81 @@ module.exports = app => {
             next(err)
         }
     })
+
+    app.get('/goal/sellers/:month/:office?/:seller?/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
+
+            const cached = await cachelist.searchValue(`goal/sellers/${req.params}`);
+
+            if (cached) {
+                return res.json(JSON.parse(cached));
+            }
+
+            let sellers;
+            let offices;
+            let id_login;
+            let group;
+            let month = req.params.month;
+            if (req.access.all.allowed) {
+                offices = req.params.office;
+                id_login = req.params.seller;
+                group = req.params.group;
+
+                sellers = await Goal.listSeller(month, id_login, offices, group);
+            } else {
+                if (req.login.perfil == 4 || req.login.perfil == 8) {
+                    id_login = req.params.seller;
+                    group = req.params.group;
+
+                    offices = req.params.office ? req.params.office : req.login.offices.map(of => of.code);
+
+                    sellers = await Goal.listSeller(month, id_login, offices, group);
+                } else {
+                    id_login = req.login.id_login;
+                    group = req.params.group;
+
+                    sellers = await Goal.listSeller(month, id_login, false, group);
+                }
+            }
+
+            cachelist.addCache(`goal/sellers/${req.params}`, JSON.stringify(sellers), 60 * 15);
+
+            res.json(sellers);
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/goal/offices/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
+
+            // const cached = await cachelist.searchValue(`goal/offices/${req.params}`);
+
+            // if (cached) {
+            //     return res.json(JSON.parse(cached));
+            // }
+
+            let goals;
+            let offices;
+            let month = req.params.month;
+
+            if (req.access.all.allowed) {
+                offices = req.params.office;
+                goals = await Goal.listOffice(month, offices);
+            } else {
+                offices = req.params.office ? req.params.office : req.login.offices.map(of => of.code);
+                goals = await Goal.listOffice(month, offices);
+            }
+
+            cachelist.addCache(`goal/offices/${req.params}`, JSON.stringify(goals), 60 * 15);
+
+            res.json(goals);
+        } catch (err) {
+            next(err)
+        }
+    })
+
+
 
     app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {

@@ -205,22 +205,22 @@ module.exports = app => {
         }
     })
 
-    app.get('/expectedsellers', Middleware.authenticatedMiddleware, async ( req, res, next) => {
-        try {
-            const cached = await cachelist.searchValue(`goal:id_login:${req.login.id_login}`)
+    // app.get('/expectedsellers', Middleware.authenticatedMiddleware, async ( req, res, next) => {
+    //     try {
+    //         const cached = await cachelist.searchValue(`goal:id_login:${req.login.id_login}`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            }
+    //         if (cached) {
+    //             return res.json(JSON.parse(cached))
+    //         }
 
-            const id_login = req.login.id_login
+    //         const id_login = req.login.id_login
 
-            const expected = await Item.listExpectedSalesByManager(id_login)
-            cachelist.addCache(`goal:id_login:${req.login.id_login}`, JSON.stringify(expected), 60 * 60 * 6)
+    //         const expected = await Item.listExpectedSalesByManager(id_login)
+    //         cachelist.addCache(`goal:id_login:${req.login.id_login}`, JSON.stringify(expected), 60 * 60 * 6)
 
-            res.json(expected)
-        } catch (err) {
-            next(err)
-        }
-    })
+    //         res.json(expected)
+    //     } catch (err) {
+    //         next(err)
+    //     }
+    // })
 }

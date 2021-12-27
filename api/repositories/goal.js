@@ -5,10 +5,10 @@ class Goal {
 
     async insert(goal) {
         try {
-            const sql = 'INSERT INTO ansa.goal (id_goalline, id_salesman, amount) values (?, ?, ?)'
-            const result = await query(sql, [goal.id_goalline, goal.id_salesman, goal.amount])
+            const sql = 'INSERT INTO ansa.goal (id_goalline, id_salesman, amount) values (?, ?, ?)';
+            const result = await query(sql, [goal.id_goalline, goal.id_salesman, goal.amount]);
 
-            return result
+            return result.insertId;
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
@@ -52,11 +52,9 @@ class Goal {
         try {
             const sql = 'SELECT id_goalline FROM ansa.goalline where itemcode = ? and date = ?'
             const result = await query(sql, [obj.itemcode, obj.date])
-            console.log(result);
 
-            return result[0].id_goalline
+            return result[0].id_goalline;
         } catch (error) {
-            console.log(error);
             return false
         }
     }
@@ -81,17 +79,57 @@ class Goal {
             FROM ansa.salesman sa
             CROSS JOIN ansa.goalline gl
             LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
-            WHERE sa.id_login = '${id_login}'
+            WHERE sa.id_login = ?
             group by sa.code, gl.date
             order by gl.date asc`
 
-            return query(sql)
+            return query(sql, id_login)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
 
+    async listGoals(id_salesman, month, group){
+        try {
+            let sql = `SELECT GL.itemgroup, COUNT(GO.amount) as amount
+            FROM ansa.salesman SA
+            LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
+            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND SA.id_salesman = ?
+            AND GL.date BETWEEN ? AND ? `
 
+            if(group) sql+= ` AND GL.itemgroup = '${group}' `
+            
+            sql+= ` 
+            group by GL.itemgroup
+            ORDER BY GL.itemgroup ASC`
+
+            const result = await query(sql, [id_salesman, `${month}-01`, `${month}-30`])
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async items(offices, month){
+        try {
+            let sql = `SELECT GL.itemcode, COUNT(GO.amount) as amount
+            FROM ansa.salesman SA
+            LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
+            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND SA.office = ?
+            AND GL.date BETWEEN ? AND ?
+            group by GL.itemgroup
+            ORDER BY GL.itemgroup ASC`
+
+            const result = await query(sql, [offices, `${month}-01`, `${month}-30`])
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
 }
 
 module.exports = new Goal()

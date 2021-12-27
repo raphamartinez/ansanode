@@ -35,6 +35,7 @@ class Seller {
 
             return sellers
         } catch (error) {
+            console.log(error);
             throw new InternalServerError('No se pudieron enumerar los vendedores.')
         }
     }

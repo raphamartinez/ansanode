@@ -388,9 +388,9 @@ class Hbs {
                         INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
                         INNER JOIN Label La ON I.Labels = La.Code
                         INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE I.Code = "${code}"`
+                        WHERE I.Code = ?`
 
-            const data = await queryhbs(sql)
+            const data = await queryhbs(sql, code)
 
             if (data[0].StockQty > 0) return data
 
@@ -532,10 +532,10 @@ class Hbs {
             const sql = `SELECT Ig.Name FROM ItemGroup Ig
             INNER JOIN Item I ON Ig.Code = I.ItemGroup
             INNER JOIN Stock St ON St.ArtCode = I.Code
-            WHERE St.StockDepo IN (${stocks})
+            WHERE St.StockDepo IN (?)
             AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             GROUP BY Ig.Name`
-            return queryhbs(sql)
+            return queryhbs(sql, stocks)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Grupo de Artículos')
         }
@@ -577,10 +577,10 @@ class Hbs {
             SUM(IF(MONTH(Sa.TransDate) = (MONTH(NOW()- interval 3 MONTH)),Sr.Qty,0)) AS goal3, DATE_FORMAT(NOW() - INTERVAL 3 month, '%m/%Y') AS month3
             FROM SalesOrder Sa
             INNER JOIN SalesOrderItemRow Sr ON Sa.internalId = Sr.masterId 
-            WHERE Sr.ArtCode = ${artcode}
-            AND Sa.SalesMan = '${salesman.code}'`
+            WHERE Sr.ArtCode = ?
+            AND Sa.SalesMan = ?`
 
-            const data = await queryhbs(sql)
+            const data = await queryhbs(sql, [artcode, salesman.code])
             return data[0]
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

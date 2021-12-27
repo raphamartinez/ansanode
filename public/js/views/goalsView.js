@@ -1,128 +1,4 @@
-const addGoals = () => {
-    const div = document.createElement('div')
 
-    const content = `
-  <div class="container-fluid">
-  <div class="d-sm-flex align-items-center justify-content-between mb-4">
-      <div class="col-md-12 text-left">
-          <a href="/metas" class="btn btn-secondary">
-              <i class="fas fa-chevron-left"></i> Volver a la lista
-          </a>
-          <button  data-toggle="modal" data-target="#searchGoal" type="button" class="btn btn-success">
-              <i class="fas fa-search"></i> Nuevo Filtro
-          </button>
-      </div>
-  </div>
-  <div class="row">
-      <div class="col-md-12">
-          <div class="card">
-              <div class="tab-pane">
-                  <div class="form-group">
-                      <div class="col-md-12 text-left">
-                          <div class="text-center" id="loadinggoals"></div>
-                          <div id="info" text-left">
-                              <h5><strong>Información de la meta</strong></h5>
-                              <ul class="list-group">
-                                  <li>La meta del mes debe ingresarse de acuerdo con la columna correspondiente, por defecto se muestran 12 meses.</li>
-                                  <li>Para guardar la meta, presione la tecla "Enter", después del cual el sistema lo
-                                      dirigirá a la siguiente línea.</li>
-                                  <li>Use filtros de columna para ayudar con la tarea.</li>
-                              </ul>
-                          </div>
-                          <table style="font-family: Calibri; font-size: 0.75em; letter-spacing: .1em;"
-                              class="table table-bordered text-left" id="tablegoals" width="100%" cellspacing="0">
-                          </table>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-  </div>
-</div>
-</div>
-
-  `
-    div.innerHTML = content
-
-    return div
-}
-
-const addGoalsExcel = () => {
-    const div = document.createElement('div')
-
-    const content = `
-    <div class="container-fluid">
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <div class="col-md-12 text-left">
-            <a href="/metas" type="button" class="btn btn-secondary">
-                <i class="fas fa-chevron-left"></i> Volver a la lista
-            </a>
-            <button data-toggle="modal" data-target="#searchGoal" type="button" class="btn btn-success">
-                <i class="fa fa-file-excel"></i> Descarga Excel
-            </button>
-            <button data-toggle="modal" data-target="#uploadGoals" type="button" class="btn btn-success">
-            <i class="fas fa-file-upload"></i> Importar Excel
-            </button>
-        </div>
-    </div>
-    <div class="row gutters-sm">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="tab-pane">
-                    <div class="form-group">
-                        <div class="col-md-12 p-4 text-left">
-                            <div class="text-center" id="loadinggoals"></div>
-                            <div id="info" text-center ">
-                                <h5><strong>Información de la meta</strong></h5>
-                                <ul class=" list-group">
-                                <li>La meta del mes debe ingresarse de acuerdo con la columna correspondiente, por
-                                    defecto se muestran 12 meses.</li>
-                                <li>Para guardar la meta, presione la tecla "Enter", después del cual el sistema lo
-                                    dirigirá a la siguiente línea.</li>
-                                <li>Use filtros de columna para ayudar con la tarea.</li>
-                                <li>No realice cambios en las celdas de la hoja de cálculo, excepto en las columnas
-                                    destinadas a la inserción de la meta.</li>
-                                <li>Sube la hoja de cálculo y los valores se registrarán automáticamente en la base de
-                                    datos.</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-</div>
-  
-    `
-    div.innerHTML = content
-
-    return div
-}
-
-const opcionesGoals = () => {
-    const div = document.createElement('div')
-
-    const content = `
-    <div class="d-sm-flex align-items-center justify-content-between mb-4">
-    <div class="col-md-6 text-left">
-        <div class="btn-group" role="group">
-            <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Opciones
-            </button>
-            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                <a onclick="addGoalsList(event)" class="dropdown-item"><i class="fa fa-plus"></i> Fijar metas Online</a>
-                <a onclick="addGoalsListExcel(event)" class="dropdown-item"><i class="fa fa-file-excel"></i> Fijar metas con Excel</a>
-            </div>
-        </div>
-    </div>
-</div>
-  `
-    div.innerHTML = content
-
-    return div
-}
 
 
 const lineaddgoal = (goal, index, id_salesman, disabled) => {
@@ -153,33 +29,6 @@ const lineaddgoal = (goal, index, id_salesman, disabled) => {
     return content
 }
 
-const listGroups = (group) => {
-
-    const option = document.createElement('option')
-
-    const content = `${group.Name}</option>`
-
-    option.value = group.Name
-
-    option.innerHTML = content
-
-    return option
-}
-
-
-const listSalesman = (salesman) => {
-
-    const option = document.createElement('option')
-
-    const content = `${salesman.name}</option>`
-
-    option.value = `{"id_salesman": ${salesman.id_salesman}, "office": "${salesman.office}"}`
-
-    option.innerHTML = content
-
-    return option
-}
-
 const listDate = (datesql, date) => {
     const option = document.createElement('option')
 
@@ -196,130 +45,14 @@ const modalAdd = () => {
     const div = document.createElement('div')
 
     const content = `
-  <div class="modal fade" id="searchGoal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-          <div class="modal-header">
-              <h5 class="modal-title">Filtrar la Meta</h5>
-              <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">x</span>
-              </button>
-          </div>
-          <form>
-              <div class="modal-body">
-              <div class="form-group border text-center col-md-12 d-none d-md-block">
-              <h8>Buscar Articulos sin stock?</h8>
-              <div class="form-check">
-                  <input class="form-check-input" type="radio" name="stock" id="stocksi" value="1">
-                  <label class="form-check-label" for="stocksi">
-                      Sí
-                  </label>
-              </div>
-              <div class="form-check">
-                  <input class="form-check-input" type="radio" name="stock" id="stockno" value="2" checked>
-                  <label class="form-check-label" for="stockno">
-                      No
-                  </label>
-              </div>
-          </div>
-          <hr>
-          <div class="form-group text-center col-md-12 d-none d-md-block">
-              <select title="Vendedor" id="listsellers" class="form-control selectpicker">
-              </select>
-          </div>
-          <div class="form-group text-center col-md-12 d-none d-md-block">
-              <select title="Grupo del Articulo" id="listgroups" class="selectpicker form-control">
-              </select>
-          </div>
-              </div>
-              <div class="modal-footer">
-                  <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                  <button type="submit" onclick="listGoalsSalesman(event)" class="btn btn-info"><i class="fas fa-plus"> Buscar</i></button>   
-              </div>
-          </form>
-      </div>
-  </div>
-  </div>
+  
 `
     div.innerHTML = content
 
     return div
 }
 
-const modalAddExcel = () => {
-    const div = document.createElement('div')
 
-    const content = `
-    <div class="modal fade" id="searchGoal" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Generar Excel de Metas</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-                </button>
-            </div>
-            <form>
-                <div class="modal-body">
-            <div class="form-group text-center col-md-12 d-none d-md-block">
-                <select title="Vendedor" id="listsellers" class="selectpicker form-control">
-                </select>
-            </div>
-            <div class="form-group text-center col-md-12 d-none d-md-block">
-                <select title="Grupo del Articulo" id="listgroups" class="selectpicker form-control" multiple>
-                </select>
-            </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" onclick="listGoalsExcel(event)" class="btn btn-success"><i class="fas fa-file-excel"> Descarga Excel</i></button>   
-                </div>
-            </form>
-        </div>
-    </div>
-    </div>
-  `
-    div.innerHTML = content
-
-    return div
-}
-
-const modalUploadExcel = () => {
-    const div = document.createElement('div')
-
-    const content = `
-    <div class="modal fade" id="uploadGoals" tabindex="-1">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Importar Excel</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-                </button>
-            </div>
-            <form>
-                <div class="modal-body">
-                <div class="form-group col-md-12 text-center">
-                <label><h5>Seleccione el Excel que desea importar al sistema.</h5></label>
-                    <div class="custom-file">
-                    <input type="file" class="custom-file-input" id="file" oninput="inputFile()" required>
-                    <label class="custom-file-label" id="filename" for="validatedCustomFile">Buscar archivo...</label>
-                    </div>
-                </div>
-                </div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                    <button type="submit" onclick="uploadGoals(event)" class="btn btn-success"><i class="fas fa-file-excel"> Importar</i></button>   
-                </div>
-            </form>
-        </div>
-    </div>
-    </div>
-  `
-    div.innerHTML = content
-
-    return div
-}
 
 
 const showGoals = () => {
@@ -495,23 +228,58 @@ const expectedsGroups = (expected) => {
 
 }
 
+const user = (salesman, goals, index) => {
+    const div = document.createElement('div');
+
+    div.innerHTML = `
+    <div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-row">
+            <div class="form-group border col-md-8 ">
+                <div class="form-row">
+                    <div class="form-group col-md-10">
+                        <h3>${salesman.name}</h3>
+                    </div>
+                    <div class="form-group col-md-7 text-center" data-div-chart-${index}>
+                        <h5>Graficos</h5>
+                        <canvas class="flex d-inline" data-chart-amount-${index}></canvas>
+                    </div>
+                    <div class="form-group col-md-5 text-center">
+                        <h5>Grupos</h5>
+                        <table id="tableGroups" class="table table-hover table-sm ">
+                        <thead>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Cant</th>
+                        <th scope="col">% Meta</th>
+                        </thead>
+                            <tbody>
+                                ${goals}
+                              </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group border col-md-4">
+                <div id="gaugeChart${index}" class="column"></div>
+            </div>
+        </div>
+    </div>
+</div>`
+
+    return div;
+}
+
 export const View = {
-    addGoals,
-    addGoalsExcel,
-    opcionesGoals,
+    user,
     lineaddgoal,
-    listSalesman,
     listDate,
-    listGroups,
     modalAdd,
-    modalAddExcel,
     progress,
     sellers,
     showGoals,
     expecteds,
     expectedsMonth,
-    expectedsGroups,
-    modalUploadExcel
+    expectedsGroups
 }
 
 

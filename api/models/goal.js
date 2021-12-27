@@ -1,4 +1,7 @@
-const Repositorie = require('../repositories/goal')
+const Repositorie = require('../repositories/goal');
+const RepositorieSeller = require('../repositories/seller');
+const RepositorieSales = require('../repositories/sales');
+
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const excelToJson = require('convert-excel-to-json')
 const fs = require('fs')
@@ -79,7 +82,7 @@ class Goal {
 
                     let i = { itemcode: line[1], date: `${year}-${month}-01` }
                     const id_goalline = await Repositorie.search(i)
- 
+
                     if (id_goalline) {
                         let item = {
                             id_goalline: id_goalline,
@@ -110,6 +113,95 @@ class Goal {
             return Repositorie.list(goal)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los goals.')
+        }
+    }
+
+    async listOffice(month, offices){
+        try {
+            const data = await RepositorieSeller.list(false, offices);
+            let sellers = [];
+
+            for (let obj of data) {
+                let goals = await Repositorie.listGoals(obj.id_salesman, month);
+                let amount = await RepositorieSales.list(obj.code, month);
+                let sales = await RepositorieSales.graphSalesDay(obj.code, month);
+
+                const salesPerDay = sales.map(sale => {
+                    return sale.qty
+                });
+
+                let x = 0;
+
+                let salesAmount = sales.map(sale => {
+                    x += sale.qty
+                    return x
+                });
+
+                const days = sales.map(sale => {
+                    return sale.TransDate
+                });
+
+                obj.goals = goals;
+                obj.amount = amount;
+                obj.salesPerDay = salesPerDay;
+                obj.salesAmount = salesAmount;
+                obj.days = days;
+
+                sellers.push(obj);
+            }
+
+            
+            let goals = []
+
+            for(let seller of sellers){
+
+            }
+
+            return sellers;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas.');
+        }
+    }
+
+    async listSeller(month, salesman, offices, group) {
+        try {
+            const data = await RepositorieSeller.list(salesman, offices);
+            let sellers = [];
+
+            for (let obj of data) {
+                let goals = await Repositorie.listGoals(obj.id_salesman, month, group);
+                let amount = await RepositorieSales.list(obj.code, month, group);
+                let sales = await RepositorieSales.graphSalesDay(obj.code, month, group);
+
+                const salesPerDay = sales.map(sale => {
+                    return sale.qty
+                });
+
+                let x = 0;
+
+                let salesAmount = sales.map(sale => {
+                    x += sale.qty
+                    return x
+                });
+
+                const days = sales.map(sale => {
+                    return sale.TransDate
+                });
+
+                obj.goals = goals;
+                obj.amount = amount;
+                obj.salesPerDay = salesPerDay;
+                obj.salesAmount = salesAmount;
+                obj.days = days;
+
+                sellers.push(obj);
+            }
+
+            return sellers;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas.');
         }
     }
 

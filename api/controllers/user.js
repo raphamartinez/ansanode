@@ -20,11 +20,10 @@ module.exports = app => {
             let users;
             let offices = req.login.offices
             let perfil = req.params.perfil
-
             History.insertHistory(`Listado de usuarios.`, req.login.id_login)
 
             if (req.access.all.allowed) {
-                users = await User.listUsers(perfil, id)
+                users = await User.listUsers(perfil, false, false)
             } else {
                 if (req.login.perfil == 4) {
                     offices = offices.map(of => {
@@ -36,6 +35,7 @@ module.exports = app => {
                     users = await User.listUsers(perfil, req.login.id_login)
                 }
             }
+            console.log(users);
 
             res.json(users)
         } catch (err) {

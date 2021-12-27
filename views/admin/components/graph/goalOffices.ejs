@@ -9,6 +9,9 @@
                     <label for="office">Sucursal</label>
                     <select id="suoffice" name="office" class="form-control" data-office required>
                         <option value="" disabled selected>Sucursal</option>
+                        <% offices.forEach(office=> { %>
+                            <option value="<%=office.code%>"><%= office.name %></option>
+                            <% }) %>
                     </select>
                 </div>
                 <div class="form-group col-md-6">

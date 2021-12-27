@@ -18,9 +18,9 @@ class Hbs {
         }
     }
 
-    listSalesman() {
+    listSalesman(id_login, offices) {
         try {
-            return Repositorie.listSalesMan()
+            return Repositorie.listSalesMan(id_login, offices)
         } catch (error) {
             throw new InternalServerError('Error')
         }

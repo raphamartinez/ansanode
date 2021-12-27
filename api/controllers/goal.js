@@ -1,6 +1,9 @@
 const Goal = require('../models/goal')
 const GoalLine = require('../models/goalline')
 const Sellers = require('../models/seller')
+const Hbs = require('../models/hbs')
+const Office = require('../models/office')
+
 const moment = require('moment')
 const multer = require('multer')
 const multerConfig = require('../config/multer')
@@ -12,7 +15,32 @@ module.exports = app => {
 
     app.get('/metas', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
-            res.render('metas')
+            let id_login = false;
+            let offices = false;
+            let sellers;
+
+            if (req.access.all.allowed) {
+                sellers = await Sellers.list();
+                offices = await Office.listOffice();
+            } else {
+                if (req.login.perfil == 4 || req.login.perfil == 8) {
+                    let offices = req.login.offices;
+
+                    offices = offices.map(of => {
+                        return of.code
+                    });
+                } else {
+                    id_login = req.login.id_login;
+                }
+
+                sellers = await Sellers.list(id_login, offices);
+                offices = await Office.listOffice(req.login.id_login);
+            }
+
+            res.render('metas', {
+                sellers,
+                offices
+            })
         } catch (err) {
             next(err)
         }
@@ -128,12 +156,13 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalslineexcel/:id_salesman/:groups', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalslineexcel/:salesman/:groups/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
-            const id_salesman = req.params.id_salesman
+            const salesman = req.params.salesman
             const groups = req.params.groups
+            const stock = req.params.stock
 
-            const wb = await GoalLine.listExcel(id_salesman, groups)
+            const wb = await GoalLine.listExcel(salesman, groups, stock)
 
             wb.write('meta.xlsx', res)
         } catch (err) {

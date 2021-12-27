@@ -140,11 +140,11 @@ const viewGroup = async (event) => {
                     case (percent == 0):
                         color = '#A9A9A9';
                         break;
-        
+
                     case (percent > 0 && percent <= 25):
                         color = '#FB301E';
                         break;
-        
+
 
                     case (percent > 25 && percent <= 50):
                         color = '#E2D51A';
@@ -407,7 +407,7 @@ const searchOffice = async (event) => {
     try {
         const office = event.currentTarget.office.value;
         const month = event.currentTarget.month.value;
-        
+
         // const offices = await Connection.noBody(`goal/offices/${month}/${office}`, 'GET');
 
         // offices.forEach(of => {
@@ -711,12 +711,21 @@ const generateExcel = async (event) => {
         const arrgroups = document.querySelectorAll('#exgroups option:checked');
         const groups = Array.from(arrgroups).map(el => `'${el.value}'`);
 
-        const optionseller = document.querySelector('#exsellers option:checked');
-        const salesman = await JSON.parse(optionseller.value);
+        const salesman = document.querySelector('#exsellers option:checked').value;
+        const stock = document.querySelector('input[name="liststock"]:checked').value;
 
-        const xls = await Connection.backFile(`goalslineexcel/${salesman.id_salesman}/${groups}`, 'GET');
+        document.querySelector('[data-btn-download]').innerHTML = ""
+        
+        const div = document.createElement('div')
+        div.classList.add('spinner-border', 'spinner-border')
 
-        document.querySelector('[data-generate-excel]').reset();
+        document.querySelector('[data-btn-download]').appendChild(div);
+
+        document.querySelector('[data-btn-download]').disabled = true;
+
+        const xls = await Connection.backFile(`goalslineexcel/${salesman}/${groups}/${stock}`, 'GET');
+
+        document.querySelector('[data-btn-download]').innerHTML = `<i class="fas fa-file-excel"> Descarga Excel</i>`;
 
         const filexls = await xls.blob();
 
@@ -856,10 +865,8 @@ const listGoals = async (salesman, group, stock) => {
                 row.child.hide();
                 tr.removeClass('shown');
             } else {
-                const seller = document.querySelector('#onsellers option:checked');
-                const salesman = JSON.parse(seller.value);
-
-                const sales = await Connection.noBody(`sale/${salesman.id_salesman}/${artcode}`, "GET")
+                const salesman = document.querySelector('#onsellers option:checked').value;
+                const sales = await Connection.noBody(`sale/${salesman}/${artcode}`, "GET")
 
                 row.child(listSales(sales)).show();
                 tr.addClass('shown');

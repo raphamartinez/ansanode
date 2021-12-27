@@ -6,17 +6,29 @@ const cachelist = require('../infrastructure/redis/cache')
 
 module.exports = app => {
 
-    app.get('/sellershbs', [Middleware.authenticatedMiddleware, Authorization('salesman', 'read')], async (req, res, next) => {
+    app.get('/sellershbs/:offices?', [Middleware.authenticatedMiddleware, Authorization('salesman', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`sellers`)
+            let id_login = false;
+            let offices = false;
+            let sellers;
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
+            if (req.access.all.allowed) {
+                offices = req.params.offices;
+                sellers = await Hbs.listSalesman();
+            } else {
+                if (req.login.perfil == 4 || req.login.perfil == 8) {
+                    let offices = req.login.offices;
+
+                    offices = offices.map(of => {
+                        return of.code
+                    });
+                } else {
+                    id_login = req.login.id_login;
+                }
+
+                sellers = await Hbs.listSalesman(id_login, offices);
             }
-
-            const sellers = await Hbs.listSalesman()
-            cachelist.addCache(`sellershbs`, JSON.stringify(sellers), 60 * 60 * 6)
 
             res.json(sellers)
         } catch (err) {
@@ -42,13 +54,13 @@ module.exports = app => {
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
                     let offices = req.login.offices;
 
-                        office = offices.map(of => {
-                            return of.code
-                        });
-                 }else{
+                    office = offices.map(of => {
+                        return of.code
+                    });
+                } else {
                     id_login = req.login.id_login;
-                 }
-                 sellers = await Seller.list(id_login, office);
+                }
+                sellers = await Seller.list(id_login, office);
             }
 
             cachelist.addCache(`goal:sellers:goal:${req.login.id_login}`, JSON.stringify(sellers), 60 * 60 * 6)

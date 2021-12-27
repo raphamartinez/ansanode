@@ -149,25 +149,83 @@ class GoalLine {
         }
     }
 
-    async listExcel(id_salesman, groups) {
+    async listExcel(id_salesman, groups, stock) {
+        console.log(stock);
         try {
             const salesman = await RepositorieSeller.view(false, id_salesman)
-            const data = await RepositorieGoal.listExcel(id_salesman, groups)
-
+            const data = await RepositorieGoal.listExcel(id_salesman, groups, stock)
+            let titles;
+            const dates = await datesGoal()
             let lines = []
-            for (let line of data) {
 
-                let arr = []
-                stocks.forEach(stock => {
-                    if (stock[1] == salesman.office) arr.push(stock[0])
-                })
+            if (stock == 1) {
+                for (let line of data) {
 
-                const stock = await RepositorieHbs.listItemsStock(line.itemcode, arr);
+                    let arr = []
+                    stocks.forEach(stock => {
+                        if (stock[1] == salesman.office) arr.push(stock[0])
+                    })
 
-                line.stockCity = stock.CityQty - stock.CityReserved;
-                line.stockAnsa = stock.Qty - stock.Reserved;
+                    const stock = await RepositorieHbs.listItemsStock(line.itemcode, arr);
 
-                lines.push(line);
+                    line.stockCity = stock.CityQty - stock.CityReserved;
+                    line.stockAnsa = stock.Qty - stock.Reserved;
+
+                    lines.push(line);
+                }
+
+                titles = [
+                    "Vendedor",
+                    "Id",
+                    "Grupo",
+                    "Producto",
+                    "Aplicacion",
+                    "Nº Etiqueta",
+                    "Etiqueta",
+                    "Cod Articulo",
+                    "Articulo",
+                    `Stock Sucursal ${salesman.office}`,
+                    "Stock ANSA",
+                    dates[0],
+                    dates[1],
+                    dates[2],
+                    dates[3],
+                    dates[4],
+                    dates[5],
+                    dates[6],
+                    dates[7],
+                    dates[8],
+                    dates[9],
+                    dates[10],
+                    dates[11],
+                    dates[12]
+                ]
+            } else {
+                lines = data;
+                titles = [
+                    "Vendedor",
+                    "Id",
+                    "Grupo",
+                    "Producto",
+                    "Aplicacion",
+                    "Nº Etiqueta",
+                    "Etiqueta",
+                    "Cod Articulo",
+                    "Articulo",
+                    dates[0],
+                    dates[1],
+                    dates[2],
+                    dates[3],
+                    dates[4],
+                    dates[5],
+                    dates[6],
+                    dates[7],
+                    dates[8],
+                    dates[9],
+                    dates[10],
+                    dates[11],
+                    dates[12]
+                ]
             }
 
             const wb = new xl.Workbook({
@@ -187,35 +245,6 @@ class GoalLine {
             });
 
             const ws = wb.addWorksheet('Meta');
-
-            const dates = await datesGoal()
-
-            const titles = [
-                "Vendedor",
-                "Id",
-                "Grupo",
-                "Producto",
-                "Aplicacion",
-                "Nº Etiqueta",
-                "Etiqueta",
-                "Cod Articulo",
-                "Articulo",
-                `Stock Sucursal ${salesman.office}`,
-                "Stock ANSA",
-                dates[0],
-                dates[1],
-                dates[2],
-                dates[3],
-                dates[4],
-                dates[5],
-                dates[6],
-                dates[7],
-                dates[8],
-                dates[9],
-                dates[10],
-                dates[11],
-                dates[12]
-            ]
 
             const date = new Date()
             const date2 = new Date(date.getTime() - 14400000)
@@ -244,10 +273,10 @@ class GoalLine {
 
             ws.cell(3, 2, 3, 9, true).string(`Fecha de Registro: ${now}`)
             ws.cell(4, 2, 4, 9, true).string(`Grupos: ${groups}`)
-            ws.cell(5, 2, 5, 9, true).string(`Valores de stock según la fecha de generación del excel: ${now}`)
+            if (stock == 1) ws.cell(5, 2, 5, 9, true).string(`Valores de stock según la fecha de generación del excel: ${now}`)
             ws.column(2).hide()
             ws.row(6).freeze();
-            ws.column(5).setWidth(35);
+            ws.column(5).setWidth(20);
             ws.column(7).setWidth(35);
             ws.column(9).setWidth(50).freeze()
             ws.row(6).filter({
@@ -276,6 +305,7 @@ class GoalLine {
                             } else {
                                 ws.cell(rowIndex, columnIndex++).string(record[columnName])
                             }
+
                             break
                     }
                 })

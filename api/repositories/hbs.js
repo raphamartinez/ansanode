@@ -326,11 +326,19 @@ class Hbs {
         }
     }
 
-    listSalesMan() {
+    listSalesMan(code, offices) {
         try {
-            const sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office
+            let sql = `SELECT DISTINCT Sa.SalesMan as code, Us.Name as name, Us.Office as office
             FROM SalesOrder Sa 
-            INNER JOIN User Us ON Sa.SalesMan = Us.Code WHERE Us.Office IS NOT NULL GROUP BY Us.Code ORDER BY SalesMan`
+            INNER JOIN User Us ON Sa.SalesMan = Us.Code 
+            WHERE Us.Office IS NOT NULL `
+           
+            if(offices) sql+= ` AND Us.Office IN (${offices}) `
+
+            sql += `
+            GROUP BY Us.Code 
+            ORDER BY SalesMan`
+
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar SalesMan')

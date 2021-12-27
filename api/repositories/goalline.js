@@ -48,11 +48,14 @@ class GoalLine {
     }
 
 
-    async listExcel(id_salesman, groups) {
+    async listExcel(id_salesman, groups, stock) {
         try {
   
-            let sql = `SELECT (SELECT code from ansa.salesman where id_salesman = ?) as code,GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelcode, GL.labelname, GL.itemcode, GL.itemname, '' as stockCity, '' as stockAnsa,
-            SUM(IF(MONTH(GL.date) = MONTH(NOW()), GO.amount, 0)) as g1, 
+            let sql = `SELECT (SELECT code from ansa.salesman where id_salesman = ?) as code,GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelcode, GL.labelname, GL.itemcode, GL.itemname, `
+
+            if(stock == 1) sql += ` '' as stockCity, '' as stockAnsa, `
+            
+            sql += ` SUM(IF(MONTH(GL.date) = MONTH(NOW()), GO.amount, 0)) as g1, 
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 1 month)), GO.amount, 0)) as g2, 
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 2 month)), GO.amount, 0)) as g3, 
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 3 month)), GO.amount, 0)) as g4, 

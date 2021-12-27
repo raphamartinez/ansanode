@@ -9,12 +9,18 @@
                     <label for="office">Sucursal</label>
                     <select name="office" class="form-control" data-office required>
                         <option value="" disabled selected>Sucursal</option>
+                        <% offices.forEach(office=> { %>
+                            <option value="<%=office.code%>"><%= office.name %></option>
+                            <% }) %>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
                     <label for="seller">Vendedores</label>
                     <select name="seller" class="form-control" data-seller>
                         <option value="" disabled selected>Vendedores</option>
+                        <% sellers.forEach(seller=> { %>
+                            <option value="<%= seller.id_salesman %>" data-office="<%= seller.office %>"><%= seller.name %> - <%= seller.code %></option>
+                        <% }) %>
                     </select>
                 </div>
                 <div class="form-group col-md-4">

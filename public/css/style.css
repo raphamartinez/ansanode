@@ -148,6 +148,8 @@ input:checked+.slider:before {
   position: fixed;
   z-index: 1031;
   height: 2rem;
+  left: 50%;
+  bottom: 10%;
   vertical-align: text-bottom;
   background-color: currentColor;
   border-radius: 50%;

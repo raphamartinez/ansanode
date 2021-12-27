@@ -715,7 +715,7 @@ const generateExcel = async (event) => {
         const stock = document.querySelector('input[name="liststock"]:checked').value;
 
         document.querySelector('[data-btn-download]').innerHTML = ""
-        
+
         const div = document.createElement('div')
         div.classList.add('spinner-border', 'spinner-border')
 
@@ -726,6 +726,7 @@ const generateExcel = async (event) => {
         const xls = await Connection.backFile(`goalslineexcel/${salesman}/${groups}/${stock}`, 'GET');
 
         document.querySelector('[data-btn-download]').innerHTML = `<i class="fas fa-file-excel"> Descarga Excel</i>`;
+        document.querySelector('[data-btn-download]').disabled = false;
 
         const filexls = await xls.blob();
 
@@ -738,7 +739,8 @@ const generateExcel = async (event) => {
         document.body.removeChild(a);
 
     } catch (error) {
-
+        document.querySelector('[data-btn-download]').innerHTML = `<i class="fas fa-file-excel"> Descarga Excel</i>`;
+        document.querySelector('[data-btn-download]').disabled = false;
     }
 }
 

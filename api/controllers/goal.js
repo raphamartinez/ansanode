@@ -1,12 +1,10 @@
 const Goal = require('../models/goal')
 const GoalLine = require('../models/goalline')
 const Sellers = require('../models/seller')
-const Hbs = require('../models/hbs')
 const Office = require('../models/office')
-
 const moment = require('moment')
 const multer = require('multer')
-const multerConfig = require('../config/multer')
+const multerConfig = require('../config/multerLocal')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
@@ -16,7 +14,7 @@ module.exports = app => {
     app.get('/metas', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
             let id_login = false;
-            let offices = false;
+            let offices = [];
             let sellers;
 
             if (req.access.all.allowed) {
@@ -24,11 +22,8 @@ module.exports = app => {
                 offices = await Office.listOffice();
             } else {
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
-                    let offices = req.login.offices;
-
-                    offices = offices.map(of => {
-                        return of.code
-                    });
+                    let off = req.login.offices.map(of => of.code);
+                    offices.push(off)
                 } else {
                     id_login = req.login.id_login;
                 }
@@ -58,14 +53,14 @@ module.exports = app => {
         }
     })
 
-    app.get('/goal/sellers/:month/:office?/:seller?/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalsalesman/:month/:office?/:seller?/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`goal/sellers/${req.params}`);
+            // const cached = await cachelist.searchValue(`goal/sellers/${req.params}`);
 
-            if (cached) {
-                return res.json(JSON.parse(cached));
-            }
+            // if (cached) {
+            //     return res.json(JSON.parse(cached));
+            // }
 
             let sellers;
             let offices;

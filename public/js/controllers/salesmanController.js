@@ -53,10 +53,8 @@ const list = async () => {
 
         let dtview = data.map(salesman => {
             return [
-                `<a><i data-view data-id="${salesman.id_salesman}" data-name="${salesman.name}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
-                <a><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
-                salesman.name,
-                salesman.manager,
+                `<a class="text-center"><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                `${salesman.name} - ${salesman.code}`,
                 salesman.dateReg
             ]
         });
@@ -67,7 +65,6 @@ const list = async () => {
             columns: [
                 { title: "Opciones" },
                 { title: "Nombre del Vendedor" },
-                { title: "Gerente" },
                 { title: "Fecha de Registro" }
             ],
             paging: true,
@@ -107,13 +104,12 @@ const add = async (event) => {
         const date = new Date()
 
         obj.sellers.forEach(salesman => {
+            if(salesman.id_salesman == false) return alert(`Vendedor ${salesman.name} ya está registrado en el sistema.`)
             rowNode
                 .row
                 .add([
-                    `<a><i data-view data-id="${salesman.id_salesman}" data-name="${salesman.name}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
-                    <a><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
-                    salesman.name,
-                    "",
+                    `<a><i data-drop data-id="${salesman.id_salesman}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                    `${salesman.name} - ${salesman.code}`,
                     `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                 ])
                 .draw()
@@ -123,9 +119,9 @@ const add = async (event) => {
                 .css('color', 'black')
                 .animate({ color: '#4e73df' });
 
-        })
+                alert(`Vendedor ${salesman.name} agregado en el sistema.`)
 
-        alert(obj.msg)
+        })
 
     } catch (error) {
         console.log(error);
@@ -199,10 +195,8 @@ const view = async (event) => {
             rowNode
                 .row
                 .add([
-                    `<a><i data-view data-id="${id}" class="fas fa-user-circle" style="color:#cbccce; padding: 2px;"></i></a>
-                    <a><i data-drop data-id="${id}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
+                    `<a><i data-drop data-id="${id}" class="fas fa-trash" style="color:#CC0000; padding: 2px;"></i></a>`,
                     name,
-                    manager.name,
                     `${date.getHours()}:${date.getMinutes()} ${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                 ])
                 .draw()

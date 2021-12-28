@@ -5,12 +5,9 @@ class PowerBi {
     async insert(powerbi) {
         try {
             const sql = 'INSERT INTO ansa.powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
-            await query(sql, [powerbi.url, powerbi.title, powerbi.type, powerbi.description])
+            const result = await query(sql, [powerbi.url, powerbi.title, powerbi.type, powerbi.description])
 
-            const sqlid = 'SELECT LAST_INSERT_ID() AS id_powerbi FROM ansa.powerbi LIMIT 1'
-            const obj = await query(sqlid)
-
-            return obj[0].id_powerbi
+            return result.insertId;
         } catch (error) {
             throw new InvalidArgumentError('El powerbi no se pudo insertar en la base de datos')
         }

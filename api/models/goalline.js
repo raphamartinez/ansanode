@@ -150,7 +150,7 @@ class GoalLine {
     }
 
     async listExcel(id_salesman, groups, stock) {
-        console.log(stock);
+
         try {
             const salesman = await RepositorieSeller.view(false, id_salesman)
             const data = await RepositorieGoal.listExcel(id_salesman, groups, stock)

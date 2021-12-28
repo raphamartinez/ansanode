@@ -6,11 +6,9 @@ class Quiz {
     async insertQuiz(obj) {
         try {
             const sql = 'INSERT INTO quiz (title, status, datereg) values (?, ?, now() - interval 3 hour )'
-            await query(sql, [obj.title, 1])
+            const result = await query(sql, [obj.title, 1])
 
-            const sqlId = 'select LAST_INSERT_ID() as id from ansa.quiz LIMIT 1'
-            const t = await query(sqlId)
-            return t[0].id
+            return result.insertId;
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
@@ -20,11 +18,9 @@ class Quiz {
     async insertQuestion(obj, id) {
         try {
             const sql = 'INSERT INTO question (title, type, id_quiz) values (?, ?, ?)'
-            await query(sql, [obj.title, obj.type, id])
+            const result = await query(sql, [obj.title, obj.type, id])
 
-            const sqlId = 'select LAST_INSERT_ID() as id from ansa.question LIMIT 1'
-            const t = await query(sqlId)
-            return t[0].id
+            return result.insertId;
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
@@ -34,11 +30,9 @@ class Quiz {
     async insertAnswer(obj, id) {
         try {
             const sql = 'INSERT INTO answer (title, id_question) values (?, ?)'
-            await query(sql, [obj, id])
+            const result = await query(sql, [obj, id])
 
-            const sqlId = 'select LAST_INSERT_ID() as id from ansa.answer LIMIT 1'
-            const t = await query(sqlId)
-            return t[0].id
+            return result.insertId;
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
@@ -48,11 +42,9 @@ class Quiz {
     async insertInterview(user, quiz, id_login) {
         try {
             const sql = 'INSERT INTO ansa.interview (id_quiz, mail, name, status, id_login, datereg) values (?, ?, ?, ?, ?, now() - interval 3 hour)'
-            await query(sql, [quiz.id_quiz, user.mail, user.name, 1, id_login])
+            const result = await query(sql, [quiz.id_quiz, user.mail, user.name, 1, id_login])
 
-            const sqlId = 'select LAST_INSERT_ID() as id from ansa.answer LIMIT 1'
-            const t = await query(sqlId)
-            return t[0].id
+            return result.insertId;
         } catch (error) {
             console.log(error);
             throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')

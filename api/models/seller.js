@@ -9,8 +9,14 @@ class Seller {
 
             for (let index = 0; index < sellers.length; index++) {
                 let salesman = await JSON.parse(sellers[index].toString())
-                const id = await Repositorie.insert(salesman)
-                salesman.id_salesman = id
+
+                const check = await Repositorie.check(salesman.code)
+                if (!check) {
+                    const id = await Repositorie.insert(salesman)
+                    salesman.id_salesman = id;
+                }else{
+                    salesman.id_salesman = false;
+                }
 
                 newSellers.push(salesman)
             }
@@ -23,16 +29,7 @@ class Seller {
 
     async list(id_login, office) {
         try {
-            const data = await Repositorie.list(id_login, office)
-
-            let sellers = []
-            for (let seller of data) {
-                const expected = await Repositorie.listExpected(seller.id_salesman)
-
-                seller.expected = expected
-                sellers.push(seller)
-            }
-
+            const sellers = await Repositorie.list(id_login, office)
             return sellers
         } catch (error) {
             console.log(error);

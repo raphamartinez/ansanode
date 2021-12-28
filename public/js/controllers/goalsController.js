@@ -428,7 +428,7 @@ const searchUnit = async (event) => {
     const seller = event.currentTarget.seller.value;
     const month = event.currentTarget.month.value;
 
-    const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}`, 'GET')
+    const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}`, 'GET')
     document.querySelector('[data-goal-users]').innerHTML = ""
 
     sellers.forEach((salesman, index) => {
@@ -453,7 +453,7 @@ const searchUnit = async (event) => {
                 <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${amount.name}</th>
                     <td>${amount.qty}</td>
-                    <td>${descPorcent}</td>
+                    <td>${goal.amount}</td>
                 </tr>`;
 
             });
@@ -474,7 +474,7 @@ const searchUnit = async (event) => {
                 <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${goal.itemgroup}</th>
                     <td>0</td>
-                    <td>${descPorcent}</td>
+                    <td>${goal.amount}</td>
                 </tr>`;
 
             });
@@ -520,27 +520,6 @@ const init = async () => {
 
     try {
 
-        const sellersgoal = await Connection.noBody('sellers', 'GET');
-        sellersgoal.forEach(salesman => {
-            const option = document.createElement('option');
-            option.value = `{"id_salesman": ${salesman.id_salesman}, "office": "${salesman.office}"}`;
-            option.innerHTML = salesman.name;
-
-            document.getElementById('exsellers').appendChild(option);
-
-            const option2 = document.createElement('option');
-            option2.value = `{"id_salesman": ${salesman.id_salesman}, "office": "${salesman.office}"}`;
-            option2.innerHTML = salesman.name;
-
-            document.getElementById('onsellers').appendChild(option2);
-
-            const option3 = document.createElement('option');
-            option3.value = salesman.code;
-            option3.innerHTML = salesman.name;
-            option3.dataset.office = salesman.office;
-
-            document.querySelector('[data-seller]').appendChild(option3);
-        });
 
         const itemsgroups = await Connection.noBody('itemsgroups', 'GET');
         itemsgroups.forEach(group => {
@@ -556,21 +535,6 @@ const init = async () => {
 
             document.getElementById('ongroups').appendChild(option2);
         })
-
-        const offices = await Connection.noBody('offices', 'GET');
-        offices.forEach(office => {
-            const option = document.createElement('option');
-            option.value = office.code;
-            option.innerHTML = office.name;
-
-            if (office.id_office !== 15) document.querySelector('[data-office]').appendChild(option);
-
-            const option2 = document.createElement('option');
-            option2.value = office.code;
-            option2.innerHTML = office.name;
-
-            if (office.id_office !== 15) document.querySelector('#suoffice').appendChild(option2);
-        });
 
         $('#exgroups').selectpicker("refresh");
 
@@ -682,7 +646,7 @@ document.querySelector('[button-goal-online]').addEventListener('click', goalOnl
 
 
 
-const searchGoalOnline = (event) => {
+const searchGoalOnline = async (event) => {
     event.preventDefault();
 
     try {
@@ -695,9 +659,22 @@ const searchGoalOnline = (event) => {
 
         const stock = document.querySelector('input[name="stock"]:checked').value;
 
-        listGoals(salesman, group, stock);
-    } catch (error) {
+        document.querySelector('[data-btn-online]').innerHTML = ""
 
+        const div = document.createElement('div')
+        div.classList.add('spinner-border', 'spinner-border')
+
+        document.querySelector('[data-btn-online]').appendChild(div);
+        document.querySelector('[data-btn-online]').disabled = true;
+
+        await listGoals(salesman, group, stock);
+
+        document.querySelector('[data-btn-online]').innerHTML = `<i class="fas fa-search"> Buscar</i>`;
+        document.querySelector('[data-btn-online]').disabled = false;
+
+    } catch (error) {
+        document.querySelector('[data-btn-online]').innerHTML = `<i class="fas fa-search"> Buscar</i>`;
+        document.querySelector('[data-btn-online]').disabled = false;
     }
 }
 
@@ -958,11 +935,23 @@ const uploadFile = async (event) => {
 
         formData.append('file', file)
 
+        document.querySelector('[data-btn-upload]').innerHTML = ""
+
+        const div = document.createElement('div')
+        div.classList.add('spinner-border', 'spinner-border')
+
+        document.querySelector('[data-btn-upload]').appendChild(div);
+        document.querySelector('[data-btn-upload]').disabled = true;
+
+        document.querySelector('[data-form-upload]').reset()
+
         const obj = await Connection.bodyMultipart('goalexcel', formData, 'POST')
 
-        alert(obj.msg)
-    } catch (error) {
+        document.querySelector('[data-btn-upload]').innerHTML = `<i class="fas fa-file-excel"> Subir Excel</i></button>`;
+        document.querySelector('[data-btn-upload]').disabled = false;
 
+    } catch (error) {
+        alert('Lo servicio seguira rodando en el servidor!')
     }
 }
 

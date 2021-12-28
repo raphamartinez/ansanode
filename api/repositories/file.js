@@ -5,11 +5,9 @@ class File {
     async insert(file, details, id_login) {
         try {
             const sql = 'INSERT INTO ansa.file (title, description, filename, mimetype, path, type, size, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
-            await query(sql, [details.title, details.description, file.filename, file.mimetype, file.path, details.type, file.size, id_login])
+            const result = await query(sql, [details.title, details.description, file.filename, file.mimetype, file.path, details.type, file.size, id_login])
 
-            const result = await query("Select LAST_INSERT_ID() as id_file from ansa.file LIMIT 1")
-
-            return result[0].id_file
+            return result.insertId;
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el archivo en la base de datos')
         }
@@ -18,11 +16,9 @@ class File {
     async insertoffice(data, id_login) {
         try {
             const sql = 'INSERT INTO ansa.file (title, description, mimetype, path, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
-            await query(sql, [data.title, data.description, data.mimetype, data.path, data.type, id_login])
+            const result = await query(sql, [data.title, data.description, data.mimetype, data.path, data.type, id_login])
 
-            const result = await query("Select LAST_INSERT_ID() as id_file from ansa.file LIMIT 1")
-
-            return result[0].id_file
+            return result.insertId;
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el archivo office en la base de datos')
         }

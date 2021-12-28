@@ -14,6 +14,17 @@ class Seller {
         }
     }
 
+    async check(code) {
+        try {
+            const sql = 'select id_salesman from salesman where code = ?'
+            const result = await query(sql, code)
+
+            return result[0]
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo insertar la sucursal en la base de datos')
+        }
+    }
+
     async delete(id_salesman) {
         try {
             const sql = `UPDATE salesman SET status = ? WHERE id_salesman = ?`
@@ -26,7 +37,6 @@ class Seller {
 
 
     async update(manager) {
-        console.log(manager);
         try {
             const sql = `UPDATE ansa.salesman set id_login = ? WHERE id_salesman = ?`
             const result = await query(sql, [manager.id, manager.id_salesman])
@@ -49,6 +59,8 @@ class Seller {
 
             sql+= ` GROUP BY SA.id_salesman
             ORDER BY SA.name`
+
+            console.log(sql);
 
             return query(sql)
         } catch (error) {

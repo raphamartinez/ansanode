@@ -249,8 +249,8 @@ const user = (salesman, goals, index) => {
                         <table id="tableGroups" class="table table-hover table-sm ">
                         <thead>
                         <th scope="col">Nombre</th>
-                        <th scope="col">Cant</th>
-                        <th scope="col">% Meta</th>
+                        <th scope="col">Vendido</th>
+                        <th scope="col">Meta</th>
                         </thead>
                             <tbody>
                                 ${goals}

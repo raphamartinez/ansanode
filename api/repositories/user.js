@@ -5,11 +5,9 @@ class User {
     async insert(user) {
         try {
             const sql = `INSERT INTO ansa.user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )`
-            await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login])
+            const result = await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login])
 
-            const sqlId = 'select LAST_INSERT_ID() as id_user from ansa.user LIMIT 1'
-            const obj = await query(sqlId)
-            return obj[0]
+            return result.insertId;
         } catch (error) {
             throw new InvalidArgumentError('No se pudo insertar el usuario en la base de datos')
         }

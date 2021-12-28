@@ -38,13 +38,13 @@ class Mail {
 
 class VerifyMail extends Mail {
 
-    constructor(login) {
+    constructor(user, date, address, salesman) {
         super()
-        this.from = '"Informes ANSA" informes.adm@americaneumaticos.com'
-        this.to = login.mail
-        this.subject = 'Prosegur'
-        this.text = `Hello, placa: ${veiculo} na data ${data}`
-        this.html = `<h1>Hello<h1>, click the link below to verify: <a href="${address}">${address}</a>`
+        this.from = '"Meta ANSA" informes.adm@americaneumaticos.com'
+        this.to = 'raphamartinezz@gmail.com'
+        this.subject = 'Nueva meta agregada'
+        this.text = `Hola Rodrigo, nueva meta agregada `
+        // this.attachments = attachment
     }
 }
 

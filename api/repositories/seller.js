@@ -60,8 +60,6 @@ class Seller {
             sql+= ` GROUP BY SA.id_salesman
             ORDER BY SA.name`
 
-            console.log(sql);
-
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las sucursais')

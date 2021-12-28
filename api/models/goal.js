@@ -1,7 +1,7 @@
 const Repositorie = require('../repositories/goal');
 const RepositorieSeller = require('../repositories/seller');
 const RepositorieSales = require('../repositories/sales');
-
+const Queue = require('../infrastructure/redis/queue');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const excelToJson = require('convert-excel-to-json')
 const fs = require('fs')
@@ -32,98 +32,113 @@ class Goal {
                 sourceFile: `tmp/uploads/${file.key}`
             });
 
+            let l;
             let i;
-            goals.Meta[3].J.match(/Stock ANSA*/) ? i = 2 : i = 0;
+
+            if (goals.Meta[3].J) {
+                i = 0
+                l = 3
+            } else {
+                l = 4
+                goals.Meta[4].K.match(/Stock ANSA*/) ? i = 2 : i = 0;
+            }
 
             let date;
 
             if (i == 2) {
                 date = [
-                    goals.Meta[3].L.replace("/", "-"),
-                    goals.Meta[3].M.replace("/", "-"),
-                    goals.Meta[3].N.replace("/", "-"),
-                    goals.Meta[3].O.replace("/", "-"),
-                    goals.Meta[3].P.replace("/", "-"),
-                    goals.Meta[3].Q.replace("/", "-"),
-                    goals.Meta[3].R.replace("/", "-"),
-                    goals.Meta[3].S.replace("/", "-"),
-                    goals.Meta[3].T.replace("/", "-"),
-                    goals.Meta[3].U.replace("/", "-"),
-                    goals.Meta[3].V.replace("/", "-"),
-                    goals.Meta[3].W.replace("/", "-"),
-                    goals.Meta[3].X.replace("/", "-")
+                    goals.Meta[l].L.replace("/", "-"),
+                    goals.Meta[l].M.replace("/", "-"),
+                    goals.Meta[l].N.replace("/", "-"),
+                    goals.Meta[l].O.replace("/", "-"),
+                    goals.Meta[l].P.replace("/", "-"),
+                    goals.Meta[l].Q.replace("/", "-"),
+                    goals.Meta[l].R.replace("/", "-"),
+                    goals.Meta[l].S.replace("/", "-"),
+                    goals.Meta[l].T.replace("/", "-"),
+                    goals.Meta[l].U.replace("/", "-"),
+                    goals.Meta[l].V.replace("/", "-"),
+                    goals.Meta[l].W.replace("/", "-"),
+                    goals.Meta[l].X.replace("/", "-")
                 ]
             } else {
                 date = [
-                    goals.Meta[3].J.replace("/", "-"),
-                    goals.Meta[3].K.replace("/", "-"),
-                    goals.Meta[3].L.replace("/", "-"),
-                    goals.Meta[3].M.replace("/", "-"),
-                    goals.Meta[3].N.replace("/", "-"),
-                    goals.Meta[3].O.replace("/", "-"),
-                    goals.Meta[3].P.replace("/", "-"),
-                    goals.Meta[3].Q.replace("/", "-"),
-                    goals.Meta[3].R.replace("/", "-"),
-                    goals.Meta[3].S.replace("/", "-"),
-                    goals.Meta[3].T.replace("/", "-"),
-                    goals.Meta[3].U.replace("/", "-"),
-                    goals.Meta[3].V.replace("/", "-")
+                    goals.Meta[l].J.replace("/", "-"),
+                    goals.Meta[l].K.replace("/", "-"),
+                    goals.Meta[l].L.replace("/", "-"),
+                    goals.Meta[l].M.replace("/", "-"),
+                    goals.Meta[l].N.replace("/", "-"),
+                    goals.Meta[l].O.replace("/", "-"),
+                    goals.Meta[l].P.replace("/", "-"),
+                    goals.Meta[l].Q.replace("/", "-"),
+                    goals.Meta[l].R.replace("/", "-"),
+                    goals.Meta[l].S.replace("/", "-"),
+                    goals.Meta[l].T.replace("/", "-"),
+                    goals.Meta[l].U.replace("/", "-"),
+                    goals.Meta[l].V.replace("/", "-")
                 ]
             }
 
-            let table = []
+            let table = [];
 
-            goals.Meta.shift()
-            goals.Meta.shift()
-            goals.Meta.shift()
-            goals.Meta.shift()
+            goals.Meta.shift();
+            goals.Meta.shift();
+            goals.Meta.shift();
+            goals.Meta.shift();
+
+            if (!goals.Meta[3].J) goals.Meta.shift();
 
             goals.Meta.forEach(goal => {
                 if (i == 2) {
-                    table.push([goal.A, goal.H, date[i], goal.L])
-                    table.push([goal.A, goal.H, date[i + 1], goal.M])
-                    table.push([goal.A, goal.H, date[i + 2], goal.N])
-                    table.push([goal.A, goal.H, date[i + 3], goal.O])
-                    table.push([goal.A, goal.H, date[i + 4], goal.P])
-                    table.push([goal.A, goal.H, date[i + 5], goal.Q])
-                    table.push([goal.A, goal.H, date[i + 6], goal.R])
-                    table.push([goal.A, goal.H, date[i + 7], goal.S])
-                    table.push([goal.A, goal.H, date[i + 8], goal.T])
-                    table.push([goal.A, goal.H, date[i + 9], goal.U])
-                    table.push([goal.A, goal.H, date[i + 10], goal.V])
-                    table.push([goal.A, goal.H, date[i + 11], goal.W])
-                    table.push([goal.A, goal.H, date[i + 12], goal.X])
+                    if (goal.L > 0) table.push([goal.A, goal.H, date[0], goal.L])
+                    if (goal.M > 0) table.push([goal.A, goal.H, date[1], goal.M])
+                    if (goal.N > 0) table.push([goal.A, goal.H, date[2], goal.N])
+                    if (goal.O > 0) table.push([goal.A, goal.H, date[3], goal.O])
+                    if (goal.P > 0) table.push([goal.A, goal.H, date[4], goal.P])
+                    if (goal.Q > 0) table.push([goal.A, goal.H, date[5], goal.Q])
+                    if (goal.R > 0) table.push([goal.A, goal.H, date[6], goal.R])
+                    if (goal.S > 0) table.push([goal.A, goal.H, date[7], goal.S])
+                    if (goal.T > 0) table.push([goal.A, goal.H, date[8], goal.T])
+                    if (goal.U > 0) table.push([goal.A, goal.H, date[9], goal.U])
+                    if (goal.V > 0) table.push([goal.A, goal.H, date[10], goal.V])
+                    if (goal.W > 0) table.push([goal.A, goal.H, date[11], goal.W])
+                    if (goal.X > 0) table.push([goal.A, goal.H, date[12], goal.X])
                 } else {
-                    table.push([goal.A, goal.H, date[i], goal.J])
-                    table.push([goal.A, goal.H, date[i + 1], goal.K])
-                    table.push([goal.A, goal.H, date[i + 2], goal.L])
-                    table.push([goal.A, goal.H, date[i + 3], goal.M])
-                    table.push([goal.A, goal.H, date[i + 4], goal.N])
-                    table.push([goal.A, goal.H, date[i + 5], goal.O])
-                    table.push([goal.A, goal.H, date[i + 6], goal.P])
-                    table.push([goal.A, goal.H, date[i + 7], goal.Q])
-                    table.push([goal.A, goal.H, date[i + 8], goal.R])
-                    table.push([goal.A, goal.H, date[i + 9], goal.S])
-                    table.push([goal.A, goal.H, date[i + 10], goal.T])
-                    table.push([goal.A, goal.H, date[i + 11], goal.U])
-                    table.push([goal.A, goal.H, date[i + 12], goal.V])
+                    if (goal.J > 0) table.push([goal.A, goal.H, date[0], goal.J])
+                    if (goal.K > 0) table.push([goal.A, goal.H, date[1], goal.K])
+                    if (goal.L > 0) table.push([goal.A, goal.H, date[2], goal.L])
+                    if (goal.M > 0) table.push([goal.A, goal.H, date[3], goal.M])
+                    if (goal.N > 0) table.push([goal.A, goal.H, date[4], goal.N])
+                    if (goal.O > 0) table.push([goal.A, goal.H, date[5], goal.O])
+                    if (goal.P > 0) table.push([goal.A, goal.H, date[6], goal.P])
+                    if (goal.Q > 0) table.push([goal.A, goal.H, date[7], goal.Q])
+                    if (goal.R > 0) table.push([goal.A, goal.H, date[8], goal.R])
+                    if (goal.S > 0) table.push([goal.A, goal.H, date[9], goal.S])
+                    if (goal.T > 0) table.push([goal.A, goal.H, date[10], goal.T])
+                    if (goal.U > 0) table.push([goal.A, goal.H, date[11], goal.U])
+                    if (goal.V > 0) table.push([goal.A, goal.H, date[12], goal.V])
                 }
             })
 
-            fs.unlinkSync(`tmp/uploads/${file.filename}`)
 
-            console.log(table[0][0]);
             const id_salesman = await Repositorie.listSalesman(table[0][0])
 
             if (id_salesman) {
+
+                // const data = {
+                //     id_salesman,
+                //     table,
+                //     file
+                // }
+
+                // await Queue.add('Goal', { data });
                 for (let line of table) {
 
                     let year = line[2].split("-")[1];
                     let month = line[2].split("-")[0];
 
-                    let i = { itemcode: line[1], date: `${year}-${month}-01` }
-                    console.log(i);
-                    const id_goalline = await Repositorie.search(i);
+                    let obj = { itemcode: line[1], date: `${year}-${month}-01` }
+                    const id_goalline = await Repositorie.search(obj);
 
                     if (id_goalline) {
                         let item = {
@@ -131,19 +146,21 @@ class Goal {
                             id_salesman: id_salesman,
                             amount: line[3]
                         }
-                        console.log(id_goalline);
-                        const obj = await Repositorie.validate(item)
-                        console.log(obj);
-                        if (obj && obj.amount && obj.amount !== item.amount) {
+
+                        const validate = await Repositorie.validate(item)
+
+                        if (validate && validate.amount && validate.amount !== item.amount) {
                             item.id_goal = obj.id_goal
                             await Repositorie.update(item)
                         } else {
-                            if (item.amount > 0) await Repositorie.insert(item)
+                            await Repositorie.insert(item)
                         }
                     }
 
                 }
             }
+
+            fs.unlinkSync(`tmp/uploads/${file.filename}`)
 
         } catch (error) {
             console.log(error);
@@ -213,7 +230,7 @@ class Goal {
             let sellers = [];
 
             for (let obj of data) {
-                
+
                 let goals = await Repositorie.listGoals(obj.id_salesman, month, group);
                 let amount = await RepositorieSales.list(obj.code, month, group);
                 let sales = await RepositorieSales.graphSalesDay(obj.code, month, group);

@@ -10,6 +10,8 @@ const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = requi
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
+const Queue = require('./api/infrastructure/redis/queue');
+const BullBoard = require('bull-board')
 
 // const Web = require('./api/models/webscraping');
 // Web.listProsegurOffice()
@@ -17,7 +19,14 @@ const History = require('./api/models/history');
 process.setMaxListeners(100)
 
 const app = customExpress()
+
+// const queues = Queue.queues.map(queue => queue.bull);
+
+// setQueues([queues]);
+
 app.locals = appLocals;
+
+// app.use('/admin/queues', BullBoard.router);
 
 app.listen(3000, () => {
 
@@ -66,7 +75,7 @@ app.use((err, req, res, next) => {
   }
 
   if (err instanceof NotAuthorized) {
-   return res.redirect('login?fail=true')
+    return res.redirect('login?fail=true')
   }
 
   if (err instanceof InvalidArgumentError) {

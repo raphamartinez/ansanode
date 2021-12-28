@@ -56,12 +56,6 @@ module.exports = app => {
     app.get('/goalsalesman/:month/:office?/:seller?/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
-            // const cached = await cachelist.searchValue(`goal/sellers/${req.params}`);
-
-            // if (cached) {
-            //     return res.json(JSON.parse(cached));
-            // }
-
             let sellers;
             let offices;
             let id_login;
@@ -89,22 +83,14 @@ module.exports = app => {
                 }
             }
 
-            cachelist.addCache(`goal/sellers/${req.params}`, JSON.stringify(sellers), 60 * 15);
-
             res.json(sellers);
         } catch (err) {
             next(err)
         }
     })
 
-    app.get('/goal/offices/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goaloffices/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
-
-            // const cached = await cachelist.searchValue(`goal/offices/${req.params}`);
-
-            // if (cached) {
-            //     return res.json(JSON.parse(cached));
-            // }
 
             let goals;
             let offices;
@@ -117,8 +103,6 @@ module.exports = app => {
                 offices = req.params.office ? req.params.office : req.login.offices.map(of => of.code);
                 goals = await Goal.listOffice(month, offices);
             }
-
-            cachelist.addCache(`goal/offices/${req.params}`, JSON.stringify(goals), 60 * 15);
 
             res.json(goals);
         } catch (err) {

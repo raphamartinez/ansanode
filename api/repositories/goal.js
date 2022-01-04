@@ -91,21 +91,40 @@ class Goal {
 
     async listGoals(id_salesman, month, group){
         try {
-            let sql = `SELECT GL.itemgroup, COUNT(GO.amount) as amount
+            let sql = `SELECT GL.itemgroup, SUM(GO.amount) as amount
+            FROM ansa.goal GO
+            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND GO.id_salesman = ?
+            AND GL.date BETWEEN ? AND LAST_DAY(?) `
+
+            if(group) sql+= ` AND GL.itemgroup = '${group}' `
+            
+            sql+= ` 
+            GROUP by GL.itemgroup
+            ORDER BY GL.itemgroup ASC`
+
+            const result = await query(sql, [id_salesman, `${month}-01`, `${month}-10`])
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async listGoalsItem(id_salesman, month){
+        
+        try {
+            let sql = `SELECT GL.itemcode, SUM(GO.amount) as amount
             FROM ansa.salesman SA
             LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
             LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
             WHERE GL.application <> "DESCONSIDERAR"
             AND SA.id_salesman = ?
-            AND GL.date BETWEEN ? AND ? `
+            AND GL.date BETWEEN ? AND LAST_DAY(?)
+            GROUP by GL.itemcode
+            ORDER BY GL.itemcode ASC`
 
-            if(group) sql+= ` AND GL.itemgroup = '${group}' `
-            
-            sql+= ` 
-            group by GL.itemgroup
-            ORDER BY GL.itemgroup ASC`
-
-            const result = await query(sql, [id_salesman, `${month}-01`, `${month}-30`])
+            const result = await query(sql, [id_salesman, `${month}-01`, `${month}-10`])
             return result
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las metas')
@@ -120,11 +139,11 @@ class Goal {
             LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
             WHERE GL.application <> "DESCONSIDERAR"
             AND SA.office = ?
-            AND GL.date BETWEEN ? AND ?
+            AND GL.date BETWEEN ? AND LAST_DAY(?)
             group by GL.itemgroup
             ORDER BY GL.itemgroup ASC`
 
-            const result = await query(sql, [offices, `${month}-01`, `${month}-30`])
+            const result = await query(sql, [offices, `${month}-01`, `${month}-10`])
             return result
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las metas')

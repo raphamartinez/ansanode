@@ -1,15 +1,15 @@
 const AccessControl = require('accesscontrol')
 const controll = new AccessControl()
 
-// 0 - user
-// 1 - admin 
-// 2 - vendedor
-// 3 - depositero
-// 4 - gerente
-// 5 - personal administrativo
-// 6 - encarregado de Sucursal
+// 0 - User
+// 1 - Admin 
+// 2 - Vendedor
+// 3 - Depositero
+// 4 - Gerente
+// 5 - Personal administrativo
+// 6 - Encarregado de Sucursal
 // 7 - Auditor
-// 8 - Patrimonio
+// 8 - Logistica
 
 controll
     .grant('8')

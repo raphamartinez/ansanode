@@ -1,6 +1,7 @@
 const Repositorie = require('../repositories/goal');
 const RepositorieSeller = require('../repositories/seller');
 const RepositorieSales = require('../repositories/sales');
+const RepositorieHbs = require('../repositories/hbs');
 const Queue = require('../infrastructure/redis/queue');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const excelToJson = require('convert-excel-to-json')
@@ -125,19 +126,14 @@ class Goal {
 
             if (id_salesman) {
 
-                // const data = {
-                //     id_salesman,
-                //     table,
-                //     file
-                // }
-
-                // await Queue.add('Goal', { data });
                 for (let line of table) {
 
                     let year = line[2].split("-")[1];
                     let month = line[2].split("-")[0];
 
                     let obj = { itemcode: line[1], date: `${year}-${month}-01` }
+
+                    console.log(obj);
                     const id_goalline = await Repositorie.search(obj);
 
                     if (id_goalline) {
@@ -182,10 +178,13 @@ class Goal {
             let sellers = [];
 
             for (let obj of data) {
-                let goals = await Repositorie.listGoals(obj.id_salesman, month);
-                let amount = await RepositorieSales.list(obj.code, month);
-                let sales = await RepositorieSales.graphSalesDay(obj.code, month);
 
+                let dtItemsExpected = await Repositorie.listGoalsItem(obj.id_salesman, month);
+                let itemsExpected = dtItemsExpected.map(item => `${item.itemcode}`);
+                let revenueExpected = await RepositorieHbs.listPrices(itemsExpected)
+
+                let dtItemsEffective = await RepositorieSales.listItem(obj.code, month);
+    
                 const salesPerDay = sales.map(sale => {
                     return sale.qty
                 });
@@ -232,7 +231,9 @@ class Goal {
             for (let obj of data) {
 
                 let goals = await Repositorie.listGoals(obj.id_salesman, month, group);
-                let amount = await RepositorieSales.list(obj.code, month, group);
+                let itemsdt = await Repositorie.listGoalsItem(obj.id_salesman, month, group);
+                let items = itemsdt.map(item => item.itemcode);
+                let amount = await RepositorieSales.list(items, obj.code, month, group);
                 let sales = await RepositorieSales.graphSalesDay(obj.code, month, group);
 
                 const salesPerDay = sales.map(sale => {

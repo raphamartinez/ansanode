@@ -107,7 +107,7 @@ const viewGroup = async (event) => {
 
         if (event.target.parentNode.getAttribute(`data-active-${index}`)) {
 
-            const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}`, 'GET')
+            const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}`, 'GET')
             sellers.forEach(salesman => {
                 let allSale = 0;
                 let allGoal = 0;
@@ -173,7 +173,7 @@ const viewGroup = async (event) => {
         } else {
 
 
-            const sellers = await Connection.noBody(`goal/sellers/${month}/${office}/${seller}/${group}`, 'GET')
+            const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}/${group}`, 'GET')
 
             document.querySelectorAll(`[data-active-${index}]`).forEach(div => {
                 div.style.backgroundColor = null;
@@ -185,8 +185,8 @@ const viewGroup = async (event) => {
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = ""
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
 
-                if (salesman.goals.length > 0) salesman.goals.forEach(goal => allGoal += goal.amount);
-                if (salesman.amount.length > 0) salesman.amount.forEach(amount => allSale += amount.qty);
+                if (salesman.goals.length > 0) salesman.goals.forEach(goal => allGoal += parseInt(goal.amount));
+                if (salesman.amount.length > 0) salesman.amount.forEach(amount => allSale += parseInt(amount.qty));
 
                 let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
 
@@ -408,11 +408,11 @@ const searchOffice = async (event) => {
         const office = event.currentTarget.office.value;
         const month = event.currentTarget.month.value;
 
-        // const offices = await Connection.noBody(`goal/offices/${month}/${office}`, 'GET');
+        const offices = await Connection.noBody(`goaloffices/${month}/${office}`, 'GET');
 
-        // offices.forEach(of => {
+        offices.forEach(of => {
 
-        // })
+        })
 
     } catch (error) {
         console.log(error);
@@ -440,20 +440,22 @@ const searchUnit = async (event) => {
             salesman.amount.forEach(amount => {
 
                 let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
-                let porcent = goal ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+                // let porcent = goal ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+                let goalSeller = 0;
 
                 if (goal) {
-                    allGoal += goal.amount;
-                    allSale += amount.qty;
+                    allGoal += parseInt(goal.amount);
+                    allSale += parseInt(amount.qty);
+                    goalSeller = parseInt(goal.amount);
                 }
 
-                let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
+                // let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
 
                 goals += `
                 <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${amount.name}</th>
                     <td>${amount.qty}</td>
-                    <td>${goal.amount}</td>
+                    <td>${goalSeller}</td>
                 </tr>`;
 
             });
@@ -461,14 +463,14 @@ const searchUnit = async (event) => {
             salesman.goals.forEach(goal => {
 
                 let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
-                let porcent = amount ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+                // let porcent = amount ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
 
                 if (amount) {
-                    allGoal += goal.amount;
-                    allSale += amount.qty;
+                    allGoal += parseInt(goal.amount);
+                    allSale += parseInt(amount.qty);
                 }
 
-                let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
+                // let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
 
                 goals += `
                 <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">

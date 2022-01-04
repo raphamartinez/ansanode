@@ -34,10 +34,12 @@
                             <a class="nav-link" id="ansa-tab" data-toggle="tab" href="#ansa" role="tab"
                                 aria-controls="contact" aria-selected="false">ANSA</a>
                         </li>
+                        <% if(perfil != 8) {%> 
                         <li class="nav-item">
                             <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
                                 aria-controls="include" aria-selected="false">Fijar Metas</a>
                         </li>
+                        <% } %> 
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="sellers" role="tabpanel"
@@ -50,9 +52,11 @@
                         <div class="tab-pane fade" id="ansa" role="tabpanel" aria-labelledby="ansa-tab">
                             <%- include(components + './graph/goalAnsa.ejs' ) %>
                         </div>
+                        <% if(perfil != 8) {%> 
                         <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
                             <%- include(components + './graph/goalInclude.ejs' ) %>
                         </div>
+                        <% } %> 
                     </div>
 
                     <div class="modal fade" id="uploadGoals" tabindex="-1">

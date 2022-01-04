@@ -21,6 +21,8 @@ module.exports = app => {
                 sellers = await Sellers.list();
                 offices = await Office.listOffice();
             } else {
+                console.log(req.login.offices);
+
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
                     let off = req.login.offices.map(of => of.code);
                     offices.push(off)
@@ -71,7 +73,6 @@ module.exports = app => {
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
                     id_login = req.params.seller;
                     group = req.params.group;
-
                     offices = req.params.office ? req.params.office : req.login.offices.map(of => of.code);
 
                     sellers = await Goal.listSeller(month, id_login, offices, group);

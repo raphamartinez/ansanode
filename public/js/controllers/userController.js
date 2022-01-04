@@ -81,7 +81,6 @@ const init = async () => {
 init()
 
 const modalEdit = async (event) => {
-    event.target
 
     $("#perfiledit").val(event.target.getAttribute('data-perfil'));
 
@@ -106,7 +105,7 @@ const modalEdit = async (event) => {
 
         })
     } else {
-        offices.forEach(office => {
+        dtoffices.forEach(office => {
             const line = document.createElement('option');
             line.value = office.id_office;
             line.innerHTML = office.name;

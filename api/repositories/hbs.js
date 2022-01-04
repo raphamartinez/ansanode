@@ -611,6 +611,17 @@ class Hbs {
         }
     }
 
+    listPrices(items) {
+        try {
+            const sql = `SELECT SUM(pr.Price) as price FROM Price pr
+            WHERE pr.ArtCode IN (?)`
+
+            return queryhbs(sql, items)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar prices')
+        }
+    }
+
     listClocksOffice() {
         try {
             const sql = `SELECT Office, PortNr, IPAddress, Password FROM PayRollSettingsZKclockOfficeIPRow`

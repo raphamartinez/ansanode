@@ -229,7 +229,7 @@ document.querySelector('[data-goal-users]').addEventListener('click', viewGroup,
 const gaugeChart = (color, porcent, title, index) => {
     function GaugeChart(value, titleText, backgroundColor) {
 
-        let amount = value > 100 ? 100 : value;
+        let amount = value > 100 ? 100 : parseInt(value);
         let message = value == 0 ? "ND" : `${value} %`;
 
         return {
@@ -404,117 +404,282 @@ document.querySelector('[data-office]').addEventListener('change', changeOffice,
 const searchOffice = async (event) => {
     event.preventDefault();
 
+    document.querySelector('[data-goal-offices]').innerHTML = ""
+
+    document.querySelector('[data-btn-goal-offices]').innerHTML = ""
+
+    const div = document.createElement('div')
+    div.classList.add('spinner-border', 'spinner-border')
+
+    document.querySelector('[data-btn-goal-offices]').appendChild(div);
+    document.querySelector('[data-btn-goal-offices]').disabled = true;
+
     try {
         const office = event.currentTarget.office.value;
         const month = event.currentTarget.month.value;
 
         const offices = await Connection.noBody(`goaloffices/${month}/${office}`, 'GET');
 
-        offices.forEach(of => {
+        offices.forEach((ofi, index) => {
+            let goals = "";
+            let allSale = 0;
+            let allGoal = 0;
 
+            let revenueEffective = 0;
+            let revenueExpected = 0;
+
+            if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.")
+            if (!ofi.goals) return null;
+
+            if (ofi.goals.length > 0) {
+                ofi.goals.forEach(goal => {
+
+                    revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                    revenueExpected += parseFloat(goal.price);
+
+                    allGoal += goal.amount ? parseInt(goal.amount) : 0;
+                    allSale += goal.effectiveAmount ? parseInt(goal.effectiveAmount) : 0;
+
+                    goals += `
+                    <tr data-view-group data-index="${index + 100}" data-group="${goal.itemgroup}" data-office="${ofi.code}" data-month="${month}">
+                        <th scope="row">${goal.itemgroup}</th>
+                        <td>${goal.effectiveAmount ? goal.effectiveAmount : 0}</td>
+                        <td>${goal.amount ? goal.amount : 0}</td>
+                    </tr>`;
+
+                });
+            }
+
+
+            let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+            let color = '#A9A9A9';
+
+            switch (true) {
+                case (percent == 0):
+                    color = '#A9A9A9';
+                    break;
+
+                case (percent > 0 && percent <= 25):
+                    color = '#FB301E';
+                    break;
+
+                case (percent > 25 && percent <= 50):
+                    color = '#E2D51A';
+                    break;
+
+                case (percent > 50 && percent <= 75):
+                    color = '#5F9EA0';
+                    break;
+
+                case (percent > 75):
+                    color = '#00AE4D';
+                    break;
+            }
+
+            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueExpected, month));
+            gaugeChart(color, percent, 'Rendimiento %', index + 100)
+            chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index + 100)
         })
 
+        document.querySelector('[data-btn-goal-offices]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-offices]').disabled = false;
+
+
     } catch (error) {
+        document.querySelector('[data-btn-goal-offices]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-offices]').disabled = false;
+
         console.log(error);
     }
 }
 
 document.querySelector('[data-search-goal-offices]').addEventListener('submit', searchOffice, false);
 
+const listStock = async (event) => {
+    let btn = event.target
+    let expanded = btn.getAttribute('aria-expanded')
+    let index = btn.getAttribute('data-index');
+
+    if (expanded == "true") {
+        if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+            $(`#dataStock${index}`).dataTable().fnClearTable();
+            $(`#dataStock${index}`).dataTable().fnDestroy();
+            $(`#dataStock${index}`).empty();
+        }
+    } else {
+
+        try {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'block';
+
+            if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+                $(`#dataStock${index}`).dataTable().fnClearTable();
+                $(`#dataStock${index}`).dataTable().fnDestroy();
+                $(`#dataStock${index}`).empty();
+            }
+
+            let month = btn.getAttribute('data-month');
+            let office = btn.getAttribute('data-office');
+
+            const items = await Connection.noBody(`goalstock/${month}/${office}`, 'GET');
+
+            let dtview = items.map(item => {
+                let stockCity = item.stockCity ? item.stockCity : 0;
+                let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
+
+                return [
+                    item.itemgroup,
+                    item.itemcode,
+                    item.itemname,
+                    item.amount,
+                    stockCity,
+                    stockAnsa
+                ]
+            })
+
+            $(`#dataStock${index}`).DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Grupo" },
+                    { title: "Cod Articulo" },
+                    { title: "Nombre" },
+                    { title: "Meta" },
+                    { title: "Cant Stock - Ciudad" },
+                    { title: "Cant Stock - ANSA" },
+                ],
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollY: false,
+                scrollCollapse: true,
+                scrollX: true,
+                autoHeight: true,
+                lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
+                pagingType: "numbers",
+                searchPanes: true,
+                fixedHeader: false,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            })
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        } catch (error) {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        }
+    }
+}
+window.listStock = listStock;
+
+
 const searchUnit = async (event) => {
     event.preventDefault();
 
-    const office = event.currentTarget.office.value;
-    const seller = event.currentTarget.seller.value;
-    const month = event.currentTarget.month.value;
+    document.querySelector('[data-btn-goal-sellers]').innerHTML = ""
 
-    const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}`, 'GET')
-    document.querySelector('[data-goal-users]').innerHTML = ""
+    const div = document.createElement('div')
+    div.classList.add('spinner-border', 'spinner-border')
 
-    sellers.forEach((salesman, index) => {
-        let goals = "";
-        let allSale = 0;
-        let allGoal = 0;
+    document.querySelector('[data-btn-goal-sellers]').appendChild(div);
+    document.querySelector('[data-btn-goal-sellers]').disabled = true;
 
-        if (salesman.amount.length > 0) {
-            salesman.amount.forEach(amount => {
+    try {
+        const office = event.currentTarget.office.value;
+        const seller = event.currentTarget.seller.value;
+        const month = event.currentTarget.month.value;
 
-                let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
-                // let porcent = goal ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
-                let goalSeller = 0;
+        const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}`, 'GET')
+        document.querySelector('[data-goal-users]').innerHTML = ""
 
-                if (goal) {
-                    allGoal += parseInt(goal.amount);
-                    allSale += parseInt(amount.qty);
-                    goalSeller = parseInt(goal.amount);
-                }
+        sellers.forEach((salesman, index) => {
+            let goals = "";
+            let allSale = 0;
+            let allGoal = 0;
 
-                // let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
+            if (salesman.amount.length > 0) {
+                salesman.amount.forEach(amount => {
 
-                goals += `
+                    let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
+                    let goalSeller = 0;
+
+                    if (goal) {
+                        allGoal += parseInt(goal.amount);
+                        allSale += parseInt(amount.qty);
+                        goalSeller = parseInt(goal.amount);
+                    }
+
+                    goals += `
                 <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${amount.name}</th>
                     <td>${amount.qty}</td>
                     <td>${goalSeller}</td>
                 </tr>`;
 
-            });
-        } else {
-            salesman.goals.forEach(goal => {
+                });
+            } else {
+                salesman.goals.forEach(goal => {
 
-                let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
-                // let porcent = amount ? (amount.qty * 100 / goal.amount).toFixed(0) : 0;
+                    let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
 
-                if (amount) {
-                    allGoal += parseInt(goal.amount);
-                    allSale += parseInt(amount.qty);
-                }
+                    if (amount) {
+                        allGoal += parseInt(goal.amount);
+                        allSale += parseInt(amount.qty);
+                    }
 
-                // let descPorcent = porcent > 0 ? `${porcent} %` : ' ';
-
-                goals += `
+                    goals += `
                 <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${goal.itemgroup}</th>
                     <td>0</td>
                     <td>${goal.amount}</td>
                 </tr>`;
 
-            });
-        }
+                });
+            }
 
 
-        let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+            let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
 
-        let color = '#A9A9A9';
+            let color = '#A9A9A9';
 
-        switch (true) {
-            case (percent == 0):
-                color = '#A9A9A9';
-                break;
+            switch (true) {
+                case (percent == 0):
+                    color = '#A9A9A9';
+                    break;
 
-            case (percent > 0 && percent <= 25):
-                color = '#FB301E';
-                break;
+                case (percent > 0 && percent <= 25):
+                    color = '#FB301E';
+                    break;
 
-            case (percent > 25 && percent <= 50):
-                color = '#E2D51A';
-                break;
+                case (percent > 25 && percent <= 50):
+                    color = '#E2D51A';
+                    break;
 
-            case (percent > 50 && percent <= 75):
-                color = '#5F9EA0';
-                break;
+                case (percent > 50 && percent <= 75):
+                    color = '#5F9EA0';
+                    break;
 
-            case (percent > 75):
-                color = '#00AE4D';
-                break;
-        }
+                case (percent > 75):
+                    color = '#00AE4D';
+                    break;
+            }
 
-        document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index));
-        chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index)
-        gaugeChart(color, percent, 'Rendimiento %', index)
+            document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index));
+            chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index)
+            gaugeChart(color, percent, 'Rendimiento %', index)
 
-    });
+        });
+        document.querySelector('[data-btn-goal-sellers]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-sellers]').disabled = false;
 
+    } catch (error) {
+        document.querySelector('[data-btn-goal-sellers]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-sellers]').disabled = false;
+
+        console.log(error);
+    }
 }
 
 document.querySelector('[data-search-goal-sellers]').addEventListener('submit', searchUnit, false)
@@ -590,51 +755,6 @@ const goalOnline = async () => {
             const now = `${month}/${year}`
 
             return now;
-        })
-
-        const table = $("#tablegoals").DataTable({
-            data: [],
-            columns: [
-                { title: "Linea de Productos" },
-                { title: "Aplicacion" },
-                {
-                    title: "Cod Articulo",
-                    className: "details-control",
-                },
-                { title: "Nombre" },
-                {
-                    title: "Stock Ci",
-                    className: "datatable-grey",
-                },
-                {
-                    title: "Stock TT",
-                    className: "datatable-grey",
-                },
-                { title: datecolumn[0] },
-                { title: datecolumn[1] },
-                { title: datecolumn[2] },
-                { title: datecolumn[3] },
-                { title: datecolumn[4] },
-                { title: datecolumn[5] },
-                { title: datecolumn[6] },
-                { title: datecolumn[7] },
-                { title: datecolumn[8] },
-                { title: datecolumn[9] },
-                { title: datecolumn[10] },
-                { title: datecolumn[11] }
-            ],
-            paging: true,
-            ordering: false,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            autoWidth: true,
-            lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
-            pagingType: "numbers",
-            fixedHeader: false,
-            order: true
         })
 
         $('#goalOnline').modal("show");
@@ -731,6 +851,8 @@ const listGoals = async (salesman, group, stock) => {
 
         const goalsline = await Connection.noBody(`goalsline/${salesman.id_salesman}/${salesman.office}/${group}/${stock}`, 'GET')
 
+        document.querySelector(`#tablegoals`).innerHTML = ""
+
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
             $('#tablegoals').dataTable().fnClearTable();
             $('#tablegoals').dataTable().fnDestroy();
@@ -784,50 +906,49 @@ const listGoals = async (salesman, group, stock) => {
             return now;
         })
 
-        const table = $("#tablegoals").DataTable({
-            data: dtview,
-            columns: [
-                { title: "Linea de Productos" },
-                { title: "Aplicacion" },
-                {
-                    title: "Cod Articulo",
-                    className: "details-control",
-                },
-                { title: "Nombre" },
-                {
-                    title: "Stock Ci",
-                    className: "datatable-grey",
-                },
-                {
-                    title: "Stock TT",
-                    className: "datatable-grey",
-                },
-                { title: datecolumn[0] },
-                { title: datecolumn[1] },
-                { title: datecolumn[2] },
-                { title: datecolumn[3] },
-                { title: datecolumn[4] },
-                { title: datecolumn[5] },
-                { title: datecolumn[6] },
-                { title: datecolumn[7] },
-                { title: datecolumn[8] },
-                { title: datecolumn[9] },
-                { title: datecolumn[10] },
-                { title: datecolumn[11] }
-            ],
-            paging: true,
-            ordering: false,
-            info: true,
-            scrollY: false,
-            scrollCollapse: true,
-            scrollX: true,
-            autoHeight: true,
-            autoWidth: true,
-            lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
-            pagingType: "numbers",
-            fixedHeader: false,
-            order: true
-        })
+        $(document).ready(function () {
+            const table = $("#tablegoals").DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Linea de Productos" },
+                    { title: "Aplicacion" },
+                    {
+                        title: "Cod Articulo",
+                        className: "details-control",
+                    },
+                    { title: "Nombre" },
+                    {
+                        title: "Stock Ci",
+                        className: "datatable-grey",
+                    },
+                    {
+                        title: "Stock TT",
+                        className: "datatable-grey",
+                    },
+                    { title: datecolumn[0] },
+                    { title: datecolumn[1] },
+                    { title: datecolumn[2] },
+                    { title: datecolumn[3] },
+                    { title: datecolumn[4] },
+                    { title: datecolumn[5] },
+                    { title: datecolumn[6] },
+                    { title: datecolumn[7] },
+                    { title: datecolumn[8] },
+                    { title: datecolumn[9] },
+                    { title: datecolumn[10] },
+                    { title: datecolumn[11] }
+                ],
+                paging: true,
+                ordering: false,
+                info: true,
+                scrollX: true,
+                responsive: false,
+                autoWidth: true,
+                lengthMenu: [[200, 300, 400, 500], [200, 300, 400, 500]],
+                pagingType: "numbers",
+                order: true
+            })
+        });
 
         $('#tablegoals').excelTableFilter();
 

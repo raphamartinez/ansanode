@@ -64,6 +64,23 @@ class Office {
             throw new InternalServerError('No se pudieron enumerar las sucursais')
         }
     }
+
+    offices(offices) {
+        try {
+            let sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
+            FROM ansa.office FF 
+            WHERE FF.status = 1 and FF.id_office != 15 `
+
+            if (offices != "ALL" && offices != null) sql += ` and FF.code IN (${offices})`
+
+            sql+= ` GROUP BY FF.code
+            ORDER BY FF.name`
+
+            return query(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las sucursais')
+        }
+    }
 }
 
 module.exports = new Office()

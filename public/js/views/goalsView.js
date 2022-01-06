@@ -269,7 +269,82 @@ const user = (salesman, goals, index) => {
     return div;
 }
 
+const office = (office, goals, index, revenueEffective, revenueExpected, month) => {
+    const div = document.createElement('div');
+
+    div.innerHTML = `
+    <div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-row">
+            <div class="form-group border col-md-8 ">
+                <div class="form-row">
+                    <div class="form-group col-md-10">
+                        <h3>${office.name}</h3>
+                    </div>
+                    <div class="form-group col-md-7 text-center" data-div-chart-${index}>
+                        <h5>Graficos</h5>
+                        <canvas class="flex d-inline" data-chart-amount-${index}></canvas>
+                    </div>
+                    <div class="form-group col-md-5 text-center">
+                        <h5>Grupos</h5>
+                        <table id="tableGroups" class="table table-hover table-sm ">
+                        <thead>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Vendido</th>
+                        <th scope="col">Meta</th>
+                        </thead>
+                            <tbody>
+                                ${goals}
+                              </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group border col-md-4 text-center">
+                <div id="gaugeChart${index}" class="column"></div>
+                <div class="text-center">
+                <h1 class="h5 font-weight-bold text-info"> Facturamento efectivo: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+                <div class="text-center">
+               <h1 class="h5 font-weight-bold text-success"> Facturamento prevision: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group text-center list-group-flush">
+    <li class="list-group-item">
+    <button data-btn-goal-stock-${index} onclick="listStock(event)" data-office="${office.code}" data-month="${month}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
+    <div class="btn-group">
+  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Comparar con Metas anteriores
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="#">12/21</a>
+    <a class="dropdown-item" href="#">11/21</a>
+    <a class="dropdown-item" href="#">10/21</a>
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item" href="#">Los últimos 3 meses</a>
+  </div>
+</div>
+    </li>
+  </ul>
+  <div class="collapse" id="collapseStock${index}">
+  <div class="card card-body text-center">
+  <div class="col-md-12 text-center">
+  <div data-loading-stock-${index} class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+  </div>
+  </div>
+  <table class="table table-bordered text-center" id="dataStock${index}" width="100%" cellspacing="0"></table>
+  </div>
+</div>
+</div>`
+
+    return div;
+}
+
 export const View = {
+    office,
     user,
     lineaddgoal,
     listDate,

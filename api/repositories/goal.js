@@ -131,17 +131,40 @@ class Goal {
         }
     }
 
-    async items(offices, month){
+    async listGoalsOffice(offices, month, group){
         try {
-            let sql = `SELECT GL.itemcode, COUNT(GO.amount) as amount
+            let sql = `SELECT GL.itemgroup, SUM(GO.amount) as amount
+            FROM ansa.salesman SA 
+            LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
+            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            WHERE GL.application <> "DESCONSIDERAR"
+            AND SA.office IN (?)
+            AND GL.date BETWEEN ? AND LAST_DAY(?) `
+
+            if(group) sql+= ` AND GL.itemgroup = '${group}' `
+            
+            sql+= ` 
+            GROUP by GL.itemgroup
+            ORDER BY GL.itemgroup ASC `
+
+            const result = await query(sql, [offices, `${month}-01`, `${month}-10`])
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async items(offices, month, group){
+        try {
+            let sql = `SELECT GL.itemcode, GL.itemgroup, GL.itemname, SUM(GO.amount) as amount
             FROM ansa.salesman SA
             LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
             LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
             WHERE GL.application <> "DESCONSIDERAR"
-            AND SA.office = ?
+            AND SA.office IN (?)
             AND GL.date BETWEEN ? AND LAST_DAY(?)
-            group by GL.itemgroup
-            ORDER BY GL.itemgroup ASC`
+            group by GL.itemcode
+            ORDER BY GL.itemcode ASC`
 
             const result = await query(sql, [offices, `${month}-01`, `${month}-10`])
             return result

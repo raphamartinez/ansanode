@@ -1,10 +1,11 @@
 const Repositorie = require('../repositories/goal');
 const RepositorieSeller = require('../repositories/seller');
 const RepositorieSales = require('../repositories/sales');
+const RepositorieOffice = require('../repositories/office');
 const RepositorieHbs = require('../repositories/hbs');
 const Queue = require('../infrastructure/redis/queue');
-const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
-const excelToJson = require('convert-excel-to-json')
+const { InvalidArgumentError, InternalServerError, NotFound } = require('./error');
+const excelToJson = require('convert-excel-to-json');
 const fs = require('fs')
 
 class Goal {
@@ -145,8 +146,8 @@ class Goal {
 
                         const validate = await Repositorie.validate(item)
 
-                        if (validate && validate.amount && validate.amount !== item.amount) {
-                            item.id_goal = obj.id_goal
+                        if (validate) {
+                            item.id_goal = validate.id_goal
                             await Repositorie.update(item)
                         } else {
                             await Repositorie.insert(item)
@@ -172,51 +173,116 @@ class Goal {
         }
     }
 
-    async listOffice(month, offices) {
+    async listStock(month, office, group = false) {
         try {
-            const data = await RepositorieSeller.list(false, offices);
-            let sellers = [];
 
-            for (let obj of data) {
+            const stocks = [
+                ["01AUTOPJC", "01"],
+                ["01CAFE", "11"],
+                ["01DOSRUED", "11"],
+                ["01IMPPJC", "01"],
+                ["02AUTOCDE", "02"],
+                ["03AUTOBVIS", "03"],
+                ["04AUTOENC", "04"],
+                ["05AUTOSAL", "05"],
+                ["06AUTOFDO", "11"],
+                ["06AUTOSHCH", "06"],
+                ["07AUTOBADO", "07"],
+                ["10TRUCK", "10"],
+                ["12AUTORITA", "12"],
+                ["13AUTOMRA", "13"],
+                ["DCCDE", "02"],
+                ["DEPTRANIMP", "11"],
+                ["MATRIZ", "11"],
+            ]
+            let arrstock = " "
 
-                let dtItemsExpected = await Repositorie.listGoalsItem(obj.id_salesman, month);
-                let itemsExpected = dtItemsExpected.map(item => `${item.itemcode}`);
-                let revenueExpected = await RepositorieHbs.listPrices(itemsExpected)
+            stocks.forEach(stock => {
+                if (stock[1] === office) {
+                    const st = stock[0]
 
-                let dtItemsEffective = await RepositorieSales.listItem(obj.code, month);
-    
-                const salesPerDay = sales.map(sale => {
-                    return sale.qty
-                });
+                    if (arrstock.length > 1) {
+                        arrstock += `',${st}'`
+                    } else {
+                        arrstock += `'${st}'`
+                    }
+                }
+            });
 
-                let x = 0;
+            let itemsdt = await Repositorie.items(office, month, group);
+            let items = itemsdt.map(item => item.itemcode);
+            let data = await RepositorieHbs.listStockItems(items, arrstock);
+            let data2 = await RepositorieHbs.listStockCityItems(items, arrstock);
 
-                let salesAmount = sales.map(sale => {
-                    x += sale.qty
-                    return x
-                });
+            itemsdt.map(item => {
+                let obj = data.find(obj => obj.ArtCode == item.itemcode)
+                let obj2 = data2.find(obj2 => obj2.ArtCode == item.itemcode)
 
-                const days = sales.map(sale => {
-                    return sale.TransDate
-                });
+                if (obj) item.stockAnsa = obj.Qty - obj.Reserved
+                if (obj2) item.stockCity = obj2.Qty - obj2.Reserved
 
-                obj.goals = goals;
-                obj.amount = amount;
-                obj.salesPerDay = salesPerDay;
-                obj.salesAmount = salesAmount;
-                obj.days = days;
+                return item
+            });
 
-                sellers.push(obj);
+            return itemsdt;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas.');
+        }
+    }
+
+
+    async listOffice(month, offices, group = false) {
+        try {
+            const data = await RepositorieOffice.offices(offices);
+            let ofs = [];
+
+            for (let ofi of data) {
+                let itemsdt = await Repositorie.items(ofi.code, month, group);
+                let items = itemsdt.map(item => item.itemcode);
+
+                if (items.length > 0) {
+                    let revenueExpected = await RepositorieHbs.listPrices(items);
+                    let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month, group);
+                    let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group);
+                    let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
+
+                    let goals = goalExpected.map(goal => {
+                        let group = revenueExpected.find(expected => expected.Name === goal.itemgroup);
+                        let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
+                        if (group) goal.price = group.price;
+                        if (effective) {
+                            goal.effectiveAmount = effective.amount;
+                            goal.effectivePrice = effective.price;
+                        }
+                        return goal;
+                    });
+
+                    const salesPerDay = sales.map(sale => {
+                        return sale.qty
+                    });
+
+                    let x = 0;
+
+                    let salesAmount = sales.map(sale => {
+                        x += sale.qty
+                        return x
+                    });
+
+                    const days = sales.map(sale => {
+                        return sale.TransDate
+                    });
+
+                    ofi.goals = goals;
+                    ofi.salesPerDay = salesPerDay;
+                    ofi.salesAmount = salesAmount;
+                    ofi.days = days;
+                }
+
+                ofs.push(ofi);
             }
 
-
-            let goals = []
-
-            for (let seller of sellers) {
-
-            }
-
-            return sellers;
+            return ofs;
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las metas.');
@@ -234,7 +300,7 @@ class Goal {
                 let itemsdt = await Repositorie.listGoalsItem(obj.id_salesman, month, group);
                 let items = itemsdt.map(item => item.itemcode);
                 let amount = await RepositorieSales.list(items, obj.code, month, group);
-                let sales = await RepositorieSales.graphSalesDay(obj.code, month, group);
+                let sales = await RepositorieSales.graphSalesDay(items, obj.code, month, group);
 
                 const salesPerDay = sales.map(sale => {
                     return sale.qty

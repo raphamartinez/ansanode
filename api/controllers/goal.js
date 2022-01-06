@@ -93,25 +93,48 @@ module.exports = app => {
     app.get('/goaloffices/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
-            let goals;
             let offices;
             let month = req.params.month;
+            let office = req.params.office == "ALL" ? null : req.params.office;
 
             if (req.access.all.allowed) {
-                offices = req.params.office;
-                goals = await Goal.listOffice(month, offices);
+                offices = office;
+                let ofs = await Goal.listOffice(month, offices);
+                res.json(ofs);
+
             } else {
-                offices = req.params.office ? req.params.office : req.login.offices.map(of => of.code);
-                goals = await Goal.listOffice(month, offices);
+                offices = office ? office : req.login.offices.map(of => of.code);
+                let ofs = await Goal.listOffice(month, offices);
+                res.json(ofs);
             }
 
-            res.json(goals);
         } catch (err) {
             next(err)
         }
     })
 
+    app.get('/goalstock/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
 
+            let offices;
+            let month = req.params.month;
+            let office = req.params.office == "ALL" ? null : req.params.office;
+
+            if (req.access.all.allowed) {
+                offices = office;
+                let ofs = await Goal.listStock(month, offices);
+                res.json(ofs);
+
+            } else {
+                offices = office ? office : req.login.offices.map(of => of.code);
+                let ofs = await Goal.listStock(month, offices);
+                res.json(ofs);
+            }
+
+        } catch (err) {
+            next(err)
+        }
+    })
 
     app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {

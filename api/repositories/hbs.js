@@ -332,8 +332,8 @@ class Hbs {
             FROM SalesOrder Sa 
             INNER JOIN User Us ON Sa.SalesMan = Us.Code 
             WHERE Us.Office IS NOT NULL `
-           
-            if(offices) sql+= ` AND Us.Office IN (${offices}) `
+
+            if (offices) sql += ` AND Us.Office IN (${offices}) `
 
             sql += `
             GROUP BY Us.Code 
@@ -561,6 +561,42 @@ class Hbs {
         }
     }
 
+    listStockItems(items, stocks) {
+        try {
+            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved
+            FROM Item I
+            INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+            INNER JOIN Label La ON I.Labels = La.Code
+            INNER JOIN Stock St ON I.Code = St.ArtCode
+            WHERE St.ArtCode IN (${items}) 
+            GROUP BY St.ArtCode 
+            ORDER BY St.ArtCode`
+            
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listStockCityItems(items, stocks) {
+        try {
+            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved
+            FROM Item I
+            INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
+            INNER JOIN Label La ON I.Labels = La.Code
+            INNER JOIN Stock St ON I.Code = St.ArtCode
+            WHERE St.ArtCode IN (${items}) 
+            AND St.StockDepo IN (${stocks})
+            GROUP BY St.ArtCode 
+            ORDER BY St.ArtCode`
+            
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+
     listItemsGroups() {
         try {
             const sql = `SELECT distinct ig.Code, ig.Name
@@ -611,12 +647,18 @@ class Hbs {
         }
     }
 
-    listPrices(items) {
+    async listPrices(items) {
         try {
-            const sql = `SELECT SUM(pr.Price) as price FROM Price pr
-            WHERE pr.ArtCode IN (?)`
+            const sql = `SELECT ig.Name, SUM(pr.Price) as price FROM Price pr 
+            INNER JOIN Item it ON pr.ArtCode = it.Code
+            INNER JOIN ItemGroup ig ON it.ItemGroup = ig.Code
+            WHERE pr.ArtCode IN (${items})
+            GROUP BY ig.Name
+            ORDER BY ig.Name ASC`;
 
-            return queryhbs(sql, items)
+            const result = await queryhbs(sql);
+
+            return result;
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar prices')
         }

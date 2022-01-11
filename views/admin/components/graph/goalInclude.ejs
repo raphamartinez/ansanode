@@ -104,9 +104,11 @@
                             </select>
                         </div>
                         <div class="form-group col-md-12 text-center">
-                            <label for="">¿Quieres listar el Stock en el Excel? El tiempo para generar la descarga aumentará considerablemente.</label>
+                            <label for="">¿Quieres listar el Stock en el Excel? El tiempo para generar la descarga
+                                aumentará considerablemente.</label>
                             <div class="form-check form-check-inline">
-                                <input class="form-check-input" type="radio" id="stockSi" name="liststock" value="1" required>
+                                <input class="form-check-input" type="radio" id="stockSi" name="liststock" value="1"
+                                    required>
                                 <label class="form-check-label" for="stockSi">Si</label>
                             </div>
                             <div class="form-check form-check-inline">
@@ -128,6 +130,20 @@
 
 <div class="card shadow mt-4">
     <div class="card-body">
+        <div class="container text-center mb-4">
+            <h5 class="mb-2"><strong>Información de lo Upload</strong></h5>
+            <ul class=" list-group">
+                <li class="text-left">Si el usuario agrega o elimina cualquier columna de Excel de objetivos
+                    generados por el sistema, es posible que los objetivos no se agreguen correctamente.
+                </li>
+                <li class="text-left">El sistema solo acepta excel en formato xlsx, xltx, xls, ods.</li>
+                <li class="text-left">
+                    Despues de cargar el excel el sistema computará todas las metas,
+                    el proceso toma de acuerdo a la cantidad de articulos, luego de finalizar el responsable
+                    de las metas será informado vía correo electronico
+                    y las metas aparecerán en los gráficos del sistema.</li>
+            </ul>
+        </div>
         <button data-toggle="collapse" data-target="#uploadCollapse" aria-expanded="false"
             aria-controls="uploadCollapse" type="button" class="btn btn-info btn-lg btn-block mb-4">Subir
             Excel</button>

@@ -31,7 +31,7 @@ const chart = (days, salesAmount, salesPerDay, index, group) => {
 
     const ctx = document.querySelector(`[data-chart-amount-${index}]`)
 
-    const chart = new Chart(ctx, {
+    new Chart(ctx, {
         type: 'bar',
         data: data,
         options: {
@@ -62,43 +62,203 @@ const chart = (days, salesAmount, salesPerDay, index, group) => {
             }
         }
     });
-
-    // const update = (days, salesPerDay, salesAmount, group, goal, index) => {
-
-
-
-    //     const i = chart.data.datasets.length == 2 ? 0 : chart.data.datasets.length;
-    //     chart.data.labels = days;
-    //     chart.data.datasets[i].data = salesPerDay;
-    //     chart.data.datasets[i].label = `Ventas por dia - ${group}`
-    //     chart.data.datasets[i + 1].data = salesAmount;
-    //     chart.data.datasets[i + 1].label = `Montante de Ventas - ${group}`
-
-    //     // if (chart.data.datasets.length == 2) {
-    //     //     var newDataset = {
-    //     //         label: `Meta - ${group}`,
-    //     //         backgroundColor: 'rgba(99, 255, 132, 0.2)',
-    //     //         borderColor: 'rgba(99, 255, 132, 1)',
-    //     //         borderWidth: 1,
-    //     //         data: goal,
-    //     //         type: 'line'
-    //     //     }
-    //     //     chart.data.datasets.push(newDataset);
-
-    //     // } else {
-    //     //     chart.data.datasets[i + 2].type = 'line'
-    //     //     chart.data.datasets[i + 2].backgroundColor = '#AFE000'
-    //     //     chart.data.datasets[i + 2].data = goal;
-    //     //     chart.data.datasets[i + 2].label = `Meta - ${group}`
-    //     // }
-
-    //     chart.update();
-    // }
-
 }
 
+const viewGroupOffice = async (event) => {
+    if (event.target.parentNode.nodeName == "TR" && event.target.parentNode.matches('[data-index]')) {
+        const index = event.target.parentNode.getAttribute("data-index");
+        const group = event.target.parentNode.getAttribute("data-group");
+        const month = event.target.parentNode.getAttribute("data-month");
+        const office = event.target.parentNode.getAttribute("data-office");
+
+        if (event.target.parentNode.getAttribute(`data-active-${index}`)) {
+
+            const offices = await Connection.noBody(`goaloffices/${month}/${office}`, 'GET');
+
+            offices.forEach(ofi => {
+                let allSale = 0;
+                let allGoal = 0;
+
+                let revenueEffective = 0;
+                let revenueExpected = 0;
+
+                if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.");
+                if (!ofi.goals) return null;
+
+                if (ofi.goals.length > 0) {
+                    ofi.goals.forEach(goal => {
+
+                        revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                        revenueExpected += parseFloat(goal.price);
+
+                        allGoal += goal.amount ? parseInt(goal.amount) : 0;
+                        allSale += goal.effectiveAmount ? parseInt(goal.effectiveAmount) : 0;
+
+                    });
+                };
+
+                let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+                let color = '#A9A9A9';
+
+                switch (true) {
+                    case (percent == 0):
+                        color = '#A9A9A9';
+                        break;
+
+                    case (percent > 0 && percent <= 25):
+                        color = '#FB301E';
+                        break;
+
+                    case (percent > 25 && percent <= 50):
+                        color = '#E2D51A';
+                        break;
+
+                    case (percent > 50 && percent <= 75):
+                        color = '#5F9EA0';
+                        break;
+
+                    case (percent > 75):
+                        color = '#00AE4D';
+                        break;
+                }
+
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = "";
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
+
+                chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index);
+                updateChartGauge(`Rendimiento %`, color, index, allGoal, allSale);
+
+                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+            })
+
+            if ($.fn.DataTable.isDataTable(`#dataFinance${index}`)) {
+                $(`#dataFinance${index}`).dataTable().fnClearTable();
+                $(`#dataFinance${index}`).dataTable().fnDestroy();
+                $(`#dataFinance${index}`).empty();
+            }
+
+            $(`#collapseFinance${index}`).collapse('hide');
+
+            event.target.parentNode.style.backgroundColor = null;
+            event.target.parentNode.removeAttribute(`data-active-${index}`);
+
+        } else {
+
+            const offices = await Connection.noBody(`goaloffices/${month}/${office}/${group}`, 'GET');
+
+            document.querySelectorAll(`[data-active-${index}]`).forEach(div => {
+                div.style.backgroundColor = null;
+            });
+
+            offices.forEach(ofi => {
+                let allGoal = 0;
+                let allSale = 0;
+                let revenueEffective = 0;
+                let revenueExpected = 0;
+
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = "";
+                document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
+
+                if (ofi.goals.length > 0) {
+                    ofi.goals.forEach(goal => {
+                        allGoal += parseInt(goal.amount);
+                        allSale += parseInt(goal.effectiveAmount);
+                        revenueEffective += goal.effectivePrice;
+                        revenueExpected += goal.price;
+                    });
+                }
+
+                let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+                let color = '#A9A9A9';
+
+                switch (true) {
+                    case (percent == 0):
+                        color = '#A9A9A9';
+                        break;
+
+                    case (percent > 0 && percent <= 25):
+                        color = '#FB301E';
+                        break;
+
+                    case (percent > 25 && percent <= 50):
+                        color = '#E2D51A';
+                        break;
+
+                    case (percent > 50 && percent <= 75):
+                        color = '#5F9EA0';
+                        break;
+
+                    case (percent > 75):
+                        color = '#00AE4D';
+                        break;
+                };
+
+                chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index, group);
+                updateChartGauge(`Rendimiento - Cant Vendida`, color, index, allGoal, allSale);
+
+                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+
+                let dtview = ofi.invoices.map(invoice => {
+                    let date = new Date(invoice.date)
+                    return [
+                        invoice.id,
+                        `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                        invoice.user,
+                        invoice.client,
+                        invoice.artcode,
+                        invoice.name,
+                        invoice.qty,
+                        invoice.price.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                    ];
+                })
+
+                $(`#collapseStock${index}`).collapse('hide');
+                $(`#collapseFinance${index}`).collapse('show');
+
+                if ($.fn.DataTable.isDataTable(`#dataFinance${index}`)) {
+                    $(`#dataFinance${index}`).dataTable().fnClearTable();
+                    $(`#dataFinance${index}`).dataTable().fnDestroy();
+                    $(`#dataFinance${index}`).empty();
+                };
+
+                $(`#dataFinance${index}`).DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Id" },
+                        { title: "Fecha" },
+                        { title: "Vendedor" },
+                        { title: "Cliente" },
+                        { title: "Cod" },
+                        { title: "Articulo" },
+                        { title: "Cant" },
+                        { title: "Precio" }
+                    ],
+                    responsive: true,
+                    paging: true,
+                    ordering: false,
+                    info: true,
+                    scrollX: true,
+                    responsive: false,
+                    autoWidth: true,
+                    pagingType: "numbers",
+                    order: true
+                });
+            });
+
+            event.target.parentNode.style.backgroundColor = "#c9ffcf7a";
+            event.target.parentNode.dataset[`active-${index}`] = 1;
+        }
+    }
+}
+
+document.querySelector('[data-goal-offices]').addEventListener('click', viewGroupOffice, false)
+
 const viewGroup = async (event) => {
-    if (event.target.parentNode.nodeName == "TR") {
+    if (event.target.parentNode.nodeName == "TR" && event.target.parentNode.matches('[data-index]')) {
         const index = event.target.parentNode.getAttribute("data-index");
         const seller = event.target.parentNode.getAttribute("data-id");
         const group = event.target.parentNode.getAttribute("data-group");
@@ -167,11 +327,18 @@ const viewGroup = async (event) => {
                 updateChartGauge(`Rendimiento %`, color, index, percent, percent, "%");
             });
 
+            if ($.fn.DataTable.isDataTable(`#dataFinance${index}`)) {
+                $(`#dataFinance${index}`).dataTable().fnClearTable();
+                $(`#dataFinance${index}`).dataTable().fnDestroy();
+                $(`#dataFinance${index}`).empty();
+            }
+
+            $(`#collapseFinance${index}`).collapse('hide');
+
             event.target.parentNode.style.backgroundColor = null;
             event.target.parentNode.removeAttribute(`data-active-${index}`);
 
         } else {
-
 
             const sellers = await Connection.noBody(`goalsalesman/${month}/${office}/${seller}/${group}`, 'GET')
 
@@ -182,6 +349,7 @@ const viewGroup = async (event) => {
             sellers.forEach(salesman => {
                 let allGoal = 0;
                 let allSale = 0;
+
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = ""
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
 
@@ -212,10 +380,56 @@ const viewGroup = async (event) => {
                     case (percent > 75):
                         color = '#00AE4D';
                         break;
-                }
+                };
 
-                chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index, group)
-                updateChartGauge(`Rendimiento - Cant Vendida`, color, index, allGoal, allSale)
+                chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index, group);
+                updateChartGauge(`Rendimiento - Cant Vendida`, color, index, allGoal, allSale);
+
+                let dtview = salesman.invoices.map(invoice => {
+                    let date = new Date(invoice.date)
+                    return [
+                        invoice.id,
+                        `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                        invoice.user,
+                        invoice.client,
+                        invoice.artcode,
+                        invoice.name,
+                        invoice.qty,
+                        invoice.price.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                    ];
+                })
+
+                $(`#collapseStock${index}`).collapse('hide');
+                $(`#collapseFinance${index}`).collapse('show');
+
+                if ($.fn.DataTable.isDataTable(`#dataFinance${index}`)) {
+                    $(`#dataFinance${index}`).dataTable().fnClearTable();
+                    $(`#dataFinance${index}`).dataTable().fnDestroy();
+                    $(`#dataFinance${index}`).empty();
+                };
+
+                $(`#dataFinance${index}`).DataTable({
+                    data: dtview,
+                    columns: [
+                        { title: "Id" },
+                        { title: "Fecha" },
+                        { title: "Vendedor" },
+                        { title: "Cliente" },
+                        { title: "Cod" },
+                        { title: "Articulo" },
+                        { title: "Cant" },
+                        { title: "Precio" }
+                    ],
+                    responsive: true,
+                    paging: true,
+                    ordering: false,
+                    info: true,
+                    scrollX: true,
+                    responsive: false,
+                    autoWidth: true,
+                    pagingType: "numbers",
+                    order: true
+                });
             })
 
             event.target.parentNode.style.backgroundColor = "#c9ffcf7a";
@@ -450,7 +664,6 @@ const searchOffice = async (event) => {
                 });
             }
 
-
             let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
 
             let color = '#A9A9A9';
@@ -477,7 +690,17 @@ const searchOffice = async (event) => {
                     break;
             }
 
-            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueExpected, month));
+            let monthGoals = "";
+
+            ofi.month.forEach(mnt => {
+                let color = mnt.month != month ? "btn-secondary" : "btn-success";
+                let disabled = mnt.month != month ? "" : "disabled";
+                let active = mnt.month != month ? "" : `data-comparation-active-${index + 100}`;
+
+                monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-index="${index + 100}" data-office="${office}" data-month="${mnt.month}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+            })
+
+            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueExpected, month, monthGoals));
             gaugeChart(color, percent, 'Rendimiento %', index + 100)
             chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index + 100)
         })
@@ -496,10 +719,185 @@ const searchOffice = async (event) => {
 
 document.querySelector('[data-search-goal-offices]').addEventListener('submit', searchOffice, false);
 
+
+const comparationMonthOffice = async (event) => {
+
+    const btn = event.target;
+
+    const office = btn.getAttribute('data-office');
+    const index = btn.getAttribute('data-index');
+
+    if (btn.matches(`[data-comparation-active-${index}]`)) {
+        btn.removeAttribute(`data-comparation-active-${index}`);
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-secondary');
+
+        return null;
+    }
+
+    btn.setAttribute(`data-comparation-active-${index}`, '1')
+    btn.classList.remove('btn-secondary');
+    btn.classList.add('btn-success');
+
+    let months = Array.from(document.querySelectorAll(`[data-comparation-active-${index}]`)).map(div => {
+        div.getAttribute('data-month');
+    })
+
+
+
+    const offices = await Connection.noBody(`goaloffices/${months}/${office}`, 'GET');
+
+    offices.forEach((ofi, index) => {
+
+        let label1 = group ? `Ventas por dia - ${group}` : `Ventas por dia - ${month}`;
+        let label2 = group ? `Montante de Ventas - ${group}` : `Montante de Ventas - ${month}`;
+
+        const ctxComparation = document.querySelector(`[data-chart-comparation-${index}]`)
+
+        const data = {
+            labels: ofi.days,
+            datasets: [{
+                type: 'bar',
+                label: label1,
+                data: ofi.salesPerDay,
+                fill: false,
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgb(54, 162, 235)',
+                order: 2
+            }, {
+                type: 'line',
+                label: label2,
+                data: ofi.salesAmount,
+                borderWidth: 2,
+                fill: false,
+                backgroundColor: '#ACF415',
+                borderColor: '#ACF195',
+                tension: 0.2,
+                order: 1
+            }]
+        };
+        new Chart(ctxComparation, {
+            type: 'bar',
+            data: data,
+            options: {
+                responsive: true,
+                legend: {
+                    position: 'top',
+                    labels: {
+                        fontColor: "#000",
+                        fontSize: 18,
+                        fontStyle: "bold"
+                    }
+                },
+                elements: {
+                    line: {
+                        borderWidth: 3
+                    }
+                },
+                scales: {
+                    r: {
+                        pointLabels: {
+                            font: {
+                                size: 15,
+                                color: "#000",
+                                style: "bold"
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+window.comparationMonthOffice = comparationMonthOffice;
+
 const listStock = async (event) => {
     let btn = event.target
     let expanded = btn.getAttribute('aria-expanded')
     let index = btn.getAttribute('data-index');
+
+    $(`#collapseFinance${index}`).collapse('hide')
+
+    if (expanded == "true") {
+        if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+            $(`#dataStock${index}`).dataTable().fnClearTable();
+            $(`#dataStock${index}`).dataTable().fnDestroy();
+            $(`#dataStock${index}`).empty();
+        }
+    } else {
+
+        try {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'block';
+
+            if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+                $(`#dataStock${index}`).dataTable().fnClearTable();
+                $(`#dataStock${index}`).dataTable().fnDestroy();
+                $(`#dataStock${index}`).empty();
+            }
+
+            let month = btn.getAttribute('data-month');
+            let id = btn.getAttribute('data-id');
+            let office = btn.getAttribute('data-office');
+
+            const items = await Connection.noBody(`goalstock/${month}/${office}/${id}`, 'GET');
+
+            let dtview = items.map(item => {
+                let stockCity = item.stockCity ? item.stockCity : 0;
+                let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
+
+                return [
+                    item.itemgroup,
+                    item.itemcode,
+                    item.itemname,
+                    item.amount,
+                    stockCity,
+                    stockAnsa
+                ]
+            })
+
+            $(`#dataStock${index}`).DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Grupo" },
+                    { title: "Cod Articulo" },
+                    { title: "Nombre" },
+                    { title: "Meta" },
+                    { title: "Cant Stock - Ciudad" },
+                    { title: "Cant Stock - ANSA" },
+                ],
+                responsive: true,
+                paging: true,
+                ordering: false,
+                info: true,
+                scrollX: true,
+                responsive: false,
+                autoWidth: true,
+                pagingType: "numbers",
+                order: true,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            })
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        } catch (error) {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        }
+    }
+}
+
+window.listStock = listStock;
+
+const listStockOffice = async (event) => {
+    let btn = event.target
+    let expanded = btn.getAttribute('aria-expanded')
+    let index = btn.getAttribute('data-index');
+
+    $(`#collapseFinance${index}`).collapse('hide')
 
     if (expanded == "true") {
         if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
@@ -547,17 +945,15 @@ const listStock = async (event) => {
                     { title: "Cant Stock - Ciudad" },
                     { title: "Cant Stock - ANSA" },
                 ],
+                responsive: true,
                 paging: true,
-                ordering: true,
+                ordering: false,
                 info: true,
-                scrollY: false,
-                scrollCollapse: true,
                 scrollX: true,
-                autoHeight: true,
-                lengthMenu: [[50, 100, 150, 200], [50, 100, 150, 200]],
+                responsive: false,
+                autoWidth: true,
                 pagingType: "numbers",
-                searchPanes: true,
-                fixedHeader: false,
+                order: true,
                 dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
@@ -572,7 +968,8 @@ const listStock = async (event) => {
         }
     }
 }
-window.listStock = listStock;
+
+window.listStockOffice = listStockOffice;
 
 
 const searchUnit = async (event) => {
@@ -599,7 +996,7 @@ const searchUnit = async (event) => {
             let allSale = 0;
             let allGoal = 0;
 
-            if (salesman.amount.length > 0) {
+            if (salesman.amount.length > salesman.goals.length) {
                 salesman.amount.forEach(amount => {
 
                     let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
@@ -632,7 +1029,7 @@ const searchUnit = async (event) => {
                     goals += `
                 <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${goal.itemgroup}</th>
-                    <td>0</td>
+                    <td>${amount ? amount.qty : 0}</td>
                     <td>${goal.amount}</td>
                 </tr>`;
 
@@ -666,7 +1063,17 @@ const searchUnit = async (event) => {
                     break;
             }
 
-            document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index));
+            let monthGoals = "";
+
+            salesman.month.forEach(mnt => {
+                let color = mnt.month != month ? "btn-secondary" : "btn-success";
+                let disabled = mnt.month != month ? "" : "disabled";
+                let active = mnt.month != month ? "" : `data-comparation-active-${index}`;
+
+                monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-office="${office}" data-month="${mnt.month}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+            })
+
+            document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index, month, monthGoals));
             chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index)
             gaugeChart(color, percent, 'Rendimiento %', index)
 
@@ -1037,7 +1444,10 @@ $('#tablegoals tbody').on('click', 'dropdown-filter-item', async function (event
 
 const inputFile = () => {
     let fileName = document.getElementById('file').files[0].name;
-    if (fileName.split('.').pop() === "xlsx" || fileName.split('.').pop() === "xls") {
+    let file = fileName.split('.').pop();
+    let types = ["xlsx", "xls", "xltx", "ods"]
+
+    if (types.indexOf(file) > -1) {
         document.getElementById('filename').innerHTML = fileName
     } else {
         document.getElementById('file').value = "";

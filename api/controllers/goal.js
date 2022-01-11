@@ -90,21 +90,22 @@ module.exports = app => {
         }
     })
 
-    app.get('/goaloffices/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goaloffices/:month/:office/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
             let offices;
             let month = req.params.month;
+            let group = req.params.group;
             let office = req.params.office == "ALL" ? null : req.params.office;
 
             if (req.access.all.allowed) {
                 offices = office;
-                let ofs = await Goal.listOffice(month, offices);
+                let ofs = await Goal.listOffice(month, offices, group);
                 res.json(ofs);
 
             } else {
                 offices = office ? office : req.login.offices.map(of => of.code);
-                let ofs = await Goal.listOffice(month, offices);
+                let ofs = await Goal.listOffice(month, offices, group);
                 res.json(ofs);
             }
 
@@ -113,21 +114,22 @@ module.exports = app => {
         }
     })
 
-    app.get('/goalstock/:month/:office', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+    app.get('/goalstock/:month/:office/:id?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
             let offices;
             let month = req.params.month;
-            let office = req.params.office == "ALL" ? null : req.params.office;
+            let id = req.params.id ? req.params.id : false;
+            let office = req.params.office == "ALL" ? false : req.params.office;
 
             if (req.access.all.allowed) {
                 offices = office;
-                let ofs = await Goal.listStock(month, offices);
+                let ofs = await Goal.listStock(month, offices, id);
                 res.json(ofs);
 
             } else {
                 offices = office ? office : req.login.offices.map(of => of.code);
-                let ofs = await Goal.listStock(month, offices);
+                let ofs = await Goal.listStock(month, offices, id);
                 res.json(ofs);
             }
 
@@ -192,7 +194,7 @@ module.exports = app => {
         try {
             const file = req.file
 
-            await Goal.upload(file)
+            await Goal.upload(file, req.login)
 
             cachelist.delPrefix('goal')
 

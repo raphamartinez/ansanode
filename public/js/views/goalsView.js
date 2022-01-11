@@ -228,7 +228,7 @@ const expectedsGroups = (expected) => {
 
 }
 
-const user = (salesman, goals, index) => {
+const user = (salesman, goals, index, month, monthGoals) => {
     const div = document.createElement('div');
 
     div.innerHTML = `
@@ -264,12 +264,48 @@ const user = (salesman, goals, index) => {
             </div>
         </div>
     </div>
-</div>`
+
+    <div class="collapse" id="collapseFinance${index}">
+        <div class="card card-body">
+            <table class="table table-bordered text-center" id="dataFinance${index}" width="100%" cellspacing="0"></table>
+        </div>
+    </div>
+
+    <div class="collapse" id="collapseComparation${index}">
+        <div class="card card-body text-center">
+            <div class="col-md-12 text-center">
+                <hr>
+                <p>Seleccione los meses que quiera comparar</p>
+                ${monthGoals}
+                <br>
+                <div data-div-comparation-${index}></div>
+            </div>
+         </div>
+    </div>
+
+    <ul class="list-group text-center list-group-flush">
+        <li class="list-group-item">
+            <button data-btn-goal-stock-${index} onclick="listStock(event)" data-month="${month}" data-office="${salesman.office}" data-id="${salesman.id_salesman}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
+        </li>
+    </ul>
+
+    <div class="collapse" id="collapseStock${index}">
+        <div class="card card-body">
+            <div class="col-md-12">
+                <div data-loading-stock-${index} class="spinner-border text-primary" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+            </div>
+        <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
+        </div>
+    </div>
+</div>
+`
 
     return div;
 }
 
-const office = (office, goals, index, revenueEffective, revenueExpected, month) => {
+const office = (office, goals, index, revenueEffective, revenueExpected, month, monthGoals) => {
     const div = document.createElement('div');
 
     div.innerHTML = `
@@ -287,7 +323,7 @@ const office = (office, goals, index, revenueEffective, revenueExpected, month) 
                     </div>
                     <div class="form-group col-md-5 text-center">
                         <h5>Grupos</h5>
-                        <table id="tableGroups" class="table table-hover table-sm ">
+                        <table id="tableGroupsOffice" class="table table-hover table-sm ">
                         <thead>
                         <th scope="col">Nombre</th>
                         <th scope="col">Vendido</th>
@@ -303,40 +339,51 @@ const office = (office, goals, index, revenueEffective, revenueExpected, month) 
             <div class="form-group border col-md-4 text-center">
                 <div id="gaugeChart${index}" class="column"></div>
                 <div class="text-center">
-                <h1 class="h5 font-weight-bold text-info"> Facturamento efectivo: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                    <h1 data-revenue-effective${index} class="h5 font-weight-bold text-info"> Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
                 <div class="text-center">
-               <h1 class="h5 font-weight-bold text-success"> Facturamento prevision: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                    <h1 data-revenue-expected${index} class="h5 font-weight-bold text-success"> Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
             </div>
         </div>
     </div>
     <ul class="list-group text-center list-group-flush">
     <li class="list-group-item">
-    <button data-btn-goal-stock-${index} onclick="listStock(event)" data-office="${office.code}" data-month="${month}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
-    <div class="btn-group">
-  <button type="button" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    Comparar con Metas anteriores
-  </button>
-  <div class="dropdown-menu">
-    <a class="dropdown-item" href="#">12/21</a>
-    <a class="dropdown-item" href="#">11/21</a>
-    <a class="dropdown-item" href="#">10/21</a>
-    <div class="dropdown-divider"></div>
-    <a class="dropdown-item" href="#">Los últimos 3 meses</a>
-  </div>
-</div>
+    <button data-btn-goal-stock-${index} onclick="listStockOffice(event)" data-office="${office.code}" data-month="${month}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
+    <button type="button" data-toggle="collapse" data-target="#collapseComparation${index}" class="btn btn-secondary">Comparar con Metas anteriores</button>
     </li>
   </ul>
+
   <div class="collapse" id="collapseStock${index}">
-  <div class="card card-body text-center">
-  <div class="col-md-12 text-center">
+  <div class="card card-body">
+  <div class="col-md-12">
   <div data-loading-stock-${index} class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
   </div>
   </div>
-  <table class="table table-bordered text-center" id="dataStock${index}" width="100%" cellspacing="0"></table>
+  <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
   </div>
+</div>
+
+<div class="collapse" id="collapseFinance${index}">
+<div class="card card-body">
+<table class="table table-bordered text-center" id="dataFinance${index}" width="100%" cellspacing="0"></table>
+</div>
+</div>
+
+<div class="collapse" id="collapseComparation${index}">
+    <div class="card card-body text-center">
+        <div class="col-md-12 text-center">
+            <hr>
+            <p>Seleccione los meses que quiera comparar</p>
+            ${monthGoals}
+            <br>
+            <div data-div-comparation-${index}></div>
+        </div>
+    </div>
+</div>
+
+</div>
 </div>
 </div>`
 

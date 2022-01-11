@@ -36,18 +36,6 @@ class Mail {
     }
 }
 
-class VerifyMail extends Mail {
-
-    constructor(user, date, address, salesman) {
-        super()
-        this.from = '"Meta ANSA" informes.adm@americaneumaticos.com'
-        this.to = 'raphamartinezz@gmail.com'
-        this.subject = 'Nueva meta agregada'
-        this.text = `Hola Rodrigo, nueva meta agregada `
-        // this.attachments = attachment
-    }
-}
-
 class ResetPasswordMail extends Mail {
 
     constructor(mailenterprise, token) {
@@ -242,12 +230,50 @@ class AttachmentBi extends Mail {
         this.subject = title
         this.text = body
         this.attachments = attachment
-        //{
-          //filename: 'image1.jpg',
-          //  path: __dirname + '/image1.jpg'
-        //}
     }
 }
 
+class GoalMail extends Mail {
 
-module.exports = { VerifyMail, ResetPasswordMail, AttachmentBi, QuizMail }
+    constructor(filename, details, salesman, user, date, cc) {
+        super()
+        this.from = '"Meta ANSA" informes.adm@americaneumaticos.com'
+        this.to = 'raphamartinezz@gmail.com'
+        this.cc = cc
+        this.subject = `Nueva meta agregada - ${salesman}`
+        this.html = `
+        <style>
+        tr:nth-child(even) {
+            background-color: #E6E6FA;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+            padding: 5px;
+            text-align: center;
+        }
+
+        </style>
+        <h1> Hola Rodrigo, nueva meta agregada.</h1>
+        <hr>
+        <h3>Usuario que agregó: ${user}</h3>
+        <h3>Codigo del Vendedor: ${salesman}</h3>
+        <h3>Fecha de Registro: ${date}</h3>
+        <hr>
+        <br>
+        <table>
+            <tr>
+                <th>Articulo</th>
+                <th>Fecha</th>
+                <th>Meta</th>
+            </tr>
+        <tbody>
+            ${details}
+        </tbody>
+        </table>`
+        this.attachments = filename
+    }
+}
+
+module.exports = { ResetPasswordMail, AttachmentBi, QuizMail, GoalMail }

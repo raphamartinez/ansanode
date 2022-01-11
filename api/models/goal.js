@@ -7,6 +7,8 @@ const Queue = require('../infrastructure/redis/queue');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error');
 const excelToJson = require('convert-excel-to-json');
 const fs = require('fs')
+const { GoalMail } = require('./mail')
+const nodemailer = require('nodemailer')
 
 class Goal {
 
@@ -28,7 +30,7 @@ class Goal {
         }
     }
 
-    async upload(file) {
+    async upload(file, login) {
         try {
             let goals = excelToJson({
                 sourceFile: `tmp/uploads/${file.key}`
@@ -36,6 +38,7 @@ class Goal {
 
             let l;
             let i;
+            let details = "";
 
             if (goals.Meta[3].J) {
                 i = 0
@@ -92,38 +95,37 @@ class Goal {
 
             goals.Meta.forEach(goal => {
                 if (i == 2) {
-                    if (goal.L > 0) table.push([goal.A, goal.H, date[0], goal.L])
-                    if (goal.M > 0) table.push([goal.A, goal.H, date[1], goal.M])
-                    if (goal.N > 0) table.push([goal.A, goal.H, date[2], goal.N])
-                    if (goal.O > 0) table.push([goal.A, goal.H, date[3], goal.O])
-                    if (goal.P > 0) table.push([goal.A, goal.H, date[4], goal.P])
-                    if (goal.Q > 0) table.push([goal.A, goal.H, date[5], goal.Q])
-                    if (goal.R > 0) table.push([goal.A, goal.H, date[6], goal.R])
-                    if (goal.S > 0) table.push([goal.A, goal.H, date[7], goal.S])
-                    if (goal.T > 0) table.push([goal.A, goal.H, date[8], goal.T])
-                    if (goal.U > 0) table.push([goal.A, goal.H, date[9], goal.U])
-                    if (goal.V > 0) table.push([goal.A, goal.H, date[10], goal.V])
-                    if (goal.W > 0) table.push([goal.A, goal.H, date[11], goal.W])
-                    if (goal.X > 0) table.push([goal.A, goal.H, date[12], goal.X])
+                    if (goal.L > 0) table.push([goal.A, goal.H, date[0], goal.L]);
+                    if (goal.M > 0) table.push([goal.A, goal.H, date[1], goal.M]);
+                    if (goal.N > 0) table.push([goal.A, goal.H, date[2], goal.N]);
+                    if (goal.O > 0) table.push([goal.A, goal.H, date[3], goal.O]);
+                    if (goal.P > 0) table.push([goal.A, goal.H, date[4], goal.P]);
+                    if (goal.Q > 0) table.push([goal.A, goal.H, date[5], goal.Q]);
+                    if (goal.R > 0) table.push([goal.A, goal.H, date[6], goal.R]);
+                    if (goal.S > 0) table.push([goal.A, goal.H, date[7], goal.S]);
+                    if (goal.T > 0) table.push([goal.A, goal.H, date[8], goal.T]);
+                    if (goal.U > 0) table.push([goal.A, goal.H, date[9], goal.U]);
+                    if (goal.V > 0) table.push([goal.A, goal.H, date[10], goal.V]);
+                    if (goal.W > 0) table.push([goal.A, goal.H, date[11], goal.W]);
+                    if (goal.X > 0) table.push([goal.A, goal.H, date[12], goal.X]);
                 } else {
-                    if (goal.J > 0) table.push([goal.A, goal.H, date[0], goal.J])
-                    if (goal.K > 0) table.push([goal.A, goal.H, date[1], goal.K])
-                    if (goal.L > 0) table.push([goal.A, goal.H, date[2], goal.L])
-                    if (goal.M > 0) table.push([goal.A, goal.H, date[3], goal.M])
-                    if (goal.N > 0) table.push([goal.A, goal.H, date[4], goal.N])
-                    if (goal.O > 0) table.push([goal.A, goal.H, date[5], goal.O])
-                    if (goal.P > 0) table.push([goal.A, goal.H, date[6], goal.P])
-                    if (goal.Q > 0) table.push([goal.A, goal.H, date[7], goal.Q])
-                    if (goal.R > 0) table.push([goal.A, goal.H, date[8], goal.R])
-                    if (goal.S > 0) table.push([goal.A, goal.H, date[9], goal.S])
-                    if (goal.T > 0) table.push([goal.A, goal.H, date[10], goal.T])
-                    if (goal.U > 0) table.push([goal.A, goal.H, date[11], goal.U])
-                    if (goal.V > 0) table.push([goal.A, goal.H, date[12], goal.V])
-                }
-            })
+                    if (goal.J > 0) table.push([goal.A, goal.H, date[0], goal.J]);
+                    if (goal.K > 0) table.push([goal.A, goal.H, date[1], goal.K]);
+                    if (goal.L > 0) table.push([goal.A, goal.H, date[2], goal.L]);
+                    if (goal.M > 0) table.push([goal.A, goal.H, date[3], goal.M]);
+                    if (goal.N > 0) table.push([goal.A, goal.H, date[4], goal.N]);
+                    if (goal.O > 0) table.push([goal.A, goal.H, date[5], goal.O]);
+                    if (goal.P > 0) table.push([goal.A, goal.H, date[6], goal.P]);
+                    if (goal.Q > 0) table.push([goal.A, goal.H, date[7], goal.Q]);
+                    if (goal.R > 0) table.push([goal.A, goal.H, date[8], goal.R]);
+                    if (goal.S > 0) table.push([goal.A, goal.H, date[9], goal.S]);
+                    if (goal.T > 0) table.push([goal.A, goal.H, date[10], goal.T]);
+                    if (goal.U > 0) table.push([goal.A, goal.H, date[11], goal.U]);
+                    if (goal.V > 0) table.push([goal.A, goal.H, date[12], goal.V]);
+                };
+            });
 
-
-            const id_salesman = await Repositorie.listSalesman(table[0][0])
+            const id_salesman = await Repositorie.listSalesman(table[0][0]);
 
             if (id_salesman) {
 
@@ -132,9 +134,7 @@ class Goal {
                     let year = line[2].split("-")[1];
                     let month = line[2].split("-")[0];
 
-                    let obj = { itemcode: line[1], date: `${year}-${month}-01` }
-
-                    console.log(obj);
+                    let obj = { itemcode: line[1], date: `${year}-${month}-01` };
                     const id_goalline = await Repositorie.search(obj);
 
                     if (id_goalline) {
@@ -142,22 +142,45 @@ class Goal {
                             id_goalline: id_goalline,
                             id_salesman: id_salesman,
                             amount: line[3]
-                        }
+                        };
 
-                        const validate = await Repositorie.validate(item)
+                        const validate = await Repositorie.validate(item);
 
                         if (validate) {
-                            item.id_goal = validate.id_goal
-                            await Repositorie.update(item)
+                            item.id_goal = validate.id_goal;
+                            await Repositorie.update(item);
                         } else {
-                            await Repositorie.insert(item)
+                            await Repositorie.insert(item);
                         }
-                    }
 
+                        console.log(item);
+                        details += `<tr><td>${obj.itemcode}</td><td>${obj.date}</td><td>${item.amount}</td></tr>`
+                    }
                 }
             }
 
-            fs.unlinkSync(`tmp/uploads/${file.filename}`)
+            let dt = new Date();
+
+            const attachment = {
+                filename: file.filename,
+                path: `tmp/uploads/${file.filename}`
+            };
+
+            const send = new GoalMail(attachment, details, table[0][0], login.name, `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`, login.mailenterprise);
+
+            const transport = nodemailer.createTransport({
+                host: process.env.MAIL_HOST,
+                port: process.env.MAIL_PORT,
+                secure: false,
+                auth: {
+                    user: process.env.MAIL_USER,
+                    pass: process.env.MAIL_PASSWORD
+                }
+            })
+
+            await transport.sendMail(send)
+
+            fs.unlinkSync(`tmp/uploads/${file.filename}`);
 
         } catch (error) {
             console.log(error);
@@ -173,7 +196,7 @@ class Goal {
         }
     }
 
-    async listStock(month, office, group = false) {
+    async listStock(month, office = false, id = false) {
         try {
 
             const stocks = [
@@ -198,7 +221,7 @@ class Goal {
             let arrstock = " "
 
             stocks.forEach(stock => {
-                if (stock[1] === office) {
+                if (parseInt(stock[1]) === parseInt(office)) {
                     const st = stock[0]
 
                     if (arrstock.length > 1) {
@@ -209,7 +232,14 @@ class Goal {
                 }
             });
 
-            let itemsdt = await Repositorie.items(office, month, group);
+            let itemsdt;
+
+            if (id) {
+                itemsdt = await Repositorie.listGoalsItem(id, month);
+            }else{
+                itemsdt = await Repositorie.items(office, month, false);
+            }
+
             let items = itemsdt.map(item => item.itemcode);
             let data = await RepositorieHbs.listStockItems(items, arrstock);
             let data2 = await RepositorieHbs.listStockCityItems(items, arrstock);
@@ -238,7 +268,9 @@ class Goal {
             let ofs = [];
 
             for (let ofi of data) {
-                let itemsdt = await Repositorie.items(ofi.code, month, group);
+
+                let monthGoals = await Repositorie.month(parseInt(ofi.code), false);
+                let itemsdt = await Repositorie.items(parseInt(ofi.code), month, group);
                 let items = itemsdt.map(item => item.itemcode);
 
                 if (items.length > 0) {
@@ -246,6 +278,12 @@ class Goal {
                     let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month, group);
                     let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group);
                     let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
+                    let invoices;
+
+                    if (group) {
+                        invoices = await RepositorieHbs.listInvoice(month, group);
+                        ofi.invoices = invoices;
+                    };
 
                     let goals = goalExpected.map(goal => {
                         let group = revenueExpected.find(expected => expected.Name === goal.itemgroup);
@@ -259,24 +297,26 @@ class Goal {
                     });
 
                     const salesPerDay = sales.map(sale => {
-                        return sale.qty
+                        return sale.qty;
                     });
 
                     let x = 0;
 
                     let salesAmount = sales.map(sale => {
-                        x += sale.qty
-                        return x
+                        x += sale.qty;
+                        return x;
                     });
 
                     const days = sales.map(sale => {
-                        return sale.TransDate
+                        return sale.TransDate;
                     });
 
                     ofi.goals = goals;
                     ofi.salesPerDay = salesPerDay;
                     ofi.salesAmount = salesAmount;
                     ofi.days = days;
+                    ofi.month = monthGoals;
+
                 }
 
                 ofs.push(ofi);
@@ -296,25 +336,31 @@ class Goal {
 
             for (let obj of data) {
 
+                let monthGoals = await Repositorie.month(false, obj.id_salesman);
                 let goals = await Repositorie.listGoals(obj.id_salesman, month, group);
                 let itemsdt = await Repositorie.listGoalsItem(obj.id_salesman, month, group);
                 let items = itemsdt.map(item => item.itemcode);
                 let amount = await RepositorieSales.list(items, obj.code, month, group);
                 let sales = await RepositorieSales.graphSalesDay(items, obj.code, month, group);
+                let invoices;
 
+                if (group) {
+                    invoices = await RepositorieHbs.listInvoice(month, group, obj.code);
+                    obj.invoices = invoices;
+                };
                 const salesPerDay = sales.map(sale => {
-                    return sale.qty
+                    return sale.qty;
                 });
 
                 let x = 0;
 
                 let salesAmount = sales.map(sale => {
-                    x += sale.qty
-                    return x
+                    x += sale.qty;
+                    return x;
                 });
 
                 const days = sales.map(sale => {
-                    return sale.TransDate
+                    return sale.TransDate;
                 });
 
                 obj.goals = goals;
@@ -322,6 +368,7 @@ class Goal {
                 obj.salesPerDay = salesPerDay;
                 obj.salesAmount = salesAmount;
                 obj.days = days;
+                obj.month = monthGoals;
 
                 sellers.push(obj);
             }

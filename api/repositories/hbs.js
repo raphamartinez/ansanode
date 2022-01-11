@@ -259,6 +259,25 @@ class Hbs {
     //     }
     // }
 
+    listInvoice(month, group, code){
+        try {
+            let sql = `SELECT sa.internalId AS id, sa.TransDate AS date, sa.SalesMan as user, sa.CustName AS client, sr.ArtCode as artcode, sr.Name as name, sr.Qty as qty, 
+            IF(sa.Currency = "GS", sr.RowNet / sa.BaseRate , IF(sa.Currency = "RE", sr.RowNet * sa.FromRate / sa.BaseRate, sr.RowNet)) AS price
+            FROM SalesOrder sa 
+            INNER JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
+            LEFT JOIN Item it ON sr.ArtCode = it.Code
+            LEFT JOIN ItemGroup  ig ON it.ItemGroup = ig.Code
+            WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?)
+            AND ig.Name = ?`
+
+            if(code) sql += ` AND sa.SalesMan = '${code}' `
+
+            return queryhbs(sql, [`${month}-01`, `${month}-10`, group])
+        } catch (error) {
+            
+        }
+    }
+
     listSalesOrder(search) {
         try {
             let sql = `SELECT SO.SerNr,CONCAT(DATE_FORMAT(SO.TransTime, '%H:%i'), " ", DATE_FORMAT(SO.TransDate, '%d/%m/%Y')) AS date,SO.CustCode,SO.CustName,TRUNCATE(SO.Total,2) as Total,TRUNCATE(SO.SubTotal,2) as SubTotal,SO.Invalid,SO.Closed,SO.Status,

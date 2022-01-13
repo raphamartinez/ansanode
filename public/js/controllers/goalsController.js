@@ -697,7 +697,7 @@ const searchOffice = async (event) => {
                 let disabled = mnt.month != month ? "" : "disabled";
                 let active = mnt.month != month ? "" : `data-comparation-active-${index + 100}`;
 
-                monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-index="${index + 100}" data-office="${office}" data-month="${mnt.month}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+                monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-index="${index + 100}" data-office="${office}" data-month="${mnt.month}" data-id="ALL" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
             })
 
             document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueExpected, month, monthGoals));
@@ -719,96 +719,199 @@ const searchOffice = async (event) => {
 
 document.querySelector('[data-search-goal-offices]').addEventListener('submit', searchOffice, false);
 
-
 const comparationMonthOffice = async (event) => {
 
     const btn = event.target;
 
+    const id = btn.getAttribute('data-id');
     const office = btn.getAttribute('data-office');
     const index = btn.getAttribute('data-index');
+
+    document.querySelector(`[data-loading-comparation-${index}]`).innerHTML = `<br><div class="spinner-border text-primary mb-4" role="status"></div>`
 
     if (btn.matches(`[data-comparation-active-${index}]`)) {
         btn.removeAttribute(`data-comparation-active-${index}`);
         btn.classList.remove('btn-success');
         btn.classList.add('btn-secondary');
-
-        return null;
+    } else {
+        btn.setAttribute(`data-comparation-active-${index}`, '1')
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-success');
     }
 
-    btn.setAttribute(`data-comparation-active-${index}`, '1')
-    btn.classList.remove('btn-secondary');
-    btn.classList.add('btn-success');
+    let btnsmonth = document.querySelectorAll(`[data-comparation-active-${index}]`)
+    let months = Array.from(btnsmonth).map(el => `${el.getAttribute('data-month')}`);
 
-    let months = Array.from(document.querySelectorAll(`[data-comparation-active-${index}]`)).map(div => {
-        div.getAttribute('data-month');
-    })
+    const goals = await Connection.noBody(`goalcomparations/${JSON.stringify(months.reverse())}/${office}/${id}`, 'GET');
 
+    let color = [
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(201, 203, 207, 0.2)'
+    ];
 
+    let background = [
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(255, 99, 132)',
+        'rgb(201, 203, 207)'
+    ];
 
-    const offices = await Connection.noBody(`goaloffices/${months}/${office}`, 'GET');
+    let dataset = [];
 
-    offices.forEach((ofi, index) => {
+    document.querySelector(`#dataComparation${index}`).innerHTML = ""
+    document.querySelector(`#dataComparation${index}`).innerHTML = `<thead>
+    <tr data-thead1-comparation-${index}>
+    <th></th>
+    </tr>
+    <tr data-thead2-comparation-${index}>
+    </tr>
+</thead>
+    <tbody data-tbody-comparation-${index}>
+    </tbody>`
 
-        let label1 = group ? `Ventas por dia - ${group}` : `Ventas por dia - ${month}`;
-        let label2 = group ? `Montante de Ventas - ${group}` : `Montante de Ventas - ${month}`;
+    let groupsData = [];
+    const obj = {}
+    goals.forEach((goal, i) => {
 
-        const ctxComparation = document.querySelector(`[data-chart-comparation-${index}]`)
+        goal.goals.reduce(function (r, a) {
+            groupsData[a[`itemgroup`]] = groupsData[a[`itemgroup`]] || [];
+            groupsData[a[`itemgroup`]].push(a);
 
-        const data = {
-            labels: ofi.days,
-            datasets: [{
-                type: 'bar',
-                label: label1,
-                data: ofi.salesPerDay,
-                fill: false,
-                backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                borderColor: 'rgb(54, 162, 235)',
-                order: 2
-            }, {
-                type: 'line',
-                label: label2,
-                data: ofi.salesAmount,
-                borderWidth: 2,
-                fill: false,
-                backgroundColor: '#ACF415',
-                borderColor: '#ACF195',
-                tension: 0.2,
-                order: 1
-            }]
-        };
-        new Chart(ctxComparation, {
+            return r;
+        }, Object.create(obj));
+
+        let month = goal.month.split('-');
+
+        const label1 = `Ventas por dia - ${month[1]}/${month[0]}`;
+        const label2 = `Montante de Ventas - ${month[1]}/${month[0]}`;
+
+        dataset.push({
             type: 'bar',
-            data: data,
-            options: {
-                responsive: true,
-                legend: {
-                    position: 'top',
-                    labels: {
-                        fontColor: "#000",
-                        fontSize: 18,
-                        fontStyle: "bold"
-                    }
-                },
-                elements: {
-                    line: {
-                        borderWidth: 3
-                    }
-                },
-                scales: {
-                    r: {
-                        pointLabels: {
-                            font: {
-                                size: 15,
-                                color: "#000",
-                                style: "bold"
-                            }
+            label: label1,
+            data: goal.salesPerDay,
+            fill: false,
+            backgroundColor: background[i],
+            borderColor: color[i],
+            order: 2
+        }, {
+            type: 'line',
+            label: label2,
+            data: goal.salesAmount,
+            borderWidth: 2,
+            fill: false,
+            backgroundColor: color[i],
+            borderColor: background[i],
+            tension: 0.2,
+            order: 1
+        });
+    });
+
+    groupsData = Object.keys(groupsData).map((key) => [key, groupsData[key]]);
+
+    let dtView = groupsData.map(group => {
+        let arr = group[1].map(gp => {
+            return [
+                gp.effectiveAmount ? gp.effectiveAmount : "",
+                gp.amount
+            ]
+        });
+        const newArr = Array.prototype.concat(group[0], ...arr);
+
+        return newArr
+    });
+
+    dtView.forEach(dt => {
+        let tr = document.createElement('tr');
+        dt.forEach((t, ib) => {
+            if (ib == 0) {
+                tr.innerHTML += `<th scope="row">${t}</th>`
+            } else {
+                tr.innerHTML += `<td>${t}</td>`
+            }
+        });
+        document.querySelector(`[data-tbody-comparation-${index}]`).appendChild(tr)
+    })
+    let days = goals[0].days.map(d => d.split('/')[0])
+    let data = {
+        labels: days,
+        datasets: dataset
+    };
+
+    document.querySelector(`[data-div-comparation-${index}]`).innerHTML = "";
+    document.querySelector(`[data-div-comparation-${index}]`).innerHTML = `<canvas class="flex d-inline" data-chart-comparation-${index}></canvas>`
+
+
+    const ctxComparation = document.querySelector(`[data-chart-comparation-${index}]`);
+
+    new Chart(ctxComparation, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+                labels: {
+                    fontColor: "#000",
+                    fontSize: 18,
+                    fontStyle: "bold"
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    pointLabels: {
+                        font: {
+                            size: 15,
+                            color: "#000",
+                            style: "bold"
                         }
                     }
                 }
             }
-        });
+        }
     });
-}
+
+    let thGroup = document.createElement('th');
+    thGroup.innerHTML = "Grupo";
+    thGroup.rowSpan = "2";
+    document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(thGroup);
+
+    months.forEach((mnth, im) => {
+        let mt = mnth.split('-');
+
+        let th = document.createElement('th');
+        th.colSpan = "2";
+        th.innerHTML = `${mt[1]}/${mt[0]}`;
+        th.scope = "col";
+        document.querySelector(`[data-thead1-comparation-${index}]`).appendChild(th);
+
+        let th1 = document.createElement('th');
+        th1.innerHTML = "Vendido";
+        th1.style.backgroundColor = color[im]
+        th1.scope = "col";
+        document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(th1);
+
+        let th2 = document.createElement('th');
+        th2.innerHTML = "Meta";
+        th2.style.backgroundColor = color[im];
+        th2.scope = "col";
+        document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(th2);
+    });
+
+    document.querySelector(`[data-loading-comparation-${index}]`).innerHTML = ""
+};
 
 window.comparationMonthOffice = comparationMonthOffice;
 
@@ -818,6 +921,7 @@ const listStock = async (event) => {
     let index = btn.getAttribute('data-index');
 
     $(`#collapseFinance${index}`).collapse('hide')
+    $(`#collapseComparation${index}`).collapse('hide')
 
     if (expanded == "true") {
         if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
@@ -898,6 +1002,7 @@ const listStockOffice = async (event) => {
     let index = btn.getAttribute('data-index');
 
     $(`#collapseFinance${index}`).collapse('hide')
+    $(`#collapseComparation${index}`).collapse('hide')
 
     if (expanded == "true") {
         if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
@@ -1070,7 +1175,7 @@ const searchUnit = async (event) => {
                 let disabled = mnt.month != month ? "" : "disabled";
                 let active = mnt.month != month ? "" : `data-comparation-active-${index}`;
 
-                monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-office="${office}" data-month="${mnt.month}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+                monthGoals += `<button onclick="comparationMonthOffice(event)" data-office="ALL" ${disabled} ${active} data-id="${salesman.id_salesman}" data-month="${mnt.month}" data-index="${index}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
             })
 
             document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index, month, monthGoals));

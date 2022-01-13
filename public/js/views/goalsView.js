@@ -271,21 +271,10 @@ const user = (salesman, goals, index, month, monthGoals) => {
         </div>
     </div>
 
-    <div class="collapse" id="collapseComparation${index}">
-        <div class="card card-body text-center">
-            <div class="col-md-12 text-center">
-                <hr>
-                <p>Seleccione los meses que quiera comparar</p>
-                ${monthGoals}
-                <br>
-                <div data-div-comparation-${index}></div>
-            </div>
-         </div>
-    </div>
-
     <ul class="list-group text-center list-group-flush">
         <li class="list-group-item">
             <button data-btn-goal-stock-${index} onclick="listStock(event)" data-month="${month}" data-office="${salesman.office}" data-id="${salesman.id_salesman}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
+            <button type="button" data-toggle="collapse" data-target="#collapseComparation${index}" class="btn btn-secondary">Comparar con Metas anteriores</button>
         </li>
     </ul>
 
@@ -299,6 +288,31 @@ const user = (salesman, goals, index, month, monthGoals) => {
         <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
         </div>
     </div>
+
+    <div class="collapse" id="collapseComparation${index}">
+    <div class="card card-body text-center">
+        <div class="col-md-12 text-center">
+            <hr>
+            <p>Seleccione los meses que quiera comparar</p>
+            ${monthGoals}
+            <div data-loading-comparation-${index}></div>
+            <br>
+            <div data-div-comparation-${index}></div>
+            <table class="table table-bordered" id="dataComparation${index}">
+        <thead>
+            <tr data-thead1-comparation-${index}>
+            <th></th>
+            </tr>
+            <tr data-thead2-comparation-${index}>
+            </tr>
+        </thead>
+            <tbody data-tbody-comparation-${index}>
+            </tbody>
+        </table>
+        </div>
+     </div>
+</div>
+
 </div>
 `
 
@@ -375,10 +389,23 @@ const office = (office, goals, index, revenueEffective, revenueExpected, month, 
     <div class="card card-body text-center">
         <div class="col-md-12 text-center">
             <hr>
+            <h5>Comparacion</h5>
             <p>Seleccione los meses que quiera comparar</p>
+            <div data-loading-comparation-${index}></div>
             ${monthGoals}
             <br>
             <div data-div-comparation-${index}></div>
+            <table class="table table-bordered" id="dataComparation${index}">
+            <thead>
+                <tr data-thead1-comparation-${index}>
+                <th></th>
+                </tr>
+                <tr data-thead2-comparation-${index}>
+                </tr>
+            </thead>
+                <tbody data-tbody-comparation-${index}>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

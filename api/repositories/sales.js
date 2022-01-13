@@ -32,8 +32,7 @@ class Sales {
         }
     }
 
-    async listOffice(items, offices, month) {
-
+    async listOffice(items, offices, month, salesman) {
         try {
 
             let sql = `
@@ -42,11 +41,13 @@ class Sales {
             INNER JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
             LEFT JOIN Item it ON sr.ArtCode = it.Code 
             LEFT JOIN ItemGroup ig ON it.ItemGroup = ig.Code
-            WHERE sa.Office IN (${offices})
-            AND sa.TransDate BETWEEN ? AND LAST_DAY(?) 
-            AND sr.ArtCode IN (${items}) 
-            GROUP BY ig.Name
-            ORDER BY ig.Name`
+            WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?) 
+            AND sr.ArtCode IN (${items}) `
+
+            if (offices) sql += ` AND sa.Office IN (${offices}) `
+            if (salesman) sql += ` AND sa.SalesMan = '${salesman}' `
+
+            sql += ` GROUP BY ig.Name ORDER BY ig.Name`
 
             const result = await queryhbs(sql, [`${month}-01`, `${month}-10`]);
             return result;
@@ -85,10 +86,9 @@ class Sales {
             AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
             if (group) sql += ` AND ig.Name = '${group}' `
-
             if (items && items.length > 0) sql += ` AND it.Code IN (${items}) `
 
-            sql += `GROUP BY sa.TransDate
+            sql += ` GROUP BY sa.TransDate
             ORDER BY sa.TransDate ASC`
 
             const result = await queryhbs(sql, [salesman, `${date}-01`, `${date}-10`])
@@ -110,13 +110,56 @@ class Sales {
         AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
             if (group) sql += ` AND ig.Name = '${group}' `
-
             if (items && items.length > 0) sql += ` AND it.Code IN (${items}) `
 
             sql += `GROUP BY sa.TransDate
         ORDER BY sa.TransDate ASC`
 
             const result = await queryhbs(sql, [office, `${date}-01`, `${date}-10`])
+            return result
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async graphSalesDayComparation(items, office, date, salesman) {
+        try {
+            let sql = `SELECT dateList.Date as date,
+            CASE WHEN sa.TransDate IS NULL THEN 0
+            ELSE COUNT(sa.internalId) 
+            END AS amt,
+             DATE_FORMAT(dateList.Date, '%d/%m/%Y') as TransDate, 
+             SUM(sa.Qty) AS qty
+        FROM
+        (
+            SELECT a.Date
+            FROM (
+                SELECT LAST_DAY(?) - INTERVAL (a.a + (10 * b.a) + (100 * c.a)) DAY AS Date
+                FROM (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS a
+                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS b
+                CROSS JOIN (SELECT 0 AS a UNION ALL SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9) AS c
+            ) AS a
+            WHERE a.Date between ? and LAST_DAY(?)
+        ) AS dateList 
+                LEFT JOIN (SELECT sa.internalId, DATE_FORMAT(sa.TransDate, '%d/%m/%Y') as TransDate, sa.TransDate AS date
+                  , SUM(sr.Qty) AS qty
+                FROM SalesOrder sa 
+                LEFT JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
+                LEFT JOIN Item it ON sr.ArtCode = it.Code 
+                LEFT JOIN ItemGroup ig ON it.ItemGroup = ig.Code
+                WHERE it.Code IN (${items})`
+
+            if (office) sql += ` AND sa.Office = '${office}' `
+            if (salesman) sql += ` AND sa.SalesMan = '${salesman}' `
+
+            sql += `
+                GROUP BY sa.TransDate
+                ORDER BY sa.TransDate ASC) AS sa ON dateList.Date = Date(sa.date)
+                Group BY dateList.Date
+                ORDER BY dateList.Date`
+
+            const result = await queryhbs(sql, [`${date}-01`, `${date}-01`, `${date}-01`])
             return result
         } catch (error) {
             console.log(error);

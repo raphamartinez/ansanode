@@ -236,7 +236,7 @@ class Goal {
 
             if (id) {
                 itemsdt = await Repositorie.listGoalsItem(id, month);
-            }else{
+            } else {
                 itemsdt = await Repositorie.items(office, month, false);
             }
 
@@ -261,6 +261,73 @@ class Goal {
         }
     }
 
+    async listComparation(months, office, id) {
+        try {
+
+            let data = [];
+            for (let month of months) {
+                let obj = {};
+                let itemsdt;
+                let code = false;
+
+                if (id) {
+                    itemsdt = await Repositorie.listGoalsItem(id, month);
+                    let salesman = await RepositorieSeller.list(id, false);
+                    code = salesman[0].code
+                } else {
+                    itemsdt = await Repositorie.items(parseInt(office), month);
+
+                }
+                let items = itemsdt.map(item => item.itemcode);
+
+                if (items.length > 0) {
+                    let revenueExpected = await RepositorieHbs.listPrices(items);
+                    let goalEffective = await RepositorieSales.listOffice(items, office, month, code);
+                    let goalExpected = await Repositorie.listGoalsOffice(office, month, false, id);
+                    let sales = await RepositorieSales.graphSalesDayComparation(items, office, month, code);
+
+                    let goals = goalExpected.map(goal => {
+                        let group = revenueExpected.find(expected => expected.Name === goal.itemgroup);
+                        let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
+                        if (group) goal.price = group.price;
+                        if (effective) {
+                            goal.effectiveAmount = effective.amount;
+                            goal.effectivePrice = effective.price;
+                        }
+                        return goal;
+                    });
+
+                    const salesPerDay = sales.map(sale => {
+                        return sale.qty;
+                    });
+
+                    let x = 0;
+
+                    let salesAmount = sales.map(sale => {
+                        x += sale.qty;
+                        return x;
+                    });
+
+                    const days = sales.map(sale => {
+                        return sale.TransDate;
+                    });
+
+                    obj['goals'] = goals;
+                    obj['salesPerDay'] = salesPerDay;
+                    obj['salesAmount'] = salesAmount;
+                    obj['days'] = days;
+                    obj['month'] = month
+                }
+
+                data.push(obj);
+            }
+
+            return data;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas.');
+        }
+    }
 
     async listOffice(month, offices, group = false) {
         try {
@@ -275,8 +342,8 @@ class Goal {
 
                 if (items.length > 0) {
                     let revenueExpected = await RepositorieHbs.listPrices(items);
-                    let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month, group);
-                    let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group);
+                    let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
+                    let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group, false);
                     let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
                     let invoices;
 

@@ -114,6 +114,20 @@ module.exports = app => {
         }
     })
 
+    app.get('/goalcomparations/:months/:office/:id?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
+
+            let months = JSON.parse(req.params.months);
+            let office = req.params.office != "ALL" ? req.params.office : false;
+            let id = req.params.id != "ALL" ? req.params.id : false;
+
+            let ofs = await Goal.listComparation(months, office, id);
+            res.json(ofs);
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get('/goalstock/:month/:office/:id?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 

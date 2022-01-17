@@ -656,7 +656,8 @@ const searchOffice = async (event) => {
 
                     goals += `
                     <tr data-view-group data-index="${index + 100}" data-group="${goal.itemgroup}" data-office="${ofi.code}" data-month="${month}">
-                        <th scope="row">${goal.itemgroup}</th>
+                        <th scope="row">${goal.itemgroup}</th> 
+                        <td>${goal.allEffective ? goal.allEffective : 0}</td>
                         <td>${goal.effectiveAmount ? goal.effectiveAmount : 0}</td>
                         <td>${goal.amount ? goal.amount : 0}</td>
                     </tr>`;
@@ -1105,6 +1106,8 @@ const searchUnit = async (event) => {
                 salesman.amount.forEach(amount => {
 
                     let goal = salesman.goals.find(goal => goal.itemgroup === amount.name);
+                    let allAmount = salesman.allAmount.find(amount => goal.itemgroup === amount.name);
+
                     let goalSeller = 0;
 
                     if (goal) {
@@ -1116,6 +1119,7 @@ const searchUnit = async (event) => {
                     goals += `
                 <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${amount.name}</th>
+                    <td>${allAmount.qty}</td>
                     <td>${amount.qty}</td>
                     <td>${goalSeller}</td>
                 </tr>`;
@@ -1125,6 +1129,7 @@ const searchUnit = async (event) => {
                 salesman.goals.forEach(goal => {
 
                     let amount = salesman.amount.find(amount => goal.itemgroup === amount.name);
+                    let allAmount = salesman.allAmount.find(amount => goal.itemgroup === amount.name);
 
                     if (amount) {
                         allGoal += parseInt(goal.amount);
@@ -1134,6 +1139,7 @@ const searchUnit = async (event) => {
                     goals += `
                 <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
                     <th scope="row">${goal.itemgroup}</th>
+                    <td>${allAmount ? allAmount.qty : 0}</td>
                     <td>${amount ? amount.qty : 0}</td>
                     <td>${goal.amount}</td>
                 </tr>`;
@@ -1588,8 +1594,10 @@ const uploadFile = async (event) => {
         document.querySelector('[data-btn-upload]').innerHTML = `<i class="fas fa-file-excel"> Subir Excel</i></button>`;
         document.querySelector('[data-btn-upload]').disabled = false;
 
+        alert(obj.msg)
+
     } catch (error) {
-        alert('Lo servicio seguira rodando en el servidor!')
+        alert('El servicio seguira rodando en el servidor!')
     }
 }
 

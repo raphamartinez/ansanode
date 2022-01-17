@@ -343,6 +343,7 @@ class Goal {
                 if (items.length > 0) {
                     let revenueExpected = await RepositorieHbs.listPrices(items);
                     let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
+                    let allEffective = await RepositorieSales.listOffice(false, ofi.code, month);
                     let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group, false);
                     let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
                     let invoices;
@@ -355,8 +356,11 @@ class Goal {
                     let goals = goalExpected.map(goal => {
                         let group = revenueExpected.find(expected => expected.Name === goal.itemgroup);
                         let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
+                        let all = allEffective.find(effective => effective.name === goal.itemgroup);
+
                         if (group) goal.price = group.price;
                         if (effective) {
+                            goal.allEffective = all.amount;
                             goal.effectiveAmount = effective.amount;
                             goal.effectivePrice = effective.price;
                         }
@@ -383,7 +387,6 @@ class Goal {
                     ofi.salesAmount = salesAmount;
                     ofi.days = days;
                     ofi.month = monthGoals;
-
                 }
 
                 ofs.push(ofi);
@@ -407,6 +410,7 @@ class Goal {
                 let goals = await Repositorie.listGoals(obj.id_salesman, month, group);
                 let itemsdt = await Repositorie.listGoalsItem(obj.id_salesman, month, group);
                 let items = itemsdt.map(item => item.itemcode);
+                let allAmount = await RepositorieSales.list(false, obj.code, month, group);
                 let amount = await RepositorieSales.list(items, obj.code, month, group);
                 let sales = await RepositorieSales.graphSalesDay(items, obj.code, month, group);
                 let invoices;
@@ -415,6 +419,7 @@ class Goal {
                     invoices = await RepositorieHbs.listInvoice(month, group, obj.code);
                     obj.invoices = invoices;
                 };
+
                 const salesPerDay = sales.map(sale => {
                     return sale.qty;
                 });
@@ -432,6 +437,7 @@ class Goal {
 
                 obj.goals = goals;
                 obj.amount = amount;
+                obj.allAmount = allAmount;
                 obj.salesPerDay = salesPerDay;
                 obj.salesAmount = salesAmount;
                 obj.days = days;

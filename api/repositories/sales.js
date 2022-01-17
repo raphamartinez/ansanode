@@ -41,9 +41,9 @@ class Sales {
             INNER JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
             LEFT JOIN Item it ON sr.ArtCode = it.Code 
             LEFT JOIN ItemGroup ig ON it.ItemGroup = ig.Code
-            WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?) 
-            AND sr.ArtCode IN (${items}) `
+            WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
+            if (items) sql += ` AND sr.ArtCode IN (${items}) `
             if (offices) sql += ` AND sa.Office IN (${offices}) `
             if (salesman) sql += ` AND sa.SalesMan = '${salesman}' `
 

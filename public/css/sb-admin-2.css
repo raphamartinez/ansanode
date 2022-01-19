@@ -10742,6 +10742,11 @@ body.sidebar-toggled footer.sticky-footer {
     display: block;
   }
 }
-.dataTables_scrollHeadInner, .table{
-  width:100%!important
-     };
+
+     table.dataTable,
+table.dataTable th,
+table.dataTable td {
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}

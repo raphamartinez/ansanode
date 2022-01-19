@@ -244,7 +244,7 @@ const user = (salesman, goals, index, month, monthGoals) => {
                         <h5>Graficos</h5>
                         <canvas class="flex d-inline" data-chart-amount-${index}></canvas>
                     </div>
-                    <div class="form-group col-md-5 text-center">
+                    <div class="form-group col-md-5 text-center table-responsive">
                         <h5>Grupos</h5>
                         <table id="tableGroups" class="table table-sm table-hover">
                         <thead>

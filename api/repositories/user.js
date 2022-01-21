@@ -83,7 +83,7 @@ class User {
                         FROM ansa.user us
                         INNER JOIN ansa.login lo ON us.id_login = lo.id_login 
                         WHERE lo.id_login = us.id_login 
-                        and us.status = 1 `
+                        and us.status = 1 and lo.status = 1 `
 
             if (perfil) sql += `and us.perfil = ${perfil} `
 

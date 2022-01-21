@@ -57,11 +57,24 @@ module.exports = app => {
 
     app.post('/crm', [Middleware.authenticatedMiddleware, Authorization('crm', 'create')], async (req, res, next) => {
         try {
-            const crm = req.body.crm
+            const crm = req.body.crm;
 
-            const id = await Crm.create(crm, req.login.id_login)
+            const id = await Crm.create(crm, req.login.id_login);
 
-            res.status(201).json({ msg: 'Crm agregada con éxito.', id })
+            res.status(201).json({ msg: 'Crm agregada con éxito.', id });
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/crm/products/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'create')], async (req, res, next) => {
+        try {
+            const products = req.body.products;
+            const id = req.params.id;
+
+            let ids = await Crm.createProducts(products, id);
+
+            res.status(201).json({ msg: 'Producto agregado con éxito.', ids });
         } catch (err) {
             next(err)
         }

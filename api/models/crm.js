@@ -22,6 +22,22 @@ class Crm {
         }
     }
 
+    async createProducts(products, id) {
+        try {
+
+            for (const product of products) {
+                product.id_crm = id
+
+                await Repositorie.insertProduct(product)
+            };
+
+            return id
+        } catch (error) {
+            console.log(error);
+            throw new InvalidArgumentError('No se pudo crear una nueva sucursal.')
+        }
+    }
+
     async update(crm, id_crm) {
         try {
             const result = await Repositorie.update(crm, id_crm)

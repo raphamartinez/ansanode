@@ -75,7 +75,8 @@ class Crm {
                         WHEN classification = 4 THEN "100%"
                         ELSE "no clasificado"
             END as classificationdesc
-            FROM ansa.crmproducts `
+            FROM ansa.crmproducts 
+            WHERE id_crm = ?`
 
             return query(sql, id)
 
@@ -116,7 +117,7 @@ class Crm {
             let sql = `SELECT COUNT(cp.id) as products, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
             FROM ansa.crm cr
             LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
-            WHERE cr.contactdate BETWEEN ? and ? `
+            WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 
@@ -135,10 +136,10 @@ class Crm {
 
     listProductsType(search) {
         try {
-            let sql = `SELECT COUNT(cp.id) as products, cp.type
+            let sql = `SELECT COUNT(cp.id) as products, IF(cp.type != "",cp.type,"No Definido") as type
             FROM ansa.crm cr
             LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
-            WHERE cr.contactdate BETWEEN ? and ? `
+            WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 
@@ -159,7 +160,7 @@ class Crm {
         try {
             let sql = `SELECT COUNT(cr.client) as client, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
             FROM ansa.crm cr
-            WHERE cr.contactdate BETWEEN ? and ? `
+            WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 

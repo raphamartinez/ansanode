@@ -3,19 +3,23 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('./error
 
 class ViewPowerBi {
 
-    async insertPowerBi(users, id_powerbi) {
+    async insertPowerBi(users, id) {
         try {
+            let access = [];
 
-            users.forEach(obj => {
+            for (let user of users) {
                 const viewpowerbi = {
-                    id_powerbi: id_powerbi,
-                    id_login: obj
-                }
+                    id_powerbi: id,
+                    id_login: user
+                };
 
-                Repositorie.insert(viewpowerbi)
-            })
+                let newId = await Repositorie.insert(viewpowerbi);
+                viewpowerbi.id = newId;
 
-            return true
+                access.push(viewpowerbi)
+            }
+
+            return access;
         } catch (error) {
             throw new InvalidArgumentError('No se pudo crear el powerbi.')
         }

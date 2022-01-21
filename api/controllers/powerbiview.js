@@ -7,12 +7,12 @@ module.exports = app => {
     app.post('/powerbiview', Middleware.authenticatedMiddleware, async (req, res, next) => {
         try {
             const users = req.body.users
-            const id_powerbi = req.body.id_powerbi
-            await ViewPowerBi.insertPowerBi(users, id_powerbi)
+            const id = req.body.id
+            const access = await ViewPowerBi.insertPowerBi(users, id)
 
             cachelist.delPrefix('powerbi')
 
-            res.status(200).json({ msg: `PowerBi agregado con éxito.` })
+            res.status(200).json({ msg: `PowerBi agregado con éxito.`, access })
         } catch (error) {
             next(error)
         }

@@ -1,4 +1,5 @@
 import { Connection } from '../services/connection.js'
+import { Loading } from './loadingController.js'
 
 const adjustModalDatatable = () => {
     $('#dataCrm').on('shown.bs.modal', function () {
@@ -39,6 +40,40 @@ const addProduct = (event) => {
     document.querySelector('#classification').selectedIndex = 0
 }
 
+const submitNewProduct = (event) => {
+    event.preventDefault()
+
+    const product = {
+        name: document.querySelector('#newproduct').value,
+        type: '',
+        code: '',
+        classification: document.querySelector('#newclassification').value
+    }
+
+    Array.from(document.querySelector('[data-product]').children).forEach(option => {
+        if (option.value == product.name) {
+            let type = option.innerHTML
+            let split = type.split("-")
+
+            product.code = split[0]
+            product.type = split[1]
+        }
+    })
+
+    if (!product.name) return alert('Necesita informar el producto para agregar a la lista.')
+    if (!product.classification) return alert('Classifique el contacto.')
+
+    const option = document.createElement('option')
+
+    option.value = JSON.stringify(product)
+    option.innerHTML = product.name
+
+    document.querySelector('#newproducts').appendChild(option)
+    document.querySelector('#newproduct').value = ""
+    document.querySelector('#newclassification').selectedIndex = 0
+}
+
+
 const viewCreate = async () => {
     const items = await Connection.noBody('items/all', 'GET')
     items.forEach(item => {
@@ -63,27 +98,35 @@ const viewCreate = async () => {
 const create = async (event) => {
     event.preventDefault();
 
-    let selectproducts = document.querySelectorAll('[data-products] option');
-    let products = Array.from(selectproducts).map(el => JSON.parse(el.value));
+    try {
+        let selectproducts = document.querySelectorAll('[data-products] option');
+        let products = Array.from(selectproducts).map(el => JSON.parse(el.value));
 
-    if (products.length == 0) return alert("Se debe describir al menos un artículo ofrecido.")
+        if (products.length == 0) return alert("Se debe describir al menos un artículo ofrecido.");
 
-    const crm = {
-        contactdate: event.currentTarget.contactdate.value,
-        client: event.currentTarget.client.value,
-        name: event.currentTarget.name.value,
-        phone: event.currentTarget.phone.value,
-        mail: event.currentTarget.mail.value,
-        description: event.currentTarget.description.value,
-        products: products
-    };
+        Loading.enable('[data-btn-add]');
 
-    document.querySelector('[data-products]').innerHTML = ""
-    document.querySelector('[data-form-crm]').reset();
+        const crm = {
+            contactdate: event.currentTarget.contactdate.value,
+            client: event.currentTarget.client.value,
+            name: event.currentTarget.name.value,
+            phone: event.currentTarget.phone.value,
+            mail: event.currentTarget.mail.value,
+            description: event.currentTarget.description.value,
+            products: products
+        };
 
-    const obj = await Connection.body('crm', { crm }, 'POST')
+        document.querySelector('[data-products]').innerHTML = "";
+        document.querySelector('[data-form-crm]').reset();
 
-    alert(obj.msg)
+        const obj = await Connection.body('crm', { crm }, 'POST');
+
+        Loading.disable('[data-btn-add]', 'Agregar Contacto');
+
+        alert(obj.msg);
+    } catch (error) {
+        Loading.disable('[data-btn-add]', 'Agregar Contacto');
+    }
 }
 
 const viewSearch = async () => {
@@ -116,7 +159,8 @@ const table = async (data) => {
     let crms = data.map(crm => {
         let options = `
         <a><i data-action data-id="${crm.id}" class="btn-view fas fa-eye"></i></a>
-        <a><i data-action data-id="${crm.id}" data-client="${crm.client}" data-description="${crm.description}" data-name="${crm.name}" data-phone="${crm.phone}" data-mail="${crm.mail}" data-contactdate="${crm.contactdatereg}" class="btn-edit fas fa-edit"></i></a>
+        <a><i data-action data-id="${crm.id}" class="btn-add fas fa-plus" style="color: #6495ED;"></i></a>
+        <a><i data-action data-id="${crm.id}" data-user="${crm.user}" data-client="${crm.client}" data-description="${crm.description}" data-name="${crm.name}" data-phone="${crm.phone}" data-mail="${crm.mail}" data-contactdate="${crm.contactdatereg}" class="btn-edit fas fa-edit"></i></a>
         <a><i data-action data-id="${crm.id}" class="btn-delete fas fa-trash"></i></a>`
         let line = [
             options,
@@ -173,7 +217,10 @@ const table = async (data) => {
         ]
     })
 
-    $("#dataCrm").DataTable().columns.adjust();
+    $("#dataCrm").DataTable()
+        .columns
+        .adjust()
+        .draw();
 }
 
 const changeProbability = async (event) => {
@@ -224,7 +271,7 @@ const view = async (event) => {
 
         let div = `<div class="container-fluid text-center"><div class="card card-shadow shadow text-center"><h4><strong>Productos</strong></h4><div class="form-row justify-content-md-center"><div class="align-self-center text-center mb-4">
         <table data-products-${id} id="dataproducts" style="background-color: rgba(90, 159, 236, .1); padding-top: 0.3rem; left: 50%" class="table text-center table-hover table-bordered " cellpadding="0" cellspacing="0" border="0">
-        </table></div></div><button onclick="addNewProduct(event)" btn-add-${id} type="button" class="btn btn-success btn-sm">Agregar nuevo producto</button></div></div>`
+        </table></div></div></div></div>`
 
         row.child(div).show()
 
@@ -248,7 +295,6 @@ const view = async (event) => {
                 classification
             ]
         })
-
 
         if ($.fn.DataTable.isDataTable(`[data-products-${id}]`)) {
             $(`[data-products-${id}]`).dataTable().fnClearTable();
@@ -285,6 +331,34 @@ const view = async (event) => {
         document.querySelector('[data-loading]').style.display = "none"
         adjustModalDatatable()
     }
+}
+
+const addNewProduct = (event) => {
+    const tr = event.path[3];
+    if (tr.className === "child") tr = tr.previousElementSibling;
+
+    const id = event.target.getAttribute('data-id');
+
+    $('#addProduct').modal('show');
+
+    const submit = async (event2) => {
+        event2.preventDefault();
+
+        let selectproducts = document.querySelectorAll('#newproducts option');
+        let products = Array.from(selectproducts).map(el => JSON.parse(el.value));
+
+        if (products.length == 0) return alert("Se debe describir al menos un artículo ofrecido.");
+
+        const obj = await Connection.body(`crm/products/${id}`, { products }, 'POST');
+
+        document.querySelector('#newproducts').innerHTML = "";
+        $('#addProduct').modal('hide');
+
+        alert(obj.msg);
+        document.querySelector('[data-add-new-crmproduct]').removeEventListener('submit', submit, false);
+    }
+
+    document.querySelector('[data-add-new-crmproduct]').addEventListener('submit', submit, false);
 }
 
 const modalDeleteProduct = (event) => {
@@ -463,48 +537,58 @@ const graphType = (types) => {
 }
 
 const search = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
-    let selectoffice = document.querySelectorAll('#office option:checked')
-    let offices = Array.from(selectoffice).map(el => `'${el.value}'`);
-    if (offices.length === 0) offices[0] = "ALL"
+    try {
+        Loading.enable('[data-btn-search]')
 
-    let selectsellers = document.querySelectorAll('#code option:checked')
-    let sellers = Array.from(selectsellers).map(el => `'${el.value}'`);
-    if (sellers.length === 0) sellers[0] = "ALL"
+        let selectoffice = document.querySelectorAll('#office option:checked')
+        let offices = Array.from(selectoffice).map(el => `'${el.value}'`);
+        if (offices.length === 0) offices[0] = "ALL"
 
-    const search = {
-        start: event.currentTarget.start.value,
-        end: event.currentTarget.end.value,
-        offices: offices,
-        sellers: sellers
-    };
+        let selectsellers = document.querySelectorAll('#code option:checked')
+        let sellers = Array.from(selectsellers).map(el => `'${el.value}'`);
+        if (sellers.length === 0) sellers[0] = "ALL"
 
-    if (!search.start || !search.end) {
-        return alert("¡El período es obligatorio!")
+        const search = {
+            start: event.currentTarget.start.value,
+            end: event.currentTarget.end.value,
+            offices: offices,
+            sellers: sellers
+        };
+
+        if (!search.start || !search.end) {
+            return alert("¡El período es obligatorio!")
+        }
+
+        const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
+
+        if (data.crms.length < 1) {
+            document.querySelector('[data-div-table-crms]').classList.add('d-none')
+            document.querySelector('[data-div-chart-crms]').classList.add('d-none')
+
+            Loading.disable('[data-btn-search]', 'Buscar')
+
+            return alert('No hay contactos en el período informado.')
+        }
+
+
+        document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
+        document.querySelector('[data-div-table-crms]').classList.remove('d-none')
+
+        table(data.crms)
+        graphClient(data.clients)
+        graphType(data.types)
+        graphDate(data.days)
+
+        Loading.disable('[data-btn-search]', 'Buscar')
+
+        $('html,body').animate({
+            scrollTop: $('[data-div-chart-crms]').offset().top - 100
+        }, 'slow');
+    } catch (error) {
+        Loading.disable('[data-btn-search]', 'Buscar')
     }
-
-    const data = await Connection.noBody(`crm/${search.start}/${search.end}/${search.offices}/${search.sellers}`, 'GET')
-
-    if (data.crms.length < 1) {
-        document.querySelector('[data-div-table-crms]').classList.add('d-none')
-        document.querySelector('[data-div-chart-crms]').classList.add('d-none')
-
-        return alert('No hay contactos en el período informado.')
-    }
-
-    table(data.crms)
-    graphClient(data.clients)
-    graphType(data.types)
-    graphDate(data.days)
-
-    document.querySelector('[data-div-chart-crms]').classList.remove('d-none')
-    document.querySelector('[data-div-table-crms]').classList.remove('d-none')
-
-
-    $('html,body').animate({
-        scrollTop: $('[data-div-chart-crms]').offset().top - 100
-    }, 'slow');
 }
 
 
@@ -514,6 +598,7 @@ viewSearch()
 
 
 document.querySelector('[data-add-product]').addEventListener('click', addProduct, false)
+document.querySelector('[data-add-new-product]').addEventListener('click', submitNewProduct, false)
 document.querySelector('[data-form-crm]').addEventListener('submit', create, false)
 document.querySelector('[data-search-crm]').addEventListener('submit', search, false)
 
@@ -523,6 +608,7 @@ const edit = (event) => {
     if (tr.className === "child") tr = tr.previousElementSibling
 
     const id = event.target.getAttribute('data-id');
+    const user = event.target.getAttribute('data-user');
 
     let crm = {
         id: event.target.getAttribute('data-id'),
@@ -558,10 +644,38 @@ const edit = (event) => {
 
         const obj = await Connection.body(`crm/${id}`, { newCrm }, 'PUT');
 
-        // $(`#dataCrm`).DataTable()
-        //     .row(tr)
-        //     .remove()
-        //     .draw();
+        $(`#dataCrm`).DataTable()
+            .row(tr)
+            .remove()
+            .draw();
+
+        let date = new Date(newCrm.contactdate);
+        let dateReg = new Date(newCrm.contactdate);
+
+        const rowNode = $(`#dataCrm`).DataTable()
+            .row
+            .add(
+                [
+                    `
+        <a><i data-action data-id="${id}" class="btn-view fas fa-eye"></i></a>
+        <a><i data-action data-id="${id}" class="btn-add fas fa-plus" style="color: #6495ED;"></i></a>
+        <a><i data-action data-id="${id}" data-client="${newCrm.client}" data-description="${newCrm.description}" data-name="${newCrm.name}" data-phone="${newCrm.phone}" data-mail="${newCrm.mail}" data-contactdate="${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}" class="btn-edit fas fa-edit"></i></a>
+        <a><i data-action data-id="${id}" class="btn-delete fas fa-trash"></i></a>`,
+                    `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                    newCrm.client,
+                    newCrm.name,
+                    newCrm.phone,
+                    newCrm.mail,
+                    newCrm.description,
+                    user,
+                    `${dateReg.getDate()}/${dateReg.getMonth() + 1}/${dateReg.getFullYear()}`
+                ])
+            .draw()
+            .node();
+
+        $(rowNode)
+            .css('color', 'black')
+            .animate({ color: '#4e73df' });
 
         $("#editCrm").modal('hide');
 
@@ -605,6 +719,7 @@ document.querySelector('#dataCrm').addEventListener('click', (event) => {
         if (event.target.classList[0] === 'btn-view') return view(event)
         if (event.target.classList[0] === 'btn-edit') return edit(event)
         if (event.target.classList[0] === 'btn-delete') return drop(event)
+        if (event.target.classList[0] === 'btn-add') return addNewProduct(event)
     }
 })
 

@@ -4,9 +4,10 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class ViewPowerBi {
     async insert(viewpowerbi) {
         try {
-            const sql = 'INSERT INTO ansa.viewpowerbi (id_powerbi, id_login, dateReg) values (?, ?, now() - interval 3 hour )'
-            const result = query(sql, [viewpowerbi.id_powerbi, viewpowerbi.id_login])
-            return result[0]
+            const sql = 'INSERT INTO ansa.viewpowerbi (id_powerbi, id_login, dateReg) values (?, ?, now() - interval 3 hour )';
+            const result = await query(sql, [viewpowerbi.id_powerbi, viewpowerbi.id_login]);
+            
+            return result.insertId;
         } catch (error) {
             throw new InvalidArgumentError('No se pudo powerbi el archivo office en la base de datos')
         }
@@ -14,16 +15,14 @@ class ViewPowerBi {
 
     list(id_powerbi) {
         try {
-            let sql = `SELECT vp.id_viewpowerbi, us.name 
+            let sql = `SELECT vp.id_viewpowerbi, us.name, vp.id_login
             FROM viewpowerbi vp
-            INNER JOIN user us ON vp.id_login = us.id_login `
-
-            sql += `WHERE vp.id_powerbi = ${id_powerbi} `
-
-            sql+= `GROUP BY vp.id_viewpowerbi
+            INNER JOIN user us ON vp.id_login = us.id_login 
+            WHERE vp.id_powerbi = ?
+            GROUP BY vp.id_viewpowerbi
             ORDER BY vp.dateReg DESC`
 
-            return query(sql)
+            return query(sql, id_powerbi)
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar los powerbi')
         }

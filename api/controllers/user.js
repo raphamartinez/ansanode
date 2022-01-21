@@ -35,8 +35,6 @@ module.exports = app => {
                     users = await User.listUsers(perfil, req.login.id_login)
                 }
             }
-            console.log(users);
-
             res.json(users)
         } catch (err) {
             next(err)

@@ -128,49 +128,6 @@ const showModalPbiInsert = () => {
     return div
 }
 
-const modalAddBiUser = (id_powerbi) => {
-    const div = document.createElement('div')
-
-    const content = `<div class="modal fade" id="modalAddBiUser" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Listado de Accesos</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">x</span>
-                </button>
-            </div>
-            <form>
-                <div class="modal-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-12 text-center"> 
-                            <h6>Nuevo accesos</h6>
-                            <select title="Usuarios" multiple class="selectpicker form-control" name="userselect" id="userselect" required>
-                            </select>
-                            <hr>
-                        </div> 
-                        <div class="form-group col-md-12 text-center"> 
-                            <h6>Usuarios con acceso</h6>
-                            <table class="table table-bordered text-center" id="tableusers" width="100%" cellspacing="0"></table>
-                        </div> 
-                    </div>
-                </div>    
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                    <button data-id_powerbi="${id_powerbi}" type="submit" onclick="addBiUser(event)" name="btn" class=" btn btn-success"><i class="fas fa-plus"> Enlace</i></button>   
-                </div>
-            </form>
-        </div>
-    </div>
-</div>`
-
-    div.innerHTML = content
-
-    return div
-
-}
-
-
 const optionUser = (user) => {
     const line = document.createElement('option')
 
@@ -270,6 +227,5 @@ export const ViewPowerBi = {
     buttons,
     optionUser,
     optionBi,
-    modalAddBiUser,
     modalAddBisUser
 }

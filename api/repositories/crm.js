@@ -25,30 +25,40 @@ class Crm {
         }
     }
 
-    async delete() {
+    async delete(status, id) {
         try {
-            const sql = ``
-            const result = await query(sql)
+            const sql = `UPDATE ansa.crm SET status = ? where id = ?`
+            const result = await query(sql, [status, id])
             return result[0]
         } catch (error) {
             throw new InternalServerError('')
         }
     }
     
-    async update() {  
+    async deleteProduct(id) {
         try {
-            const sql = ''
-            const result = await query(sql, [])
+            const sql = `DELETE FROM ansa.crmproducts where id = ?`
+            const result = await query(sql, id)
+            return result[0]
+        } catch (error) {
+            throw new InternalServerError('')
+        }
+    }
+
+    async update(crm, id_crm) {  
+        try {
+            const sql = 'UPDATE ansa.crm SET client = ?, phone = ?, mail = ?, description = ?, contactdate = ? where id = ?'
+            const result = await query(sql, [crm.client, crm.phone, crm.mail, crm.description, crm.contactdate, id_crm])
             return result[0]
         } catch (error) {
             throw new InvalidArgumentError('')
         }
     }
 
-    async updateProduct(value, id) {  
+    async updateProduct(classification, id) {  
         try {
             const sql = 'UPDATE ansa.crmproducts SET classification = ? WHERE id = ?'
-            const result = await query(sql, [value, id])
+            const result = await query(sql, [classification, id])
             return result[0]
         } catch (error) {
             throw new InvalidArgumentError('')
@@ -77,7 +87,7 @@ class Crm {
 
     list(search) {
         try {
-            let sql = `SELECT cr.id, cr.client, cr.name, cr.phone, cr.mail, cr.description, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as contactdate, DATE_FORMAT(cr.datereg, '%H:%i %d/%m/%Y') as datereg, cr.status, us.name as user
+            let sql = `SELECT cr.id, cr.client, cr.name, cr.phone, cr.mail, cr.description, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as contactdate, DATE_FORMAT(cr.contactdate, '%Y-%m-%d') as contactdatereg, DATE_FORMAT(cr.datereg, '%H:%i %d/%m/%Y') as datereg, cr.status, us.name as user
             FROM ansa.crm cr
             INNER JOIN ansa.user us ON cr.id_login = us.id_login 
             WHERE cr.status = 1 `

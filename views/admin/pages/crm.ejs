@@ -9,177 +9,294 @@
         </div>
         <%- include(partials + 'loading.ejs' ) %>
 
-        <div class="row justify-content-md-center">
-            <div class="col-md-10">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary">Nuevo Contacto</h6>
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Nuevo Contacto</h6>
+                        </div>
+                        <div class="card-body">
+                            <form data-form-crm>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="contactdate">Fecha de Contacto</label>
+                                        <input data-contactdate type="date" name="contactdate" id="contactdate"
+                                            class="form-control" required>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="client">Cliente</label>
+                                        <input list="clientlist" type="text" name="client" id="client"
+                                            placeholder="Informe el cliente" class="form-control" required>
+                                        <datalist data-client id="clientlist"></datalist>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="name">Nombre del Representante</label>
+                                        <input data-name type="text" name="name" id="name"
+                                            placeholder="Representante del cliente" class="form-control" required>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="phone">Teléfono</label>
+                                        <input data-phone type="text" name="phone" id="phone" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="mail">E-mail</label>
+                                        <input data-mail type="mail" name="mail" id="mail" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="product">Producto</label>
+                                                <input list="productlist" class="custom-select"
+                                                    placeholder="Informe lo producto" id="product" name="product">
+                                                <datalist data-product id="productlist"></datalist>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-12">
+                                                <label for="classification">Probabilidad de venta</label>
+                                                <select class="form-control" id="classification">
+                                                    <option value="" disabled selected>Seleccionar</option>
+                                                    <option value="1">-50%</option>
+                                                    <option value="2">50%</option>
+                                                    <option value="3">75%</option>
+                                                    <option value="4">100%</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group text-center col-md-12">
+                                                <button data-add-product class="btn btn-success" type="button">Agregar
+                                                    Producto</button>
+                                            </div>
+                                        </div>
+                                        <div class="row-fluid">
+                                            <label for="description">Comentario</label>
+                                            <textarea data-description
+                                                placeholder="Comentarios adicionales sobre el contacto"
+                                                class="form-control" name="description" id="description"
+                                                rows="3"></textarea>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-8">
+                                        <label for="products">Todos los productos ofrecidos</label>
+                                        <select data-products multiple class="form-control" name="products"
+                                            id="products"></select>
+                                    </div>
+                                    <div class="form-group text-right col-md-12">
+                                        <button class="btn btn-success" type="submit">Agregar Contacto</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form data-form-crm>
+                </div>
+            </div>
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-header py-3">
+                            <h6 class="m-0 font-weight-bold text-primary">Buscar Contactos</h6>
+                        </div>
+                        <div class="card-body">
+                            <form data-search-crm>
+                                <div class="form-row">
+                                    <div class="form-group col-md-3">
+                                        <h6>Fecha Inicial</h6>
+                                        <input data-datestart type="date" name="start" id="start" class="form-control"
+                                            required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6>Fecha Final</h6>
+                                        <input data-dateend type="date" name="end" id="end" class="form-control"
+                                            required>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6>Sucursal</h6>
+                                        <select title="Filtrar sucursal" class="form-control selectpicker office"
+                                            id="office" name="office" multiple data-office>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <h6>Vendedores</h6>
+                                        <select title="Filtrar vendedores" class="form-control selectpicker seller"
+                                            id="code" name="code" multiple data-code>
+                                        </select>
+                                    </div>
+                                    <div class="form-group text-center col-md-12">
+                                        <button class="btn btn-primary" type="submit">Buscar</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-div-chart-crms class="d-none row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-body">
+                            <div class="form-row align-items-center">
+                                <div class="col-md-4 text-center" div-chart-client>
+                                    <canvas style="max-height: 600px;" class="flex d-inline" data-chart-client></canvas>
+                                </div>
+                                <div class="col-md-4 text-center" div-chart-date>
+                                    <canvas style="max-height: 600px;" class="flex d-inline" data-chart-date></canvas>
+                                </div>
+                                <div class="col-md-4 text-center" div-chart-type>
+                                    <canvas style="max-height: 300px;" class="flex d-inline" data-chart-type></canvas>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="form-row text-center align-items-center">
+                                <div class="col-md-4">
+                                    <h5>Clientes contactados</h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>Productos Ofrecidos</h5>
+                                </div>
+                                <div class="col-md-4">
+                                    <h5>Tipos de Productos</h5>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div data-div-table-crms class="d-none row justify-content-md-center">
+                <div class="col-md-10">
+                    <div class="card shadow mb-4">
+                        <div class="card-header">
                             <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="contactdate">Fecha de Contacto</label>
-                                    <input data-contactdate type="date" name="contactdate" id="contactdate"
-                                        class="form-control" required>
+                                <div class="form-group col-md-12">
+                                    <h6 class="m-0 font-weight-bold text-primary">Listado de Contactos</h6>
                                 </div>
-                                <div class="form-group col-md-4">
-                                    <label for="client">Cliente</label>
-                                    <input list="clientlist" type="text" name="client" id="client"
-                                        placeholder="Informe el cliente" class="form-control" required>
-                                    <datalist data-client id="clientlist"></datalist>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="name">Nombre del Representante</label>
-                                    <input data-name type="text" name="name" id="name"
-                                        placeholder="Representante del cliente" class="form-control" required>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="phone">Teléfono</label>
-                                    <input data-phone type="text" name="phone" id="phone" class="form-control">
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="mail">E-mail</label>
-                                    <input data-mail type="mail" name="mail" id="mail" class="form-control">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-12">
-                                            <label for="product">Producto</label>
-                                            <input list="productlist" class="custom-select"
-                                                placeholder="Informe lo producto" id="product" name="product">
-                                            <datalist data-product id="productlist"></datalist>
-                                        </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered text-center" id="dataCrm" width="100%" cellspacing="0">
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="editCrm" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Quieres editar este contacto?</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
+                        </div>
+                        <form data-edit-crm>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="contactdate">Fecha de Contacto</label>
+                                        <input data-contactdate type="date" name="contactdate" id="contactdateedit"
+                                            class="form-control" required>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group col-md-12">
-                                            <label for="classification">Probabilidad de venta</label>
-                                            <select class="form-control" id="classification">
-                                                <option value="" disabled selected>Seleccionar</option>
-                                                <option value="1">-50%</option>
-                                                <option value="2">50%</option>
-                                                <option value="3">75%</option>
-                                                <option value="4">100%</option>
-                                            </select>
-                                        </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="client">Cliente</label>
+                                        <input list="clientlist" type="text" name="client" id="clientedit"
+                                            placeholder="Informe el cliente" class="form-control" required>
+                                        <datalist data-client id="clientlist"></datalist>
                                     </div>
-                                    <div class="form-row">
-                                        <div class="form-group text-center col-md-12">
-                                            <button data-add-product class="btn btn-success" type="button">Agregar
-                                                Producto</button>
-                                        </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="name">Nombre del Representante</label>
+                                        <input data-name type="text" name="name" id="nameedit"
+                                            placeholder="Representante del cliente" class="form-control" required>
                                     </div>
-                                    <div class="row-fluid">
+                                    <div class="form-group col-md-6">
+                                        <label for="phone">Teléfono</label>
+                                        <input data-phone type="text" name="phone" id="phoneedit" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="mail">E-mail</label>
+                                        <input data-mail type="mail" name="mail" id="mailedit" class="form-control">
+                                    </div>
+                                    <div class="form-group col-md-6">
                                         <label for="description">Comentario</label>
-                                        <textarea data-description
-                                            placeholder="Comentarios adicionales sobre el contacto" class="form-control"
-                                            name="description" id="description" rows="3"></textarea>
+                                        <input data-mail type="mail" name="description" id="descriptionedit"
+                                            class="form-control">
                                     </div>
                                 </div>
-                                <div class="form-group col-md-8">
-                                    <label for="products">Todos los productos ofrecidos</label>
-                                    <select data-products multiple class="form-control" name="products"
-                                        id="products"></select>
-                                </div>
-                                <div class="form-group text-right col-md-12">
-                                    <button class="btn btn-success" type="submit">Agregar Contacto</button>
-                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-warning"><i class="fas fa-edit">
+                                        Editar</i></button>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-        </div>
 
-    <div class="row justify-content-md-center">
-        <div class="col-md-10">
-            <div class="card shadow mb-4">
-                <div class="card-header py-3">
-                    <h6 class="m-0 font-weight-bold text-primary">Buscar Contactos</h6>
-                </div>
-                <div class="card-body">
-                    <form data-search-crm>
-                        <div class="form-row">
-                            <div class="form-group col-md-3">
-                                <h6>Fecha Inicial</h6>
-                                <input data-datestart type="date" name="start" id="start" class="form-control" required>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <h6>Fecha Final</h6>
-                                <input data-dateend type="date" name="end" id="end" class="form-control" required>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <h6>Sucursal</h6>
-                                <select title="Filtrar sucursal" class="form-control selectpicker office" id="office"
-                                    name="office" multiple data-office>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-3">
-                                <h6>Vendedores</h6>
-                                <select title="Filtrar vendedores" class="form-control selectpicker seller" id="code"
-                                    name="code" multiple data-code>
-                                </select>
-                            </div>
-                            <div class="form-group text-center col-md-12">
-                                <button class="btn btn-primary" type="submit">Buscar</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    <div data-div-chart-crms class="d-none row justify-content-md-center">
-        <div class="col-md-10">
-            <div class="card shadow mb-4">
-                <div class="card-body">
-                    <div class="form-row align-items-center">
-                        <div class="col-md-4 text-center" div-chart-client>
-                            <canvas style="max-height: 600px;" class="flex d-inline" data-chart-client></canvas>
+            <div class="modal fade" id="dropProduct" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Quieres borrar este producto?</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
                         </div>
-                        <div class="col-md-4 text-center" div-chart-date>
-                            <canvas style="max-height: 600px;" class="flex d-inline" data-chart-date></canvas>
-                        </div>
-                        <div class="col-md-4 text-center" div-chart-type>
-                            <canvas style="max-height: 300px;" class="flex d-inline" data-chart-type></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="form-row text-center align-items-center">
-                        <div class="col-md-4">
-                            <h5>Clientes contactados</h5>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Productos Ofrecidos</h5>
-                        </div>
-                        <div class="col-md-4">
-                            <h5>Tipos de Productos</h5>
-                        </div>
+                        <form data-drop-crmproduct>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <h8>Lo producto no poderá ser visualizado novamiente.</h8>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-times">
+                                        Borrar</i></button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <div data-div-table-crms class="d-none row justify-content-md-center">
-        <div class="col-md-10">
-            <div class="card shadow mb-4">
-                <div class="card-header">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <h6 class="m-0 font-weight-bold text-primary">Listado de Contactos</h6>
+
+            <div class="modal fade" id="dropCrm" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Quieres borrar este contacto?</h5>
+                            <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">x</span>
+                            </button>
                         </div>
+                        <form data-drop-crm>
+                            <div class="modal-body">
+                                <div class="form-row">
+                                    <div class="col-md-12">
+                                        <h8>Lo contacto no poderá ser visualizado novamiente.</h8>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button"
+                                    data-bs-dismiss="modal">Cancelar</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-times">
+                                        Deshabilitar</i></button>
+                            </div>
+                        </form>
                     </div>
                 </div>
-                <div class="card-body">
-                    <table class="table table-bordered text-center" id="dataCrm" width="100%" cellspacing="0">
-                    </table>
-                </div>
             </div>
-        </div>
-    </div>
+
+
     </div>
     <%- include(partials + 'script.ejs' ) %>
 

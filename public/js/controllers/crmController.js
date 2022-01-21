@@ -1,5 +1,4 @@
 import { Connection } from '../services/connection.js'
-import { View } from '../views/crmView.js'
 
 const adjustModalDatatable = () => {
     $('#dataCrm').on('shown.bs.modal', function () {
@@ -117,7 +116,7 @@ const table = async (data) => {
     let crms = data.map(crm => {
         let options = `
         <a><i data-action data-id="${crm.id}" class="btn-view fas fa-eye"></i></a>
-        <a><i data-action data-id="${crm.id}" class="btn-edit fas fa-edit"></i></a>
+        <a><i data-action data-id="${crm.id}" data-client="${crm.client}" data-description="${crm.description}" data-name="${crm.name}" data-phone="${crm.phone}" data-mail="${crm.mail}" data-contactdate="${crm.contactdatereg}" class="btn-edit fas fa-edit"></i></a>
         <a><i data-action data-id="${crm.id}" class="btn-delete fas fa-trash"></i></a>`
         let line = [
             options,
@@ -223,9 +222,9 @@ const view = async (event) => {
         tr.classList.add('bg-dark', 'text-white')
         i.classList.add('fas', 'fa-eye-slash', 'text-white')
 
-        let div = `<div class="container-fluid text-center"><div class="card card-shadow shadow"><h4><strong>Productos</strong></h4><div class="form-row justify-content-md-center"><div class="align-self-center text-center mb-4">
+        let div = `<div class="container-fluid text-center"><div class="card card-shadow shadow text-center"><h4><strong>Productos</strong></h4><div class="form-row justify-content-md-center"><div class="align-self-center text-center mb-4">
         <table data-products-${id} id="dataproducts" style="background-color: rgba(90, 159, 236, .1); padding-top: 0.3rem; left: 50%" class="table text-center table-hover table-bordered " cellpadding="0" cellspacing="0" border="0">
-        </table></div></div></div></div>`
+        </table></div></div><button onclick="addNewProduct(event)" btn-add-${id} type="button" class="btn btn-success btn-sm">Agregar nuevo producto</button></div></div>`
 
         row.child(div).show()
 
@@ -238,10 +237,11 @@ const view = async (event) => {
             <option value="2">50%</option>
             <option value="3">75%</option>
             <option value="4">100%</option>
-            <option value="${product.classification}" disabled selected>${product.classificationdesc} - Selecionado</option>
+            <option value="${product.classification}" disabled selected>${product.classificationdesc} - Seleccionado</option>
             </select>`
 
             return [
+                `<a><i onclick="modalDeleteProduct(event)" data-id="${product.id}" class="btn-delete fas fa-trash"></i></a>`,
                 product.code,
                 product.name,
                 product.type,
@@ -259,6 +259,7 @@ const view = async (event) => {
         $(`[data-products-${id}]`).DataTable({
             data: productsdata,
             columns: [
+                { title: "Opciones" },
                 { title: "Code" },
                 { title: "Nombre" },
                 { title: "Tipo" },
@@ -285,6 +286,37 @@ const view = async (event) => {
         adjustModalDatatable()
     }
 }
+
+const modalDeleteProduct = (event) => {
+    try {
+        const tr = event.path[3];
+        if (tr.className === "child") tr = tr.previousElementSibling;
+
+        const id = event.target.getAttribute('data-id');
+
+        $('#dropProduct').modal('show');
+
+        const submit = async (event2) => {
+            event2.preventDefault();
+
+            const obj = await Connection.noBody(`crm/products/${id}`, 'DELETE');
+
+            $('#dropProduct').modal('hide');
+
+            tr.remove();
+
+            alert(obj.msg);
+            document.querySelector('[data-drop-crmproduct]').removeEventListener('submit', submit, false);
+        }
+
+        document.querySelector('[data-drop-crmproduct]').addEventListener('submit', submit, false);
+
+    } catch (error) {
+
+    }
+
+}
+window.modalDeleteProduct = modalDeleteProduct
 
 const graphClient = (clients) => {
 
@@ -490,10 +522,55 @@ const edit = (event) => {
     let tr = event.path[3]
     if (tr.className === "child") tr = tr.previousElementSibling
 
-    const crm = {
-        id: event.target.getAttribute('data-id')
+    const id = event.target.getAttribute('data-id');
+
+    let crm = {
+        id: event.target.getAttribute('data-id'),
+        contactdate: event.target.getAttribute('data-contactdate'),
+        client: event.target.getAttribute('data-client'),
+        name: event.target.getAttribute('data-name'),
+        phone: event.target.getAttribute('data-phone'),
+        mail: event.target.getAttribute('data-mail'),
+        description: event.target.getAttribute('data-description'),
     }
 
+    document.querySelector('#contactdateedit').value = crm.contactdate
+    document.querySelector('#clientedit').value = crm.client
+    document.querySelector('#nameedit').value = crm.name
+    document.querySelector('#phoneedit').value = crm.phone
+    document.querySelector('#mailedit').value = crm.mail
+    document.querySelector('#descriptionedit').value = crm.description
+
+    $('#editCrm').modal('show');
+
+    const submit = async (event2) => {
+        event2.preventDefault();
+
+        let newCrm = {
+            id: id,
+            contactdate: event2.currentTarget.contactdate.value,
+            client: event2.currentTarget.client.value,
+            name: event2.currentTarget.name.value,
+            phone: event2.currentTarget.phone.value,
+            mail: event2.currentTarget.mail.value,
+            description: event2.currentTarget.description.value,
+        }
+
+        const obj = await Connection.body(`crm/${id}`, { newCrm }, 'PUT');
+
+        // $(`#dataCrm`).DataTable()
+        //     .row(tr)
+        //     .remove()
+        //     .draw();
+
+        $("#editCrm").modal('hide');
+
+        document.querySelector('[data-edit-crm]').removeEventListener('submit', submit, false);
+
+        alert(obj.msg);
+    }
+
+    document.querySelector('[data-edit-crm]').addEventListener('submit', submit, false);
 }
 
 const drop = (event) => {
@@ -501,32 +578,26 @@ const drop = (event) => {
     if (tr.className === "child") tr = tr.previousElementSibling;
 
     const id = event.target.getAttribute('data-id');
-    document.querySelector('[data-modal]').innerHTML = ""
 
-    document.querySelector('[data-modal]').appendChild(View.drop())
-
-    $('#drop').modal('show');
+    $('#dropCrm').modal('show');
 
     const submit = async (event2) => {
         event2.preventDefault();
-
-        document.querySelector('[data-delete-crm]').removeEventListener('submit', submit, false);
-
         const obj = await Connection.noBody(`crm/${id}`, 'DELETE');
 
-        $('#dataCrm').DataTable()
+        $(`#dataCrm`).DataTable()
             .row(tr)
             .remove()
             .draw();
 
-        $("#drop").modal('hide');
+        $("#dropCrm").modal('hide');
 
-        document.querySelector('[data-modal]').innerHTML = ""
+        document.querySelector('[data-drop-crm]').removeEventListener('submit', submit, false);
 
         alert(obj.msg);
     }
 
-    document.querySelector('[data-delete-crm]').addEventListener('submit', submit, false);
+    document.querySelector('[data-drop-crm]').addEventListener('submit', submit, false);
 }
 
 document.querySelector('#dataCrm').addEventListener('click', (event) => {

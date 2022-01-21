@@ -22,18 +22,18 @@ class Crm {
         }
     }
 
-    async update(data, id) {
+    async update(crm, id_crm) {
         try {
-            const result = await Repositorie.update(data, id)
+            const result = await Repositorie.update(crm, id_crm)
             return result
         } catch (error) {
             throw new InvalidArgumentError('No se pudo actualizar el sucursal.')
         }
     }
 
-    async updateProduct(value, id) {
+    async updateProduct(classification, id) {
         try {
-            const result = await Repositorie.updateProduct(value, id)
+            const result = await Repositorie.updateProduct(classification, id)
             return result
         } catch (error) {
             throw new InvalidArgumentError('No se pudo actualizar el sucursal.')
@@ -42,7 +42,16 @@ class Crm {
 
     async delete(id) {
         try {
-            const result = await Repositorie.delete(id)
+            const result = await Repositorie.delete(0, id)
+            return result
+        } catch (error) {
+            throw new InternalServerError('No se pudo borrar la sucursal.')
+        }
+    }
+
+    async deleteProduct(id) {
+        try {
+            const result = await Repositorie.deleteProduct(id)
             return result
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la sucursal.')

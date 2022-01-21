@@ -238,7 +238,7 @@ class GoalMail extends Mail {
     constructor(filename, details, salesman, user, date, cc) {
         super()
         this.from = '"Meta ANSA" informes.adm@americaneumaticos.com'
-        this.to = 'raphamartinezz@gmail.com'
+        this.to = 'rodrigo.chiari@americaneumaticos.com'
         this.cc = cc
         this.subject = `Nueva meta agregada - ${salesman}`
         this.html = `

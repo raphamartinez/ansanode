@@ -69,13 +69,13 @@ module.exports = app => {
 
     app.put('/crm/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'update')], async (req, res, next) => {
         try {
-            const data = req.body
-            const id_crm = req.params.id
+            const crm = req.body.newCrm;
+            const id_crm = req.params.id;
 
-            await Crm.update(data, id_crm)
-            cachelist.delPrefix('crm')
+            await Crm.update(crm, id_crm);
+            cachelist.delPrefix('crm');
 
-            res.json({ msg: 'Crm actualizada con éxito.' })
+            res.json({ msg: 'Crm actualizada con éxito.' });
         } catch (err) {
             next(err)
         }
@@ -83,13 +83,13 @@ module.exports = app => {
 
     app.put('/crm/products/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'update')], async (req, res, next) => {
         try {
-            const value = req.body.value
-            const id = req.params.id
+            const classification = req.body.value;
+            const id = req.params.id;
 
-            await Crm.updateProduct(value, id)
-            cachelist.delPrefix('crm')
+            await Crm.updateProduct(classification, id);
+            cachelist.delPrefix('crm');
 
-            res.json({ msg: 'Crm actualizada con éxito.' })
+            res.json({ msg: 'Producto actualizado con éxito.' });
         } catch (err) {
             next(err)
         }
@@ -97,12 +97,25 @@ module.exports = app => {
 
     app.delete('/crm/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'delete')], async (req, res, next) => {
         try {
-            const id_crm = req.params.id
+            const id = req.params.id;
 
-            await Crm.delete(id_crm)
-            cachelist.delPrefix('crm')
+            await Crm.delete(id);
+            cachelist.delPrefix('crm');
 
-            res.json({ msg: 'Crm eliminada con éxito.' })
+            res.json({ msg: 'Crm eliminado con éxito.' });
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.delete('/crm/products/:id', [Middleware.authenticatedMiddleware, Authorization('crm', 'delete')], async (req, res, next) => {
+        try {
+            const id = req.params.id;
+
+            await Crm.deleteProduct(id);
+            cachelist.delPrefix('crm');
+
+            res.json({ msg: 'Producto eliminado con éxito.' });
         } catch (err) {
             next(err)
         }

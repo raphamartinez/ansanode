@@ -41,6 +41,7 @@ module.exports = app => {
             mail['id_mailpowerbi'] = id_mailpowerbi
             await Mail.insertMailAttachment(mail)
             await Mail.insertMailScheduling(mail)
+            await Mail.insertMailPeriod(mail)
 
             res.status(201).json({id:id_mailpowerbi, msg: `¡La programación de correo electrónico se agregó correctamente!`})
         } catch (err) {

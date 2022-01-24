@@ -35,16 +35,30 @@ class Mail {
         }
     }
 
+    async insertPeriod(weekday, mail) {
+        try {
+            const sql = 'INSERT INTO ansa.mailperiod (weekday, hour, datestart, dateend, id_mailpowerbi) values (?, ?, ?, LAST_DAY(?), ?)'
+            const result = await query(sql, [weekday, mail.hour, `${mail.datestart}-01`, `${mail.dateend}-10`, mail.id_mailpowerbi])
+
+            return result.insertId
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo insertar el archivo office en la base de datos')
+        }
+    }
+
     async deleteMail(id_mailpowerbi) {
         try {
-            const sqlattachment = `DELETE from ansa.mailattachment WHERE id_mailpowerbi = ${id_mailpowerbi} `
-            await query(sqlattachment)
+            const sqlattachment = `DELETE from ansa.mailattachment WHERE id_mailpowerbi = ? `
+            await query(sqlattachment, id_mailpowerbi)
 
-            const sqlscheduling = `DELETE from ansa.mailscheduling WHERE id_mailpowerbi = ${id_mailpowerbi} `
-            await query(sqlscheduling)
+            const sqlscheduling = `DELETE from ansa.mailscheduling WHERE id_mailpowerbi = ? `
+            await query(sqlscheduling, id_mailpowerbi)
 
-            const sql = `DELETE from ansa.mailpowerbi WHERE id_mailpowerbi = ${id_mailpowerbi}`
-            return query(sql)
+            const sqlperiod = `DELETE from ansa.mailperiod WHERE id_mailpowerbi = ? `
+            await query(sqlperiod, id_mailpowerbi)
+
+            const sql = `DELETE from ansa.mailpowerbi WHERE id_mailpowerbi = ?`
+            return query(sql, id_mailpowerbi)
 
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el archivo en la base de datos')
@@ -106,12 +120,14 @@ class Mail {
 
     async listMailtoSend() {
         try {
-            let sql = `SELECT MA.id_mailpowerbi, MA.type, MA.recipients, MA.cc, MA.cco, MA.title, MA.body, DATE_FORMAT(MA.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(MT.id_mailattachment) as countatt
-            FROM ansa.mailpowerbi MA
-            LEFT JOIN ansa.mailattachment MT ON MA.id_mailpowerbi = MT.id_mailpowerbi
-            LEFT JOIN ansa.mailscheduling MS ON MA.id_mailpowerbi = MS.id_mailpowerbi
-            WHERE MS.date between now() - interval 3 hour AND now() - interval 59 minute
-            GROUP BY MA.id_mailpowerbi`
+            let sql = `SELECT ma.id_mailpowerbi, ma.type, ma.recipients, ma.cc, ma.cco, ma.title, ma.body, DATE_FORMAT(ma.datereg, '%H:%i %d/%m/%Y') as datereg, COUNT(mt.id_mailattachment) as countatt
+            FROM ansa.mailpowerbi ma
+            LEFT JOIN ansa.mailattachment mt ON ma.id_mailpowerbi = mt.id_mailpowerbi
+            LEFT JOIN ansa.mailscheduling ms ON ma.id_mailpowerbi = ms.id_mailpowerbi
+            LEFT JOIN ansa.mailperiod mp ON ma.id_mailpowerbi = mp.id_mailpowerbi
+            WHERE (ms.date between now() - interval 3 hour AND now() - interval 2 hour) 
+            OR ((date(now() - interval 3 hour) between date(mp.datestart) and date(mp.dateend)) AND WEEKDAY(now() - interval 3 hour) = mp.weekday AND hour(now() - interval 3 hour) = mp.hour)
+            GROUP BY ma.id_mailpowerbi`
             const result = await query(sql)
 
             return result

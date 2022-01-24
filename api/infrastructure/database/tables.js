@@ -43,6 +43,7 @@ class Tables {
     this.createTableCrm()
     this.createTableCrmProducts()
     this.createTableProsegurUser()
+    this.createTableMailPeriod()
     
     return true
   }
@@ -277,6 +278,18 @@ class Tables {
   createTablemailattachment() {
     const sql = `CREATE TABLE IF NOT EXISTS ansa.mailattachment (id_mailattachment int NOT NULL AUTO_INCREMENT,
       url VARCHAR (250), id_mailpowerbi int,FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id_mailattachment))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableMailPeriod() {
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailperiod (id int NOT NULL AUTO_INCREMENT, datestart DATE,  dateend DATE, weekday int,
+      id_mailpowerbi int, FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
       if (error) {

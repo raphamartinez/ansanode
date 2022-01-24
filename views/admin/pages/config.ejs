@@ -379,39 +379,46 @@
                     <form>
                         <div class="modal-body">
                             <div class="form-row">
-                                <div class="form-group col-md-12 text-left">
-                                    <h5 class="text-center"><strong>Suscribirse</strong></h5>
-                                    <h8 data-detail-for></h8>
+                                <div class="form-group col-md-6">
+                                    <div class="form-group col-md-12 text-left">
+                                        <h5 class="text-center"><strong>Suscribirse</strong></h5>
+                                        <hr>
+                                        <h8 data-detail-for></h8>
+                                    </div>
+                                    <div class="form-group col-md-12 text-left">
+                                        <h8 data-detail-cc></h8>
+                                    </div>
+                                    <div class="form-group col-md-12 text-left">
+                                        <h8 data-detail-cco></h8>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-12 text-left">
-                                    <h8 data-detail-cc></h8>
+                                <div class="form-group col-md-6">
+                                    <div class="form-group col-md-12 text-center">
+                                        <h5 data-detail-title></h5>
+                                        <hr>
+                                    </div>
+                                    <div class="form-group col-md-12 text-center">
+                                        <h5><strong>Cuerpo del correo electronico</strong></h5>
+                                        <textarea data-detail-body class="form-control" style="height: 90px;"
+                                            disabled></textarea>
+                                    </div>
                                 </div>
-                                <div class="form-group col-md-12 text-left">
-                                    <h8 data-detail-cco></h8>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6 text-center">
+                                    <h5><strong>Archivos Adjuntos</strong></h5>
                                     <hr>
-                                </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <h5 data-detail-title></h5>
-                                    <hr>
-                                </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <h5><strong>Cuerpo del correo electronico</strong></h5>
-                                    <textarea data-detail-body class="form-control" style="height: 90px;"
-                                        disabled></textarea>
-                                </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <h5><strong>Archivos Adjuntos:</strong></h5>
-                                    <p data-detail-type></p>
                                     <div class="form-group col-md-12 text-left">
                                         <a data-detail-btn-att data-mail-add-attachment data-id_mailpowerbi
                                             class="btn btn-success text-white">Agregar adjunto</a>
                                     </div>
                                     <table class="table table-bordered text-center" id="tableattachment" width="100%"
                                         cellspacing="0"></table>
-                                    <hr>
+                                    <p data-detail-type></p>
                                 </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <h5><strong>Calendario de envío: </strong></h5>
+                                <div class="form-group col-md-6 text-center">
+                                    <h5><strong>Calendario de envío</strong></h5>
+                                    <hr>
                                     <div class="form-group col-md-12 text-left">
                                         <a data-detail-btn-timer data-btn-add-timer data-id_mailpowerbi
                                             class="btn btn-success text-white">Agregar envio</a>
@@ -421,406 +428,469 @@
                                 </div>
                             </div>
                         </div>
-                    </form>
                 </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="addMail" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Formulario de programación de correo electrónico
-                        </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
-                                aria-hidden="true">&times;</span> </button>
-                    </div>
-                    <div class="modal-body">
-                        <form data-form-mail>
-                            <div id="smartwizard">
-                                <ul>
-                                    <li><a href="#step-1">Paso 1<br /><small>Correo electrónico</small></a></li>
-                                    <li><a href="#step-2">Paso 2<br /><small>Archivos adjuntos</small></a></li>
-                                    <li><a href="#step-3">Paso 3<br /><small>Calendario de envío</small></a></li>
-                                    <li><a href="#step-4">Paso 3<br /><small>Confirmación</small></a></li>
-                                </ul>
-                                <div>
-                                    <div id="step-1">
-                                        <div id="form-step-0" class="form-row" role="form" data-toggle="validator">
-                                            <div class="form-group col-md-12 text-center">
-                                                <h5 class="modal-title">Correo electrónico</h5>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="form-row">
-                                                    <div class="form-group col-md-12">
-                                                        <input id="for" name="for" type="text" class="form-control"
-                                                            placeholder="Para" required>
-                                                    </div>
-                                                    <div class="form-group col-md-12">
-                                                        <input name="cc" id="cc" type="text" class="form-control"
-                                                            placeholder="Cc">
-                                                    </div>
-                                                    <div class="form-group col-md-12">
-                                                        <input name="cco" id="cco" type="text" class="form-control"
-                                                            placeholder="Cco">
-                                                    </div>
-                                                    <div class="form-group col-md-12">
-                                                        <input name="title" id="title" type="text" class="form-control"
-                                                            placeholder="Título" required>
-                                                    </div>
-                                                    <div class="form-group col-md-12">
-                                                        <textarea name="message" type="text" id="message"
-                                                            class="form-control" placeholder="Mensaje" required
-                                                            style="height: 120px;"></textarea>
-                                                    </div>
-                                                </div>
-                                            </div>
+    <div class="modal fade" id="addMail" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Formulario de programación de correo electrónico
+                    </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <span
+                            aria-hidden="true">&times;</span> </button>
+                </div>
+                <div class="modal-body">
+                    <form data-form-mail>
+                        <div id="smartwizard">
+                            <ul>
+                                <li><a href="#step-1">Paso 1<br /><small>Correo electrónico</small></a></li>
+                                <li><a href="#step-2">Paso 2<br /><small>Archivos adjuntos</small></a></li>
+                                <li><a href="#step-3">Paso 3<br /><small>Calendario de envío</small></a></li>
+                                <li><a href="#step-4">Paso 3<br /><small>Confirmación</small></a></li>
+                            </ul>
+                            <div>
+                                <div id="step-1">
+                                    <div id="form-step-0" class="form-row" role="form" data-toggle="validator">
+                                        <div class="form-group col-md-12 text-center">
+                                            <h5 class="modal-title">Correo electrónico</h5>
                                         </div>
-                                    </div>
-                                    <div id="step-2">
-                                        <div id="form-step-1" class="row" role="form" data-toggle="validator">
-                                            <div class="form-group col-md-12 text-center">
-                                                <h5 class="modal-title">Archivos adjuntos</h5>
-                                                <h8 class="section-subheading text-muted">Agregue el enlace del informe
-                                                    que se
-                                                    adjuntará al correo electrónico.</h8>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <h8 class="modal-title">Listado de Informes</h8>
-                                                <select name="bis" id="bis" class="form-control">
-                                                    <option value="" default disabled selected>Informes</option>
-                                                </select>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <a data-add-report class="btn btn-success text-white">Agregar
-                                                    Informe</a>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <h8 class="modal-title">ou</h8>
-                                            </div>
-                                            <div class="form-group col-md-12">
-                                                <input name="urlinput" id="urlinput" type="url" class="form-control"
-                                                    placeholder="URL del Informe">
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <a data-add-url class="btn btn-success text-white">Agregar
-                                                    URL</a>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <h8 class="modal-title">Lista de archivos adjuntos</h8>
-                                                <select name="url" id="url" class="form-control" multiple>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="step-3">
-                                        <div id="form-step-2" class="row" role="form" data-toggle="validator">
-                                            <div class="form-group col-md-12 text-center">
-                                                <h5 class="modal-title">Calendario de envío</h5>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <input class="form-control" type="datetime-local" name="date" id="date"
-                                                    multiple>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <a data-add-timer class="btn btn-success text-white">Agregar envio
-                                                    programado</a>
-                                            </div>
-                                            <div class="form-group col-md-12 text-center">
-                                                <h8 class="modal-title">Lista de Envíos programados</h8>
-                                                <select name="schedule" id="schedule" class="form-control" multiple>
-                                                </select>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div id="step-4">
-                                        <div id="form-step-3" class="row" role="form" data-toggle="validator">
-                                            <div class="form-group col-md-12 text-center">
-                                                <h5 class="modal-title">Confirmar la programación del correo electrónico
-                                                </h5>
-                                            </div>
-                                            <hr>
-                                            <div class="form-group col-md-12 text-center">
-                                                <label for="typejpg"><strong>
-                                                        ¿Desea fusionar los archivos adjuntos en un solo archivo o
-                                                        mantenerlos separados?</strong></label>
-                                                <div class="custom-control custom-radio custom-control-inline"
-                                                    color:black>
-                                                    <input type="radio" class="custom-control-input perfil" id="typejpg"
-                                                        name="type" value="1" required>
-                                                    <label class="custom-control-label" for="typejpg">Reunir</label>
+                                        <div class="modal-body">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-12">
+                                                    <input id="for" name="for" type="text" class="form-control"
+                                                        placeholder="Para" required>
                                                 </div>
-                                                <div class="custom-control custom-radio custom-control-inline"
-                                                    color:black>
-                                                    <input type="radio" class="custom-control-input perfil" id="typepdf"
-                                                        name="type" value="2">
-                                                    <label class="custom-control-label" for="typepdf">Manténgase
-                                                        separado</label>
+                                                <div class="form-group col-md-12">
+                                                    <input name="cc" id="cc" type="text" class="form-control"
+                                                        placeholder="Cc">
                                                 </div>
-                                            </div>
-                                            <div class="col-md-12 text-center">
-                                                <button class="btn btn-success text-uppercase"
-                                                    type="submit">Agregar</button>
+                                                <div class="form-group col-md-12">
+                                                    <input name="cco" id="cco" type="text" class="form-control"
+                                                        placeholder="Cco">
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <input name="title" id="title" type="text" class="form-control"
+                                                        placeholder="Título" required>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <textarea name="message" type="text" id="message"
+                                                        class="form-control" placeholder="Mensaje" required
+                                                        style="height: 120px;"></textarea>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                <div id="step-2">
+                                    <div id="form-step-1" class="row" role="form" data-toggle="validator">
+                                        <div class="form-group col-md-12 text-center">
+                                            <h5 class="modal-title">Archivos adjuntos</h5>
+                                            <h8 class="section-subheading text-muted">Agregue el enlace del informe
+                                                que se
+                                                adjuntará al correo electrónico.</h8>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <h8 class="modal-title">Listado de Informes</h8>
+                                            <select name="bis" id="bis" class="form-control">
+                                                <option value="" default disabled selected>Informes</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <a data-add-report class="btn btn-success text-white">Agregar
+                                                Informe</a>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <h8 class="modal-title">ou</h8>
+                                        </div>
+                                        <div class="form-group col-md-12">
+                                            <input name="urlinput" id="urlinput" type="url" class="form-control"
+                                                placeholder="URL del Informe">
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <a data-add-url class="btn btn-success text-white">Agregar
+                                                URL</a>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <h8 class="modal-title">Lista de archivos adjuntos</h8>
+                                            <select style="height: 8rem;" name="url" id="url" class="form-control"
+                                                multiple>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="step-3">
+                                    <div id="form-step-2" class="row" role="form" data-toggle="validator">
+                                        <div class="form-group col-md-12 text-center">
+                                            <h5 class="modal-title">Calendario de envío</h5>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <hr>
+                                            <h6>Seleccione por Periodo</h6>
+                                        </div>
+                                        <div class="form-group col-md-5 text-center">
+                                            <label for="datestart">Fecha Inicial</label>
+                                            <input class="form-control" type="month" name="datestart" id="datestart"
+                                                multiple>
+                                        </div>
+                                        <div class="form-group col-md-5 text-center">
+                                            <label for="dateend">Fecha Final</label>
+                                            <input class="form-control" type="month" name="dateend" id="dateend"
+                                                multiple>
+                                        </div>
+                                        <div class="form-group col-md-2 text-center">
+                                            <label for="dateend">Hora</label>
+                                            <select class="form-control" name="hour" id="hour">
+                                                <option value="" selected disabled> - </option>
+                                                <option value="0">0 am</option>
+                                                <option value="1">1 am</option>
+                                                <option value="2">2 am</option>
+                                                <option value="3">3 am</option>
+                                                <option value="4">4 am</option>
+                                                <option value="5">5 am</option>
+                                                <option value="6">6 am</option>
+                                                <option value="7">7 am</option>
+                                                <option value="8">8 am</option>
+                                                <option value="9">9 am</option>
+                                                <option value="10">10 am</option>
+                                                <option value="11">11 am</option>
+                                                <option value="12">12 pm</option>
+                                                <option value="13">13 pm</option>
+                                                <option value="14">14 pm</option>
+                                                <option value="15">15 pm</option>
+                                                <option value="16">16 pm</option>
+                                                <option value="17">17 pm</option>
+                                                <option value="18">18 pm</option>
+                                                <option value="19">19 pm</option>
+                                                <option value="20">20 pm</option>
+                                                <option value="21">21 pm</option>
+                                                <option value="22">22 pm</option>
+                                                <option value="23">23 pm</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <select style="height: 11rem;" class="form-control" name="weekday"
+                                                id="weekday" multiple>
+                                                <option value="0">Lunes</option>
+                                                <option value="1">Martes</option>
+                                                <option value="2">Miércoles</option>
+                                                <option value="3">Jueves</option>
+                                                <option value="4">Viernes</option>
+                                                <option value="5">Sábado</option>
+                                                <option value="6">Domingo</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="form-group col-md-12 text-center">
+                                            <hr>
+                                            <h6>Seleccione por Fecha especifica</h6>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <label for="start">Seleccione el día deseado y presione el botón
+                                                agregar</label>
+                                            <input class="form-control" type="datetime-local" name="date" id="date"
+                                                multiple>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <a data-add-timer class="btn btn-success text-white">Agregar dia</a>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <h8 class="modal-title">Lista de Envíos programados</h8>
+                                            <select style="height: 8rem;" name="schedule" id="schedule"
+                                                class="form-control" multiple>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="step-4">
+                                    <div id="form-step-3" class="row" role="form" data-toggle="validator">
+                                        <div class="form-group col-md-12 text-center">
+                                            <h5 class="modal-title">Confirmar la programación del correo electrónico
+                                            </h5>
+                                        </div>
+                                        <hr>
+                                        <div class="form-group col-md-12 text-center">
+                                            <label for="typejpg"><strong>
+                                                    ¿Desea fusionar los archivos adjuntos en un solo archivo o
+                                                    mantenerlos separados?</strong></label>
+                                            <div class="custom-control custom-radio custom-control-inline" color:black>
+                                                <input type="radio" class="custom-control-input perfil" id="typejpg"
+                                                    name="type" value="1" required>
+                                                <label class="custom-control-label" for="typejpg">Reunir</label>
+                                            </div>
+                                            <div class="custom-control custom-radio custom-control-inline" color:black>
+                                                <input type="radio" class="custom-control-input perfil" id="typepdf"
+                                                    name="type" value="2">
+                                                <label class="custom-control-label" for="typepdf">Manténgase
+                                                    separado</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <button class="btn btn-success text-uppercase"
+                                                type="submit">Agregar</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                        </form>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="portfolio-modal modal fade" id="viewAttachment" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Archivo adjunto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-row">
+                        <div class="form-group col-md-12 text-center">
+                            <iframe data-attachment-image style="width: 1100px;height: 520px;" frameborder="0"
+                                scrolling="no" src="">
+                            </iframe>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="portfolio-modal modal fade" id="viewAttachment" tabindex="-1">
-            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Archivo adjunto</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
+    <div class="modal fade" id="dropTimer" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Eliminar horario</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-drop-timer>
                     <div class="modal-body">
                         <div class="form-row">
+                            <div class=" col-md-12">
+                                El correo electrónico no se enviará a la hora seleccionada.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="dropAttachment" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">¿Eliminar adjunto?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-drop-attachment>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class=" col-md-12">
+                                El archivo adjunto no se enviará en el correo electrónico seleccionado.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addattachment" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Agregar archivo adjunto</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-mail-add-reports>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <h8 class="section-subheading text-muted text-center">Agregue el enlace del informe que
+                                se
+                                adjuntará al correo electrónico.</h8>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <h8 class="modal-title">Listado de Informes</h8>
+                            <select name="bis" id="newbis" class="form-control">
+                                <option value="" default disabled selected>Informes</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <a data-new-report class="btn btn-success text-white">Agregar Informe</a>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <h8 class="modal-title">ou</h8>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <input name="urlinput" id="newurlinput" type="text" class="form-control"
+                                placeholder="URL del Informe">
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <a data-new-url class="btn btn-success text-white">Agregar URL</a>
+                        </div>
+                        <div class="form-group col-md-12 text-center">
+                            <h8 class="modal-title">Lista de archivos adjuntos</h8>
+                            <select name="url" id="urlnew" class="form-control" multiple>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addschedule" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar calendario de correo electrónico</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-mail-add-timer>
+                    <div class="modal-body">
+                        <div class="form-row col-md-12 text-center">
                             <div class="form-group col-md-12 text-center">
-                                <iframe data-attachment-image style="width: 1100px;height: 520px;" frameborder="0"
-                                    scrolling="no" src="">
-                                </iframe>
+                                <input class="form-control" type="datetime-local" name="date" id="datenew" multiple>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="dropTimer" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Eliminar horario</h5>
-                        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-drop-timer>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class=" col-md-12">
-                                    El correo electrónico no se enviará a la hora seleccionada.
-                                </div>
+                            <div class="form-group col-md-12 text-center">
+                                <a data-add-new-timer class="btn btn-success text-white">Agregar envio
+                                    programado</a>
                             </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" type="button" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="dropAttachment" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">¿Eliminar adjunto?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-drop-attachment>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class=" col-md-12">
-                                    El archivo adjunto no se enviará en el correo electrónico seleccionado.
-                                </div>
+                            <div class="form-group col-md-12 text-center">
+                                <h8 class="modal-title">Lista de Envíos programados</h8>
+                                <select name="schedule" id="newschedule" class="form-control" multiple>
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                            <button type="submit" class=" btn btn-success"><i class="fas fa-plus">
+                                    Agregar</i>
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="addattachment" tabindex="-1">
-            <div class="modal-dialog modal-lg modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="exampleModalLabel">Agregar archivo adjunto</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
+    <div class="modal fade" id="dropmodal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">¿Eliminar el Vendedor?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-drop-salesman>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class=" col-md-12">
+                                <h8>Ya no se puede vincular al vendedor para establecer objetivos y otras
+                                    actividades.
+                                </h8>
+                            </div>
+                        </div>
                     </div>
-                    <form data-mail-add-reports>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <h8 class="section-subheading text-muted text-center">Agregue el enlace del informe que
-                                    se
-                                    adjuntará al correo electrónico.</h8>
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <h8 class="modal-title">Listado de Informes</h8>
-                                <select name="bis" id="newbis" class="form-control">
-                                    <option value="" default disabled selected>Informes</option>
-                                </select>
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <a data-new-report class="btn btn-success text-white">Agregar Informe</a>
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <h8 class="modal-title">ou</h8>
-                            </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addManager" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Enlace al gerente </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
+                </div>
+                <form data-add-manager>
+                    <div class="modal-body">
+                        <div class="form-row">
                             <div class="form-group col-md-12">
-                                <input name="urlinput" id="newurlinput" type="text" class="form-control"
-                                    placeholder="URL del Informe">
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <a data-new-url class="btn btn-success text-white">Agregar URL</a>
-                            </div>
-                            <div class="form-group col-md-12 text-center">
-                                <h8 class="modal-title">Lista de archivos adjuntos</h8>
-                                <select name="url" id="urlnew" class="form-control" multiple>
+                                <select title="Usuarios" class="form-control selectpicker" name="managerselect"
+                                    id="managerselect" required>
                                 </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class=" btn btn-success"><i class="fas fa-plus"> Agregar</i></button>
+                            <button type="submit" class=" btn btn-success"><i class="fas fa-plus">
+                                    Enlace</i>
+                            </button>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
+    </div>
 
-        <div class="modal fade" id="addschedule" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Agregar calendario de correo electrónico</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-mail-add-timer>
-                        <div class="modal-body">
-                            <div class="form-row col-md-12 text-center">
-                                <div class="form-group col-md-12 text-center">
-                                    <input class="form-control" type="datetime-local" name="date" id="datenew" multiple>
-                                </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <a data-add-new-timer class="btn btn-success text-white">Agregar envio
-                                        programado</a>
-                                </div>
-                                <div class="form-group col-md-12 text-center">
-                                    <h8 class="modal-title">Lista de Envíos programados</h8>
-                                    <select name="schedule" id="newschedule" class="form-control" multiple>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class=" btn btn-success"><i class="fas fa-plus">
-                                        Agregar</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+    <div class="modal fade" id="addsalesman" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar vendedor al sistema </h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">x</span>
+                    </button>
                 </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="dropmodal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">¿Eliminar el Vendedor?</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-drop-salesman>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class=" col-md-12">
-                                    <h8>Ya no se puede vincular al vendedor para establecer objetivos y otras
-                                        actividades.
-                                    </h8>
-                                </div>
+                <form data-add-salesman>
+                    <div class="modal-body">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <select title="Seleccione un vendedor para agregar al sistema"
+                                    class="selectpicker form-control" name="salesmanselect" id="salesmanselect" multiple
+                                    required>
+                                </select>
                             </div>
                         </div>
                         <div class="modal-footer">
                             <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                            <button type="submit" class=" btn btn-danger"><i class="fas fa-times"> Eliminar</i></button>
+                            <button type="submit" name="btn" class=" btn btn-success"><i class="fas fa-plus">
+                                    Agregar</i>
+                            </button>
                         </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <div class="modal fade" id="addManager" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Enlace al gerente </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
                     </div>
-                    <form data-add-manager>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <select title="Usuarios" class="form-control selectpicker" name="managerselect"
-                                        id="managerselect" required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" class=" btn btn-success"><i class="fas fa-plus">
-                                        Enlace</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+                </form>
             </div>
         </div>
-
-        <div class="modal fade" id="addsalesman" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Agregar vendedor al sistema </h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">x</span>
-                        </button>
-                    </div>
-                    <form data-add-salesman>
-                        <div class="modal-body">
-                            <div class="form-row">
-                                <div class="form-group col-md-12">
-                                    <select title="Seleccione un vendedor para agregar al sistema"
-                                        class="selectpicker form-control" name="salesmanselect" id="salesmanselect"
-                                        multiple required>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
-                                <button type="submit" name="btn" class=" btn btn-success"><i class="fas fa-plus">
-                                        Agregar</i>
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    </div>
 
     </div>
     <%- include(partials + 'script.ejs' ) %>

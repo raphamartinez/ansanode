@@ -1,7 +1,12 @@
-import { ViewMail } from "../views/mailView.js"
 import { Connection } from '../services/connection.js'
 
 const init = async () => {
+
+    if ($.fn.DataTable.isDataTable('#tablemail')) {
+        $('#tablemail').dataTable().fnClearTable();
+        $('#tablemail').dataTable().fnDestroy();
+        $('#tablemail').empty();
+    }
 
     const data = await Connection.noBody('mails', 'GET')
 
@@ -182,14 +187,16 @@ const addTimer = () => {
 document.querySelector('[data-add-timer]').addEventListener('click', addTimer, false)
 
 const addMail = async (event) => {
-    event.preventDefault()
+    event.preventDefault();
 
     try {
-        const scheduleoption = document.querySelectorAll('#schedule option')
-        const attachmentoption = document.querySelectorAll('#url option')
+        const scheduleoption = document.querySelectorAll('#schedule option');
+        const attachmentoption = document.querySelectorAll('#url option');
+        const weekdayoption = document.querySelectorAll('#weekday option:checked');
 
-        const schedule = Array.from(scheduleoption).map(el => `${el.value}`)
-        const attachment = Array.from(attachmentoption).map(el => `${el.value}`)
+        const schedule = Array.from(scheduleoption).map(el => `${el.value}`);
+        const attachment = Array.from(attachmentoption).map(el => `${el.value}`);
+        const weekday = Array.from(weekdayoption).map(el => `${el.value}`);
 
         const mailschedule = {
             for: event.currentTarget.for.value,
@@ -198,19 +205,23 @@ const addMail = async (event) => {
             title: event.currentTarget.title.value,
             body: event.currentTarget.message.value,
             type: event.currentTarget.type.value,
+            datestart: event.currentTarget.datestart.value,
+            dateend: event.currentTarget.dateend.value,
+            hour: event.currentTarget.hour.value,
+            weekday: weekday,
             schedule: schedule,
             urls: attachment
-        }
+        };
 
-        if(!mailschedule.for || !mailschedule.title || !mailschedule.body) return alert('Complete todos los campos del correo electrónico.')
+        if(!mailschedule.for || !mailschedule.title || !mailschedule.body) return alert('Complete todos los campos del correo electrónico.');
 
-        const obj = await Connection.body('mail', { mailschedule }, 'POST')
+        const obj = await Connection.body('mail', { mailschedule }, 'POST');
 
-        $('#modalmailschedule').modal('hide')
+        $('#modalmailschedule').modal('hide');
 
-        alert(obj.msg)
+        alert(obj.msg);
     } catch (error) {
-        alert(error)
+        alert(error);
     }
 }
 

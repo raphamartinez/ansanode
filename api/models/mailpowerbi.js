@@ -63,6 +63,27 @@ class MailPowerBi {
         }
     }
 
+    async insertMailPeriod(mail) {
+        try {
+            let objs = []
+
+            for (let weekday of mail.weekday) {
+                let id = await Repositorie.insertPeriod(weekday, mail)
+
+                let period = {
+                    weekday,
+                    id
+                }
+
+                objs.push(period)
+            }
+
+            return objs
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo crear el periodo.')
+        }
+    }
+
     async updateMailPowerBi(mail) {
         try {
             const result = await Repositorie.updateMail(mail)

@@ -39,11 +39,11 @@ module.exports = app => {
             let id_mailpowerbi = await Mail.insertMailPowerBi(mail, req.login.id_login)
 
             mail['id_mailpowerbi'] = id_mailpowerbi
-            await Mail.insertMailAttachment(mail)
-            await Mail.insertMailScheduling(mail)
-            await Mail.insertMailPeriod(mail)
+            if (mail.urls) await Mail.insertMailAttachment(mail)
+            if (mail.schedule) await Mail.insertMailScheduling(mail)
+            if (mail.weekday && mail.datestart && mail.dateend) await Mail.insertMailPeriod(mail)
 
-            res.status(201).json({id:id_mailpowerbi, msg: `¡La programación de correo electrónico se agregó correctamente!`})
+            res.status(201).json({ id: id_mailpowerbi, msg: `¡La programación de correo electrónico se agregó correctamente!` })
         } catch (err) {
             next(err)
         }
@@ -106,7 +106,7 @@ module.exports = app => {
         try {
             const id_mailpowerbi = req.params.id_mailpowerbi
             await Mail.deleteMailPowerBi(id_mailpowerbi)
-            
+
             res.json({ msg: 'Correo electrónico eliminado con éxito!' })
         } catch (err) {
             next(err)

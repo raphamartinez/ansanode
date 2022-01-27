@@ -144,7 +144,7 @@ class Quiz {
             if (id_interview) {
                 const check = await Repositorie.check(id_interview)
 
-                if (check) return true
+                if (check) return check
             }
 
             return false

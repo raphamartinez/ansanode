@@ -16,14 +16,14 @@ async function onPassword(event) {
         var url = window.location.pathname
         var token = url.substring(13)
 
-        const pass = document.getElementById("password").value;
-        const passconf = document.getElementById("passwordconf").value;
+        const pass = document.getElementById("pass").value;
+        const passconf = document.getElementById("checkpassword").value;
 
         if (pass === passconf) {
             const data = await Connection.noBearer('resetPassword', { pass, token }, 'POST')
 
             alert(data.message)
-            window.location.href = data.url
+            window.location.href = 'https://informes.americaneumaticos.com.py/login';
         }
     } catch (error) {
         alert(error)
@@ -36,12 +36,12 @@ async function onForgot(event) {
     event.preventDefault()
     try {
 
-        const mail = document.querySelector('[data-mail]').value
+        const mail = document.querySelector('[data-mail]').value;
 
-        const data = await Connection.noBearer('forgotPassword', { mail }, 'POST')
+        const data = await Connection.noBearer('forgotPassword', { mail }, 'POST');
 
-        alert(data.message)
-        window.location.href = data.url
+        alert(data.message);
+        window.location.href = 'https://informes.americaneumaticos.com.py/login';
     } catch (error) {
         alert(error)
     }

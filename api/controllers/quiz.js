@@ -83,7 +83,9 @@ module.exports = app => {
                 const check = await Quiz.check(token)
 
                 if (check) {
-                    res.render('quiz')
+                    res.render('quizpublic',{
+                        username: check.name
+                    })
                 } else {
                     res.redirect('http://www.americaneumaticos.com.py/')
                 }

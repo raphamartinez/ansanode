@@ -65,7 +65,7 @@ class Quiz {
 
     async check(id_interview) {
         try {
-            const sql = `SELECT id
+            const sql = `SELECT id, name
             FROM ansa.interview
             WHERE id = ? AND status = 1`
 

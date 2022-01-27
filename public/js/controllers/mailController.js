@@ -8,6 +8,18 @@ const init = async () => {
         $('#tablemail').empty();
     }
 
+    if ($.fn.DataTable.isDataTable('#tableattachment')) {
+        $('#tableattachment').dataTable().fnClearTable();
+        $('#tableattachment').dataTable().fnDestroy();
+        $('#tableattachment').empty();
+    }
+
+    if ($.fn.DataTable.isDataTable('#tablescheduling')) {
+        $('#tablescheduling').dataTable().fnClearTable();
+        $('#tablescheduling').dataTable().fnDestroy();
+        $('#tablescheduling').empty();
+    }
+
     const data = await Connection.noBody('mails', 'GET')
 
     let dtview = data.map(mail => {
@@ -71,6 +83,9 @@ const init = async () => {
         searching: false
     })
 
+    $("#tableattachment").DataTable()
+        .columns.adjust();
+
     $("#tablescheduling").DataTable({
         data: [],
         columns: [
@@ -89,6 +104,9 @@ const init = async () => {
         fixedHeader: false,
         searching: false
     })
+
+    $("#tablescheduling").DataTable()
+        .columns.adjust();
 
     let obj = await Connection.noBody('powerbis', 'GET')
     obj.powerbis.forEach(powerbi => {
@@ -213,11 +231,35 @@ const addMail = async (event) => {
             urls: attachment
         };
 
-        if(!mailschedule.for || !mailschedule.title || !mailschedule.body) return alert('Complete todos los campos del correo electrónico.');
+        if (!mailschedule.for || !mailschedule.title || !mailschedule.body) return alert('Complete todos los campos del correo electrónico.');
 
         const obj = await Connection.body('mail', { mailschedule }, 'POST');
 
         $('#modalmailschedule').modal('hide');
+
+        document.querySelector('[data-form-mail]').reset();
+        
+        const date = new Date();
+
+        const rowNode = $('#tablemail').DataTable()
+            .row
+            .add([
+                `<a><i data-view data-id="${obj.id}" class="fas fa-eye" style="color:#cbccce;"></i></a>
+                 <a><i data-drop data-id="${obj.id}" class="fas fa-trash" style="color:#CC0000;"></i></a>`,
+                `${mail.for}`,
+                `${mailschedule.cc}`,
+                `${mailschedule.cco}`,
+                `${mailschedule.title}`,
+                `${mailschedule.body}`,
+                `${mailschedule.urls.length > 0 ? mailschedule.urls.length : "0"}`,
+                `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`
+            ])
+            .draw()
+            .node();
+
+        $(rowNode)
+            .css('color', 'black')
+            .animate({ color: '#4e73df' });
 
         alert(obj.msg);
     } catch (error) {

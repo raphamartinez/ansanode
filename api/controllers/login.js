@@ -25,6 +25,14 @@ module.exports = app => {
         }
     });
 
+    app.get('/forgotPassword', async function (req, res, next) {
+        try {
+            res.render('forgotPassword');
+        } catch (err) {
+            next(err)
+        }
+    });
+
     app.post('/login', passport.authenticate('local', {
         successRedirect: '/dashboard',
         failureRedirect: '/login?fail=true'
@@ -95,7 +103,7 @@ module.exports = app => {
             const mailenterprise = req.body.mail
             const login = await Login.forgotPassword(mailenterprise)
 
-            History.insertHistory('Solicitud de restablecimiento de contraseña', login.id_login)
+            if (login) History.insertHistory('Solicitud de restablecimiento de contraseña', login.id_login)
 
             res.json({ url: '../', message: 'Correo electrónico de restablecimiento de contraseña enviado!' })
         } catch (err) {
@@ -114,7 +122,7 @@ module.exports = app => {
     app.post('/resetPassword', async function (req, res, next) {
         try {
             const token = req.body.token
-            const password = req.body.password
+            const password = req.body.pass
             const id_login = await Login.changePassword(token, password)
 
             History.insertHistory('Contraseña alterada.', id_login)

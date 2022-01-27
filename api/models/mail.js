@@ -160,7 +160,7 @@ class QuizMail extends Mail {
                                             <h2>Hola ${user.name}, te enviamos un cuestionario de ${quiz.title}!</h2>
                                             <span> A continuación se muestra un enlace para acceder al cuestionario:</span>
                                             <br>
-                                            <a href="https://informes.americaneumaticos.com.py/publicquiz/${token}">Enlace de acceso</a>
+                                            <a href="http://localhost:3000\/publicquiz/${token}">Enlace de acceso</a>
                                             <br>
                                             <span> El enlace tiene una duración de 24 horas.</span>
                                         </div>

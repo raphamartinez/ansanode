@@ -1411,6 +1411,12 @@ const listGoals = async (salesman, group, stock) => {
             return now;
         })
 
+        if ($.fn.DataTable.isDataTable('#tablegoals')) {
+            $('#tablegoals').dataTable().fnClearTable();
+            $('#tablegoals').dataTable().fnDestroy();
+            $('#tablegoals').empty();
+        }
+
         $("#tablegoals").DataTable({
             data: dtview,
             columns: [

@@ -81,7 +81,8 @@ const init = async () => {
 init()
 
 const modalEdit = async (event) => {
-
+    document.querySelector('#officeedit').innerHTML = "";
+    
     $("#perfiledit").val(event.target.getAttribute('data-perfil'));
 
     const offices = await JSON.parse(event.target.getAttribute('data-offices')) 

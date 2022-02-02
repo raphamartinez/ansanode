@@ -17,15 +17,21 @@ module.exports = app => {
             let offices = [];
             let sellers;
 
+            req.flash('error', 'No tienes acceso a ninguna sucursal, contacte lo administrador del sistema.');
+            return res.redirect('/dashboard')
+
             if (req.access.all.allowed) {
                 sellers = await Sellers.list();
                 offices = await Office.listOffice();
             } else {
-                console.log(req.login.offices);
-
                 if (req.login.perfil == 4 || req.login.perfil == 8) {
                     let off = req.login.offices.map(of => of.code);
                     offices.push(off)
+
+                    if (req.login.perfil == 4 && offices.length === 0) {
+                        req.flash('error_msg', '¡Nombre de usuario y/o contraseña inválido!');
+                        return res.redirect('/dashboard')
+                    }
                 } else {
                     id_login = req.login.id_login;
                 }

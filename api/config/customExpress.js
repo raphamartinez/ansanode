@@ -5,6 +5,8 @@ const consign = require('consign');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
+const flash = require('express-flash')
+// const flash = require('connect-flash');
 
 module.exports = () => {
 
@@ -49,6 +51,8 @@ module.exports = () => {
     res.header("Access-Control-Allow-Headers", 'Origin, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, X-Response-Time, X-PINGOTHER, X-CSRF-Token,Authorization');
     next();
   });
+
+  app.use(flash());
 
   consign({ cwd: path.join(__dirname, '../') })
     .include('models')

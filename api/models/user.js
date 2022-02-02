@@ -91,9 +91,13 @@ class User {
 
             await RepositorieOffice.delete(login.id_login)
 
-            await user.offices.forEach(async office => {
-                await RepositorieOffice.insert(login.id_login, office)
-            })
+            if (Array.isArray(user.offices)) {
+                for (let office of user.offices) {
+                    await RepositorieOffice.insert(login.id_login, office)
+                }
+            } else {
+                await RepositorieOffice.insert(login.id_login, user.offices)
+            }
 
             return true
         } catch (error) {

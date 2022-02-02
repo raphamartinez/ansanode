@@ -16,9 +16,10 @@ module.exports = app => {
 
     app.get('/login', async function (req, res, next) {
         try {
-            if (req.query.fail)
-                res.render('login', { message: `¡Nombre de usuario y/o contraseña inválido!` });
-            else
+            if (req.query.fail) {
+                req.flash('error', '¡Nombre de usuario y/o contraseña inválido!');
+                res.redirect('login');
+            } else
                 res.render('login');
         } catch (err) {
             next(err)

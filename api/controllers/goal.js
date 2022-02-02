@@ -17,9 +17,6 @@ module.exports = app => {
             let offices = [];
             let sellers;
 
-            req.flash('error', 'No tienes acceso a ninguna sucursal, contacte lo administrador del sistema.');
-            return res.redirect('/dashboard')
-
             if (req.access.all.allowed) {
                 sellers = await Sellers.list();
                 offices = await Office.listOffice();
@@ -29,7 +26,7 @@ module.exports = app => {
                     offices.push(off)
 
                     if (req.login.perfil == 4 && offices.length === 0) {
-                        req.flash('error_msg', '¡Nombre de usuario y/o contraseña inválido!');
+                        req.flash('error', 'Solicitar acceso a una sucursal.');
                         return res.redirect('/dashboard')
                     }
                 } else {

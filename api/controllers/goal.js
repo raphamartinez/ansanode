@@ -158,11 +158,11 @@ module.exports = app => {
     app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
-            const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)
+            // const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            }
+            // if (cached) {
+            //     return res.json(JSON.parse(cached))
+            // }
 
             const id_salesman = req.params.id_salesman
             const group = req.params.group

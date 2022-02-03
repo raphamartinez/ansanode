@@ -1362,16 +1362,16 @@ const listGoals = async (salesman, group, stock) => {
 
     try {
 
-        const goalsline = await Connection.noBody(`goalsline/${salesman.id_salesman}/${salesman.office}/${group}/${stock}`, 'GET')
+        const goalsline = await Connection.noBody(`goalsline/${salesman}/${salesman.office}/${group}/${stock}`, 'GET')
 
         let index = 1;
 
         const profile = document.querySelector('#profile').value
-        let disabled;
+        let disabled = "";
         if (profile == 8) disabled = "disabled"
 
         let dtview = goalsline.map(goal => {
-            const field = View.lineaddgoal(goal, index, salesman.id_salesman, disabled)
+            const field = View.lineaddgoal(goal, index, salesman, disabled)
             index += 12
             return field
         });

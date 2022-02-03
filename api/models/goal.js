@@ -14,14 +14,15 @@ class Goal {
 
     async insert(goal) {
         try {
-            const item = await Repositorie.search(goal)
-            const obj = await Repositorie.validate(item)
+            const id_goalline = await Repositorie.search(goal)
+            const obj = await Repositorie.validate(id_goalline, goal.id_salesman)
 
-            if (obj && obj.amount && obj.amount !== goal.amount) {
-                item.id_goal = obj.id_goal
-                await Repositorie.update(item)
+            if (obj) {
+                goal.id_goal = obj.id_goal
+                if (obj.amount !== goal.amount) await Repositorie.update(goal)
             } else {
-                await Repositorie.insert(item)
+                goal.id_goalline = id_goalline
+                if (goal.amount > 0) await Repositorie.insert(goal)
             }
 
             return true

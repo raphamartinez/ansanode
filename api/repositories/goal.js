@@ -26,10 +26,10 @@ class Goal {
         }
     }
 
-    async validate(goal) {
+    async validate(id_goalline, id_salesman) {
         try {
             const sql = 'SELECT amount, id_goal FROM ansa.goal where id_goalline = ? and id_salesman = ?'
-            const result = await query(sql, [goal.id_goalline, goal.id_salesman])
+            const result = await query(sql, [id_goalline, id_salesman])
 
             return result[0]
         } catch (error) {

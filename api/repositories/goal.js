@@ -158,10 +158,11 @@ class Goal {
 
     async items(offices, month, group) {
         try {
-            let sql = `SELECT GL.itemcode, GL.itemgroup, GL.itemname, SUM(GO.amount) as amount
+            let sql = `SELECT GL.itemcode, GL.itemgroup, GL.itemname, SUM(GO.amount) as amount, (SUM(GO.amount) * IP.price) as price
             FROM ansa.salesman SA
             LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
             LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            LEFT JOIN ansa.itemprice IP ON GL.itemcode = IP.code
             WHERE GL.application <> "DESCONSIDERAR"
             AND SA.office IN (?)
             AND GL.date BETWEEN ? AND LAST_DAY(?)

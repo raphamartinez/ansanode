@@ -197,11 +197,11 @@ module.exports = app => {
         try {
             const goal = req.body.goal
 
-            await Goal.insert(goal)
+            const status = await Goal.insert(goal)
 
             cachelist.delPrefix('goal')
 
-            res.status(201).json({ msg: 'Meta agregada con éxito.' })
+            res.status(201).json(status)
         } catch (err) {
             next(err)
         }

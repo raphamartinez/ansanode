@@ -92,7 +92,7 @@ const viewGroupOffice = async (event) => {
                         revenueExpected += parseFloat(goal.price);
 
                         allGoal += goal.amount ? parseInt(goal.amount) : 0;
-                        if(goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
+                        if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
                     });
                 };
 
@@ -163,7 +163,7 @@ const viewGroupOffice = async (event) => {
                 if (ofi.goals.length > 0) {
                     ofi.goals.forEach(goal => {
                         allGoal += parseInt(goal.amount);
-                        if(goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
+                        if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
                         revenueEffective += goal.effectivePrice;
                         revenueExpected += goal.price;
                     });
@@ -637,16 +637,13 @@ const searchOffice = async (event) => {
             let allGoal = 0;
 
             let revenueEffective = 0;
-            let revenueExpected = 0;
 
             if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.")
             if (!ofi.goals) return null;
 
             if (ofi.goals.length > 0) {
                 ofi.goals.forEach(goal => {
-
                     revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
-                    revenueExpected += parseFloat(goal.price);
 
                     allGoal += goal.amount ? parseInt(goal.amount) : 0;
                     if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
@@ -698,7 +695,7 @@ const searchOffice = async (event) => {
                 monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-index="${index + 100}" data-office="${office}" data-month="${mnt.month}" data-id="ALL" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
             })
 
-            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueExpected, month, monthGoals));
+            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, ofi.revenueExpected, month, monthGoals));
             gaugeChart(color, percent, 'Rendimiento %', index + 100)
             chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index + 100)
         })
@@ -1495,7 +1492,7 @@ const listGoals = async (salesman, group, stock) => {
 }
 
 
-$(document).on('keypress', '.goal', function (e) {
+$(document).on('keypress', '.goal', async function (e) {
     if (e.which == 13) {
         e.preventDefault();
         var $next = $('[tabIndex=' + (+this.tabIndex + 1) + ']');
@@ -1506,15 +1503,42 @@ $(document).on('keypress', '.goal', function (e) {
 
         $next.focus();
 
-        const btn = e.currentTarget
+        let status = 3;
+        const btn = e.currentTarget;
         const goal = {
             id_salesman: btn.getAttribute("data-id_salesman"),
             itemcode: btn.getAttribute("data-itemcode"),
             date: btn.getAttribute("data-date"),
             amount: btn.value
-        }
-        Connection.body(`goal`, { goal }, 'POST')
+        };
 
+        if(goal.amount && goal.amount > -1) {
+            status = await Connection.body(`goal`, { goal }, 'POST');
+        };
+
+        switch (status) {
+            case 1: {
+                toastr.success(`Cod Articulo: ${goal.itemcode}<br>Mes: ${goal.date}<br>Valor: ${goal.amount}`, "Meta agregada con éxito!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+            case 2: {
+                toastr.warning(`La meta no fue cambiado ya que no hay modificaciones.`, "Aviso!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+            case 3: {
+                toastr.error(`Verifique la meta insertada, uno erro fue generado.`, "Erro en la Meta!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+        };
     }
 });
 

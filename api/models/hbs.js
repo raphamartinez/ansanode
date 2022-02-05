@@ -10,6 +10,8 @@ class Hbs {
         try {
             await this.listSalary()
             await this.listUsers()
+            // await this.listPriceToInsert()
+            // await this.listStockToInsert()
 
             console.log('list hbs ok');
         } catch (error) {
@@ -173,13 +175,13 @@ class Hbs {
                 search.stock = stocks
             }
 
-            
+
             if (search.code === "ALL") {
 
                 const dataItem = await Repositorie.listItemsComplete(search.stock)
                 const items = dataItem.map(obj => `'${obj.ArtCode}'`);
                 search.code = items
-            }else{
+            } else {
                 search.code = `'${search.code}'`
             }
 
@@ -281,7 +283,7 @@ class Hbs {
             const data = await Repositorie.listGoodyear(search)
             const sales = await Repositorie.listGoodyearSales(search)
 
-           const items = await data.map(obj => {
+            const items = await data.map(obj => {
                 let sale = sales.find(sale => sale.ArtCode === obj.ArtCode)
                 if (obj.Reserved > 0) obj.StockQty - obj.Reserved
 
@@ -416,6 +418,34 @@ class Hbs {
         }
     }
 
+
+    async listPriceToInsert() {
+        try {
+            const itemPrices = await Repositorie.listPriceToInsert();
+
+            for (let items of itemPrices) {
+                await Repositorie.insertPrice(items);
+            }
+
+            return true;
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
+
+    async listStockToInsert() {
+        try {
+            const itemStocks = await Repositorie.listStockToInsert();
+            
+            for (let items of itemStocks) {
+                await Repositorie.insertStock(items);
+            }
+
+            return true;
+        } catch (error) {
+            throw new InternalServerError('Error')
+        }
+    }
 }
 
 module.exports = new Hbs

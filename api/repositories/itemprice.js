@@ -35,6 +35,20 @@ class ItemPrice {
         }
     }
 
+    listHbs(goal) {
+        try {
+            const sql = `SELECT pr.ArtCode, MIN(pr.Price)
+            FROM Price pr 
+            Group BY pr.ArtCode
+            ORDER BY pr.ArtCode
+                  `
+
+            return query(sql, goal.date)
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar los login')
+        }
+    }
+
     // async listExpectedSalesByManager(id_login) {
     //     try {
 

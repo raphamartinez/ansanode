@@ -1,6 +1,7 @@
 <%- include(partials + 'header.ejs' ) %>
     <link href="../css/excel-bootstrap-table-filter-style.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/bootstrap-select.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
 
     <style>
         .column {
@@ -30,12 +31,12 @@
                             <a class="nav-link" id="offices-tab" data-toggle="tab" href="#offices" role="tab"
                                 aria-controls="profile" aria-selected="false">Sucursales</a>
                         </li>
-                        <% if(perfil != 8) {%> 
-                        <li class="nav-item">
-                            <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
-                                aria-controls="include" aria-selected="false">Fijar Metas</a>
-                        </li>
-                        <% } %> 
+                        <% if(perfil !=8) {%>
+                            <li class="nav-item">
+                                <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
+                                    aria-controls="include" aria-selected="false">Fijar Metas</a>
+                            </li>
+                            <% } %>
                     </ul>
                     <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="sellers" role="tabpanel"
@@ -45,11 +46,11 @@
                         <div class="tab-pane fade" id="offices" role="tabpanel" aria-labelledby="offices-tab">
                             <%- include(components + './graph/goalOffices.ejs' ) %>
                         </div>
-                        <% if(perfil != 8) {%> 
-                        <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
-                            <%- include(components + './graph/goalInclude.ejs' ) %>
-                        </div>
-                        <% } %> 
+                        <% if(perfil !=8) {%>
+                            <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
+                                <%- include(components + './graph/goalInclude.ejs' ) %>
+                            </div>
+                            <% } %>
                     </div>
 
                     <div class="modal fade" id="uploadGoals" tabindex="-1">
@@ -100,5 +101,6 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
         <script
             src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
-            <%- include(partials + 'footer.ejs' ) %>
+        <%- include(partials + 'footer.ejs' ) %>

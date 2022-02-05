@@ -692,15 +692,47 @@ class Hbs {
         }
     }
 
-    listInvoiceItems(invoice) {
+    listPriceToInsert() {
         try {
-            const sql = `SELECT iv.SerNr as invoicenr, ir.Artcode AS code, ir.Name AS name, ir.Labels AS label, ir.Qty AS qty, TRUNCATE(ir.Price,2) AS price, TRUNCATE(ir.Qty * ir.Price,2) as priceamount ,
-            TRUNCATE(IF(iv.Currency = "GS", iv.Total / iv.BaseRate, IF(iv.Currency = "RE", iv.Total  * iv.FromRate / iv.BaseRate, iv.Total)),2) AS totalUsd,
-            TRUNCATE(IF(iv.Currency = "GS", iv.SubTotal / iv.BaseRate, IF(iv.Currency = "RE", iv.SubTotal  * iv.FromRate / iv.BaseRate, iv.SubTotal)),2) AS subtotalUsd
-            FROM InvoiceItemRow ir
-            INNER JOIN Invoice iv ON iv.internalId = ir.masterId 
-            WHERE iv.SerNr = ?`
-            return queryhbs(sql, invoice)
+            const sql = `SELECT pr.ArtCode as code, MIN(pr.Price) as price
+            FROM Price pr 
+            Group BY pr.ArtCode
+            ORDER BY pr.ArtCode`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    
+    listStockToInsert() {
+        try {
+            const sql = `SELECT st.ArtCode as code, st.Qty as qty, st.Reserved as reserved
+            FROM Stock st 
+            Group BY st.ArtCode
+            ORDER BY st.ArtCode`
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    insertStock(item) {
+        try {
+            const sql = `INSERT INTO ansa.itemstock (code, qty, reserved, deposit) values (?, ?, ?, ?)`
+
+            return query(sql, [item.code, item.qty, item.reserved])
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    
+    insertPrice(item) {
+        try {
+            const sql = `INSERT INTO ansa.itemprice (code, price) values (?, ?)`
+
+            return query(sql, [item.code, item.price])
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

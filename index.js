@@ -12,6 +12,7 @@ const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
 const Queue = require('./api/infrastructure/redis/queue');
 const BullBoard = require('bull-board')
+const Hbs = require('./api/models/hbs')
 
 // const Web = require('./api/models/webscraping');
 // Web.listProsegurOffice()

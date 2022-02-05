@@ -13,21 +13,33 @@ const nodemailer = require('nodemailer')
 class Goal {
 
     async insert(goal) {
+        let status = 3;
+
         try {
             const id_goalline = await Repositorie.search(goal)
             const obj = await Repositorie.validate(id_goalline, goal.id_salesman)
 
             if (obj) {
                 goal.id_goal = obj.id_goal
-                if (obj.amount !== goal.amount) await Repositorie.update(goal)
+                if (obj.amount !== parseInt(goal.amount)) {
+                    await Repositorie.update(goal)
+                    status = 1;
+                } else {
+                    status = 2;
+                }
             } else {
                 goal.id_goalline = id_goalline
-                if (goal.amount > 0) await Repositorie.insert(goal)
+                if (parseInt(goal.amount) > 0) {
+                    await Repositorie.insert(goal)
+                    status = 1;
+                } else {
+                    status = 2;
+                }
             }
 
-            return true
+            return status;
         } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar los goals.')
+            return status;
         }
     }
 
@@ -334,15 +346,18 @@ class Goal {
         try {
             const data = await RepositorieOffice.offices(offices);
             let ofs = [];
+            let revenueExpected = 0;
 
             for (let ofi of data) {
 
                 let monthGoals = await Repositorie.month(parseInt(ofi.code), false);
                 let itemsdt = await Repositorie.items(parseInt(ofi.code), month, group);
                 let items = itemsdt.map(item => item.itemcode);
+                let itemsPrice = itemsdt.map(item => item.price);
+
+                revenueExpected = itemsPrice.reduce((a, b) => a + b, 0);
 
                 if (items.length > 0) {
-                    let revenueExpected = await RepositorieHbs.listPrices(items);
                     let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
                     let allEffective = await RepositorieSales.listOffice(false, ofi.code, month);
                     let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group, false);
@@ -355,11 +370,9 @@ class Goal {
                     };
 
                     let goals = goalExpected.map(goal => {
-                        let group = revenueExpected.find(expected => expected.Name === goal.itemgroup);
                         let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
                         let all = allEffective.find(effective => effective.name === goal.itemgroup);
 
-                        if (group) goal.price = group.price;
                         if (effective) {
                             goal.allEffective = all.amount;
                             goal.effectiveAmount = effective.amount;
@@ -388,6 +401,7 @@ class Goal {
                     ofi.salesAmount = salesAmount;
                     ofi.days = days;
                     ofi.month = monthGoals;
+                    ofi.revenueExpected = revenueExpected;
                 }
 
                 ofs.push(ofi);

@@ -152,19 +152,19 @@ class GoalLine {
     async listExcel(id_salesman, groups, stock) {
 
         try {
-            const salesman = await RepositorieSeller.view(false, id_salesman)
-            const data = await RepositorieGoal.listExcel(id_salesman, groups, stock)
+            const salesman = await RepositorieSeller.view(false, id_salesman);
+            const data = await RepositorieGoal.listExcel(id_salesman, groups, stock);
             let titles;
-            const dates = await datesGoal()
-            let lines = []
+            const dates = await datesGoal();
+            let lines = [];
 
             if (stock == 1) {
                 for (let line of data) {
 
-                    let arr = []
+                    let arr = [];
                     stocks.forEach(stock => {
-                        if (stock[1] == salesman.office) arr.push(stock[0])
-                    })
+                        if (stock[1] == salesman.office) arr.push(stock[0]);
+                    });
 
                     const stock = await RepositorieHbs.listItemsStock(line.itemcode, arr);
 
@@ -172,7 +172,7 @@ class GoalLine {
                     line.stockAnsa = stock.Qty - stock.Reserved;
 
                     lines.push(line);
-                }
+                };
 
                 titles = [
                     "Vendedor",
@@ -226,7 +226,7 @@ class GoalLine {
                     dates[11],
                     dates[12]
                 ]
-            }
+            };
 
             const wb = new xl.Workbook({
                 author: 'America Neumáticos S.A',
@@ -246,9 +246,9 @@ class GoalLine {
 
             const ws = wb.addWorksheet('Meta');
 
-            const date = new Date()
-            const date2 = new Date(date.getTime() - 14400000)
-            const now = `${date2.getHours()}:${date2.getMinutes()} ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`
+            const date = new Date();
+            const date2 = new Date(date.getTime() - 14400000);
+            const now = `${date2.getHours()}:${date2.getMinutes()} ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`;
 
             ws.addImage({
                 path: './public/img/ansalogomin.png',
@@ -269,47 +269,46 @@ class GoalLine {
                     color: '#000000',
                     size: 21,
                 }
-            }))
+            }));
 
-            ws.cell(3, 2, 3, 9, true).string(`Fecha de Registro: ${now}`)
-            ws.cell(4, 2, 4, 9, true).string(`Grupos: ${groups}`)
-            if (stock == 1) ws.cell(5, 2, 5, 9, true).string(`Valores de stock según la fecha de generación del excel: ${now}`)
-            ws.column(2).hide()
+            ws.cell(3, 2, 3, 9, true).string(`Fecha de Registro: ${now}`);
+            ws.cell(4, 2, 4, 9, true).string(`Grupos: ${groups}`);
+            if (stock == 1) ws.cell(5, 2, 5, 9, true).string(`Valores de stock según la fecha de generación del excel: ${now}`);
+            ws.column(2).hide();
             ws.row(6).freeze();
             ws.column(5).setWidth(20);
             ws.column(7).setWidth(35);
-            ws.column(9).setWidth(50).freeze()
+            ws.column(9).setWidth(50).freeze();
             ws.row(6).filter({
                 firstColumn: 1,
                 lastColumn: 9
             });
 
 
-            let headerIndex = 1
+            let headerIndex = 1;
             titles.forEach(title => {
-                ws.cell(6, headerIndex++).string(title).style(headerStyle)
+                ws.cell(6, headerIndex++).string(title).style(headerStyle);
             })
 
-            let rowIndex = 7
+            let rowIndex = 7;
             lines.forEach(record => {
-                let columnIndex = 1
+                let columnIndex = 1;
                 Object.keys(record).forEach(columnName => {
                     switch (columnIndex) {
                         case 2:
-                            ws.cell(rowIndex, columnIndex++).number(record[columnName])
+                            ws.cell(rowIndex, columnIndex++).number(record[columnName]);
                             break
                         default:
                             if (columnIndex > 9) {
-                                if (typeof record[columnName] === "object") record[columnName] = 0
-                                ws.cell(rowIndex, columnIndex++).number(parseInt(record[columnName]))
+                                if (typeof record[columnName] === "object") record[columnName] = 0;
+                                ws.cell(rowIndex, columnIndex++).number(parseInt(record[columnName]));
                             } else {
-                                ws.cell(rowIndex, columnIndex++).string(record[columnName])
+                                ws.cell(rowIndex, columnIndex++).string(record[columnName]);
                             }
-
                             break
                     }
                 })
-                rowIndex++
+                rowIndex++;
             })
 
             return wb

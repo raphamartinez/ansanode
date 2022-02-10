@@ -25,7 +25,7 @@ class User {
                     status: 1
                 }
 
-                const obj = await RepositorieLogin.insert(login)
+                const id_login = await RepositorieLogin.insert(login)
 
                 const user = {
                     name: data.user.name,
@@ -35,19 +35,19 @@ class User {
                     status: 1,
                     offices: data.user.offices,
                     login: {
-                        id_login: obj.id_login
+                        id_login: id_login
                     }
                 }
 
-                const us = await Repositorie.insert(user)
+                const id_user = await Repositorie.insert(user)
 
                 await data.user.offices.forEach(async office => {
-                    await RepositorieOffice.insert(obj.id_login, office)
+                    await RepositorieOffice.insert(id_login, office)
                 })
 
                 const result = {
-                    id_login: obj.id_login,
-                    id_user: us.id_user
+                    id_login: id_login,
+                    id_user: id_user
                 }
 
                 return result

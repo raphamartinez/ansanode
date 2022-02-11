@@ -5,16 +5,7 @@
     <div class="card-body">
         <form data-search-goal-offices>
             <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="office">Sucursal</label>
-                    <select id="suoffice" name="office" class="form-control" data-office>
-                        <option value="ALL" selected>Todas las sucursales</option>
-                        <% offices.forEach(office=> { %>
-                           <% if(office.id_office != 15) {%>  <option value="<%=office.code%>"><%= office.name %></option> <% } %> 
-                            <% }) %>
-                    </select>
-                </div>
-                <div class="form-group col-md-6">
+                <div class="form-group col-md-12">
                     <label for="month">Mes</label>
                     <input class="form-control" type="month" id="sumonth" name="month" required>
                 </div>
@@ -26,4 +17,4 @@
     </div>
 </div>
 
-<div data-goal-offices></div>
+<div data-goal-ansa></div>

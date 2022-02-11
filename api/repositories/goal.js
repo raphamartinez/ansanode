@@ -39,10 +39,10 @@ class Goal {
 
     async listSalesman(code) {
         try {
-            const sql = 'SELECT id_salesman FROM ansa.salesman where code = ?'
+            const sql = 'SELECT id_salesman, office FROM ansa.salesman where code = ?'
             const result = await query(sql, [code])
 
-            return result[0].id_salesman
+            return result[0]
         } catch (error) {
             return false
         }

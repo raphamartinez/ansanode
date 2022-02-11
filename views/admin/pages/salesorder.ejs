@@ -22,23 +22,29 @@
                     <div class="card-body">
                         <form data-form-search>
                             <div class="form-row">
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-6">
                                     <h6>Fecha Inicial</h6>
                                     <input class="form-control datepicker" type="date" name="datestart" id="datestart"
                                         required>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-6">
                                     <h6>Fecha Final</h6>
                                     <input class="form-control datepicker" type="date" name="dateend" id="dateend"
                                         required>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-4">
+                                    <h6>Grupo</h6>
+                                    <select multiple title="Seleccione uno grupo" class="form-control selectpicker"
+                                        name="selectgroups" id="selectgroups">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
                                     <h6>Sucursal</h6>
                                     <select multiple title="Seleccione una sucursal" class="form-control selectpicker"
                                         name="selectoffice" id="selectoffice" required>
                                     </select>
                                 </div>
-                                <div class="form-group col-md-3">
+                                <div class="form-group col-md-4">
                                     <h6>Vendedor</h6>
                                     <select multiple title="Seleccione uno vendedor" class="form-control selectpicker"
                                         name="selectsellers" id="selectsellers">

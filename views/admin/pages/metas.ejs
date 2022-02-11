@@ -31,6 +31,10 @@
                             <a class="nav-link" id="offices-tab" data-toggle="tab" href="#offices" role="tab"
                                 aria-controls="profile" aria-selected="false">Sucursales</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="ansa-tab" data-toggle="tab" href="#ansa" role="tab"
+                                aria-controls="profile" aria-selected="false">Ansa</a>
+                        </li>
                         <% if(perfil !=8) {%>
                             <li class="nav-item">
                                 <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
@@ -46,11 +50,12 @@
                         <div class="tab-pane fade" id="offices" role="tabpanel" aria-labelledby="offices-tab">
                             <%- include(components + './graph/goalOffices.ejs' ) %>
                         </div>
-                        <% if(perfil !=8) {%>
-                            <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
-                                <%- include(components + './graph/goalInclude.ejs' ) %>
-                            </div>
-                            <% } %>
+                        <div class="tab-pane fade" id="ansa" role="tabpanel" aria-labelledby="ansa-tab">
+                            <%- include(components + './graph/goalAnsa.ejs' ) %>
+                        </div>
+                        <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
+                            <%- include(components + './graph/goalInclude.ejs' ) %>
+                        </div>
                     </div>
 
                     <div class="modal fade" id="uploadGoals" tabindex="-1">

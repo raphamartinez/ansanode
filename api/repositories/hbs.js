@@ -288,6 +288,9 @@ class Hbs {
 
             sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal))),2)
                     FROM SalesOrder SO
+                    LEFT JOIN SalesOrderItemRow SI ON SO.internalId = SI.masterId
+                    LEFT JOIN Item IT ON SI.ArtCode = IT.Code
+                    LEFT JOIN ItemGroup IG ON IT.ItemGroup = IG.Code
                     WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
                     AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
 
@@ -296,11 +299,16 @@ class Hbs {
             if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            if (search.group != "ALL") sql += `AND IG.Code IN (${search.group}) `
 
             sql += `) AS subAmountUsd, `
 
             sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total))),2)
                     FROM SalesOrder SO
+                    LEFT JOIN SalesOrderItemRow SI ON SO.internalId = SI.masterId
+                    LEFT JOIN Item IT ON SI.ArtCode = IT.Code
+                    LEFT JOIN ItemGroup IG ON IT.ItemGroup = IG.Code
                     WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
                     AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
 
@@ -309,6 +317,8 @@ class Hbs {
             if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            if (search.group != "ALL") sql += `AND IG.Code IN (${search.group}) `
 
             sql += `) AS amountUsd `
 
@@ -317,6 +327,8 @@ class Hbs {
             sql += ` FROM SalesOrder SO 
             INNER JOIN SalesOrderItemRow SOIr ON SOIr.masterId = SO.internalId 
             INNER JOIN Customer C ON C.Code = SO.CustCode 
+            LEFT JOIN Item IT ON SOIr.ArtCode = IT.Code
+            LEFT JOIN ItemGroup IG ON IT.ItemGroup = IG.Code
             LEFT JOIN Person pe ON pe.Code = SO.SalesMan 
             WHERE (SO.Closed = 0 OR SO.Closed IS NULL) 
             AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
@@ -326,6 +338,8 @@ class Hbs {
             if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
+
+            if (search.group != "ALL") sql += `AND IG.Code IN (${search.group}) `
 
             sql += `ORDER BY SO.TransDate,SO.TransTime`
             return queryhbs(sql)
@@ -599,8 +613,9 @@ class Hbs {
 
     listStockCityItems(items, stocks) {
         try {
-            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved
+            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved, MIN(Pi.Price) AS Price
             FROM Item I
+            INNER JOIN Price Pi ON I.Code = Pi.ArtCode
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
             INNER JOIN Stock St ON I.Code = St.ArtCode

@@ -81,13 +81,14 @@ const viewGroupOffice = async (event) => {
 
                 let revenueEffective = 0;
                 let revenueExpected = 0;
+                let revenueAllEffective = 0;
 
                 if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.");
                 if (!ofi.goals) return null;
 
                 if (ofi.goals.length > 0) {
                     ofi.goals.forEach(goal => {
-
+                        revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                         revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
                         revenueExpected += parseFloat(goal.price);
 
@@ -128,8 +129,9 @@ const viewGroupOffice = async (event) => {
                 chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index);
                 updateChartGauge(`Rendimiento %`, color, index, percent);
 
-                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
-                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-effective-offgoal${index}]`).innerHTML = `Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
             })
 
             if ($.fn.DataTable.isDataTable(`#dataFinance${index}`)) {
@@ -156,6 +158,7 @@ const viewGroupOffice = async (event) => {
                 let allSale = 0;
                 let revenueEffective = 0;
                 let revenueExpected = 0;
+                let revenueAllEffective = 0;
 
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = "";
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${index}></canvas>`;
@@ -166,6 +169,7 @@ const viewGroupOffice = async (event) => {
                         if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
                         revenueEffective += goal.effectivePrice;
                         revenueExpected += goal.price;
+                        revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                     });
                 }
 
@@ -198,8 +202,9 @@ const viewGroupOffice = async (event) => {
                 chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index, group);
                 updateChartGauge(`Rendimiento %`, color, index, percent);
 
-                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
-                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-effective-offgoal${index}]`).innerHTML = `Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-effective${index}]`).innerHTML = `Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+                document.querySelector(`[data-revenue-expected${index}]`).innerHTML = `Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
 
                 let dtview = ofi.invoices.map(invoice => {
                     let date = new Date(invoice.date)
@@ -637,6 +642,7 @@ const searchOffice = async (event) => {
             let allGoal = 0;
 
             let revenueEffective = 0;
+            let revenueAllEffective = 0;
 
             if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.")
             if (!ofi.goals) return null;
@@ -644,6 +650,7 @@ const searchOffice = async (event) => {
             if (ofi.goals.length > 0) {
                 ofi.goals.forEach(goal => {
                     revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                    revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
 
                     allGoal += goal.amount ? parseInt(goal.amount) : 0;
                     if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
@@ -695,7 +702,7 @@ const searchOffice = async (event) => {
                 monthGoals += `<button onclick="comparationMonthOffice(event)" ${disabled} ${active} data-index="${index + 100}" data-office="${office}" data-month="${mnt.month}" data-id="ALL" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
             })
 
-            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, ofi.revenueExpected, month, monthGoals));
+            document.querySelector('[data-goal-offices]').appendChild(View.office(ofi, goals, index + 100, revenueEffective, revenueAllEffective, ofi.revenueExpected, month, monthGoals));
             gaugeChart(color, percent, 'Rendimiento %', index + 100)
             chart(ofi.days, ofi.salesPerDay, ofi.salesAmount, index + 100)
         })
@@ -911,19 +918,23 @@ const comparationMonthOffice = async (event) => {
 window.comparationMonthOffice = comparationMonthOffice;
 
 const listStock = async (event) => {
-    let btn = event.target
-    let expanded = btn.getAttribute('aria-expanded')
+    let btn = event.target;
+    let expanded = btn.getAttribute('aria-expanded');
     let index = btn.getAttribute('data-index');
 
-    $(`#collapseFinance${index}`).collapse('hide')
-    $(`#collapseComparation${index}`).collapse('hide')
+    $(`#collapseFinance${index}`).collapse('hide');
+    $(`#collapseComparation${index}`).collapse('hide');
 
     if (expanded == "true") {
+
+        document.querySelector(`[data-stock-amount-${index}]`).innerHTML = "";
+        document.querySelector(`[data-stock-price-${index}]`).innerHTML = "";
+
         if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
             $(`#dataStock${index}`).dataTable().fnClearTable();
             $(`#dataStock${index}`).dataTable().fnDestroy();
             $(`#dataStock${index}`).empty();
-        }
+        };
     } else {
 
         try {
@@ -933,7 +944,7 @@ const listStock = async (event) => {
                 $(`#dataStock${index}`).dataTable().fnClearTable();
                 $(`#dataStock${index}`).dataTable().fnDestroy();
                 $(`#dataStock${index}`).empty();
-            }
+            };
 
             let month = btn.getAttribute('data-month');
             let id = btn.getAttribute('data-id');
@@ -941,9 +952,14 @@ const listStock = async (event) => {
 
             const items = await Connection.noBody(`goalstock/${month}/${office}/${id}`, 'GET');
 
+            let stockPrice = 0;
+            let stockAmount = 0;
             let dtview = items.map(item => {
                 let stockCity = item.stockCity ? item.stockCity : 0;
                 let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
+
+                stockPrice += item.stockCity > 0 ? item.price * item.stockCity : 0;
+                stockAmount += item.stockCity ? parseInt(item.stockCity) : 0;
 
                 return [
                     item.itemgroup,
@@ -953,7 +969,10 @@ const listStock = async (event) => {
                     stockCity,
                     stockAnsa
                 ]
-            })
+            });
+
+            document.querySelector(`[data-stock-amount-${index}]`).innerHTML = stockAmount;
+            document.querySelector(`[data-stock-price-${index}]`).innerHTML = stockPrice.toLocaleString("en-US", { style: "currency", currency: "USD" });
 
             $(`#dataStock${index}`).DataTable({
                 data: dtview,
@@ -992,19 +1011,24 @@ const listStock = async (event) => {
 window.listStock = listStock;
 
 const listStockOffice = async (event) => {
-    let btn = event.target
-    let expanded = btn.getAttribute('aria-expanded')
+    let btn = event.target;
+    let expanded = btn.getAttribute('aria-expanded');
     let index = btn.getAttribute('data-index');
 
-    $(`#collapseFinance${index}`).collapse('hide')
-    $(`#collapseComparation${index}`).collapse('hide')
+    $(`#collapseFinance${index}`).collapse('hide');
+    $(`#collapseComparation${index}`).collapse('hide');
 
     if (expanded == "true") {
+
+        document.querySelector(`[data-stock-amount-${index}]`).innerHTML = "";
+        document.querySelector(`[data-stock-price-${index}]`).innerHTML = "";
+
         if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
             $(`#dataStock${index}`).dataTable().fnClearTable();
             $(`#dataStock${index}`).dataTable().fnDestroy();
             $(`#dataStock${index}`).empty();
-        }
+        };
+
     } else {
 
         try {
@@ -1014,16 +1038,21 @@ const listStockOffice = async (event) => {
                 $(`#dataStock${index}`).dataTable().fnClearTable();
                 $(`#dataStock${index}`).dataTable().fnDestroy();
                 $(`#dataStock${index}`).empty();
-            }
+            };
 
             let month = btn.getAttribute('data-month');
             let office = btn.getAttribute('data-office');
 
             const items = await Connection.noBody(`goalstock/${month}/${office}`, 'GET');
 
+            let stockPrice = 0;
+            let stockAmount = 0;
             let dtview = items.map(item => {
                 let stockCity = item.stockCity ? item.stockCity : 0;
                 let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
+
+                stockPrice += item.stockCity > 0 ? item.price * item.stockCity : 0;
+                stockAmount += item.stockCity ? parseInt(item.stockCity) : 0;
 
                 return [
                     item.itemgroup,
@@ -1033,7 +1062,10 @@ const listStockOffice = async (event) => {
                     stockCity,
                     stockAnsa
                 ]
-            })
+            });
+
+            document.querySelector(`[data-stock-amount-${index}]`).innerHTML = `Cantidad de Stock de la Sucursal: ${stockAmount}`;
+            document.querySelector(`[data-stock-price-${index}]`).innerHTML = `Valor de Stock de la Sucursal: ${stockPrice.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
 
             $(`#dataStock${index}`).DataTable({
                 data: dtview,
@@ -1061,7 +1093,8 @@ const listStockOffice = async (event) => {
                 buttons: [
                     'copy', 'csv', 'excel'
                 ]
-            })
+            });
+
             document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
         } catch (error) {
             document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
@@ -1177,8 +1210,8 @@ const searchUnit = async (event) => {
             })
 
             document.querySelector('[data-goal-users]').appendChild(View.user(salesman, goals, index, month, monthGoals));
-            chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index)
-            gaugeChart(color, percent, 'Rendimiento %', index)
+            chart(salesman.days, salesman.salesPerDay, salesman.salesAmount, index);
+            gaugeChart(color, percent, 'Rendimiento %', index);
 
         });
         document.querySelector('[data-btn-goal-sellers]').innerHTML = `Buscar`;
@@ -1221,61 +1254,6 @@ const init = async () => {
 }
 
 init()
-
-const goalOnline = async () => {
-
-    try {
-
-        if ($.fn.DataTable.isDataTable('#tablegoals')) {
-            $('#tablegoals').dataTable().fnClearTable();
-            $('#tablegoals').dataTable().fnDestroy();
-            $('#tablegoals').empty();
-        }
-
-        const dates = [
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            10,
-            11,
-            12
-        ]
-
-        let datecolumn = dates.map(date => {
-            const today = new Date()
-
-            let month = today.getMonth() + date
-            let year = today.getFullYear()
-
-            if (month > 12) {
-                month -= 12
-                year += 1
-            }
-
-            if (month <= 9) {
-                month = `0${month}`
-            }
-
-            const now = `${month}/${year}`
-
-            return now;
-        })
-
-        $('#goalOnline').modal("show");
-
-    } catch (error) {
-
-    }
-}
-
-document.querySelector('[button-goal-online]').addEventListener('click', goalOnline, false)
-
 
 
 const searchGoalOnline = async (event) => {
@@ -1364,8 +1342,9 @@ const listGoals = async (salesman, group, stock) => {
         let index = 1;
 
         const profile = document.querySelector('#profile').value
+        const office = document.querySelector('#onsellers option:checked').getAttribute('data-office');
         let disabled = "";
-        if (profile == 8) disabled = "disabled"
+        if (profile == 8 && office != 11) disabled = "disabled"
 
         let dtview = goalsline.map(goal => {
             const field = View.lineaddgoal(goal, index, salesman, disabled)
@@ -1512,7 +1491,7 @@ $(document).on('keypress', '.goal', async function (e) {
             amount: btn.value
         };
 
-        if(goal.amount && goal.amount > -1) {
+        if (goal.amount && goal.amount > -1) {
             status = await Connection.body(`goal`, { goal }, 'POST');
         };
 

@@ -13,14 +13,15 @@ module.exports = app => {
         }
     })
 
-    app.get('/salesorder/:datestart/:dateend/:salesman/:office', [Middleware.authenticatedMiddleware, Authorization('sales', 'read')], async (req, res, next) => {
+    app.get('/salesorder/:datestart/:dateend/:salesman/:office/:group', [Middleware.authenticatedMiddleware, Authorization('sales', 'read')], async (req, res, next) => {
         try {
 
             let search = {
                 datestart: req.params.datestart,
                 dateend: req.params.dateend,
                 salesman: req.params.salesman,
-                office: req.params.office
+                office: req.params.office,
+                group: req.params.group
             }
 
             const salesorders = await Finance.listSalesOrders(search)

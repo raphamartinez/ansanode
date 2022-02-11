@@ -138,9 +138,9 @@ class Goal {
                 };
             });
 
-            const id_salesman = await Repositorie.listSalesman(table[0][0]);
+            const salesman = await Repositorie.listSalesman(table[0][0]);
 
-            if (id_salesman) {
+            if (salesman && (login.perfil != 8 || (login.perfil == 8 && salesman.office == 11))) {
 
                 for (let line of table) {
 
@@ -153,48 +153,55 @@ class Goal {
                     if (id_goalline) {
                         let item = {
                             id_goalline: id_goalline,
-                            id_salesman: id_salesman,
+                            id_salesman: salesman.id_salesman,
                             amount: line[3]
                         };
 
                         const validate = await Repositorie.validate(item);
 
                         if (validate) {
-                            item.id_goal = validate.id_goal;
-                            await Repositorie.update(item);
+                            if (validate.amount != item.amount) {
+                                item.id_goal = validate.id_goal;
+                                details += `<tr><td>${obj.itemcode}</td><td>${obj.date}</td><td>${item.amount}</td></tr>`
+                                await Repositorie.update(item);
+                            }
                         } else {
+                            details += `<tr><td>${obj.itemcode}</td><td>${obj.date}</td><td>${item.amount}</td></tr>`
                             await Repositorie.insert(item);
                         }
-
-                        console.log(item);
-                        details += `<tr><td>${obj.itemcode}</td><td>${obj.date}</td><td>${item.amount}</td></tr>`
                     }
                 }
+
+
+                let dt = new Date();
+
+                const attachment = {
+                    filename: file.filename,
+                    path: `tmp/uploads/${file.filename}`
+                };
+
+                const send = new GoalMail(attachment, details, table[0][0], login.name, `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`, login.mailenterprise);
+
+                const transport = nodemailer.createTransport({
+                    host: process.env.MAIL_HOST,
+                    port: process.env.MAIL_PORT,
+                    secure: false,
+                    auth: {
+                        user: process.env.MAIL_USER,
+                        pass: process.env.MAIL_PASSWORD
+                    }
+                })
+
+                await transport.sendMail(send);
+
+            } else {
+                fs.unlinkSync(`tmp/uploads/${file.filename}`);
+                return false
             }
-
-            let dt = new Date();
-
-            const attachment = {
-                filename: file.filename,
-                path: `tmp/uploads/${file.filename}`
-            };
-
-            const send = new GoalMail(attachment, details, table[0][0], login.name, `${dt.getHours()}:${dt.getMinutes()} ${dt.getDate()}/${dt.getMonth() + 1}/${dt.getFullYear()}`, login.mailenterprise);
-
-            const transport = nodemailer.createTransport({
-                host: process.env.MAIL_HOST,
-                port: process.env.MAIL_PORT,
-                secure: false,
-                auth: {
-                    user: process.env.MAIL_USER,
-                    pass: process.env.MAIL_PASSWORD
-                }
-            })
-
-            await transport.sendMail(send)
 
             fs.unlinkSync(`tmp/uploads/${file.filename}`);
 
+            return true
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar los goals.')
@@ -258,11 +265,11 @@ class Goal {
             let data2 = await RepositorieHbs.listStockCityItems(items, arrstock);
 
             itemsdt.map(item => {
-                let obj = data.find(obj => obj.ArtCode == item.itemcode)
-                let obj2 = data2.find(obj2 => obj2.ArtCode == item.itemcode)
+                let obj = data.find(obj => obj.ArtCode == item.itemcode);
+                let obj2 = data2.find(obj2 => obj2.ArtCode == item.itemcode);
 
-                if (obj) item.stockAnsa = obj.Qty - obj.Reserved
-                if (obj2) item.stockCity = obj2.Qty - obj2.Reserved
+                if (obj) item.stockAnsa = obj.Qty - obj.Reserved;
+                if (obj2) item.stockCity = obj2.Qty - obj2.Reserved;
 
                 return item
             });
@@ -374,6 +381,7 @@ class Goal {
                         let all = allEffective.find(effective => effective.name === goal.itemgroup);
 
                         if (effective) {
+                            goal.allPriceEffective = all.price;
                             goal.allEffective = all.amount;
                             goal.effectiveAmount = effective.amount;
                             goal.effectivePrice = effective.price;

@@ -49,7 +49,6 @@ const list = (sales) => {
 
 const init = async () => {
     const sellers = await Connection.noBody('sellershbs', 'GET')
-
     const selectSellers = document.getElementById('selectsellers')
     sellers.forEach(salesman => {
         selectSellers.appendChild(ViewSales.optionSeller(salesman))
@@ -60,6 +59,16 @@ const init = async () => {
     offices.forEach(office => {
         selectOffice.appendChild(ViewSales.optionOffice(office))
     })
+
+    const groups = await Connection.noBody('itemsgroups', 'GET')
+    groups.forEach(group => {
+        const option = document.createElement('option');
+        option.value = group.Code;
+        option.innerHTML = group.Name;
+        document.getElementById('selectgroups').appendChild(option)
+    })
+
+    await $('#selectgroups').selectpicker("refresh");
     await $('#selectsellers').selectpicker("refresh");
     await $('#selectoffice').selectpicker("refresh");
 }
@@ -74,6 +83,10 @@ const search = async (event) => {
     let selectoffice = document.querySelectorAll('#selectoffice option:checked')
     offices = Array.from(selectoffice).map(el => `'${el.value}'`);
 
+    const selectgroups = document.querySelectorAll('#selectgroups option:checked')
+    const groups = Array.from(selectgroups).map(el => `'${el.value}'`);
+
+
     if (offices.length === 0) {
         let selectofficedefault = document.querySelectorAll('#selectoffice option')
         offices = Array.from(selectofficedefault).map(el => `'${el.value}'`);
@@ -83,13 +96,29 @@ const search = async (event) => {
         datestart: event.currentTarget.datestart.value,
         dateend: event.currentTarget.dateend.value,
         salesman: sellers,
-        office: offices
+        office: offices,
+        group: groups
     }
 
     if (search.salesman.length === 0) search.salesman = "ALL"
     if (search.office.length === 0) search.office = "ALL"
+    if (search.group.length === 0) search.group = "ALL"
 
-    const data = await Connection.noBody(`salesorder/${search.datestart}/${search.dateend}/${search.salesman}/${search.office}`, 'GET')
+    const data = await Connection.noBody(`salesorder/${search.datestart}/${search.dateend}/${search.salesman}/${search.office}/${search.group}`, 'GET')
+    
+    if (data.length === 0) {
+
+        document.querySelector('[data-subtotal]').innerHTML = "";
+        document.querySelector('[data-total]').innerHTML = "";
+        
+        if ($.fn.DataTable.isDataTable('#dataTable')) {
+            $('#dataTable').dataTable().fnClearTable();
+            $('#dataTable').dataTable().fnDestroy();
+            $('#dataTable').empty();
+        };
+
+        return alert('No hay orden de ventas para listar');
+    }
 
     let subAmountUsd = data[0].subAmountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
     document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${subAmountUsd}`

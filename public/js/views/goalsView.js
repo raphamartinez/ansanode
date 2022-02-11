@@ -286,6 +286,14 @@ const user = (salesman, goals, index, month, monthGoals) => {
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
+            <div class="form-row">
+            <div class="form-group col-md-6 text-center">
+                <h5 data-stock-amount-${index} class="m-0 font-weight-bold text-primary"></h5>
+            </div>
+            <div class="form-group col-md-6 text-center">
+                <h5 data-stock-price-${index} class="m-0 font-weight-bold text-success"></h5>
+            </div>
+          </div>
         <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
         </div>
     </div>
@@ -320,7 +328,7 @@ const user = (salesman, goals, index, month, monthGoals) => {
     return div;
 }
 
-const office = (office, goals, index, revenueEffective, revenueExpected, month, monthGoals) => {
+const office = (office, goals, index, revenueEffective, revenueAllEffective, revenueExpected, month, monthGoals) => {
     const div = document.createElement('div');
 
     div.innerHTML = `
@@ -353,12 +361,15 @@ const office = (office, goals, index, revenueEffective, revenueExpected, month, 
                 </div>
             </div>
             <div class="form-group border col-md-12 col-xl-3 text-center">
-                <div id="gaugeChart${index}" class="column"></div>
+                <div id="gaugeChart${index}" class="column"></div> 
                 <div class="text-center">
-                    <h1 data-revenue-effective${index} class="h5 font-weight-bold text-info"> Facturación Realizada: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                    <h1 data-revenue-effective-offgoal${index} class="h6 font-weight-bold text-secondary"> Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
                 <div class="text-center">
-                    <h1 data-revenue-expected${index} class="h5 font-weight-bold text-success"> Facturación Prevista: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                    <h1 data-revenue-effective${index} class="h6 font-weight-bold text-info"> Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+                <div class="text-center">
+                    <h1 data-revenue-expected${index} class="h6 font-weight-bold text-success"> Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
             </div>
         </div>
@@ -377,6 +388,14 @@ const office = (office, goals, index, revenueEffective, revenueExpected, month, 
             <span class="sr-only">Loading...</span>
   </div>
   </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 text-center">
+      <h5 data-stock-amount-${index} class="m-0 font-weight-bold text-primary"></h5>
+  </div>
+  <div class="form-group col-md-6 text-center">
+      <h5 data-stock-price-${index} class="m-0 font-weight-bold text-success"></h5>
+  </div>
+</div>
   <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
   </div>
 </div>

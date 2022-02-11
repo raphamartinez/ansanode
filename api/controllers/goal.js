@@ -209,13 +209,15 @@ module.exports = app => {
 
     app.post('/goalexcel', [Middleware.authenticatedMiddleware, Authorization('goal', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
         try {
-            const file = req.file
+            const file = req.file;
 
-            await Goal.upload(file, req.login)
+            const result = await Goal.upload(file, req.login);
 
-            cachelist.delPrefix('goal')
+            cachelist.delPrefix('goal');
 
-            res.json({ msg: 'Metas agregadas con éxito.' })
+            const msg = result ? "Metas agregadas con éxito." : "Las metas no se han agregadas.";
+
+            res.json({ msg })
         } catch (err) {
             next(err)
         }

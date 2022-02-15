@@ -596,31 +596,31 @@ class Hbs {
 
     listStockItems(items, stocks) {
         try {
-            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved
+            const sql = `SELECT I.Name as itemname, Ig.Name as itemgroup, St.ArtCode as itemcode, St.Qty, St.Reserved, I.Price, St.Qty * I.Price AS priceAmount
             FROM Item I
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
             INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE St.ArtCode IN (${items}) 
+            LEFT JOIN StockDepo Sd ON St.StockDepo = Sd.Code
+            WHERE St.ArtCode <> 5448
             GROUP BY St.ArtCode 
             ORDER BY St.ArtCode`
-            
+            //   WHERE St.ArtCode IN (${items}) 
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
 
-    listStockCityItems(items, stocks) {
+    listStockCityItems(items, office) {
         try {
-            const sql = `SELECT St.ArtCode, sum(St.Qty) AS Qty, sum(St.Reserved) AS Reserved, MIN(Pi.Price) AS Price
+            const sql = `SELECT I.Name as itemname, Ig.Name as itemgroup, St.ArtCode as itemcode, St.Qty, St.Reserved, I.Price, St.Qty * I.Price AS priceAmount
             FROM Item I
-            INNER JOIN Price Pi ON I.Code = Pi.ArtCode
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
             INNER JOIN Stock St ON I.Code = St.ArtCode
-            WHERE St.ArtCode IN (${items}) 
-            AND St.StockDepo IN (${stocks})
+            LEFT JOIN StockDepo Sd ON St.StockDepo = Sd.Code
+            WHERE Sd.Office IN (${office}) AND St.ArtCode <> 5448
             GROUP BY St.ArtCode 
             ORDER BY St.ArtCode`
             
@@ -719,7 +719,6 @@ class Hbs {
         }
     }
 
-    
     listStockToInsert() {
         try {
             const sql = `SELECT st.ArtCode as code, st.Qty as qty, st.Reserved as reserved
@@ -741,7 +740,6 @@ class Hbs {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
-
     
     insertPrice(item) {
         try {

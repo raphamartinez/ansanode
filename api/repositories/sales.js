@@ -5,7 +5,6 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 
 class Sales {
 
-
     async list(items, salesman, date, group) {
 
         try {
@@ -164,6 +163,22 @@ class Sales {
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las metas')
+        }
+    }
+
+    async listExpectedGoals(items) {
+
+        try {
+            let sql = `
+            SELECT ArtCode, MIN(Price) as Price FROM Price 
+            WHERE ArtCode IN (${items})
+            GROUP BY ArtCode 
+            ORDER BY FIELD(ArtCode, ${items});`
+
+            const result = await queryhbs(sql)
+            return result
+        } catch (error) {
+            console.log(error);
         }
     }
 }

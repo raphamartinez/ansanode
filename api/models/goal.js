@@ -219,38 +219,38 @@ class Goal {
     async listStock(month, office = false, id = false) {
         try {
 
-            const stocks = [
-                ["01AUTOPJC", "01"],
-                ["01CAFE", "11"],
-                ["01DOSRUED", "11"],
-                ["01IMPPJC", "01"],
-                ["02AUTOCDE", "02"],
-                ["03AUTOBVIS", "03"],
-                ["04AUTOENC", "04"],
-                ["05AUTOSAL", "05"],
-                ["06AUTOFDO", "11"],
-                ["06AUTOSHCH", "06"],
-                ["07AUTOBADO", "07"],
-                ["10TRUCK", "10"],
-                ["12AUTORITA", "12"],
-                ["13AUTOMRA", "13"],
-                ["DCCDE", "02"],
-                ["DEPTRANIMP", "11"],
-                ["MATRIZ", "11"],
-            ]
-            let arrstock = " "
+            // const stocks = [
+            //     ["01AUTOPJC", "01"],
+            //     ["01CAFE", "11"],
+            //     ["01DOSRUED", "11"],
+            //     ["01IMPPJC", "01"],
+            //     ["02AUTOCDE", "02"],
+            //     ["03AUTOBVIS", "03"],
+            //     ["04AUTOENC", "04"],
+            //     ["05AUTOSAL", "05"],
+            //     ["06AUTOFDO", "11"],
+            //     ["06AUTOSHCH", "06"],
+            //     ["07AUTOBADO", "07"],
+            //     ["10TRUCK", "10"],
+            //     ["12AUTORITA", "12"],
+            //     ["13AUTOMRA", "13"],
+            //     ["DCCDE", "02"],
+            //     ["DEPTRANIMP", "11"],
+            //     ["MATRIZ", "11"],
+            // ]
+            // let arrstock = " "
 
-            stocks.forEach(stock => {
-                if (parseInt(stock[1]) === parseInt(office)) {
-                    const st = stock[0]
+            // stocks.forEach(stock => {
+            //     if (parseInt(stock[1]) === parseInt(office)) {
+            //         const st = stock[0]
 
-                    if (arrstock.length > 1) {
-                        arrstock += `',${st}'`
-                    } else {
-                        arrstock += `'${st}'`
-                    }
-                }
-            });
+            //         if (arrstock.length > 1) {
+            //             arrstock += `',${st}'`
+            //         } else {
+            //             arrstock += `'${st}'`
+            //         }
+            //     }
+            // });
 
             let itemsdt;
 
@@ -260,21 +260,22 @@ class Goal {
                 itemsdt = await Repositorie.items(office, month, false);
             }
 
-            let items = itemsdt.map(item => item.itemcode);
-            let data = await RepositorieHbs.listStockItems(items, arrstock);
-            let data2 = await RepositorieHbs.listStockCityItems(items, arrstock);
+            // let items = itemsdt.map(item => item.itemcode);
+            let itemsAll = await RepositorieHbs.listStockItems(false, office);
+            let itemsCity = await RepositorieHbs.listStockCityItems(false, office);
 
-            itemsdt.map(item => {
-                let obj = data.find(obj => obj.ArtCode == item.itemcode);
-                let obj2 = data2.find(obj2 => obj2.ArtCode == item.itemcode);
+            itemsCity.map(item => {
+                let obj = itemsAll.find(obj => obj.itemcode == item.itemcode);
+                let goal = itemsdt.find(goal => goal.itemcode == item.itemcode);
 
-                if (obj) item.stockAnsa = obj.Qty - obj.Reserved;
-                if (obj2) item.stockCity = obj2.Qty - obj2.Reserved;
+                item.goal = goal ? goal.amount : 0;
+                item.stockCity = item.Qty;
+                item.stockAnsa = obj.Qty;
 
                 return item
             });
 
-            return itemsdt;
+            return itemsCity;
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las metas.');
@@ -350,6 +351,88 @@ class Goal {
     }
 
     async listOffice(month, offices, group = false) {
+        try {
+            const data = await RepositorieOffice.offices(offices);
+            let ofs = [];
+            let revenueExpected = 0;
+
+            for (let ofi of data) {
+
+                let monthGoals = await Repositorie.month(parseInt(ofi.code), false);
+                let itemsdt = await Repositorie.items(parseInt(ofi.code), month, group);
+                let items = itemsdt.map(item => item.itemcode);
+
+                // let itemsPrice = itemsdt.map(item => item.price);
+                // revenueExpected = itemsPrice.reduce((a, b) => a + b, 0);
+
+                if (items.length > 0) {
+
+                    let itemsPrice = await RepositorieSales.listExpectedGoals(items);
+
+                    itemsdt.forEach(item => {
+                        let price = itemsPrice.find(price => price.ArtCode === item.itemcode);
+                        if(price) revenueExpected += price.Price * item.amount; 
+                    })
+
+
+                    let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
+                    let allEffective = await RepositorieSales.listOffice(false, ofi.code, month);
+                    let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group, false);
+                    let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
+                    let invoices;
+
+                    if (group) {
+                        invoices = await RepositorieHbs.listInvoice(month, group);
+                        ofi.invoices = invoices;
+                    };
+
+                    let goals = goalExpected.map(goal => {
+                        let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
+                        let all = allEffective.find(effective => effective.name === goal.itemgroup);
+
+                        if (effective) {
+                            goal.allPriceEffective = all.price;
+                            goal.allEffective = all.amount;
+                            goal.effectiveAmount = effective.amount;
+                            goal.effectivePrice = effective.price;
+                        }
+                        return goal;
+                    });
+
+                    const salesPerDay = sales.map(sale => {
+                        return sale.qty;
+                    });
+
+                    let x = 0;
+
+                    let salesAmount = sales.map(sale => {
+                        x += sale.qty;
+                        return x;
+                    });
+
+                    const days = sales.map(sale => {
+                        return sale.TransDate;
+                    });
+
+                    ofi.goals = goals;
+                    ofi.salesPerDay = salesPerDay;
+                    ofi.salesAmount = salesAmount;
+                    ofi.days = days;
+                    ofi.month = monthGoals;
+                    ofi.revenueExpected = revenueExpected;
+                }
+
+                ofs.push(ofi);
+            }
+
+            return ofs;
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las metas.');
+        }
+    }
+
+    async listAnsa(month, group = false) {
         try {
             const data = await RepositorieOffice.offices(offices);
             let ofs = [];

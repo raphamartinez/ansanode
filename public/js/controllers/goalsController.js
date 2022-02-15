@@ -90,7 +90,7 @@ const viewGroupOffice = async (event) => {
                     ofi.goals.forEach(goal => {
                         revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                         revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
-                        revenueExpected += parseFloat(goal.price);
+                        revenueExpected += goal.price ? parseFloat(goal.price) : 0;
 
                         allGoal += goal.amount ? parseInt(goal.amount) : 0;
                         if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
@@ -157,7 +157,7 @@ const viewGroupOffice = async (event) => {
                 let allGoal = 0;
                 let allSale = 0;
                 let revenueEffective = 0;
-                let revenueExpected = 0;
+                let revenueExpected = ofi.revenueExpected;
                 let revenueAllEffective = 0;
 
                 document.querySelector(`[data-div-chart-${index}]`).innerHTML = "";
@@ -167,8 +167,7 @@ const viewGroupOffice = async (event) => {
                     ofi.goals.forEach(goal => {
                         allGoal += parseInt(goal.amount);
                         if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
-                        revenueEffective += goal.effectivePrice;
-                        revenueExpected += goal.price;
+                        revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
                         revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                     });
                 }
@@ -243,7 +242,7 @@ const viewGroupOffice = async (event) => {
                     ],
                     responsive: true,
                     paging: true,
-                    ordering: false,
+                    ordering: true,
                     info: true,
                     scrollX: true,
                     responsive: false,
@@ -427,7 +426,7 @@ const viewGroup = async (event) => {
                     ],
                     responsive: true,
                     paging: true,
-                    ordering: false,
+                    ordering: true,
                     info: true,
                     scrollX: true,
                     responsive: false,
@@ -958,21 +957,22 @@ const listStock = async (event) => {
                 let stockCity = item.stockCity ? item.stockCity : 0;
                 let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
 
-                stockPrice += item.stockCity > 0 ? item.price * item.stockCity : 0;
+                stockPrice += item.stockCity > 0 ? item.priceAmount : 0;
                 stockAmount += item.stockCity ? parseInt(item.stockCity) : 0;
 
                 return [
                     item.itemgroup,
                     item.itemcode,
                     item.itemname,
-                    item.amount,
+                    item.goal,
                     stockCity,
-                    stockAnsa
+                    stockAnsa,
+                    item.priceAmount.toLocaleString('en-US')
                 ]
             });
 
-            document.querySelector(`[data-stock-amount-${index}]`).innerHTML = stockAmount;
-            document.querySelector(`[data-stock-price-${index}]`).innerHTML = stockPrice.toLocaleString("en-US", { style: "currency", currency: "USD" });
+            document.querySelector(`[data-stock-amount-${index}]`).innerHTML = `Cantidad de Stock de la Sucursal: ${stockAmount}`;
+            document.querySelector(`[data-stock-price-${index}]`).innerHTML = `Valor de Stock de la Sucursal: ${stockPrice.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
 
             $(`#dataStock${index}`).DataTable({
                 data: dtview,
@@ -983,10 +983,11 @@ const listStock = async (event) => {
                     { title: "Meta" },
                     { title: "Cant Stock - Ciudad" },
                     { title: "Cant Stock - ANSA" },
+                    { title: "Valor Total USD" },
                 ],
                 responsive: true,
                 paging: true,
-                ordering: false,
+                ordering: true,
                 info: true,
                 scrollX: true,
                 responsive: false,
@@ -1000,7 +1001,8 @@ const listStock = async (event) => {
                 buttons: [
                     'copy', 'csv', 'excel'
                 ]
-            })
+            });
+
             document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
         } catch (error) {
             document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
@@ -1051,16 +1053,17 @@ const listStockOffice = async (event) => {
                 let stockCity = item.stockCity ? item.stockCity : 0;
                 let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
 
-                stockPrice += item.stockCity > 0 ? item.price * item.stockCity : 0;
+                stockPrice += item.stockCity > 0 ? item.priceAmount : 0;
                 stockAmount += item.stockCity ? parseInt(item.stockCity) : 0;
 
                 return [
                     item.itemgroup,
                     item.itemcode,
                     item.itemname,
-                    item.amount,
+                    item.goal,
                     stockCity,
-                    stockAnsa
+                    stockAnsa,
+                    item.priceAmount.toLocaleString('en-US')
                 ]
             });
 
@@ -1076,10 +1079,11 @@ const listStockOffice = async (event) => {
                     { title: "Meta" },
                     { title: "Cant Stock - Ciudad" },
                     { title: "Cant Stock - ANSA" },
+                    { title: "Valor Total USD" },
                 ],
                 responsive: true,
                 paging: true,
-                ordering: false,
+                ordering: true,
                 info: true,
                 scrollX: true,
                 responsive: false,
@@ -1104,6 +1108,123 @@ const listStockOffice = async (event) => {
 
 window.listStockOffice = listStockOffice;
 
+const searchAnsa = async (event) => {
+    event.preventDefault();
+
+    document.querySelector('[data-btn-goal-ansa]').innerHTML = "";
+
+    const div = document.createElement('div');
+    div.classList.add('spinner-border', 'spinner-border');
+
+    document.querySelector('[data-btn-goal-ansa]').appendChild(div);
+    document.querySelector('[data-btn-goal-ansa]').disabled = true;
+
+    try {
+        const month = event.currentTarget.month.value;
+
+        const ansa = await Connection.noBody(`goalansa/${month}`, 'GET');
+        document.querySelector('[data-goal-ansa]').innerHTML = "";
+
+        let goals = "";
+        let allSale = 0;
+        let allGoal = 0;
+        
+        if (ansa.amount.length > ansa.goals.length) {
+            ansa.amount.forEach(amount => {
+
+                let goal = ansa.goals.find(goal => goal.itemgroup === amount.name);
+                let allAmount = ansa.allAmount.find(amount => goal.itemgroup === amount.name);
+
+                let goalSeller = 0;
+
+                if (goal) {
+                    allGoal += parseInt(goal.amount);
+                    allSale += amount.qty > goal.amount ? parseInt(goal.amount) : parseInt(amount.qty);
+                    goalSeller = parseInt(goal.amount);
+                }
+
+                goals += `
+            <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
+                <th scope="row">${amount.name}</th>
+                <td>${allAmount.qty}</td>
+                <td>${amount.qty}</td>
+                <td>${goalSeller}</td>
+            </tr>`;
+
+            });
+        } else {
+            ansa.goals.forEach(goal => {
+
+                let amount = ansa.amount.find(amount => goal.itemgroup === amount.name);
+                let allAmount = ansa.allAmount.find(amount => goal.itemgroup === amount.name);
+
+                allGoal += parseInt(goal.amount);
+                if (amount) allSale += amount.qty > goal.amount ? parseInt(goal.amount) : parseInt(amount.qty);
+
+
+                goals += `
+            <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
+                <th scope="row">${goal.itemgroup}</th>
+                <td>${allAmount ? allAmount.qty : 0}</td>
+                <td>${amount ? amount.qty : 0}</td>
+                <td>${goal.amount}</td>
+            </tr>`;
+
+            });
+        }
+
+        let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+        let color = '#A9A9A9';
+
+        switch (true) {
+            case (percent == 0):
+                color = '#A9A9A9';
+                break;
+
+            case (percent > 0 && percent <= 25):
+                color = '#FB301E';
+                break;
+
+            case (percent > 25 && percent <= 50):
+                color = '#E2D51A';
+                break;
+
+            case (percent > 50 && percent <= 75):
+                color = '#5F9EA0';
+                break;
+
+            case (percent > 75):
+                color = '#00AE4D';
+                break;
+        }
+
+        let monthGoals = "";
+
+        ansa.month.forEach(mnt => {
+            let color = mnt.month != month ? "btn-secondary" : "btn-success";
+            let disabled = mnt.month != month ? "" : "disabled";
+            let active = mnt.month != month ? "" : `data-comparation-active-${index}`;
+
+            monthGoals += `<button onclick="comparationMonthOffice(event)" data-office="ALL" ${disabled} ${active} data-id="${salesman.id_salesman}" data-month="${mnt.month}" data-index="${index}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+        })
+
+        document.querySelector('[data-goal-ansa]').appendChild(View.user(salesman, goals, index, month, monthGoals));
+        chart(ansa.days, ansa.salesPerDay, ansa.salesAmount, index);
+        gaugeChart(color, percent, 'Rendimiento %', index);
+
+        document.querySelector('[data-btn-goal-ansa]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-ansa]').disabled = false;
+
+    } catch (error) {
+        document.querySelector('[data-btn-goal-ansa]').innerHTML = `Buscar`;
+        document.querySelector('[data-btn-goal-ansa]').disabled = false;
+
+        console.log(error);
+    }
+}
+
+document.querySelector('[data-search-goal-ansa]').addEventListener('submit', searchAnsa, false)
 
 const searchUnit = async (event) => {
     event.preventDefault();

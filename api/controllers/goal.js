@@ -117,6 +117,20 @@ module.exports = app => {
         }
     })
 
+    app.get('/goalansa/:month/:group?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
+        try {
+
+            let month = req.params.month;
+            let group = req.params.group;
+
+            let ansa = await Goal.listAnsa(month, group);
+            res.json(ansa);
+
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get('/goalcomparations/:months/:office/:id?', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 

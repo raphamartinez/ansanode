@@ -124,8 +124,8 @@ module.exports = app => {
             let group = req.params.group;
 
             let ansa = await Goal.listAnsa(month, group);
+            
             res.json(ansa);
-
         } catch (err) {
             next(err)
         }

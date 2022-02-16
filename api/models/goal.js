@@ -218,40 +218,6 @@ class Goal {
 
     async listStock(month, office = false, id = false) {
         try {
-
-            // const stocks = [
-            //     ["01AUTOPJC", "01"],
-            //     ["01CAFE", "11"],
-            //     ["01DOSRUED", "11"],
-            //     ["01IMPPJC", "01"],
-            //     ["02AUTOCDE", "02"],
-            //     ["03AUTOBVIS", "03"],
-            //     ["04AUTOENC", "04"],
-            //     ["05AUTOSAL", "05"],
-            //     ["06AUTOFDO", "11"],
-            //     ["06AUTOSHCH", "06"],
-            //     ["07AUTOBADO", "07"],
-            //     ["10TRUCK", "10"],
-            //     ["12AUTORITA", "12"],
-            //     ["13AUTOMRA", "13"],
-            //     ["DCCDE", "02"],
-            //     ["DEPTRANIMP", "11"],
-            //     ["MATRIZ", "11"],
-            // ]
-            // let arrstock = " "
-
-            // stocks.forEach(stock => {
-            //     if (parseInt(stock[1]) === parseInt(office)) {
-            //         const st = stock[0]
-
-            //         if (arrstock.length > 1) {
-            //             arrstock += `',${st}'`
-            //         } else {
-            //             arrstock += `'${st}'`
-            //         }
-            //     }
-            // });
-
             let itemsdt;
 
             if (id) {
@@ -260,22 +226,35 @@ class Goal {
                 itemsdt = await Repositorie.items(office, month, false);
             }
 
-            // let items = itemsdt.map(item => item.itemcode);
             let itemsAll = await RepositorieHbs.listStockItems(false, office);
-            let itemsCity = await RepositorieHbs.listStockCityItems(false, office);
 
-            itemsCity.map(item => {
-                let obj = itemsAll.find(obj => obj.itemcode == item.itemcode);
-                let goal = itemsdt.find(goal => goal.itemcode == item.itemcode);
+            if(office){
+                let itemsCity = await RepositorieHbs.listStockCityItems(false, office);
 
-                item.goal = goal ? goal.amount : 0;
-                item.stockCity = item.Qty;
-                item.stockAnsa = obj.Qty;
+                itemsCity.map(item => {
+                    let obj = itemsAll.find(obj => obj.itemcode == item.itemcode);
+                    let goal = itemsdt.find(goal => goal.itemcode == item.itemcode);
+    
+                    item.goal = goal ? goal.amount : 0;
+                    item.stockCity = item.Qty;
+                    item.stockAnsa = obj.Qty;
+    
+                    return item
+                });
 
-                return item
-            });
+                return itemsCity;
+            } else{
+                
+                itemsAll.map(item => {
+                    let goal = itemsdt.find(goal => goal.itemcode == item.itemcode);
+                    item.goal = goal ? goal.amount : 0;
+                    item.stockAnsa = item.Qty;
+    
+                    return item
+                });
 
-            return itemsCity;
+                return itemsAll;
+            }
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las metas.');
@@ -362,18 +341,14 @@ class Goal {
                 let itemsdt = await Repositorie.items(parseInt(ofi.code), month, group);
                 let items = itemsdt.map(item => item.itemcode);
 
-                // let itemsPrice = itemsdt.map(item => item.price);
-                // revenueExpected = itemsPrice.reduce((a, b) => a + b, 0);
-
                 if (items.length > 0) {
 
                     let itemsPrice = await RepositorieSales.listExpectedGoals(items);
 
                     itemsdt.forEach(item => {
                         let price = itemsPrice.find(price => price.ArtCode === item.itemcode);
-                        if(price) revenueExpected += price.Price * item.amount; 
+                        if (price) revenueExpected += price.Price * item.amount;
                     })
-
 
                     let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
                     let allEffective = await RepositorieSales.listOffice(false, ofi.code, month);
@@ -434,71 +409,71 @@ class Goal {
 
     async listAnsa(month, group = false) {
         try {
-            const data = await RepositorieOffice.offices(offices);
-            let ofs = [];
+            let ansa = {};
             let revenueExpected = 0;
 
-            for (let ofi of data) {
+            let monthGoals = await Repositorie.month(false, false);
+            let itemsdt = await Repositorie.items(false, month, group);
+            let items = itemsdt.map(item => item.itemcode);
 
-                let monthGoals = await Repositorie.month(parseInt(ofi.code), false);
-                let itemsdt = await Repositorie.items(parseInt(ofi.code), month, group);
-                let items = itemsdt.map(item => item.itemcode);
-                let itemsPrice = itemsdt.map(item => item.price);
+            if (items.length > 0) {
 
-                revenueExpected = itemsPrice.reduce((a, b) => a + b, 0);
+                let itemsPrice = await RepositorieSales.listExpectedGoals(items);
+            
+                itemsdt.forEach(item => {
+                    let price = itemsPrice.find(price => price.ArtCode === item.itemcode);
+                    if (price) revenueExpected += price.Price * item.amount;
+                })
+    
+                let goalEffective = await RepositorieSales.listOffice(items, false, month);
+                let allEffective = await RepositorieSales.listOffice(false, false, month);
+                let goalExpected = await Repositorie.listGoalsOffice(false, month, group, false);
+                let sales = await RepositorieSales.graphSalesDayOffice(items, false, month, group);
+                let invoices;
 
-                if (items.length > 0) {
-                    let goalEffective = await RepositorieSales.listOffice(items, ofi.code, month);
-                    let allEffective = await RepositorieSales.listOffice(false, ofi.code, month);
-                    let goalExpected = await Repositorie.listGoalsOffice(ofi.code, month, group, false);
-                    let sales = await RepositorieSales.graphSalesDayOffice(items, ofi.code, month, group);
-                    let invoices;
+                if (group) {
+                    invoices = await RepositorieHbs.listInvoice(month, group);
+                    ofi.invoices = invoices;
+                };
 
-                    if (group) {
-                        invoices = await RepositorieHbs.listInvoice(month, group);
-                        ofi.invoices = invoices;
-                    };
+                let goals = goalExpected.map(goal => {
+                    let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
+                    let all = allEffective.find(effective => effective.name === goal.itemgroup);
 
-                    let goals = goalExpected.map(goal => {
-                        let effective = goalEffective.find(effective => effective.name === goal.itemgroup);
-                        let all = allEffective.find(effective => effective.name === goal.itemgroup);
+                    if (effective) {
+                        goal.allPriceEffective = all.price;
+                        goal.allEffective = all.amount;
+                        goal.effectiveAmount = effective.amount;
+                        goal.effectivePrice = effective.price;
+                    }
+                    return goal;
+                });
 
-                        if (effective) {
-                            goal.allPriceEffective = all.price;
-                            goal.allEffective = all.amount;
-                            goal.effectiveAmount = effective.amount;
-                            goal.effectivePrice = effective.price;
-                        }
-                        return goal;
-                    });
+                const salesPerDay = sales.map(sale => {
+                    return sale.qty;
+                });
 
-                    const salesPerDay = sales.map(sale => {
-                        return sale.qty;
-                    });
+                let x = 0;
 
-                    let x = 0;
+                let salesAmount = sales.map(sale => {
+                    x += sale.qty;
+                    return x;
+                });
 
-                    let salesAmount = sales.map(sale => {
-                        x += sale.qty;
-                        return x;
-                    });
+                const days = sales.map(sale => {
+                    return sale.TransDate;
+                });
 
-                    const days = sales.map(sale => {
-                        return sale.TransDate;
-                    });
-
-                    ofi.goals = goals;
-                    ofi.salesPerDay = salesPerDay;
-                    ofi.salesAmount = salesAmount;
-                    ofi.days = days;
-                    ofi.month = monthGoals;
-                    ofi.revenueExpected = revenueExpected;
-                }
-
-                ofs.push(ofi);
+                ansa["name"] = "Todas las Sucursais"
+                ansa["goals"] = goals;
+                ansa["salesPerDay"] = salesPerDay;
+                ansa["salesAmount"] = salesAmount;
+                ansa["days"] = days;
+                ansa["month"] = monthGoals;
+                ansa["revenueExpected"] = revenueExpected;
             }
 
-            return ofs;
+            return ansa;
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las metas.');

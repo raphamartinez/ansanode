@@ -438,7 +438,119 @@ const office = (office, goals, index, revenueEffective, revenueAllEffective, rev
     return div;
 }
 
+const ansa = (office, goals, index, revenueEffective, revenueAllEffective, revenueExpected, month, monthGoals) => {
+    const div = document.createElement('div');
+
+    div.innerHTML = `
+    <div class="card shadow mb-4">
+    <div class="card-body">
+        <div class="form-row">
+            <div class="form-group border col-md-12 col-xl-9">
+                <div class="form-row">
+                    <div class="form-group col-md-10">
+                        <h3>${office.name}</h3>
+                    </div>
+                    <div class="form-group col-md-7 text-center" data-div-chart-${index}>
+                        <h5>Graficos</h5>
+                        <canvas class="flex d-inline" data-chart-amount-${index}></canvas>
+                    </div>
+                    <div class="form-group col-md-5 text-center table-responsive">
+                        <h5>Grupos</h5>
+                        <table id="tableGroupsOffice" class="table table-sm table-hover">
+                        <thead>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Vendido</th>
+                        <th scope="col">Vendido Meta</th>
+                        <th scope="col">Meta</th>
+                        </thead>
+                            <tbody>
+                                ${goals}
+                              </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group border col-md-12 col-xl-3 text-center">
+                <div id="gaugeChart${index}" class="column"></div> 
+                <div class="text-center">
+                    <h1 data-revenue-effective-offgoal${index} class="h6 font-weight-bold text-secondary"> Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+                <div class="text-center">
+                    <h1 data-revenue-effective${index} class="h6 font-weight-bold text-info"> Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+                <div class="text-center">
+                    <h1 data-revenue-expected${index} class="h6 font-weight-bold text-success"> Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <ul class="list-group text-center list-group-flush">
+    <li class="list-group-item">
+    <button data-btn-goal-stock-${index} onclick="listStockAnsa(event)" data-month="${month}" data-index="${index}" type="button" data-toggle="collapse" data-target="#collapseStock${index}" class="btn btn-info">Stock</button>
+    <button type="button" data-toggle="collapse" data-target="#collapseComparation${index}" class="btn btn-secondary">Comparar con Metas anteriores</button>
+    </li>
+  </ul>
+
+  <div class="collapse" id="collapseStock${index}">
+  <div class="card card-body">
+  <div class="col-md-12">
+  <div data-loading-stock-${index} class="spinner-border text-primary" role="status">
+            <span class="sr-only">Loading...</span>
+  </div>
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-6 text-center">
+      <h5 data-stock-amount-${index} class="m-0 font-weight-bold text-primary"></h5>
+  </div>
+  <div class="form-group col-md-6 text-center">
+      <h5 data-stock-price-${index} class="m-0 font-weight-bold text-success"></h5>
+  </div>
+</div>
+  <table class="table table-bordered" id="dataStock${index}" width="100%" cellspacing="0"></table>
+  </div>
+</div>
+
+<div class="collapse" id="collapseFinance${index}">
+<div class="card card-body">
+<table class="table table-bordered text-center" id="dataFinance${index}" width="100%" cellspacing="0"></table>
+</div>
+</div>
+
+<div class="collapse" id="collapseComparation${index}">
+    <div class="card card-body text-center">
+        <div class="col-md-12 text-center">
+            <hr>
+            <h5>Comparacion</h5>
+            <p>Seleccione los meses que quiera comparar</p>
+            <div data-loading-comparation-${index}></div>
+            ${monthGoals}
+            <br>
+            <div data-div-comparation-${index}></div>
+            <table class="table table-bordered" id="dataComparation${index}">
+            <thead>
+                <tr data-thead1-comparation-${index}>
+                <th></th>
+                </tr>
+                <tr data-thead2-comparation-${index}>
+                </tr>
+            </thead>
+                <tbody data-tbody-comparation-${index}>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</div>
+</div>
+</div>`
+
+    return div;
+}
+
+
 export const View = {
+    ansa,
     office,
     user,
     lineaddgoal,

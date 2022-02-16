@@ -105,16 +105,16 @@ class Sales {
         INNER JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
         LEFT JOIN Item it ON sr.ArtCode = it.Code 
         LEFT JOIN ItemGroup ig ON it.ItemGroup = ig.Code
-        WHERE sa.Office = ?
-        AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
-
+        WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?) `
+        
+            if (office) sql += `AND sa.Office = '${office}' `
             if (group) sql += ` AND ig.Name = '${group}' `
             if (items && items.length > 0) sql += ` AND it.Code IN (${items}) `
 
             sql += `GROUP BY sa.TransDate
         ORDER BY sa.TransDate ASC`
 
-            const result = await queryhbs(sql, [office, `${date}-01`, `${date}-10`])
+            const result = await queryhbs(sql, [`${date}-01`, `${date}-10`])
             return result
         } catch (error) {
             console.log(error);

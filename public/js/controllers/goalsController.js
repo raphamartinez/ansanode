@@ -720,6 +720,200 @@ const searchOffice = async (event) => {
 
 document.querySelector('[data-search-goal-offices]').addEventListener('submit', searchOffice, false);
 
+const comparationMonthAnsa = async (event) => {
+
+    const btn = event.target;
+    const index = btn.getAttribute('data-index');
+
+    document.querySelector(`[data-loading-comparation-${index}]`).innerHTML = `<br><div class="spinner-border text-primary mb-4" role="status"></div>`
+
+    if (btn.matches(`[data-comparation-active-${index}]`)) {
+        btn.removeAttribute(`data-comparation-active-${index}`);
+        btn.classList.remove('btn-success');
+        btn.classList.add('btn-secondary');
+    } else {
+        btn.setAttribute(`data-comparation-active-${index}`, '1')
+        btn.classList.remove('btn-secondary');
+        btn.classList.add('btn-success');
+    }
+
+    let btnsmonth = document.querySelectorAll(`[data-comparation-active-${index}]`)
+    let months = Array.from(btnsmonth).map(el => `${el.getAttribute('data-month')}`);
+
+    const goals = await Connection.noBody(`goalcomparations/${JSON.stringify(months.reverse())}/ALL/ALL`, 'GET');
+
+    let color = [
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)',
+        'rgba(255, 205, 86, 0.2)',
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(201, 203, 207, 0.2)'
+    ];
+
+    let background = [
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(255, 99, 132)',
+        'rgb(201, 203, 207)'
+    ];
+
+    let dataset = [];
+
+    document.querySelector(`#dataComparation${index}`).innerHTML = ""
+    document.querySelector(`#dataComparation${index}`).innerHTML = `<thead>
+    <tr data-thead1-comparation-${index}>
+    <th></th>
+    </tr>
+    <tr data-thead2-comparation-${index}>
+    </tr>
+</thead>
+    <tbody data-tbody-comparation-${index}>
+    </tbody>`
+
+    let groupsData = [];
+    const obj = {}
+    goals.forEach((goal, i) => {
+
+        goal.goals.reduce(function (r, a) {
+            groupsData[a[`itemgroup`]] = groupsData[a[`itemgroup`]] || [];
+            groupsData[a[`itemgroup`]].push(a);
+
+            return r;
+        }, Object.create(obj));
+
+        let month = goal.month.split('-');
+
+        const label1 = `Ventas por dia - ${month[1]}/${month[0]}`;
+        const label2 = `Montante de Ventas - ${month[1]}/${month[0]}`;
+
+        dataset.push({
+            type: 'bar',
+            label: label1,
+            data: goal.salesPerDay,
+            fill: false,
+            backgroundColor: background[i],
+            borderColor: color[i],
+            order: 2
+        }, {
+            type: 'line',
+            label: label2,
+            data: goal.salesAmount,
+            borderWidth: 2,
+            fill: false,
+            backgroundColor: color[i],
+            borderColor: background[i],
+            tension: 0.2,
+            order: 1
+        });
+    });
+
+    groupsData = Object.keys(groupsData).map((key) => [key, groupsData[key]]);
+
+    let dtView = groupsData.map(group => {
+        let arr = group[1].map(gp => {
+            return [
+                gp.effectiveAmount ? gp.effectiveAmount : "",
+                gp.amount
+            ]
+        });
+        const newArr = Array.prototype.concat(group[0], ...arr);
+
+        return newArr
+    });
+
+    dtView.forEach(dt => {
+        let tr = document.createElement('tr');
+        dt.forEach((t, ib) => {
+            if (ib == 0) {
+                tr.innerHTML += `<th scope="row">${t}</th>`
+            } else {
+                tr.innerHTML += `<td>${t}</td>`
+            }
+        });
+        document.querySelector(`[data-tbody-comparation-${index}]`).appendChild(tr)
+    })
+    let days = goals[0].days.map(d => d.split('/')[0])
+    let data = {
+        labels: days,
+        datasets: dataset
+    };
+
+    document.querySelector(`[data-div-comparation-${index}]`).innerHTML = "";
+    document.querySelector(`[data-div-comparation-${index}]`).innerHTML = `<canvas class="flex d-inline" data-chart-comparation-${index}></canvas>`
+
+
+    const ctxComparation = document.querySelector(`[data-chart-comparation-${index}]`);
+
+    new Chart(ctxComparation, {
+        type: 'bar',
+        data: data,
+        options: {
+            responsive: true,
+            legend: {
+                position: 'top',
+                labels: {
+                    fontColor: "#000",
+                    fontSize: 18,
+                    fontStyle: "bold"
+                }
+            },
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    pointLabels: {
+                        font: {
+                            size: 15,
+                            color: "#000",
+                            style: "bold"
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    let thGroup = document.createElement('th');
+    thGroup.innerHTML = "Grupo";
+    thGroup.rowSpan = "2";
+    document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(thGroup);
+
+    months.forEach((mnth, im) => {
+        let mt = mnth.split('-');
+
+        let th = document.createElement('th');
+        th.colSpan = "2";
+        th.innerHTML = `${mt[1]}/${mt[0]}`;
+        th.scope = "col";
+        document.querySelector(`[data-thead1-comparation-${index}]`).appendChild(th);
+
+        let th1 = document.createElement('th');
+        th1.innerHTML = "Vendido";
+        th1.style.backgroundColor = color[im]
+        th1.scope = "col";
+        document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(th1);
+
+        let th2 = document.createElement('th');
+        th2.innerHTML = "Meta";
+        th2.style.backgroundColor = color[im];
+        th2.scope = "col";
+        document.querySelector(`[data-thead2-comparation-${index}]`).appendChild(th2);
+    });
+
+    document.querySelector(`[data-loading-comparation-${index}]`).innerHTML = ""
+};
+
+window.comparationMonthAnsa = comparationMonthAnsa;
+
+
 const comparationMonthOffice = async (event) => {
 
     const btn = event.target;
@@ -1012,6 +1206,99 @@ const listStock = async (event) => {
 
 window.listStock = listStock;
 
+
+const listStockAnsa = async (event) => {
+    let btn = event.target;
+    let expanded = btn.getAttribute('aria-expanded');
+    let index = btn.getAttribute('data-index');
+
+    $(`#collapseFinance${index}`).collapse('hide');
+    $(`#collapseComparation${index}`).collapse('hide');
+
+    if (expanded == "true") {
+
+        document.querySelector(`[data-stock-amount-${index}]`).innerHTML = "";
+        document.querySelector(`[data-stock-price-${index}]`).innerHTML = "";
+
+        if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+            $(`#dataStock${index}`).dataTable().fnClearTable();
+            $(`#dataStock${index}`).dataTable().fnDestroy();
+            $(`#dataStock${index}`).empty();
+        };
+
+    } else {
+
+        try {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'block';
+
+            if ($.fn.DataTable.isDataTable(`#dataStock${index}`)) {
+                $(`#dataStock${index}`).dataTable().fnClearTable();
+                $(`#dataStock${index}`).dataTable().fnDestroy();
+                $(`#dataStock${index}`).empty();
+            };
+
+            let month = btn.getAttribute('data-month');
+
+            const items = await Connection.noBody(`goalstock/${month}/ALL`, 'GET');
+
+            let stockPrice = 0;
+            let stockAmount = 0;
+            let dtview = items.map(item => {
+                let stockAnsa = item.stockAnsa ? item.stockAnsa : 0;
+
+                stockPrice += item.stockAnsa > 0 ? item.priceAmount : 0;
+                stockAmount += item.stockAnsa ? parseInt(item.stockAnsa) : 0;
+
+                return [
+                    item.itemgroup,
+                    item.itemcode,
+                    item.itemname,
+                    item.goal,
+                    stockAnsa,
+                    item.priceAmount.toLocaleString('en-US')
+                ]
+            });
+
+            document.querySelector(`[data-stock-amount-${index}]`).innerHTML = `Cantidad de Stock de la Sucursal: ${stockAmount}`;
+            document.querySelector(`[data-stock-price-${index}]`).innerHTML = `Valor de Stock de la Sucursal: ${stockPrice.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+
+            $(`#dataStock${index}`).DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Grupo" },
+                    { title: "Cod Articulo" },
+                    { title: "Nombre" },
+                    { title: "Meta" },
+                    { title: "Cant Stock - ANSA" },
+                    { title: "Valor Total USD" },
+                ],
+                responsive: true,
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollX: true,
+                responsive: false,
+                autoWidth: true,
+                pagingType: "numbers",
+                order: true,
+                dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+                    "<'row'<'col-sm-12'B>>",
+                buttons: [
+                    'copy', 'csv', 'excel'
+                ]
+            });
+
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        } catch (error) {
+            document.querySelector(`[data-loading-stock-${index}]`).style.display = 'none';
+        }
+    }
+}
+
+window.listStockAnsa = listStockAnsa;
+
 const listStockOffice = async (event) => {
     let btn = event.target;
     let expanded = btn.getAttribute('aria-expanded');
@@ -1123,52 +1410,32 @@ const searchAnsa = async (event) => {
         const month = event.currentTarget.month.value;
 
         const ansa = await Connection.noBody(`goalansa/${month}`, 'GET');
+        if (!ansa.goals) return alert("No hay metas para esta sucursal neste mes.")
+
         document.querySelector('[data-goal-ansa]').innerHTML = "";
 
         let goals = "";
         let allSale = 0;
         let allGoal = 0;
+
+        let revenueEffective = 0;
+        let revenueAllEffective = 0;
         
-        if (ansa.amount.length > ansa.goals.length) {
-            ansa.amount.forEach(amount => {
-
-                let goal = ansa.goals.find(goal => goal.itemgroup === amount.name);
-                let allAmount = ansa.allAmount.find(amount => goal.itemgroup === amount.name);
-
-                let goalSeller = 0;
-
-                if (goal) {
-                    allGoal += parseInt(goal.amount);
-                    allSale += amount.qty > goal.amount ? parseInt(goal.amount) : parseInt(amount.qty);
-                    goalSeller = parseInt(goal.amount);
-                }
-
-                goals += `
-            <tr data-view-group data-index="${index}" data-group="${amount.name}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
-                <th scope="row">${amount.name}</th>
-                <td>${allAmount.qty}</td>
-                <td>${amount.qty}</td>
-                <td>${goalSeller}</td>
-            </tr>`;
-
-            });
-        } else {
+        if (ansa.goals.length > 0) {
             ansa.goals.forEach(goal => {
+                revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
 
-                let amount = ansa.amount.find(amount => goal.itemgroup === amount.name);
-                let allAmount = ansa.allAmount.find(amount => goal.itemgroup === amount.name);
-
-                allGoal += parseInt(goal.amount);
-                if (amount) allSale += amount.qty > goal.amount ? parseInt(goal.amount) : parseInt(amount.qty);
-
+                allGoal += goal.amount ? parseInt(goal.amount) : 0;
+                if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
 
                 goals += `
-            <tr data-view-group data-index="${index}" data-group="${goal.itemgroup}" data-office="${office}" data-month="${month}" data-id="${salesman.id_salesman}">
-                <th scope="row">${goal.itemgroup}</th>
-                <td>${allAmount ? allAmount.qty : 0}</td>
-                <td>${amount ? amount.qty : 0}</td>
-                <td>${goal.amount}</td>
-            </tr>`;
+                <tr data-view-group data-index="${10001}" data-group="${goal.itemgroup}" data-office="${false}" data-month="${month}">
+                    <th scope="row">${goal.itemgroup}</th> 
+                    <td>${goal.allEffective ? goal.allEffective : 0}</td>
+                    <td>${goal.effectiveAmount ? goal.effectiveAmount : 0}</td>
+                    <td>${goal.amount ? goal.amount : 0}</td>
+                </tr>`;
 
             });
         }
@@ -1204,14 +1471,14 @@ const searchAnsa = async (event) => {
         ansa.month.forEach(mnt => {
             let color = mnt.month != month ? "btn-secondary" : "btn-success";
             let disabled = mnt.month != month ? "" : "disabled";
-            let active = mnt.month != month ? "" : `data-comparation-active-${index}`;
+            let active = mnt.month != month ? "" : `data-comparation-active-${10001}`;
 
-            monthGoals += `<button onclick="comparationMonthOffice(event)" data-office="ALL" ${disabled} ${active} data-id="${salesman.id_salesman}" data-month="${mnt.month}" data-index="${index}" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
+            monthGoals += `<button onclick="comparationMonthAnsa(event)" ${disabled} ${active} data-index="${10001}" data-month="${mnt.month}" data-id="ALL" type="button" class="btn ${color} btn-sm mr-1 ml-1 ">${mnt.monthDesc}</button>`
         })
 
-        document.querySelector('[data-goal-ansa]').appendChild(View.user(salesman, goals, index, month, monthGoals));
-        chart(ansa.days, ansa.salesPerDay, ansa.salesAmount, index);
-        gaugeChart(color, percent, 'Rendimiento %', index);
+        document.querySelector('[data-goal-ansa]').appendChild(View.ansa(ansa, goals, 10001, revenueEffective, revenueAllEffective, ansa.revenueExpected, month, monthGoals));
+        gaugeChart(color, percent, 'Rendimiento %', 10001)
+        chart(ansa.days, ansa.salesPerDay, ansa.salesAmount, 10001)
 
         document.querySelector('[data-btn-goal-ansa]').innerHTML = `Buscar`;
         document.querySelector('[data-btn-goal-ansa]').disabled = false;

@@ -162,13 +162,14 @@ class Goal {
             FROM ansa.salesman SA
             LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
             LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
-            WHERE GL.application <> "DESCONSIDERAR"
-            AND SA.office IN (?)
-            AND GL.date BETWEEN ? AND LAST_DAY(?)
+            WHERE GL.application <> "DESCONSIDERAR" `
+
+            if (offices) sql += ` AND SA.office IN (${offices}) `
+            sql += ` AND GL.date BETWEEN ? AND LAST_DAY(?)
             group by GL.itemcode
             ORDER BY GL.itemcode ASC`
 
-            const result = await query(sql, [offices, `${month}-01`, `${month}-10`])
+            const result = await query(sql, [`${month}-01`, `${month}-10`])
             return result
         } catch (error) {
             throw new InternalServerError('No se pudieron enumerar las metas')

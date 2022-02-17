@@ -58,11 +58,11 @@ module.exports = app => {
         try {
             const finance = req.body.finance
 
-            await Finance.insert(finance, req.login.id_login)
+           const status = await Finance.insert(finance, req.login.id_login)
 
             cachelist.delPrefix('finance')
 
-            res.status(201).json({ return: 'Comentario agregado con éxito.' })
+            res.status(201).json(status)
         } catch (err) {
             next(err)
         }

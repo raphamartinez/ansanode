@@ -5,19 +5,21 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('./error
 class Finance {
 
     async insert(finance, id_login) {
+        let status = 3;
         try {
-
             const check = await Repositorie.check(finance)
 
             if (check) {
                 finance.id_financeinvoice = check.id_financeinvoice
-                return Repositorie.update(finance, id_login)
+                await Repositorie.update(finance, id_login)
+                status = 2;
             } else {
-                return Repositorie.insert(finance, id_login)
+                await Repositorie.insert(finance, id_login)
+                status = 1;
             }
-
+            return status;
         } catch (error) {
-            throw new InternalServerError('No se pudieron enumerar los goals.')
+           return status;
         }
     }
 
@@ -266,7 +268,7 @@ class Finance {
 
             const graphs = await Repositorie.graphReceivable(id_login, offices, datestart, dateend);
             const details = await Repositorie.detailsReceivable(id_login, offices, datestart, dateend);
- 
+
             return { graphs, details };
         } catch (error) {
             throw new InternalServerError('No se pude listar los datos.')

@@ -116,7 +116,7 @@ module.exports = app => {
 
     app.get('/invoiceitems/:invoice', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
-            const invoice = req.params.invoice
+            const invoice = req.params.invoice;
 
             const items = await Item.listInvoiceItems(invoice)
             res.json(items)

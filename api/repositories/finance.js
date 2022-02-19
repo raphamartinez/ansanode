@@ -19,7 +19,7 @@ class Finance {
 
     async check(finance) {
         try {
-            const sql = `SELECT * FROM ansa.financeinvoice WHERE invoicenr = ? AND datereg > NOW() - interval 1 day`
+            const sql = `SELECT * FROM ansa.financeinvoice WHERE invoicenr = ? AND datereg > NOW() - interval 12 hour`
             const result = await query(sql, finance.invoicenr)
 
             return result[0]

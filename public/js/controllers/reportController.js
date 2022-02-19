@@ -20,7 +20,7 @@ const list = (powerbis) => {
             { title: "Fecha de Registro" }
         ],
         paging: true,
-        ordering: true,
+        ordering: false,
         info: true,
         scrollY: false,
         scrollCollapse: true,

@@ -283,14 +283,13 @@ class Hbs {
             let sql = `SELECT SO.SerNr,CONCAT(DATE_FORMAT(SO.TransTime, '%H:%i'), " ", DATE_FORMAT(SO.TransDate, '%d/%m/%Y')) AS date,SO.CustCode,SO.CustName,TRUNCATE(SO.Total,2) as Total,TRUNCATE(SO.SubTotal,2) as SubTotal,SO.Invalid,SO.Closed,SO.Status,
             SOIr.ArtCode, SOIr.Name, SOIr.Labels, SOIr.Qty, TRUNCATE(SOIr.Price,2) as Price, TRUNCATE(SOIr.RowNet,2) as RowNet, TRUNCATE(SOIr.RowTotal,2) as RowTotal,
             SO.Currency, SO.CurrencyRate, SO.BaseRate,CONCAT(pe.Name,' ',pe.LastName) as SalesMan,
+            TRUNCATE(IF(SO.Currency = "GS", SOIr.RowNet / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowNet  * SO.FromRate / SO.BaseRate, SOIr.RowNet)),2) AS itemSubtotalUsd,
+            TRUNCATE(IF(SO.Currency = "GS", SOIr.RowTotal / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowTotal  * SO.FromRate / SO.BaseRate, SOIr.RowTotal)),2) AS itemTotalUsd,
             TRUNCATE(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total)),2) AS totalUsd,
             TRUNCATE(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal)),2) AS subtotalUsd,`
 
             sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal))),2)
                     FROM SalesOrder SO
-                    LEFT JOIN SalesOrderItemRow SI ON SO.internalId = SI.masterId
-                    LEFT JOIN Item IT ON SI.ArtCode = IT.Code
-                    LEFT JOIN ItemGroup IG ON IT.ItemGroup = IG.Code
                     WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
                     AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
 
@@ -299,16 +298,11 @@ class Hbs {
             if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
-
-            if (search.group != "ALL") sql += `AND IG.Code IN (${search.group}) `
 
             sql += `) AS subAmountUsd, `
 
             sql += `(SELECT TRUNCATE(SUM(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total))),2)
                     FROM SalesOrder SO
-                    LEFT JOIN SalesOrderItemRow SI ON SO.internalId = SI.masterId
-                    LEFT JOIN Item IT ON SI.ArtCode = IT.Code
-                    LEFT JOIN ItemGroup IG ON IT.ItemGroup = IG.Code
                     WHERE (SO.Closed = 0 OR SO.Closed IS NULL)
                     AND (SO.Invalid = 0 OR SO.Invalid IS NULL) `
 
@@ -317,8 +311,6 @@ class Hbs {
             if (search.salesman != "ALL") sql += `AND SO.SalesMan IN (${search.salesman}) `
 
             if (search.office != "ALL") sql += `AND SO.Office IN (${search.office}) `
-
-            if (search.group != "ALL") sql += `AND IG.Code IN (${search.group}) `
 
             sql += `) AS amountUsd `
 

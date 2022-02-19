@@ -807,7 +807,7 @@ async function copyLineFinance(event) {
 
                     break;
                 case 2: {
-                    toastr.warning(`Lo contacto fue cambiado.`, "Aviso!", {
+                    toastr.warning(`El contacto fue cambiado.`, "Aviso!", {
                         progressBar: true
                     })
                 }

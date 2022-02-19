@@ -120,11 +120,25 @@ const search = async (event) => {
         return alert('No hay orden de ventas para listar');
     }
 
-    let subAmountUsd = data[0].subAmountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-    document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${subAmountUsd}`
+    if (search.group.length === 0){
+        let subAmountUsd = data[0].subAmountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${subAmountUsd}`
+    
+        let amountUsd = data[0].amountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
+        document.querySelector('[data-total]').innerHTML = `Total: ${amountUsd}`
+    
+    }else{
 
-    let amountUsd = data[0].amountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
-    document.querySelector('[data-total]').innerHTML = `Total: ${amountUsd}`
+        let amount = data.reduce((a,b) => {
+            a.itemTotalUsd += b.itemTotalUsd;
+            a.itemSubtotalUsd += b.itemSubtotalUsd;
+
+            return a;
+        })
+
+        document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${amount.itemSubtotalUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+        document.querySelector('[data-total]').innerHTML = `Total: ${amount.itemTotalUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+    }
 
     const sales = data.map(sale => {
         return [

@@ -594,10 +594,10 @@ class Hbs {
             INNER JOIN Label La ON I.Labels = La.Code
             INNER JOIN Stock St ON I.Code = St.ArtCode
             LEFT JOIN StockDepo Sd ON St.StockDepo = Sd.Code
-            WHERE St.ArtCode <> 5448
+            WHERE St.ArtCode <> 5448 AND (Ig.Code >= 1 AND Ig.Code <= 13)
             GROUP BY St.ArtCode 
             ORDER BY St.ArtCode`
-            //   WHERE St.ArtCode IN (${items}) 
+
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

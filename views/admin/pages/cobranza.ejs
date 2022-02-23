@@ -11,108 +11,134 @@
 
         <%- include('../partials/loading.ejs') %>
 
-            <%- include('../components/graph/financePerformance.ejs') %>
+        <div class="row justify-content-md-center">
+            <div class="col-md-12">
+                <ul class="nav justify-content-center nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="panelFinance-tab" data-toggle="tab" href="#panelFinance" role="tab"
+                            aria-controls="panelFinance" aria-selected="true">Panel de Cobranza</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="include-tab" data-toggle="tab" href="#include" role="tab"
+                            aria-controls="include" aria-selected="false">Fijar Expectativa</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="resume-tab" data-toggle="tab" href="#resume" role="tab"
+                            aria-controls="resume" aria-selected="false">Resumen y Realizados</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="panelFinance" role="tabpanel"
+                        aria-labelledby="sellers-tab">
+                        <%- include('../components/graph/financePerformance.ejs') %>
 
-
-                <div class="row justify-content-center align-items-center">
-                    <div class="col-md-10">
-                        <div class="card shadow mb-4">
-                            <div class="card-header">
-                                <div class="form-row">
-                                    <div class="form-group col-md-3">
-                                        <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                        <div class="row justify-content-center align-items-center">
+                            <div class="col-md-10">
+                                <div class="card shadow mb-4">
+                                    <div class="card-header">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-3">
+                                                <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <form data-form-search>
+                                            <div class="form-row">
+                                                <div class="form-group border col-md-12 text-center">
+                                                    <label for="exampleFormControlInput1"
+                                                        class="d-block form-label">Tipo</label>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="type" id="type1"
+                                                            value="1" checked>
+                                                        <label class="form-check-label" for="type1">Facturas</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="type" id="type2"
+                                                            value="2">
+                                                        <label class="form-check-label" for="type2">Cheques</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="type" id="type3"
+                                                            value="3">
+                                                        <label class="form-check-label" for="type3">Ambos</label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-12">
+                                                    <label for="selectoffice" class="d-block form-label">Sucursal</label>
+        
+                                                    <select multiple title="Sucursal" class="selectpicker form-control"
+                                                        name="selectoffice" id="selectoffice" required>
+                                                    </select>
+                                                </div>
+                                                <div class="select-pure col-md-12">
+                                                    <label for="selectclient" class="d-block form-label">Clientes</label>
+        
+                                                </div>
+        
+                                                <div class="form-group text-center col-md-12 pt-5 mb-2">
+                                                    <h8>Buscar apenas clientes com facturas vencidas?</h8>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="overdue"
+                                                            id="overdueyes" value="1" checked>
+                                                        <label class="form-check-label" for="overdueyes">
+                                                            Sí
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="overdue"
+                                                            id="overdueno" value="2">
+                                                        <label class="form-check-label" for="overdueno">
+                                                            No
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group col-md-12 text-center">
+                                                    <button type="submit" class="btn btn-info">Buscar</button>
+                                                </div>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body">
-                                <form data-form-search>
-                                    <div class="form-row">
-                                        <div class="form-group border col-md-12 text-center">
-                                            <label for="exampleFormControlInput1"
-                                                class="d-block form-label">Tipo</label>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="type" id="type1"
-                                                    value="1" checked>
-                                                <label class="form-check-label" for="type1">Facturas</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="type" id="type2"
-                                                    value="2">
-                                                <label class="form-check-label" for="type2">Cheques</label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="type" id="type3"
-                                                    value="3">
-                                                <label class="form-check-label" for="type3">Ambos</label>
+                        </div>
+        
+                        <%- include('../components/graph/financeClients.ejs') %>
+        
+                            <div class="row justify-content-md-center">
+                                <div class="col-md-10">
+                                    <div class="card shadow mb-4">
+                                        <div class="card-header">
+                                            <div class="form-row">
+                                                <div class="form-group col-md-4">
+                                                    <h6 class="m-0 font-weight-bold text-primary">Listado</h6>
+                                                </div>
+                                                <div class="form-group offset-md-2 col-md-3 text-right">
+                                                    <h5 data-subtotal class="m-0 font-weight-bold text-secondary"></h5>
+                                                </div>
+                                                <div class="form-group col-md-3 text-right">
+                                                    <h5 data-total class="m-0 font-weight-bold text-success"></h5>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="form-group col-md-12">
-                                            <label for="selectoffice" class="d-block form-label">Sucursal</label>
-
-                                            <select multiple title="Sucursal" class="selectpicker form-control"
-                                                name="selectoffice" id="selectoffice" required>
-                                            </select>
-                                        </div>
-                                        <div class="select-pure col-md-12">
-                                            <label for="selectclient" class="d-block form-label">Clientes</label>
-
-                                        </div>
-
-                                        <div class="form-group text-center col-md-12 pt-5 mb-2">
-                                            <h8>Buscar apenas clientes com facturas vencidas?</h8>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="overdue"
-                                                    id="overdueyes" value="1" checked>
-                                                <label class="form-check-label" for="overdueyes">
-                                                    Sí
-                                                </label>
-                                            </div>
-                                            <div class="form-check form-check-inline">
-                                                <input class="form-check-input" type="radio" name="overdue"
-                                                    id="overdueno" value="2">
-                                                <label class="form-check-label" for="overdueno">
-                                                    No
-                                                </label>
-                                            </div>
-                                        </div>
-                                        <div class="form-group col-md-12 text-center">
-                                            <button type="submit" class="btn btn-info">Buscar</button>
+                                        <div class="card-body">
+                                            <table class="table table-bordered text-center" id="dataTable" width="100%"
+                                                cellspacing="0">
+                                            </table>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </div>
-                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="include" role="tabpanel" aria-labelledby="include-tab">
+                        <%- include('../components/graph/financeExpected.ejs') %>
+                    </div>
+                    <div class="tab-pane fade" id="resume" role="tabpanel" aria-labelledby="resume-tab">
+                        <%- include('../components/graph/financeResume.ejs') %>
                     </div>
                 </div>
-
-                <%- include('../components/graph/financeClients.ejs') %>
-
-
-
-                    <div class="row justify-content-md-center">
-                        <div class="col-md-10">
-                            <div class="card shadow mb-4">
-                                <div class="card-header">
-                                    <div class="form-row">
-                                        <div class="form-group col-md-4">
-                                            <h6 class="m-0 font-weight-bold text-primary">Listado</h6>
-                                        </div>
-                                        <div class="form-group offset-md-2 col-md-3 text-right">
-                                            <h5 data-subtotal class="m-0 font-weight-bold text-secondary"></h5>
-                                        </div>
-                                        <div class="form-group col-md-3 text-right">
-                                            <h5 data-total class="m-0 font-weight-bold text-success"></h5>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-bordered text-center" id="dataTable" width="100%"
-                                        cellspacing="0">
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            </div>
+        </div>
     </div>
 
     <%- include(partials + 'script.ejs' ) %>

@@ -433,7 +433,7 @@ class Goal {
 
                 if (group) {
                     invoices = await RepositorieHbs.listInvoice(month, group);
-                    ofi.invoices = invoices;
+                    ansa['invoices'] = invoices;
                 };
 
                 let goals = goalExpected.map(goal => {

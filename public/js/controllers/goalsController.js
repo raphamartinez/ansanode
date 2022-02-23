@@ -64,6 +64,188 @@ const chart = (days, salesAmount, salesPerDay, index, group) => {
     });
 }
 
+const viewGroupAnsa = async (event) => {
+    if (event.target.parentNode.nodeName == "TR" && event.target.parentNode.matches('[data-index]')) {
+        const group = event.target.parentNode.getAttribute("data-group");
+        const month = event.target.parentNode.getAttribute("data-month");
+
+        if (event.target.parentNode.getAttribute(`data-active-${10001}`)) {
+
+            const ansa = await Connection.noBody(`goalansa/${month}`, 'GET');
+
+            let allSale = 0;
+            let allGoal = 0;
+            let revenueEffective = 0;
+            let revenueAllEffective = 0;
+
+            if (ansa.goals.length > 0) {
+                ansa.goals.forEach(goal => {
+                    revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                    revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
+                    allGoal += goal.amount ? parseInt(goal.amount) : 0;
+                    if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
+                });
+            }
+
+            let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+            let color = '#A9A9A9';
+
+            switch (true) {
+                case (percent == 0):
+                    color = '#A9A9A9';
+                    break;
+
+                case (percent > 0 && percent <= 25):
+                    color = '#FB301E';
+                    break;
+
+                case (percent > 25 && percent <= 50):
+                    color = '#E2D51A';
+                    break;
+
+                case (percent > 50 && percent <= 75):
+                    color = '#5F9EA0';
+                    break;
+
+                case (percent > 75):
+                    color = '#00AE4D';
+                    break;
+            }
+
+            document.querySelector(`[data-div-chart-${10001}]`).innerHTML = "";
+            document.querySelector(`[data-div-chart-${10001}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${10001}></canvas>`;
+
+            chart(ansa.days, ansa.salesPerDay, ansa.salesAmount, 10001);
+            updateChartGauge(`Rendimiento %`, color, 10001, percent);
+
+            document.querySelector(`[data-revenue-effective-offgoal${10001}]`).innerHTML = `Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+            document.querySelector(`[data-revenue-effective${10001}]`).innerHTML = `Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+            document.querySelector(`[data-revenue-expected${10001}]`).innerHTML = `Facturación Prevista Meta: ${ansa.revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+
+            if ($.fn.DataTable.isDataTable(`#dataFinance${10001}`)) {
+                $(`#dataFinance${10001}`).dataTable().fnClearTable();
+                $(`#dataFinance${10001}`).dataTable().fnDestroy();
+                $(`#dataFinance${10001}`).empty();
+            }
+
+            $(`#collapseFinance${10001}`).collapse('hide');
+
+            event.target.parentNode.style.backgroundColor = null;
+            event.target.parentNode.removeAttribute(`data-active-${10001}`);
+
+        } else {
+
+            const ansa = await Connection.noBody(`goalansa/${month}/${group}`, 'GET');
+
+            document.querySelectorAll(`[data-active-${10001}]`).forEach(div => {
+                div.style.backgroundColor = null;
+            });
+
+            let allSale = 0;
+            let allGoal = 0;
+            let revenueEffective = 0;
+            let revenueAllEffective = 0;
+
+            document.querySelector(`[data-div-chart-${10001}]`).innerHTML = "";
+            document.querySelector(`[data-div-chart-${10001}]`).innerHTML = `<h5>Graficos</h5><canvas class="flex d-inline" data-chart-amount-${10001}></canvas>`;
+
+            if (ansa.goals.length > 0) {
+                ansa.goals.forEach(goal => {
+                    revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
+                    revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
+                    allGoal += goal.amount ? parseInt(goal.amount) : 0;
+                    if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
+                });
+            }
+
+            let percent = allGoal > 0 ? (allSale * 100 / allGoal).toFixed(0) : 0;
+
+            let color = '#A9A9A9';
+
+            switch (true) {
+                case (percent == 0):
+                    color = '#A9A9A9';
+                    break;
+
+                case (percent > 0 && percent <= 25):
+                    color = '#FB301E';
+                    break;
+
+                case (percent > 25 && percent <= 50):
+                    color = '#E2D51A';
+                    break;
+
+                case (percent > 50 && percent <= 75):
+                    color = '#5F9EA0';
+                    break;
+
+                case (percent > 75):
+                    color = '#00AE4D';
+                    break;
+            };
+
+            chart(ansa.days, ansa.salesPerDay, ansa.salesAmount, 10001, group);
+            updateChartGauge(`Rendimiento %`, color, 10001, percent);
+
+            document.querySelector(`[data-revenue-effective-offgoal${10001}]`).innerHTML = `Facturación Realizada Total: ${revenueAllEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+            document.querySelector(`[data-revenue-effective${10001}]`).innerHTML = `Facturación Realizada Meta: ${revenueEffective.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+            document.querySelector(`[data-revenue-expected${10001}]`).innerHTML = `Facturación Prevista Meta: ${ansa.revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })}`;
+
+            let dtview = ansa.invoices.map(invoice => {
+                let date = new Date(invoice.date)
+                return [
+                    invoice.id,
+                    `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
+                    invoice.user,
+                    invoice.client,
+                    invoice.artcode,
+                    invoice.name,
+                    invoice.qty,
+                    invoice.price.toLocaleString("en-US", { style: "currency", currency: "USD" })
+                ];
+            })
+
+            $(`#collapseStock${10001}`).collapse('hide');
+            $(`#collapseFinance${10001}`).collapse('show');
+
+            if ($.fn.DataTable.isDataTable(`#dataFinance${10001}`)) {
+                $(`#dataFinance${10001}`).dataTable().fnClearTable();
+                $(`#dataFinance${10001}`).dataTable().fnDestroy();
+                $(`#dataFinance${10001}`).empty();
+            };
+
+            $(`#dataFinance${10001}`).DataTable({
+                data: dtview,
+                columns: [
+                    { title: "Id" },
+                    { title: "Fecha" },
+                    { title: "Vendedor" },
+                    { title: "Cliente" },
+                    { title: "Cod" },
+                    { title: "Articulo" },
+                    { title: "Cant" },
+                    { title: "Precio" }
+                ],
+                responsive: true,
+                paging: true,
+                ordering: true,
+                info: true,
+                scrollX: true,
+                responsive: false,
+                autoWidth: true,
+                pagingType: "numbers",
+                order: true
+            });
+
+
+            event.target.parentNode.style.backgroundColor = "#c9ffcf7a";
+            event.target.parentNode.dataset[`active-${10001}`] = 1;
+        }
+    }
+}
+
+document.querySelector('[data-goal-ansa]').addEventListener('click', viewGroupAnsa, false)
+
 const viewGroupOffice = async (event) => {
     if (event.target.parentNode.nodeName == "TR" && event.target.parentNode.matches('[data-index]')) {
         const index = event.target.parentNode.getAttribute("data-index");
@@ -80,7 +262,7 @@ const viewGroupOffice = async (event) => {
                 let allGoal = 0;
 
                 let revenueEffective = 0;
-                let revenueExpected = 0;
+                let revenueExpected = ofi.revenueExpected;
                 let revenueAllEffective = 0;
 
                 if (office != "ALL" && !ofi.goals) return alert("No hay metas para esta sucursal neste mes.");
@@ -90,8 +272,6 @@ const viewGroupOffice = async (event) => {
                     ofi.goals.forEach(goal => {
                         revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                         revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
-                        revenueExpected += goal.price ? parseFloat(goal.price) : 0;
-
                         allGoal += goal.amount ? parseInt(goal.amount) : 0;
                         if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
                     });
@@ -166,7 +346,7 @@ const viewGroupOffice = async (event) => {
                 if (ofi.goals.length > 0) {
                     ofi.goals.forEach(goal => {
                         allGoal += parseInt(goal.amount);
-                        if (goal.effectiveAmount) allSale += goal.effectiveAmount > goal.amount ? parseInt(goal.amount) : parseInt(goal.effectiveAmount);
+                        if (goal.effectiveAmount) allSale += parseInt(goal.effectiveAmount);
                         revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;
                         revenueAllEffective += goal.allPriceEffective ? parseFloat(goal.allPriceEffective) : 0;
                     });
@@ -1420,7 +1600,7 @@ const searchAnsa = async (event) => {
 
         let revenueEffective = 0;
         let revenueAllEffective = 0;
-        
+
         if (ansa.goals.length > 0) {
             ansa.goals.forEach(goal => {
                 revenueEffective += goal.effectivePrice ? parseFloat(goal.effectivePrice) : 0;

@@ -425,87 +425,6 @@ const action = async (event) => {
 
 document.querySelector('#dataTable').addEventListener('click', action, false);
 
-const init = async () => {
-
-    const clients = await Connection.noBody('clients', 'GET')
-    let dtview = clients.map(client => {
-        return {
-            label: client.CustName,
-            value: `${client.CustCode}`
-        }
-    })
-
-    new SelectPure(".select-pure", {
-        options: dtview,
-        multiple: true,
-        autocomplete: true,
-        icon: "fa fa-times",
-        inlineIcon: false,
-        placeholder: false
-    });
-
-    document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
-
-    const offices = await Connection.noBody('offices', 'GET')
-    offices.forEach(office => {
-        const option = document.createElement('option')
-        option.value = office.code
-        option.innerHTML = office.name
-
-        if (office.id_office !== 15) document.getElementById('selectoffice').appendChild(option)
-
-        const option2 = document.createElement('option')
-        option2.value = `'${office.code}'`
-        option2.innerHTML = office.name
-
-        if (office.id_office !== 15 && document.querySelector('[data-filter-office]')) document.querySelector('[data-filter-office]').appendChild(option2)
-    });
-
-    if (document.querySelector('[data-filter-user]')) {
-        const users = await Connection.noBody('users/6', 'GET')
-
-        users.forEach(user => {
-            const option = document.createElement('option')
-            option.value = `'${user.id_login}'`
-            option.innerHTML = user.name
-            document.querySelector('[data-filter-user]').appendChild(option)
-        })
-    }
-
-    document.getElementById("overdueyes").checked = true;
-    $('#selectoffice').selectpicker("refresh");
-
-    $("#tableHistory").DataTable({
-        data: [],
-        columns: [
-            { title: "Cliente" },
-            { title: "Vencido USD" },
-            { title: "Total Cobrado" },
-
-        ],
-        paging: false,
-        ordering: true,
-        info: false,
-        scrollY: false,
-        scrollCollapse: true,
-        scrollX: true,
-        autoHeight: true,
-        pagingType: "numbers",
-        searchPanes: false,
-        searching: false,
-        fixedHeader: false
-    })
-
-    let dt = []
-    list(dt)
-
-    const obj = await Connection.noBody('finance/graph', 'GET')
-
-    chart(obj.graphs)
-    if (obj.details.length > 0) detail(obj.details, obj.amountPending)
-}
-
-init()
 
 const search = async (event) => {
     event.preventDefault()
@@ -1026,7 +945,6 @@ const view = async (event) => {
         let user = document.querySelector('[data-filter-user]').value;
         let status = event.currentTarget.getAttribute('data-action-view')
 
-
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
@@ -1078,3 +996,233 @@ const view = async (event) => {
 Array.from(document.querySelectorAll('[data-action-view]')).forEach(action => {
     action.addEventListener('click', view, false)
 })
+
+
+const listInclude = (dtview) => {
+
+    if ($.fn.DataTable.isDataTable('#dataInclude')) {
+        $('#dataInclude').dataTable().fnClearTable();
+        $('#dataInclude').dataTable().fnDestroy();
+        $('#dataInclude').empty();
+    }
+
+    $("#dataInclude").DataTable({
+        data: dtview,
+        columns: [
+            { title: "Cliente" },
+            { title: "TT Vencido" },
+            { title: "Monto Efectivo/Transf USD" },
+            { title: "Monto Cheque USD" },
+            { title: "Monto Efectivo/Transf Gs" },
+            { title: "Monto Cheque Gs" },
+            { title: "Fecha Proximado de Cobro" },
+        ],
+        paging: false,
+        ordering: true,
+        info: true,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false,
+        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+            "<'row'<'col-sm-12'B>>",
+        buttons: [
+            'copy', 'excel',
+        ]
+    })
+}
+
+const officeInclude = async (event) => {
+
+    let office = event.target.getAttribute("data-office");
+
+    const data = await Connection.noBody(`financeview/${office}/TODOS/1`, 'GET')
+
+    let dtview = data.map((obj, i) => {
+        return [
+            `${obj.CustCode} - ${obj.CustName}`,
+            obj.AmountBalance,
+            `<input data-client="${obj.CustCode}" tabindex="${i}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 1}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 2}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 3}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 4}" value="" type="date" class="form-control goal text-center">`,
+        ]
+    });
+ 
+    listInclude(dtview)
+}
+
+window.officeInclude = officeInclude
+
+const listResume = (dtview) => {
+
+    if ($.fn.DataTable.isDataTable('#dataResume')) {
+        $('#dataResume').dataTable().fnClearTable();
+        $('#dataResume').dataTable().fnDestroy();
+        $('#dataResume').empty();
+    }
+
+    $("#dataResume").DataTable({
+        data: dtview,
+        columns: [
+            { title: "Cliente" },
+            { title: "TT Vencido" },
+            { title: "Monto Efectivo/Transf USD" },
+            { title: "Monto Cheque USD" },
+            { title: "Monto Efectivo/Transf Gs" },
+            { title: "Monto Cheque Gs" },
+            { title: "Fecha Proximado de Cobro" },
+        ],
+        paging: false,
+        ordering: true,
+        info: true,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false,
+        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+            "<'row'<'col-sm-12'B>>",
+        buttons: [
+            'copy', 'excel',
+        ]
+    })
+}
+
+const officeResume = async (event) => {
+
+    let office = event.target.getAttribute("data-office");
+
+    const data = await Connection.noBody(`financeview/${office}/TODOS/1`, 'GET')
+
+    let dtview = data.map((obj, i) => {
+        return [
+            `${obj.CustCode} - ${obj.CustName}`,
+            obj.AmountBalance,
+            `<input data-client="${obj.CustCode}" tabindex="${i}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 1}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 2}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 3}" value="" type="text" class="form-control goal text-center">`,
+            `<input data-client="${obj.CustCode}" tabindex="${i + 4}" value="" type="date" class="form-control goal text-center">`,
+        ]
+    });
+ 
+    listResume(dtview)
+}
+
+window.officeResume = officeResume
+
+
+const init = async () => {
+
+    listInclude([]);
+
+    const clients = await Connection.noBody('clients', 'GET')
+    let dtview = clients.map(client => {
+        return {
+            label: client.CustName,
+            value: `${client.CustCode}`
+        }
+    })
+
+    new SelectPure(".select-pure", {
+        options: dtview,
+        multiple: true,
+        autocomplete: true,
+        icon: "fa fa-times",
+        inlineIcon: false,
+        placeholder: false
+    });
+
+    document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
+
+    const offices = await Connection.noBody('offices', 'GET')
+    offices.forEach(office => {
+        const option = document.createElement('option')
+        option.value = office.code
+        option.innerHTML = office.name
+
+        if (office.id_office !== 15) document.getElementById('selectoffice').appendChild(option)
+
+        const option2 = document.createElement('option')
+        option2.value = `'${office.code}'`
+        option2.innerHTML = office.name
+
+        if (office.id_office !== 15 && document.querySelector('[data-filter-office]')) document.querySelector('[data-filter-office]').appendChild(option2);
+
+        const a = document.createElement('a');
+        a.classList.add('nav-link');
+        a.dataset.toggle = "pill";
+        a.role = "tab";
+        a.ariaSelected = "false";
+        a.innerHTML = office.name;
+        a.onclick = function(){officeResume(event)};
+
+        if (office.id_office !== 15) document.querySelector('[data-div-resume-office]').appendChild(a)
+
+        const a2 = document.createElement('a');
+        a2.classList.add('nav-link');
+        a2.dataset.toggle = "pill";
+        a2.ariaSelected = "false";
+        a2.innerHTML = office.name;
+        a2.dataset.office = office.code;
+        a2.onclick = function(){officeInclude(event)};
+
+        if (office.id_office !== 15) document.querySelector('[data-div-expected-office]').appendChild(a2)
+    });
+
+    if (document.querySelector('[data-filter-user]')) {
+        const users = await Connection.noBody('users/6', 'GET')
+
+        users.forEach(user => {
+            const option = document.createElement('option')
+            option.value = `'${user.id_login}'`
+            option.innerHTML = user.name
+            document.querySelector('[data-filter-user]').appendChild(option)
+        })
+    }
+
+    document.getElementById("overdueyes").checked = true;
+    $('#selectoffice').selectpicker("refresh");
+
+    $("#tableHistory").DataTable({
+        data: [],
+        columns: [
+            { title: "Cliente" },
+            { title: "Vencido USD" },
+            { title: "Total Cobrado" },
+
+        ],
+        paging: false,
+        ordering: true,
+        info: false,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        pagingType: "numbers",
+        searchPanes: false,
+        searching: false,
+        fixedHeader: false
+    })
+
+    let dt = []
+    list(dt)
+
+    const obj = await Connection.noBody('finance/graph', 'GET')
+
+    chart(obj.graphs)
+    if (obj.details.length > 0) detail(obj.details, obj.amountPending)
+}
+
+init()

@@ -371,6 +371,7 @@ const office = (office, goals, index, revenueEffective, revenueAllEffective, rev
                 <div class="text-center">
                     <h1 data-revenue-expected${index} class="h6 font-weight-bold text-success"> Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
+                <p>Los valores arriba no incluyen IVA.</p>
             </div>
         </div>
     </div>
@@ -481,6 +482,7 @@ const ansa = (office, goals, index, revenueEffective, revenueAllEffective, reven
                 <div class="text-center">
                     <h1 data-revenue-expected${index} class="h6 font-weight-bold text-success"> Facturación Prevista Meta: ${revenueExpected.toLocaleString("en-US", { style: "currency", currency: "USD" })} </h1>
                 </div>
+                <p>Los valores arriba no incluyen IVA.</p>
             </div>
         </div>
     </div>

@@ -165,6 +165,8 @@ class Goal {
             WHERE GL.application <> "DESCONSIDERAR" `
 
             if (offices) sql += ` AND SA.office IN (${offices}) `
+            if (group) sql += ` AND GL.itemgroup = '${group}' `
+
             sql += ` AND GL.date BETWEEN ? AND LAST_DAY(?)
             group by GL.itemcode
             ORDER BY GL.itemcode ASC`

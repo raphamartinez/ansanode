@@ -36,13 +36,13 @@ class Sales {
 
             let sql = `
             SELECT ig.Name AS name, SUM(sr.Qty) AS amount, 
-            TRUNCATE(SUM(IF(sa.Currency = "GS", sr.RowTotal/ sa.BaseRate, IF(sa.Currency = "RE", sr.RowTotal * sa.FromRate / sa.BaseRate, sr.RowTotal))),2) AS price
-            FROM SalesOrder sa
-            INNER JOIN SalesOrderItemRow sr ON sr.masterId = sa.internalId
+            SUM(IF(sa.Currency = "GS", sr.RowNet/ sa.BaseRate, IF(sa.Currency = "RE", sr.RowNet * sa.FromRate / sa.BaseRate, sr.RowNet))) AS price
+            FROM SalesOrderItemRow sr 
+            INNER JOIN SalesOrder sa ON sr.masterId  = sa.internalId
             LEFT JOIN Item it ON sr.ArtCode = it.Code 
             LEFT JOIN ItemGroup ig ON it.ItemGroup = ig.Code
             WHERE (sa.Closed = 0 OR sa.Closed IS NULL)
-            AND (sa.Invalid = 0 OR sa.Invalid IS NULL) 
+            AND (sa.Invalid = 0 OR sa.Invalid IS NULL)
             AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
             if (items) sql += ` AND sr.ArtCode IN (${items}) `

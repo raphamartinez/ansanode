@@ -47,6 +47,19 @@ class Tables {
     return true
   }
 
+  createTableFinanceExpected() {
+    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeexpected (id int NOT NULL AUTO_INCREMENT, 
+      client int, date DATE, datereg DATETIME, id_login int, office VARCHAR(5), transfUsd double, chequeUsd double, transfGs double, chequeGs double,
+      PRIMARY KEY (id))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
   createTableProsegurUser() {
     const sql = `CREATE TABLE IF NOT EXISTS ansa.prosegurusers (id int NOT NULL AUTO_INCREMENT, 
       code int, name VARCHAR(250), office VARCHAR(5),

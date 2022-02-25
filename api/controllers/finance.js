@@ -53,7 +53,7 @@ module.exports = app => {
             next(err)
         }
     })
-
+    
     app.post('/finance', [Middleware.authenticatedMiddleware, Authorization('finance', 'create')], async (req, res, next) => {
         try {
             const finance = req.body.finance
@@ -61,6 +61,18 @@ module.exports = app => {
            const status = await Finance.insert(finance, req.login.id_login)
 
             cachelist.delPrefix('finance')
+
+            res.status(201).json(status)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/financeexpected', [Middleware.authenticatedMiddleware, Authorization('finance', 'create')], async (req, res, next) => {
+        try {
+            const finance = req.body.finance
+
+           const status = await Finance.insertExpected(finance, req.login.id_login)
 
             res.status(201).json(status)
         } catch (err) {
@@ -78,6 +90,16 @@ module.exports = app => {
             cachelist.delPrefix('finance')
 
             res.json({ msg: 'Comentario actualizada con éxito.' })
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.get('/financeresumeoffice', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+        try {
+            const offices = await Finance.resumeOffice();
+
+            res.json(offices)
         } catch (err) {
             next(err)
         }

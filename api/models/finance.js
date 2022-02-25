@@ -23,6 +23,25 @@ class Finance {
         }
     }
 
+    async insertExpected(finance, id_login) {
+        let status = 3;
+        try {
+            const check = await Repositorie.checkExpected(finance)
+
+            if (check) {
+                finance.id = check.id
+                await Repositorie.updateExpected(finance)
+                status = 2;
+            } else {
+                await Repositorie.insertExpected(finance, id_login)
+                status = 1;
+            }
+            return status;
+        } catch (error) {
+           return status;
+        }
+    }
+
     async update(finance) {
         try {
             return Repositorie.update(finance)
@@ -66,9 +85,18 @@ class Finance {
 
     async view(office, user, status) {
         try {
-            const invoices = await Repositorie.view(office, user, status)
+            const clients = await Repositorie.view(office, user, status, 1)
 
-            return invoices
+            return clients
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las facturas.')
+        }
+    }
+
+    resumeOffice() {
+        try {
+            return Repositorie.listResumeOffice();
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las facturas.')

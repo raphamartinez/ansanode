@@ -17,6 +17,19 @@ class Finance {
         }
     }
 
+    async insertExpected(finance, id_login) {
+        try {
+            const sql = `INSERT INTO ansa.financeexpected (client, transfUsd, chequeUsd, transfGs, chequeGs, office, date, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
+
+            const result = await query(sql, [finance.client, finance.transfUsd, finance.chequeUsd, finance.transfGs, finance.chequeGs, finance.office, finance.date, id_login])
+            return result[0]
+        } catch (error) {
+            console.log(error);
+
+            throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
+        }
+    }
+
     async check(finance) {
         try {
             const sql = `SELECT * FROM ansa.financeinvoice WHERE invoicenr = ? AND datereg > NOW() - interval 12 hour`
@@ -29,10 +42,48 @@ class Finance {
         }
     }
 
+    async listExpected(client, office) {
+        try {
+            let sql = `SELECT id, transfUsd, chequeUsd, transfGs, chequeGs,
+            DATE_FORMAT(fi.date, '%H:%i %d/%m/%Y') as date
+            FROM ansa.financeexpected
+            WHERE client = ? AND office = ? `;
+
+            const result = await query(sql, [client, office]);
+
+            return result[0]
+        } catch (error) {
+            throw new InternalServerError('No se pudieron enumerar las expectativas')
+        }
+    }
+
+    async checkExpected(finance) {
+        try {
+            const sql = `SELECT * FROM ansa.financeexpected WHERE client = ? AND office = ?`
+            const result = await query(sql, [finance.client, finance.office])
+
+            return result[0]
+        } catch (error) {
+
+            throw new InvalidArgumentError(error)
+        }
+    }
+
     async update(finance, id_login) {
         try {
             const sql = `UPDATE ansa.financeinvoice SET contactdate = ?, responsible = ?, contact = ?, comment = ?, payday = ?, status = ?, id_login = ? WHERE id_financeinvoice = ?`
             const result = await query(sql, [finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, id_login, finance.id_financeinvoice])
+
+            return result[0]
+        } catch (error) {
+            throw new InvalidArgumentError('No se pudo ingresar el login en la base de datos')
+        }
+    }
+
+    async updateExpected(finance) {
+        try {
+            const sql = `UPDATE ansa.financeexpected SET transfUsd = ?, chequeUsd = ?, transfGs = ?, chequeGs = ?, date = ?  WHERE id = ?`
+            const result = await query(sql, [finance.transfUsd, finance.chequeUsd, finance.transfGs, finance.chequeGs, finance.date, finance.id])
 
             return result[0]
         } catch (error) {
@@ -197,7 +248,7 @@ class Finance {
         }
     }
 
-    view(office, user, status) {
+    view(office, user, type, clients) {
         try {
             let sql = `SELECT re.CustCode, re.CustName, COUNT(DISTINCT re.OfficialSerNr) as invoices,
 
@@ -223,48 +274,49 @@ class Finance {
             IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountOpen,
             
             TRUNCATE(SUM(IF(re.DueDate <= now(),IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
-            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountBalance
-            
-            FROM ansa.receivable re
-            
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountBalance  
             `
 
-            if (status == "0") {
-                sql += `LEFT JOIN ansa.financeinvoice fi ON re.SerNr = fi.invoicenr 
-                WHERE re.CustCode <> 1  `
+            if (clients == '1') sql += `, fe.id, fe.transfUsd, fe.chequeUsd, fe.transfGs, fe.chequeGs,
+            DATE_FORMAT(fe.date, '%Y-%m-%d') as date `
+
+            sql += ` FROM ansa.receivable re  `
+            if (clients == '1') sql += ` LEFT JOIN financeexpected fe ON re.CustCode = fe.client `
+
+            sql += ` WHERE re.CustCode <> 1 `
+            if (office && office !== "ALL") sql += ` AND re.Office IN (${office}) `
+
+            if (type === '1') {
+                sql += `AND re.PayTerm != "Cheque " AND re.DueDate <= NOW() `
             } else {
-                sql += `INNER JOIN ansa.financeinvoice fi ON re.SerNr = fi.invoicenr 
-                WHERE re.CustCode <> 1 `
+                sql += `AND re.PayTerm = "Cheque " `
             }
 
-            if (user && user != "TODOS") sql += ` AND fi.id_login = ${user} `
-
-            if (office && office != "TODOS") sql += ` AND re.Office = ${office} `
-
-            switch (status) {
-                case "0":
-                    sql += ` AND (fi.status IS NULL OR fi.status = 0) `
-                    break;
-                case "1":
-                    sql += ` AND fi.status = 1 `
-                    break;
-                case "2":
-                    sql += ` AND fi.status = 2 AND fi.payday > NOW() `
-                    break;
-                case "3":
-                    sql += ` AND fi.status = 3 `
-                    break;
-                case "4":
-                    sql += ` AND fi.status = 2 AND fi.payday <= NOW() `
-                    break;
-            }
-
-            sql += ` GROUP BY re.CustCode `
+            sql += `GROUP BY re.CustCode 
+                    HAVING AmountBalance > 0
+                    ORDER BY AmountBalance DESC`
 
             return query(sql)
         } catch (error) {
             console.log(error);
-            throw new InternalServerError('No se pudieron enumerar los login')
+            throw new InternalServerError('No se pudieron enumerar los datos')
+        }
+    }
+
+
+    async listResumeOffice() {
+        try {
+            let sql = `SELECT ofi.code, ofi.name, SUM(fe.transfUsd) as transfUsd, SUM(fe.chequeUsd) as chequeUsd, SUM(fe.transfGs) as transfGs, SUM(fe.chequeGs) as chequeGs
+                    FROM ansa.office ofi
+                    LEFT JOIN ansa.financeexpected fe ON ofi.code = fe.office
+                    GROUP BY ofi.code
+                    HAVING ofi.code <> "00"
+                    ORDER BY ofi.code ASC`
+
+            return query(sql)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los resumen')
         }
     }
 }

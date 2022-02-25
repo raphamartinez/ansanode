@@ -1010,20 +1010,24 @@ const listInclude = (dtview) => {
         data: dtview,
         columns: [
             { title: "Cliente" },
-            { title: "TT Vencido" },
-            { title: "Monto Efectivo/Transf USD" },
-            { title: "Monto Cheque USD" },
-            { title: "Monto Efectivo/Transf Gs" },
-            { title: "Monto Cheque Gs" },
-            { title: "Fecha Proximado de Cobro" },
+            {
+                title: "TT Vencido",
+                className: "datatable-grey"
+            },
+            { title: "Transf USD" },
+            { title: "Cheque USD" },
+            { title: "Transf Gs" },
+            { title: "Cheque Gs" },
+            { title: "Fecha de Cobro" },
         ],
         paging: false,
-        ordering: true,
+        ordering: false,
         info: true,
         scrollY: false,
         scrollCollapse: true,
         scrollX: true,
         autoHeight: true,
+        autoWidth: true,
         pagingType: "numbers",
         searchPanes: true,
         fixedHeader: false,
@@ -1041,26 +1045,31 @@ const officeInclude = async (event) => {
 
     let office = event.target.getAttribute("data-office");
 
-    const data = await Connection.noBody(`financeview/${office}/TODOS/1`, 'GET')
+    const data = await Connection.noBody(`financeview/${office}/ALL/1`, 'GET')
 
-    let dtview = data.map((obj, i) => {
-        return [
+    let i = 1;
+    let dtview = data.map(obj => {
+        const line = [
             `${obj.CustCode} - ${obj.CustName}`,
-            obj.AmountBalance,
-            `<input data-client="${obj.CustCode}" tabindex="${i}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 1}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 2}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 3}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 4}" value="" type="date" class="form-control goal text-center">`,
+            obj.AmountBalance.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
+            `<input data-type="${obj.transfUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i}" value="${obj.transfUsd ? obj.transfUsd : ""}" type="text" class="form-control goal text-center">`,
+            `<input data-type="${obj.chequeUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 1}" value="${obj.chequeUsd ? obj.chequeUsd : ""}" type="text" class="form-control goal text-center">`,
+            `<input data-type="${obj.transfGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 2}" value="${obj.transfGs ? obj.transfGs : ""}" type="text" class="form-control goal text-center">`,
+            `<input data-type="${obj.chequeGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 3}" value="${obj.chequeGs ? obj.chequeGs : ""}" type="text" class="form-control goal text-center">`,
+            `<input data-type="2" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 4}" value="${obj.date ? obj.date : ""}" type="date" class="form-control goal text-center">`,
         ]
+
+        i += 5;
+
+        return line;
     });
- 
+
     listInclude(dtview)
 }
 
 window.officeInclude = officeInclude
 
-const listResume = (dtview) => {
+const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs, chequeGs) => {
 
     if ($.fn.DataTable.isDataTable('#dataResume')) {
         $('#dataResume').dataTable().fnClearTable();
@@ -1071,21 +1080,20 @@ const listResume = (dtview) => {
     $("#dataResume").DataTable({
         data: dtview,
         columns: [
-            { title: "Cliente" },
-            { title: "TT Vencido" },
-            { title: "Monto Efectivo/Transf USD" },
-            { title: "Monto Cheque USD" },
-            { title: "Monto Efectivo/Transf Gs" },
-            { title: "Monto Cheque Gs" },
-            { title: "Fecha Proximado de Cobro" },
+            { title: "Sucursal" },
+            { title: "Transf USD" },
+            { title: "Cheque USD" },
+            { title: "Transf Gs" },
+            { title: "Cheque Gs" }
         ],
         paging: false,
-        ordering: true,
+        ordering: false,
         info: true,
         scrollY: false,
         scrollCollapse: true,
         scrollX: true,
         autoHeight: true,
+        autoWidth: true,
         pagingType: "numbers",
         searchPanes: true,
         fixedHeader: false,
@@ -1097,31 +1105,221 @@ const listResume = (dtview) => {
             'copy', 'excel',
         ]
     })
+
+    const ctxGs = document.querySelector('[data-chart-gs]')
+
+    const chartGs = new Chart(ctxGs, {
+        type: 'bar',
+        data: {
+            labels: offices,
+            datasets: [{
+                label: 'Cheque Gs',
+                data: chequeGs,
+                backgroundColor: [
+                    'rgba(24, 226, 147, 0.4)',
+                ],
+                borderColor: [
+                    'rgba(24, 226, 147, 0.9)',
+                ],
+                borderWidth: 3
+            },
+            {
+                label: 'Efectivo/Transf Gs ',
+                data: transfGs,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+
+
+    const ctxDol = document.querySelector('[data-chart-dol]')
+
+    const chartDol = new Chart(ctxDol, {
+        type: 'bar',
+        data: {
+            labels: offices,
+            datasets: [{
+                label: 'Cheque USD',
+                data: chequeUsd,
+                backgroundColor: [
+                    'rgba(24, 226, 147, 0.4)',
+                ],
+                borderColor: [
+                    'rgba(24, 226, 147, 0.9)',
+                ],
+                borderWidth: 3
+            },
+            {
+                label: 'Efectivo/Transf USD ',
+                data: transfUsd,
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(54, 162, 235, 1)'
+                ],
+                borderWidth: 3
+            }]
+        },
+        options: {
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            }
+        }
+    });
+
+    if ($.fn.DataTable.isDataTable('#dataEffective')) {
+        $('#dataEffective').dataTable().fnClearTable();
+        $('#dataEffective').dataTable().fnDestroy();
+        $('#dataEffective').empty();
+    }
+
+    $("#dataEffective").DataTable({
+        data: dtEffective,
+        columns: [
+            { title: "Sucursal" },
+            { title: "Transf USD" },
+            { title: "%" },
+            { title: "Cheque USD" },
+            { title: "%" },
+            { title: "Transf Gs" },
+            { title: "%" },
+            { title: "Cheque Gs" },
+            { title: "%" }
+        ],
+        paging: false,
+        ordering: false,
+        info: true,
+        scrollY: false,
+        scrollCollapse: true,
+        scrollX: true,
+        autoHeight: true,
+        autoWidth: true,
+        pagingType: "numbers",
+        searchPanes: true,
+        fixedHeader: false,
+        dom: "<'row'<'col-md-6'l><'col-md-6'f>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-6'i><'col-sm-12 col-md-6'p>>" +
+            "<'row'<'col-sm-12'B>>",
+        buttons: [
+            'copy', 'excel',
+        ]
+    })
+
 }
 
 const officeResume = async (event) => {
 
-    let office = event.target.getAttribute("data-office");
+    const data = await Connection.noBody(`financeresumeoffice`, 'GET')
 
-    const data = await Connection.noBody(`financeview/${office}/TODOS/1`, 'GET')
+    let offices = []
+    let transfUsd = []
+    let chequeUsd = []
+    let transfGs = []
+    let chequeGs = []
+    let dtEffective = []
 
-    let dtview = data.map((obj, i) => {
+    let dtview = data.map(obj => {
+        offices.push(obj.code)
+        transfUsd.push(obj.transfUsd)
+        chequeUsd.push(obj.chequeUsd)
+        transfGs.push(obj.transfGs)
+        chequeGs.push(obj.chequeGs)
+
+        dtEffective.push([
+            `${obj.code} - ${obj.name}`,
+            `${obj.transfUsdEf ? obj.transfUsdEf : ""}`,
+            `${obj.transfUsdPc ? obj.transfUsdPc : ""}`,
+            `${obj.chequeUsdEf ? obj.chequeUsdEf : ""}`,
+            `${obj.chequeUsdPc ? obj.chequeUsdPc : ""}`,
+            `${obj.transfGsEf ? obj.transfGsEf : ""}`,
+            `${obj.transfGsPc ? obj.transfGsPc : ""}`,
+            `${obj.chequeGsEf ? obj.chequeGsEf : ""}`,
+            `${obj.chequeGsPc ? obj.chequeGsPc : ""}`
+        ])
+
         return [
-            `${obj.CustCode} - ${obj.CustName}`,
-            obj.AmountBalance,
-            `<input data-client="${obj.CustCode}" tabindex="${i}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 1}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 2}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 3}" value="" type="text" class="form-control goal text-center">`,
-            `<input data-client="${obj.CustCode}" tabindex="${i + 4}" value="" type="date" class="form-control goal text-center">`,
+            `${obj.code} - ${obj.name}`,
+            obj.transfUsd > 0 ? obj.transfUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
+            obj.chequeUsd > 0 ? obj.chequeUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
+            obj.transfGs > 0 ? `Gs ${obj.transfGs.toLocaleString('es')}` : "",
+            obj.chequeGs > 0 ? `Gs ${obj.chequeGs.toLocaleString('es')}` : ""
         ]
     });
- 
-    listResume(dtview)
+
+    listResume(dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs, chequeGs)
 }
 
 window.officeResume = officeResume
 
+
+$(document).on('keypress', '.goal', async function (e) {
+    if (e.which == 13) {
+        e.preventDefault();
+        var $next = $('[tabIndex=' + (+this.tabIndex + 1) + ']');
+
+        if (!$next.length) {
+            $next = $('[tabIndex=1]');
+        }
+
+        $next.focus();
+
+        let status = 3;
+        const btn = e.currentTarget.parentElement.parentElement;
+        const finance = {
+            office: e.currentTarget.getAttribute('data-office'),
+            client: e.currentTarget.getAttribute('data-client'),
+            type: e.currentTarget.getAttribute('data-type'),
+            transfUsd: btn.children[2].children[0].value.replace(",", "."),
+            chequeUsd: btn.children[3].children[0].value.replace(",", "."),
+            transfGs: btn.children[4].children[0].value.replace(",", "."),
+            chequeGs: btn.children[5].children[0].value.replace(",", "."),
+            date: btn.children[6].children[0].value
+        };
+
+        status = await Connection.body(`financeexpected`, { finance }, 'POST');
+
+        switch (status) {
+            case 1: {
+                toastr.success(`Cod Cliente: ${finance.client}<br>${finance.type == 2 ? "Fecha Aproximado de cobro" : "Valor"}: ${e.currentTarget.value}`, "Expectativa agregada con éxito!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+            case 2: {
+                toastr.warning(`La expectativa de lo cliente fue cambiada<br>${finance.type == 2 ? "Fecha Aproximado de cobro" : "Valor"}: ${e.currentTarget.value ? e.currentTarget.value : "0"}`, "Aviso!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+            case 3: {
+                toastr.error(`Verifique la expectativa insertada, uno erro fue generado.`, "Erro en la Meta!", {
+                    progressBar: true
+                })
+            }
+
+                break;
+        };
+    }
+});
 
 const init = async () => {
 
@@ -1160,15 +1358,11 @@ const init = async () => {
 
         if (office.id_office !== 15 && document.querySelector('[data-filter-office]')) document.querySelector('[data-filter-office]').appendChild(option2);
 
-        const a = document.createElement('a');
-        a.classList.add('nav-link');
-        a.dataset.toggle = "pill";
-        a.role = "tab";
-        a.ariaSelected = "false";
-        a.innerHTML = office.name;
-        a.onclick = function(){officeResume(event)};
+        const option3 = document.createElement('option');
+        option3.value = `'${office.code}'`
+        option3.innerHTML = office.name
 
-        if (office.id_office !== 15) document.querySelector('[data-div-resume-office]').appendChild(a)
+        if (office.id_office !== 15) document.querySelector('[data-div-resume-office]').appendChild(option3)
 
         const a2 = document.createElement('a');
         a2.classList.add('nav-link');
@@ -1176,7 +1370,7 @@ const init = async () => {
         a2.ariaSelected = "false";
         a2.innerHTML = office.name;
         a2.dataset.office = office.code;
-        a2.onclick = function(){officeInclude(event)};
+        a2.onclick = function () { officeInclude(event) };
 
         if (office.id_office !== 15) document.querySelector('[data-div-expected-office]').appendChild(a2)
     });

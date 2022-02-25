@@ -1,0 +1,83 @@
+<%- include(partials + 'header.ejs' ) %>
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
+    <div class="container-fluid">
+    <div class="row justify-content-md-center">
+        <div class="col-12 text-center">
+            <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Analisis de Cliente</h1>
+        </div>
+    </div>
+
+    <%- include(partials + 'loading.ejs' ) %>
+
+        <div class="row justify-content-md-center align-items-center">
+            <div class="col-md-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <div class="form-row">
+                            <div class="form-group col-md-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Buscar</h6>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <form data-form-search>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <h6>Fecha</h6>
+                                    <input class="form-control datepicker" type="month" name="month" id="month"
+                                        required>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <h6>Sucursal</h6>
+                                    <select multiple title="Seleccione una sucursal" class="form-control selectpicker"
+                                        name="office" id="office" required>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <h6>Cliente</h6>
+                                    <select multiple title="Seleccione los clientes" class="form-control selectpicker"
+                                        name="client" id="client">
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-12 text-center">
+                                    <button type="submit" class="btn btn-info">Buscar</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-10">
+                <div class="card shadow mb-4">
+                    <div class="card-header">
+                        <div class="form-row">
+                            <div class="form-group col-md-1">
+                                <h6 class="m-0 font-weight-bold text-primary">Listado</h6>
+                            </div>
+                            <div class="form-group offset-md-5 col-md-3 text-right">
+                                <h5 data-subtotal class="m-0 font-weight-bold text-secondary"></h5>
+                            </div>
+                            <div class="form-group col-md-3 text-right">
+                                <h5 data-total class="m-0 font-weight-bold text-success"></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered text-center" id="dataTable" width="100%" cellspacing="0">
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <%- include(partials + 'script.ejs' ) %>
+
+            <script type="module" src="../js/controllers/analysisController.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+            <script
+                src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+                <%- include(partials + 'footer.ejs' ) %>

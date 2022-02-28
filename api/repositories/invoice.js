@@ -6,7 +6,7 @@ class Invoice {
 
     listAnalysis(search){
         try {
-            let sql = `SELECT iv.CustCode AS code, iv.CustName AS name, TRUNCATE(SUM(IF(ir.Qty <0,ir.Qty *-1,ir.Qty) * ir.Price),2) AS amount, iv.Currency as currency
+            let sql = `SELECT iv.CustCode AS code, iv.CustName AS name, TRUNCATE(SUM(IF(ir.Qty <0,ir.Qty *-1,ir.Qty) * ir.Price),2) AS amount, iv.Currency as currency, ir.Qty as qty
             FROM InvoiceItemRow ir 
             INNER JOIN Invoice iv  ON ir.masterId = iv.internalId
             WHERE iv.TransDate BETWEEN ? AND LAST_DAY(?)

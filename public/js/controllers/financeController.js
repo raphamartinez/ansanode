@@ -1019,8 +1019,9 @@ const listInclude = (dtview) => {
             { title: "Transf Gs" },
             { title: "Cheque Gs" },
             { title: "Fecha de Cobro" },
+            { title: "Guardar", classList: "text-center" }
         ],
-        paging: false,
+        paging: true,
         ordering: false,
         info: true,
         scrollY: false,
@@ -1041,6 +1042,25 @@ const listInclude = (dtview) => {
     })
 }
 
+$(document).on('keyup', '.goal', function (e) {
+    const tr = e.currentTarget.parentElement.parentElement;
+
+    const finance = {
+        transfUsd: tr.children[2].children[0].value.replace(",", "."),
+        chequeUsd: tr.children[3].children[0].value.replace(",", "."),
+        transfGs: tr.children[4].children[0].value.replace(",", "."),
+        chequeGs: tr.children[5].children[0].value.replace(",", "."),
+        date: tr.children[6].children[0].value
+    };
+
+    if(finance.transfUsd ||finance.chequeUsd || finance.transfGs || finance.chequeGs){
+        tr.children[7].children[0].disabled = false;
+    }else{
+        tr.children[7].children[0].disabled = true;
+    }
+});
+
+
 const officeInclude = async (event) => {
 
     let office = event.target.getAttribute("data-office");
@@ -1057,9 +1077,10 @@ const officeInclude = async (event) => {
             `<input data-type="${obj.transfGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 2}" value="${obj.transfGs ? obj.transfGs : ""}" type="text" class="form-control goal text-center">`,
             `<input data-type="${obj.chequeGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 3}" value="${obj.chequeGs ? obj.chequeGs : ""}" type="text" class="form-control goal text-center">`,
             `<input data-type="2" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 4}" value="${obj.date ? obj.date : ""}" type="date" class="form-control goal text-center">`,
+            `<button data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 5}" type="button" class="btn btn-lg btn-success" onclick="saveExpected(event)" disabled><i class="fas fa-1x fa-save"></i></button>`
         ]
 
-        i += 5;
+        i += 6;
 
         return line;
     });
@@ -1268,58 +1289,48 @@ const officeResume = async (event) => {
 
 window.officeResume = officeResume
 
+async function saveExpected(event) {
+    const btn = event.path[2];
+    let status = 3;
 
-$(document).on('keypress', '.goal', async function (e) {
-    if (e.which == 13) {
-        e.preventDefault();
-        var $next = $('[tabIndex=' + (+this.tabIndex + 1) + ']');
+    const finance = {
+        office: event.currentTarget.getAttribute('data-office'),
+        client: event.currentTarget.getAttribute('data-client'),
+        transfUsd: btn.children[2].children[0].value,
+        chequeUsd: btn.children[3].children[0].value,
+        transfGs: btn.children[4].children[0].value,
+        chequeGs: btn.children[5].children[0].value,
+        date: btn.children[6].children[0].value
+    }
 
-        if (!$next.length) {
-            $next = $('[tabIndex=1]');
+    status = await Connection.body(`financeexpected`, { finance }, 'POST');
+
+    switch (status) {
+        case 1: {
+            toastr.success(`Cod Cliente: ${finance.client}<br>Sucursal: ${finance.office}`, "Expectativa agregada con éxito!", {
+                progressBar: true
+            })
         }
 
-        $next.focus();
+            break;
+        case 2: {
+            toastr.warning(`La expectativa de lo cliente fue cambiada`, "Aviso!", {
+                progressBar: true
+            })
+        }
 
-        let status = 3;
-        const btn = e.currentTarget.parentElement.parentElement;
-        const finance = {
-            office: e.currentTarget.getAttribute('data-office'),
-            client: e.currentTarget.getAttribute('data-client'),
-            type: e.currentTarget.getAttribute('data-type'),
-            transfUsd: btn.children[2].children[0].value.replace(",", "."),
-            chequeUsd: btn.children[3].children[0].value.replace(",", "."),
-            transfGs: btn.children[4].children[0].value.replace(",", "."),
-            chequeGs: btn.children[5].children[0].value.replace(",", "."),
-            date: btn.children[6].children[0].value
-        };
+            break;
+        case 3: {
+            toastr.error(`Verifique la expectativa insertada, uno erro fue generado.`, "Erro en la Meta!", {
+                progressBar: true
+            })
+        }
 
-        status = await Connection.body(`financeexpected`, { finance }, 'POST');
+            break;
+    };
 
-        switch (status) {
-            case 1: {
-                toastr.success(`Cod Cliente: ${finance.client}<br>${finance.type == 2 ? "Fecha Aproximado de cobro" : "Valor"}: ${e.currentTarget.value}`, "Expectativa agregada con éxito!", {
-                    progressBar: true
-                })
-            }
-
-                break;
-            case 2: {
-                toastr.warning(`La expectativa de lo cliente fue cambiada<br>${finance.type == 2 ? "Fecha Aproximado de cobro" : "Valor"}: ${e.currentTarget.value ? e.currentTarget.value : "0"}`, "Aviso!", {
-                    progressBar: true
-                })
-            }
-
-                break;
-            case 3: {
-                toastr.error(`Verifique la expectativa insertada, uno erro fue generado.`, "Erro en la Meta!", {
-                    progressBar: true
-                })
-            }
-
-                break;
-        };
-    }
-});
+}
+window.saveExpected = saveExpected
 
 const init = async () => {
 

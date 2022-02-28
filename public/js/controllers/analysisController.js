@@ -7,7 +7,7 @@ const init = async () => {
         line.value = office.code;
         line.innerHTML = office.name;
 
-        if(office.code != "00") document.querySelector('#office').appendChild(line);
+        if (office.code != "00") document.querySelector('#office').appendChild(line);
     });
 
     $('#office').selectpicker("refresh");
@@ -28,6 +28,7 @@ const init = async () => {
         columns: [
             { title: "Cod Cliente" },
             { title: "Nombre Cliente" },
+            { title: "Cant" },
             { title: "Valor Totale" },
             { title: "Moneda" }
         ],
@@ -55,7 +56,7 @@ const init = async () => {
 init()
 
 const table = (dtview) => {
-    
+
     if ($.fn.DataTable.isDataTable('#dataTable')) {
         $('#dataTable').dataTable().fnClearTable();
         $('#dataTable').dataTable().fnDestroy();
@@ -67,6 +68,7 @@ const table = (dtview) => {
         columns: [
             { title: "Cod Cliente" },
             { title: "Nombre Cliente" },
+            { title: "Cant" },
             { title: "Valor Totale" },
             { title: "Moneda" }
         ],
@@ -116,10 +118,14 @@ const search = async (event) => {
         const data = await Connection.noBody(`invoices/client/${search.month}/${search.offices}/${search.clients}`, 'GET')
 
         let dtview = data.map(obj => {
+            let amount = 0;
+            obj.currency == "GS" ? amount = obj.amount.toLocaleString('es') : amount = obj.amount.toLocaleString('en-US');
+            
             return [
                 obj.code,
                 obj.name,
-                obj.amount,
+                obj.qty,
+                amount,
                 obj.currency,
             ]
         });

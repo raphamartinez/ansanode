@@ -1,4 +1,5 @@
 const Finance = require('../models/finance')
+const Office = require('../models/office')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
@@ -97,9 +98,30 @@ module.exports = app => {
 
     app.get('/financeresumeoffice', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
-            const offices = await Finance.resumeOffice();
 
-            res.json(offices)
+            let arroffices = [];
+
+            let offices = {};
+
+            if (req.access.all.allowed) {
+                const cached = await cachelist.searchValue(`office`);
+
+                if (cached) {
+                    offices = await JSON.parse(cached);
+                } else {
+                    offices = await Office.listOffice();
+                    cachelist.addCache(`office`, JSON.stringify(search.offices), 60 * 60 * 2);
+                }
+
+            } else {
+                offices = await Office.listOffice(req.login.id_login);
+            }
+
+            arroffices = offices.map(office => office.code);
+
+            const resume = await Finance.resumeOffice(arroffices);
+
+            res.json(resume)
         } catch (err) {
             next(err)
         }

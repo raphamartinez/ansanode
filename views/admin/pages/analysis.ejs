@@ -22,15 +22,26 @@
                     <div class="card-body">
                         <form data-form-search>
                             <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <h6>Fecha</h6>
-                                    <input class="form-control datepicker" type="month" name="month" id="month"
+                                <div class="form-group col-md-6">
+                                    <h6>Fecha Inicial</h6>
+                                    <input class="form-control datepicker" type="month" name="start" id="start"
+                                        required>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <h6>Fecha Final</h6>
+                                    <input class="form-control datepicker" type="month" name="end" id="end"
                                         required>
                                 </div>
                                 <div class="form-group col-md-4">
                                     <h6>Sucursal</h6>
                                     <select multiple title="Seleccione una sucursal" class="form-control selectpicker"
                                         name="office" id="office" required>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <h6>Grupos</h6>
+                                    <select multiple title="Seleccione los grupos" class="form-control selectpicker"
+                                        name="group" id="group">
                                     </select>
                                 </div>
                                 <div class="form-group col-md-4">

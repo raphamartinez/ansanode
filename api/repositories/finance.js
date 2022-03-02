@@ -304,16 +304,19 @@ class Finance {
     }
 
 
-    async listResumeOffice() {
+    async listResumeOffice(arroffices) {
         try {
+            console.log(arroffices);
+
             let sql = `SELECT ofi.code, ofi.name, SUM(fe.transfUsd) as transfUsd, SUM(fe.chequeUsd) as chequeUsd, SUM(fe.transfGs) as transfGs, SUM(fe.chequeGs) as chequeGs
                     FROM ansa.office ofi
                     LEFT JOIN ansa.financeexpected fe ON ofi.code = fe.office
+                    WHERE ofi.code IN (?)
                     GROUP BY ofi.code
                     HAVING ofi.code <> "00"
                     ORDER BY ofi.code ASC`
 
-            return query(sql)
+            return query(sql, [arroffices])
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar los resumen')

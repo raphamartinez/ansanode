@@ -112,7 +112,6 @@ controll
     .readOwn('clients')
     .readOwn('sales')
     .readOwn('finance')
-    .readOwn('office')
     .readOwn('crm', ['office'])
 
 

@@ -1,5 +1,5 @@
 const Invoice = require('../models/invoice');
-const Client = require('../models/client')
+const Office = require('../models/office')
 
 const Middleware = require('../infrastructure/auth/middleware');
 const Authorization = require('../infrastructure/auth/authorization');
@@ -17,14 +17,16 @@ module.exports = app => {
         }
     })
 
-    app.get('/invoices/client/:month/:offices/:clients', [Middleware.authenticatedMiddleware, Authorization('office', 'read')], async (req, res, next) => {
+    app.get('/invoices/client/:start/:end/:offices/:clients/:groups', [Middleware.authenticatedMiddleware, Authorization('office', 'read')], async (req, res, next) => {
         try {
 
             let search = {
-                month: req.params.month,
+                start: req.params.start,
+                end: req.params.end,
                 offices: req.params.offices,
-                clients: req.params.clients
-            }
+                clients: req.params.clients,
+                groups: req.params.groups
+            };
 
             let invoices = await Invoice.listAnalysis(search);
             res.json(invoices);

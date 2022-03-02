@@ -94,9 +94,9 @@ class Finance {
         }
     }
 
-    resumeOffice() {
+    resumeOffice(arroffices) {
         try {
-            return Repositorie.listResumeOffice();
+            return Repositorie.listResumeOffice(arroffices);
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las facturas.')

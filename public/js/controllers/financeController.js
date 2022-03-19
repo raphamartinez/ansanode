@@ -1040,6 +1040,9 @@ const listInclude = (dtview) => {
             'copy', 'excel',
         ]
     })
+
+    $('.guaranie').mask('099.099.099.099', { reverse: true });
+    $('.dol').mask("#.##0,00", { reverse: true });
 }
 
 $(document).on('keyup', '.goal', function (e) {
@@ -1053,9 +1056,9 @@ $(document).on('keyup', '.goal', function (e) {
         date: tr.children[6].children[0].value
     };
 
-    if(finance.transfUsd ||finance.chequeUsd || finance.transfGs || finance.chequeGs){
+    if (finance.transfUsd || finance.chequeUsd || finance.transfGs || finance.chequeGs) {
         tr.children[7].children[0].disabled = false;
-    }else{
+    } else {
         tr.children[7].children[0].disabled = true;
     }
 });
@@ -1072,10 +1075,10 @@ const officeInclude = async (event) => {
         const line = [
             `${obj.CustCode} - ${obj.CustName}`,
             obj.AmountBalance.toLocaleString('en-US', { style: 'currency', currency: 'USD' }),
-            `<input data-type="${obj.transfUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i}" value="${obj.transfUsd ? obj.transfUsd : ""}" type="text" class="form-control goal text-center">`,
-            `<input data-type="${obj.chequeUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 1}" value="${obj.chequeUsd ? obj.chequeUsd : ""}" type="text" class="form-control goal text-center">`,
-            `<input data-type="${obj.transfGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 2}" value="${obj.transfGs ? obj.transfGs : ""}" type="text" class="form-control goal text-center">`,
-            `<input data-type="${obj.chequeGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 3}" value="${obj.chequeGs ? obj.chequeGs : ""}" type="text" class="form-control goal text-center">`,
+            `<input data-type="${obj.transfUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i}" value="${obj.transfUsd ? obj.transfUsd : ""}" type="text" class="form-control goal dol text-center">`,
+            `<input data-type="${obj.chequeUsd ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 1}" value="${obj.chequeUsd ? obj.chequeUsd : ""}" type="text" class="form-control goal dol text-center">`,
+            `<input data-type="${obj.transfGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 2}" value="${obj.transfGs ? obj.transfGs : ""}" type="text" class="form-control goal guaranie text-center">`,
+            `<input data-type="${obj.chequeGs ? "3" : "1"}" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 3}" value="${obj.chequeGs ? obj.chequeGs : ""}" type="text" class="form-control goal guaranie text-center">`,
             `<input data-type="2" data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 4}" value="${obj.date ? obj.date : ""}" type="date" class="form-control goal text-center">`,
             `<button data-office="${office}" data-client="${obj.CustCode}" tabindex="${i + 5}" type="button" class="btn btn-lg btn-success" onclick="saveExpected(event)" disabled><i class="fas fa-1x fa-save"></i></button>`
         ]

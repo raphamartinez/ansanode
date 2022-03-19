@@ -123,7 +123,8 @@ class GoalLine {
                 }
             })
 
-
+            if (checkstock == 3) return data;
+            
             let arr = []
             for (let obj of data) {
 

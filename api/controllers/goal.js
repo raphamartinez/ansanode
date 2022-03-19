@@ -172,21 +172,19 @@ module.exports = app => {
     app.get('/goalsline/:id_salesman/:office/:group/:stock', [Middleware.authenticatedMiddleware, Authorization('goal', 'read')], async (req, res, next) => {
         try {
 
-            // const cached = await cachelist.searchValue(`goal:${JSON.stringify(req.params)}`)
+            const id_salesman = req.params.id_salesman;
+            const group = req.params.group;
+            const checkstock = req.params.stock;
+            const office = req.params.office;
 
-            // if (cached) {
-            //     return res.json(JSON.parse(cached))
-            // }
+            const cached = await cachelist.searchValue(`goalsline:${JSON.stringify(group)}:${JSON.stringify(checkstock)}:${JSON.stringify(office)}`);
 
-            const id_salesman = req.params.id_salesman
-            const group = req.params.group
-            const checkstock = req.params.stock
-            const office = req.params.office
+            if (cached) return res.json(JSON.parse(cached));
 
-            const goalsline = await GoalLine.list(id_salesman, office, group, checkstock)
-            cachelist.addCache(`goal:${JSON.stringify(req.params)}`, JSON.stringify(goalsline), 60 * 60 * 6)
+            const goalsline = await GoalLine.list(id_salesman, office, group, checkstock);
+            cachelist.addCache(`goalsline:${JSON.stringify(group)}:${JSON.stringify(checkstock)}:${JSON.stringify(office)}`, JSON.stringify(goalsline), 60 * 60 * 6);
 
-            res.json(goalsline)
+            res.json(goalsline);
         } catch (err) {
             next(err)
         }

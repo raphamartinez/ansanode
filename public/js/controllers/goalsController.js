@@ -1905,19 +1905,21 @@ const listGoals = async (salesman, group, stock) => {
 
     try {
 
-        const goalsline = await Connection.noBody(`goalsline/${salesman}/${salesman.office}/${group}/${stock}`, 'GET')
+        const goalsline = await Connection.noBody(`goalsline/${salesman}/${salesman.office}/${group}/${stock}`, 'GET');
 
         let index = 1;
 
-        const profile = document.querySelector('#profile').value
+        const profile = document.querySelector('#profile').value;
         const office = document.querySelector('#onsellers option:checked').getAttribute('data-office');
         let disabled = "";
-        if (profile == 8 && office != 11) disabled = "disabled"
+        if (profile == 8 && office != 11) disabled = "disabled";
 
         let dtview = goalsline.map(goal => {
-            const field = View.lineaddgoal(goal, index, salesman, disabled)
-            index += 12
-            return field
+            const field = View.lineaddgoal(goal, index, salesman, disabled);
+
+            if(stock == 3) field.splice(4, 2);
+            index += 12;
+            return field;
         });
 
         const dates = [
@@ -1955,6 +1957,38 @@ const listGoals = async (salesman, group, stock) => {
             return now;
         })
 
+        const title = [
+            { title: "Linea de Productos" },
+            { title: "Aplicacion" },
+            {
+                title: "Cod Articulo",
+                className: "details-control",
+            },
+            { title: "Nombre" },
+            {
+                title: "Stock Ci",
+                className: "datatable-grey",
+            },
+            {
+                title: "Stock TT",
+                className: "datatable-grey",
+            },
+            { title: datecolumn[0] },
+            { title: datecolumn[1] },
+            { title: datecolumn[2] },
+            { title: datecolumn[3] },
+            { title: datecolumn[4] },
+            { title: datecolumn[5] },
+            { title: datecolumn[6] },
+            { title: datecolumn[7] },
+            { title: datecolumn[8] },
+            { title: datecolumn[9] },
+            { title: datecolumn[10] },
+            { title: datecolumn[11] }
+        ]
+
+        if(stock == 3) title.splice(4, 2);
+
         if ($.fn.DataTable.isDataTable('#tablegoals')) {
             $('#tablegoals').dataTable().fnClearTable();
             $('#tablegoals').dataTable().fnDestroy();
@@ -1963,35 +1997,7 @@ const listGoals = async (salesman, group, stock) => {
 
         $("#tablegoals").DataTable({
             data: dtview,
-            columns: [
-                { title: "Linea de Productos" },
-                { title: "Aplicacion" },
-                {
-                    title: "Cod Articulo",
-                    className: "details-control",
-                },
-                { title: "Nombre" },
-                {
-                    title: "Stock Ci",
-                    className: "datatable-grey",
-                },
-                {
-                    title: "Stock TT",
-                    className: "datatable-grey",
-                },
-                { title: datecolumn[0] },
-                { title: datecolumn[1] },
-                { title: datecolumn[2] },
-                { title: datecolumn[3] },
-                { title: datecolumn[4] },
-                { title: datecolumn[5] },
-                { title: datecolumn[6] },
-                { title: datecolumn[7] },
-                { title: datecolumn[8] },
-                { title: datecolumn[9] },
-                { title: datecolumn[10] },
-                { title: datecolumn[11] }
-            ],
+            columns: title,
             paging: true,
             ordering: false,
             info: true,

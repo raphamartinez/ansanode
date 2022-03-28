@@ -306,8 +306,6 @@ class Finance {
 
     async listResumeOffice(arroffices) {
         try {
-            console.log(arroffices);
-
             let sql = `SELECT ofi.code, ofi.name, SUM(fe.transfUsd) as transfUsd, SUM(fe.chequeUsd) as chequeUsd, SUM(fe.transfGs) as transfGs, SUM(fe.chequeGs) as chequeGs
                     FROM ansa.office ofi
                     LEFT JOIN ansa.financeexpected fe ON ofi.code = fe.office

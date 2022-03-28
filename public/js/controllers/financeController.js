@@ -1000,6 +1000,12 @@ Array.from(document.querySelectorAll('[data-action-view]')).forEach(action => {
 
 const listInclude = (dtview) => {
 
+    if(dtview.length > 0) {
+        document.querySelector('[data-info-expected]').remove()
+    }else{
+        return null
+    }
+
     if ($.fn.DataTable.isDataTable('#dataInclude')) {
         $('#dataInclude').dataTable().fnClearTable();
         $('#dataInclude').dataTable().fnDestroy();
@@ -1041,8 +1047,8 @@ const listInclude = (dtview) => {
         ]
     })
 
-    $('.guaranie').mask('099.099.099.099', { reverse: true });
-    $('.dol').mask("#.##0,00", { reverse: true });
+    $('.guaranie').mask('#.##0.000.000.000', { reverse: true});
+    $('.dol').mask('#.##0.000.000', { reverse: true});
 }
 
 $(document).on('keyup', '.goal', function (e) {
@@ -1293,18 +1299,24 @@ const officeResume = async (event) => {
 window.officeResume = officeResume
 
 async function saveExpected(event) {
-    const btn = event.path[2];
+    const tr = event.path[2].nodeName == 'TR' ? event.path[2] : event.path[3];
     let status = 3;
+
+    $('.guaranie').unmask();
+    $('.dol').unmask();
 
     const finance = {
         office: event.currentTarget.getAttribute('data-office'),
         client: event.currentTarget.getAttribute('data-client'),
-        transfUsd: btn.children[2].children[0].value,
-        chequeUsd: btn.children[3].children[0].value,
-        transfGs: btn.children[4].children[0].value,
-        chequeGs: btn.children[5].children[0].value,
-        date: btn.children[6].children[0].value
+        transfUsd: tr.children[2].children[0].value,
+        chequeUsd: tr.children[3].children[0].value,
+        transfGs: tr.children[4].children[0].value,
+        chequeGs: tr.children[5].children[0].value,
+        date: tr.children[6].children[0].value
     }
+
+    $('.guaranie').mask('#.##0.000.000.000', { reverse: true});
+    $('.dol').mask('#.##0.000.000', { reverse: true});
 
     status = await Connection.body(`financeexpected`, { finance }, 'POST');
 

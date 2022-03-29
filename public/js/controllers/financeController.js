@@ -1000,8 +1000,9 @@ Array.from(document.querySelectorAll('[data-action-view]')).forEach(action => {
 
 const listInclude = (dtview) => {
 
+    let info = document.querySelector('[data-info-expected]')
     if(dtview.length > 0) {
-        document.querySelector('[data-info-expected]').remove()
+       if(info) info.remove()
     }else{
         return null
     }
@@ -1046,9 +1047,6 @@ const listInclude = (dtview) => {
             'copy', 'excel',
         ]
     })
-
-    $('.guaranie').mask('#.##0.000.000.000', { reverse: true});
-    $('.dol').mask('#.##0.000.000', { reverse: true});
 }
 
 $(document).on('keyup', '.goal', function (e) {
@@ -1302,21 +1300,15 @@ async function saveExpected(event) {
     const tr = event.path[2].nodeName == 'TR' ? event.path[2] : event.path[3];
     let status = 3;
 
-    $('.guaranie').unmask();
-    $('.dol').unmask();
-
     const finance = {
         office: event.currentTarget.getAttribute('data-office'),
         client: event.currentTarget.getAttribute('data-client'),
-        transfUsd: tr.children[2].children[0].value,
-        chequeUsd: tr.children[3].children[0].value,
-        transfGs: tr.children[4].children[0].value,
-        chequeGs: tr.children[5].children[0].value,
+        transfUsd: tr.children[2].children[0].value.replace(",", "."),
+        chequeUsd: tr.children[3].children[0].value.replace(",", "."),
+        transfGs: tr.children[4].children[0].value.replace(",", "."),
+        chequeGs: tr.children[5].children[0].value.replace(",", "."),
         date: tr.children[6].children[0].value
     }
-
-    $('.guaranie').mask('#.##0.000.000.000', { reverse: true});
-    $('.dol').mask('#.##0.000.000', { reverse: true});
 
     status = await Connection.body(`financeexpected`, { finance }, 'POST');
 

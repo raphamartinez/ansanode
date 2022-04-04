@@ -281,7 +281,7 @@ class Finance {
             DATE_FORMAT(fe.date, '%Y-%m-%d') as date `
 
             sql += ` FROM ansa.receivable re  `
-            if (clients == '1') sql += ` LEFT JOIN financeexpected fe ON re.CustCode = fe.client `
+            if (clients == '1') sql += ` LEFT JOIN financeexpected fe ON re.CustCode = fe.client and month(fe.date) = month(now())`
 
             sql += ` WHERE re.CustCode <> 1 `
             if (office && office !== "ALL") sql += ` AND re.Office IN (${office}) `
@@ -293,7 +293,7 @@ class Finance {
             }
 
             sql += `GROUP BY re.CustCode 
-                    HAVING AmountBalance > 0
+                    HAVING AmountBalance > 0 and month(date) = month(now())
                     ORDER BY AmountBalance DESC`
 
             return query(sql)

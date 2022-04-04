@@ -1000,17 +1000,17 @@ Array.from(document.querySelectorAll('[data-action-view]')).forEach(action => {
 
 const listInclude = (dtview) => {
 
-    let info = document.querySelector('[data-info-expected]')
-    if(dtview.length > 0) {
-       if(info) info.remove()
-    }else{
-        return null
-    }
-
     if ($.fn.DataTable.isDataTable('#dataInclude')) {
         $('#dataInclude').dataTable().fnClearTable();
         $('#dataInclude').dataTable().fnDestroy();
         $('#dataInclude').empty();
+    }
+
+    let info = document.querySelector('[data-info-expected]')
+    if(dtview.length > 0 && info) {
+       info.remove()
+
+       return null
     }
 
     $("#dataInclude").DataTable({

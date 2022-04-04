@@ -1008,9 +1008,12 @@ const listInclude = (dtview) => {
 
     let info = document.querySelector('[data-info-expected]')
     if(dtview.length > 0 && info) {
-       info.remove()
+       info.classList.add('d-none')
+    }
 
-       return null
+    if(dtview.length === 0) {
+        info.classList.remove('d-none')
+        return null 
     }
 
     $("#dataInclude").DataTable({

@@ -293,7 +293,7 @@ class Finance {
             }
 
             sql += `GROUP BY re.CustCode 
-                    HAVING AmountBalance > 0 and month(date) = month(now())
+                    HAVING AmountBalance > 0
                     ORDER BY AmountBalance DESC`
 
             return query(sql)

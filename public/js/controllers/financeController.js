@@ -610,7 +610,7 @@ function viewFinance(index, title, invoices) {
                 <option value="2">Pago Programado</option>
                 <option value="3">Reenviar al gerente</option>
              </select>`,
-            `<button data-SerNr="${invoice.SerNr}" tabindex="${index + 6}" type="button" class="btn btn-lg btn-success" onclick="saveFinance(event)" disabled><i class="fas fa-1x fa-save"></i></button>`
+            `<button data-SerNr="${invoice.SerNr}" data-typecoin="${invoice.typecoin}" data-payterm="${invoice.payterm}" data-client="${invoice.CustCode}" data-amount="${invoice.coinAmount}" data-office="${invoice.office}" tabindex="${index + 6}" type="button" class="btn btn-lg btn-success" onclick="saveFinance(event)" disabled><i class="fas fa-1x fa-save"></i></button>`
         ]
     })
 
@@ -898,14 +898,21 @@ window.copyLineFinance = copyLineFinance
 async function saveFinance(event) {
     const btn = event.currentTarget
 
+    const tr = event.path[3].nodeName == "TR" ? event.path[3] : event.path[2]
+
     const finance = {
-        contactdate: event.path[3].children[5].children[0].value,
-        responsible: event.path[3].children[6].children[0].value,
-        contact: event.path[3].children[7].children[0].value,
-        comment: event.path[3].children[8].children[0].value,
-        payday: event.path[3].children[9].children[0].value,
-        status: event.path[3].children[10].children[0].value,
-        invoicenr: btn.getAttribute("data-sernr")
+        contactdate: tr.children[5].children[0].value,
+        responsible: tr.children[6].children[0].value,
+        contact: tr.children[7].children[0].value,
+        comment: tr.children[8].children[0].value,
+        payday: tr.children[9].children[0].value,
+        status: tr.children[10].children[0].value,
+        invoicenr: btn.getAttribute("data-sernr"),
+        office: btn.getAttribute("data-office"),
+        amount: btn.getAttribute("data-amount"),
+        client: btn.getAttribute("data-client"),
+        typecoin: btn.getAttribute("data-typecoin"),
+        payterm: btn.getAttribute("data-payterm"),
     }
 
     const status = await Connection.body(`finance`, { finance }, 'POST')
@@ -1225,13 +1232,13 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
         columns: [
             { title: "Sucursal" },
             { title: "Transf USD" },
-            { title: "%" },
+            { title: "%", classList: "text-center" },
             { title: "Cheque USD" },
-            { title: "%" },
+            { title: "%", classList: "text-center"  },
             { title: "Transf Gs" },
-            { title: "%" },
+            { title: "%", classList: "text-center"  },
             { title: "Cheque Gs" },
-            { title: "%" }
+            { title: "%", classList: "text-center"  }
         ],
         paging: false,
         ordering: false,
@@ -1268,29 +1275,29 @@ const officeResume = async (event) => {
 
     let dtview = data.map(obj => {
         offices.push(obj.code)
-        transfUsd.push(obj.transfUsd)
-        chequeUsd.push(obj.chequeUsd)
-        transfGs.push(obj.transfGs)
-        chequeGs.push(obj.chequeGs)
+        transfUsd.push(obj.exUsdTransf)
+        chequeUsd.push(obj.exChequeUsd)
+        transfGs.push(obj.exTransfGs)
+        chequeGs.push(obj.exChequeGs)
 
         dtEffective.push([
             `${obj.code} - ${obj.name}`,
-            `${obj.transfUsdEf ? obj.transfUsdEf : ""}`,
-            `${obj.transfUsdPc ? obj.transfUsdPc : ""}`,
-            `${obj.chequeUsdEf ? obj.chequeUsdEf : ""}`,
-            `${obj.chequeUsdPc ? obj.chequeUsdPc : ""}`,
-            `${obj.transfGsEf ? obj.transfGsEf : ""}`,
-            `${obj.transfGsPc ? obj.transfGsPc : ""}`,
-            `${obj.chequeGsEf ? obj.chequeGsEf : ""}`,
-            `${obj.chequeGsPc ? obj.chequeGsPc : ""}`
+            `${obj.usdTransf ? obj.usdTransf : ""}`,
+            `${obj.exUsdTransf ? ((obj.exUsdTransf * 100) / obj.usdTransf).toFixed(2) : ""}`,
+            `${obj.usdCheque ? obj.usdCheque : ""}`,
+            `${obj.exChequeUsd ? ((obj.exChequeUsd * 100) / obj.usdCheque).toFixed(2) : ""}`,
+            `${obj.gsTransf ? obj.gsTransf : ""}`,
+            `${obj.exTransfGs ? ((obj.exTransfGs * 100) / obj.gsTransf).toFixed(2) : ""}`,
+            `${obj.gsCheque ? obj.gsCheque : ""}`,
+            `${obj.exChequeGs ? ((obj.exChequeGs * 100) / obj.gsCheque).toFixed(2) : ""}`
         ])
 
         return [
             `${obj.code} - ${obj.name}`,
-            obj.transfUsd > 0 ? obj.transfUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
-            obj.chequeUsd > 0 ? obj.chequeUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
-            obj.transfGs > 0 ? `Gs ${obj.transfGs.toLocaleString('es')}` : "",
-            obj.chequeGs > 0 ? `Gs ${obj.chequeGs.toLocaleString('es')}` : ""
+            obj.exUsdTransf > 0 ? obj.exUsdTransf.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
+            obj.exChequeUsd > 0 ? obj.exChequeUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' }) : "",
+            obj.exTransfGs > 0 ? `Gs ${obj.exTransfGs.toLocaleString('es')}` : "",
+            obj.exChequeGs > 0 ? `Gs ${obj.exChequeGs.toLocaleString('es')}` : ""
         ]
     });
 
@@ -1365,6 +1372,9 @@ const init = async () => {
 
     document.querySelector('.select-pure__placeholder').innerHTML = "Clientes"
 
+    const date = new Date()
+    const month = date.getMonth() + 1 > 9 ? date.getMonth() + 1 : `0${date.getMonth() + 1}`
+    document.getElementById('sumonth').value = `${date.getFullYear()}-${month}`
     const offices = await Connection.noBody('offices', 'GET')
     offices.forEach(office => {
         const option = document.createElement('option')

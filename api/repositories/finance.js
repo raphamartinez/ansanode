@@ -6,9 +6,9 @@ class Finance {
 
     async insert(finance, id_login) {
         try {
-            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
+            const sql = `INSERT INTO ansa.financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, office, amount, client, typecoin, payterm, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
 
-            const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, id_login])
+            const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, finance.office, finance.amount, finance.client, finance.typecoin, finance.payterm, id_login])
             return result[0]
         } catch (error) {
             console.log(error);
@@ -93,10 +93,10 @@ class Finance {
 
     async listClient(client, d1, d2) {
         try {
-            let sql = `SELECT t.SalesMan, t.date, t.CustCode, t.CustName, t.SerNr, t.daysOverdue, t.DueDate, t.amount, t.payday, t.comment, t.responsible, t.contact, t.contactdate, t.dateReg, t.status
-            FROM (SELECT DATE_FORMAT(re.date, '%H:%i %d/%m/%Y') as date, re.SalesMan, re.CustCode, re.CustName, re.SerNr, IF(DATEDIFF(NOW(), re.DueDate) > 0,DATEDIFF(NOW(), re.DueDate),0)  as daysOverdue, DATE_FORMAT(re.DueDate, '%d/%m/%Y') as DueDate,
-            TRUNCATE(SUM(IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
-            IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total))))),2) as amount, fi.status,
+            let sql = `SELECT t.SalesMan, t.date, t.CustCode, t.CustName, t.SerNr, t.daysOverdue, t.DueDate, t.amount, t.office, t.payday, t.comment, t.responsible, t.contact, t.contactdate, t.dateReg, t.status, t.typecoin, t.payterm, t.coinAmount
+            FROM (SELECT DATE_FORMAT(re.date, '%H:%i %d/%m/%Y') as date, re.SalesMan, re.CustCode, re.CustName, re.SerNr, re.Office as office, IF(DATEDIFF(NOW(), re.DueDate) > 0,DATEDIFF(NOW(), re.DueDate),0)  as daysOverdue, DATE_FORMAT(re.DueDate, '%d/%m/%Y') as DueDate, IF(re.Currency = "RE", 1, IF(re.Currency = "GS", 2, 3)) as typecoin,
+            TRUNCATE(SUM(IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0, 
+            IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total))))),2) as amount, fi.status, IF(re.PayTerm = "Cheque", 2, 1) as payterm, re.Total as coinAmount,
             DATE_FORMAT(fi.contactdate, '%Y-%m-%d') as contactdate,if(fi.datereg > NOW() - interval 1 day , DATE_FORMAT(fi.payday, '%Y-%m-%d'), "") as payday, if(fi.datereg > NOW() - interval 1 day ,fi.comment,"") as comment, if(fi.datereg > NOW() - interval 1 day ,fi.responsible,"") as responsible, 
             if(fi.datereg > NOW() - interval 1 day ,fi.contact,"") as contact, if(fi.datereg > NOW() - interval 1 day ,DATE_FORMAT(fi.datereg, '%H:%i %d/%m/%Y'), "") as dateReg
             FROM ansa.receivable re
@@ -281,7 +281,7 @@ class Finance {
             DATE_FORMAT(fe.date, '%Y-%m-%d') as date `
 
             sql += ` FROM ansa.receivable re  `
-            if (clients == '1') sql += ` LEFT JOIN financeexpected fe ON re.CustCode = fe.client and month(fe.date) = month(now())`
+            if (clients == '1') sql += ` LEFT JOIN financeexpected fe ON re.CustCode = fe.client and LAST_DAY(fe.date) = LAST_DAY(now())`
 
             sql += ` WHERE re.CustCode <> 1 `
             if (office && office !== "ALL") sql += ` AND re.Office IN (${office}) `
@@ -306,13 +306,22 @@ class Finance {
 
     async listResumeOffice(arroffices) {
         try {
-            let sql = `SELECT ofi.code, ofi.name, SUM(fe.transfUsd) as transfUsd, SUM(fe.chequeUsd) as chequeUsd, SUM(fe.transfGs) as transfGs, SUM(fe.chequeGs) as chequeGs
-                    FROM ansa.office ofi
-                    LEFT JOIN ansa.financeexpected fe ON ofi.code = fe.office
-                    WHERE ofi.code IN (?)
-                    GROUP BY ofi.code
-                    HAVING ofi.code <> "00"
-                    ORDER BY ofi.code ASC`
+            let sql = `SELECT ofi.code, ofi.name,
+            TRUNCATE(SUM(IF(fi.typecoin = 3 AND fi.payterm = 1,  amount,0)),2) AS usdTransf,
+            fe.transfUsd as exUsdTransf,
+            TRUNCATE(SUM(IF(fi.typecoin = 3 AND fi.payterm = 2,  amount,0)),2) AS usdCheque,
+            fe.chequeUsd as exChequeUsd,
+            TRUNCATE(SUM(IF(fi.typecoin = 2 AND fi.payterm = 1,  amount,0)),2) AS gsTransf,
+            fe.transfGs as exTransfGs,
+            TRUNCATE(SUM(IF(fi.typecoin = 2 AND fi.payterm = 2,  amount,0)),2) AS gsCheque,
+            fe.chequeGs as exChequeGs
+            FROM ansa.office as ofi
+            LEFT JOIN ansa.financeinvoice as fi on ofi.code = fi.office and LAST_DAY(fi.contactdate) = LAST_DAY(NOW())
+            LEFT JOIN ansa.financeexpected as fe on fi.client = fe.client and LAST_DAY(fe.date) = LAST_DAY(NOW())
+            WHERE ofi.code <> "00" and ofi.code in (?)
+            GROUP BY code, typecoin, payterm
+            ORDER BY ofi.code ASC
+            `
 
             return query(sql, [arroffices])
         } catch (error) {

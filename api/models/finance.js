@@ -94,9 +94,13 @@ class Finance {
         }
     }
 
-    resumeOffice(arroffices) {
+    resumeOffice(arroffices, month) {
         try {
-            return Repositorie.listResumeOffice(arroffices);
+            if(!month){
+                const date = new Date()
+                month = `${date.getFullYear()}-${date.getMonth() + 1}`
+            }
+            return Repositorie.listResumeOffice(arroffices, month);
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar las facturas.')

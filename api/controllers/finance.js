@@ -96,12 +96,14 @@ module.exports = app => {
         }
     })
 
-    app.get('/financeresumeoffice', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+    app.get('/financeresumeoffice/:month?', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
 
             let arroffices = [];
 
             let offices = {};
+
+            let month = req.params.month ? req.params.month : false
 
             if (req.access.all.allowed) {
                 const cached = await cachelist.searchValue(`office`);
@@ -119,7 +121,7 @@ module.exports = app => {
 
             arroffices = offices.map(office => office.code);
 
-            const resume = await Finance.resumeOffice(arroffices);
+            const resume = await Finance.resumeOffice(arroffices, month);
 
             res.json(resume)
         } catch (err) {

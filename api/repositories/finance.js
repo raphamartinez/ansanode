@@ -304,7 +304,7 @@ class Finance {
     }
 
 
-    async listResumeOffice(arroffices) {
+    async listResumeOffice(arroffices, month) {
         try {
             let sql = `SELECT ofi.code, ofi.name,
             TRUNCATE(SUM(IF(fi.typecoin = 3 AND fi.payterm = 1,  amount,0)),2) AS usdTransf,
@@ -316,14 +316,14 @@ class Finance {
             TRUNCATE(SUM(IF(fi.typecoin = 2 AND fi.payterm = 2,  amount,0)),2) AS gsCheque,
             fe.chequeGs as exChequeGs
             FROM ansa.office as ofi
-            LEFT JOIN ansa.financeinvoice as fi on ofi.code = fi.office and LAST_DAY(fi.contactdate) = LAST_DAY(NOW())
-            LEFT JOIN ansa.financeexpected as fe on fi.client = fe.client and LAST_DAY(fe.date) = LAST_DAY(NOW())
+            LEFT JOIN ansa.financeinvoice as fi on ofi.code = fi.office and LAST_DAY(fi.contactdate) = LAST_DAY(?)
+            LEFT JOIN ansa.financeexpected as fe on fi.client = fe.client and LAST_DAY(fe.date) = LAST_DAY(?)
             WHERE ofi.code <> "00" and ofi.code in (?)
             GROUP BY code, typecoin, payterm
             ORDER BY ofi.code ASC
             `
 
-            return query(sql, [arroffices])
+            return query(sql, [`${month}-10`, `${month}-10`, arroffices])
         } catch (error) {
             console.log(error);
             throw new InternalServerError('No se pudieron enumerar los resumen')

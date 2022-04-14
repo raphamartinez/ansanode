@@ -1014,13 +1014,13 @@ const listInclude = (dtview) => {
     }
 
     let info = document.querySelector('[data-info-expected]')
-    if(dtview.length > 0 && info) {
-       info.classList.add('d-none')
+    if (dtview.length > 0 && info) {
+        info.classList.add('d-none')
     }
 
-    if(dtview.length === 0) {
+    if (dtview.length === 0) {
         info.classList.remove('d-none')
-        return null 
+        return null
     }
 
     $("#dataInclude").DataTable({
@@ -1144,6 +1144,10 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
         ]
     })
 
+    document.querySelector('[data-div-chart-gs]').innerHTML = `
+    <h4>Guaranies</h4>
+    <canvas class="flex d-inline" data-chart-gs></canvas>`
+
     const ctxGs = document.querySelector('[data-chart-gs]')
 
     const chartGs = new Chart(ctxGs, {
@@ -1182,6 +1186,9 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
         }
     });
 
+    document.querySelector('[data-div-chart-dol]').innerHTML = `
+    <h4>Dolares</h4>
+    <canvas class="flex d-inline" data-chart-dol></canvas>`
 
     const ctxDol = document.querySelector('[data-chart-dol]')
 
@@ -1234,11 +1241,11 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
             { title: "Transf USD" },
             { title: "%", classList: "text-center" },
             { title: "Cheque USD" },
-            { title: "%", classList: "text-center"  },
+            { title: "%", classList: "text-center" },
             { title: "Transf Gs" },
-            { title: "%", classList: "text-center"  },
+            { title: "%", classList: "text-center" },
             { title: "Cheque Gs" },
-            { title: "%", classList: "text-center"  }
+            { title: "%", classList: "text-center" }
         ],
         paging: false,
         ordering: false,
@@ -1263,8 +1270,11 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
 }
 
 const officeResume = async (event) => {
+    if(event) event.preventDefault()
 
-    const data = await Connection.noBody(`financeresumeoffice`, 'GET')
+    const month = document.querySelector('#sumonth').value
+
+    const data = await Connection.noBody(`financeresumeoffice/${month ? month : ""}`, 'GET')
 
     let offices = []
     let transfUsd = []
@@ -1303,6 +1313,8 @@ const officeResume = async (event) => {
 
     listResume(dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs, chequeGs)
 }
+
+document.querySelector('[data-search-resume]').addEventListener('submit', officeResume)
 
 window.officeResume = officeResume
 

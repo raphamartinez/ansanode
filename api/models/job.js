@@ -32,7 +32,7 @@ const jobHbs = new CronJob('0 30 5 * * *', () => {
     }
 });
 
-const jobReceivable = new CronJob('0 0 9 * * *', () => {
+const jobReceivable = new CronJob('0 0 3 * * *', () => {
     try {
         console.log('Executed Cron Hbs sucessfuly!');
         Hbs.listReceivables()

@@ -91,76 +91,18 @@ class Hbs {
 
     async listReceivables() {
         try {
-            await Repositorie.dropReceivable()
 
-            const ncs = await Repositorie.listNcs()
+            const invoices = await Repositorie.listUnionReceivable()
+            if (invoices.length > 0) await Repositorie.dropReceivable()
 
-            if (ncs.length !== 0) {
-                await ncs.forEach(obj => {
-
-                    if (obj.Office === "06") {
-                        const date1 = new Date(obj.date)
-                        const date2 = new Date('01-01-2020')
-                        if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "13"
-                        }
-                    }
-                    Repositorie.insertReceivable(obj)
-                });
-            }
-
-            const inv = await Repositorie.listInvoices()
-            if (inv.length !== 0) {
-                await inv.forEach(obj => {
-
-                    if (obj.Office === "06") {
-                        const date1 = new Date(obj.date)
-                        const date2 = new Date('01-01-2020')
-                        if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "13"
-                        }
-                    }
-
-                    Repositorie.insertReceivable(obj)
-                });
-            }
-
-            const installs = await Repositorie.listInstalls()
-            if (installs.length !== 0) {
-                await installs.forEach(obj => {
-
-                    if (obj.Office === "06") {
-                        const date1 = new Date(obj.date)
-                        const date2 = new Date('01-01-2020')
-                        if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "13"
-                        }
-                    }
-
-                    Repositorie.insertReceivable(obj)
-                });
-            }
-
-            const cheques = await Repositorie.listCheque()
-            if (cheques.length !== 0) {
-                await cheques.forEach(obj => {
-
-                    if (obj.Office === "06") {
-                        const date1 = new Date(obj.date)
-                        const date2 = new Date('01-01-2020')
-                        if (date1.getTime() < date2.getTime()) {
-                            obj.Office = "13"
-                        }
-                    }
-
-                    Repositorie.insertReceivable(obj)
-                });
+            for(let invoice of invoices){
+               await Repositorie.insertReceivable(invoice)
             }
 
             console.log('finalizada a consulta')
             return true
         } catch (error) {
-            console.log(error);
+            console.error(error);
             console.log('consulta de inadimplencia deu erro');
             return false
         }
@@ -436,7 +378,7 @@ class Hbs {
     async listStockToInsert() {
         try {
             const itemStocks = await Repositorie.listStockToInsert();
-            
+
             for (let items of itemStocks) {
                 await Repositorie.insertStock(items);
             }

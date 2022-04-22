@@ -8,7 +8,19 @@ module.exports = app => {
 
     app.get('/cobranza', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {
-            res.render('cobranza')
+
+            let arroffices = [];
+            let offices = {};
+            if (!req.access.all.allowed) {
+                offices = await Office.listOffice(req.login.id_login)
+                arroffices = offices.map(office => office.code)
+            }
+
+            const period = 30
+            let invoices = await Finance.listOpenInvoices(period, arroffices)
+            res.render('cobranza', {
+                invoices
+            })
         } catch (err) {
             next(err)
         }
@@ -20,11 +32,11 @@ module.exports = app => {
             let user = req.params.user
 
             if (req.access.all.allowed) {
-                
-                if(office && office == "TODOS") office = false
-                if(user && user == "TODOS") user = false
 
-                let { graphs, details }  = await Finance.graphReceivable(user, office)
+                if (office && office == "TODOS") office = false
+                if (user && user == "TODOS") user = false
+
+                let { graphs, details } = await Finance.graphReceivable(user, office)
                 res.json({ graphs, details })
             } else {
                 let id_login = false;
@@ -39,8 +51,8 @@ module.exports = app => {
                         return of.code
                     })
 
-                    if(office && office != "TODOS") offices = office
-                    if(user && user != "TODOS") id_login = user
+                    if (office && office != "TODOS") offices = office
+                    if (user && user != "TODOS") id_login = user
 
                 } else {
                     id_login = req.login.id_login
@@ -49,17 +61,17 @@ module.exports = app => {
                 let { graphs, details } = await Finance.graphReceivable(id_login, offices, datestart, dateend)
                 res.json({ graphs, details })
             }
-   
+
         } catch (err) {
             next(err)
         }
     })
-    
+
     app.post('/finance', [Middleware.authenticatedMiddleware, Authorization('finance', 'create')], async (req, res, next) => {
         try {
             const finance = req.body.finance
 
-           const status = await Finance.insert(finance, req.login.id_login)
+            const status = await Finance.insert(finance, req.login.id_login)
 
             cachelist.delPrefix('finance')
 
@@ -73,7 +85,7 @@ module.exports = app => {
         try {
             const finance = req.body.finance
 
-           const status = await Finance.insertExpected(finance, req.login.id_login)
+            const status = await Finance.insertExpected(finance, req.login.id_login)
 
             res.status(201).json(status)
         } catch (err) {
@@ -192,6 +204,28 @@ module.exports = app => {
             next(err)
         }
     })
+
+    app.get('/financeclick/:typeAmountOpen/:office?', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
+        try {
+
+            const typeAmountOpen = req.params.typeAmountOpen
+            let arroffices = [];
+            let offices = {};
+            if (!req.access.all.allowed) {
+                offices = await Office.listOffice(req.login.id_login)
+                arroffices = offices.map(office => office.code)
+            }else{
+                const office = req.params.office  
+                arroffices.push(office)
+            }
+
+            const invoices = await Finance.amountOpen(arroffices, typeAmountOpen)
+            res.json(invoices)
+        } catch (err) {
+            next(err)
+        }
+    })
+
 
     app.get('/financehistory/:invoice', [Middleware.authenticatedMiddleware, Authorization('finance', 'read')], async (req, res, next) => {
         try {

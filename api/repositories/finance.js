@@ -177,6 +177,50 @@ class Finance {
         }
     }
 
+    amountOpen(offices, typeAmountOpen) {
+        try {
+            let sql = `SELECT re.CustCode, re.CustName, COUNT(DISTINCT re.OfficialSerNr) as invoices,
+
+            TRUNCATE(SUM(IF(re.DueDate <= now() AND re.DueDate >= (now() - interval 15 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d15,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 15 day) AND re.DueDate >= (now() - interval 30 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d30,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 30 day) AND re.DueDate >= (now() - interval 60 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d60,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 60 day) AND re.DueDate >= (now() - interval 90 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d90,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 90 day) AND re.DueDate >= (now() - interval 120 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d120,
+            
+            TRUNCATE(SUM(IF(re.DueDate < (now() - interval 120 day), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as d120more,
+            
+            TRUNCATE(SUM(IF(re.DueDate > now(), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountOpen,
+            
+            TRUNCATE(SUM(IF(re.DueDate > now(), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,            
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as AmountBalance
+            
+            FROM ansa.receivable re
+            WHERE re.CustCode <> 1
+            AND re.DueDate BETWEEN CURDATE() AND CURDATE() + interval ? DAY
+            `
+
+            if (offices.length > 0) sql += ` AND re.Office IN (${offices}) `
+
+            sql += `GROUP BY re.CustCode `
+
+            return query(sql, typeAmountOpen)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los login')
+        }
+    }
+
     listInvoiceHistory(invoice) {
         try {
             let sql = `SELECT fi.id_financeinvoice, fi.invoicenr, fi.comment, fi.contact, fi.responsible, fi.status, DATE_FORMAT(fi.payday, '%d/%m/%Y') as payday, DATE_FORMAT(fi.contactdate, '%H:%i %d/%m/%Y') as contactdate,
@@ -303,6 +347,27 @@ class Finance {
         }
     }
 
+    listOpenInvoices(period, arroffices) {
+
+        try {
+            let sql = `SELECT ofi.code, ofi.name, COUNT(DISTINCT re.OfficialSerNr) as invoices,
+            TRUNCATE(SUM(IF(re.DueDate > now(), IF(re.InvoiceType = 4, IF(re.Currency = "GS", re.Total / re.BaseRate, IF(re.Currency = "RE", re.Total * re.FromRate / re.BaseRate, re.Total)),IF(re.InvoiceType = 2,0,
+            IF(re.Currency = "GS", re.Saldo / re.BaseRate, IF(re.Currency = "RE", re.Saldo * re.FromRate / re.BaseRate, re.Saldo)))), 0)),2) as total
+            FROM ansa.office as ofi 
+            INNER JOIN ansa.receivable re on ofi.code = re.Office
+            WHERE re.CustCode <> 1 AND re.DueDate BETWEEN CURDATE() AND CURDATE() + interval ? DAY `
+            
+            if(arroffices.length > 0) sql += ` AND ofi.code IN (${arroffices}) `
+
+            sql += `GROUP BY ofi.code 
+			        ORDER BY code ASC`
+
+            return query(sql, period)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los resumen')
+        }
+    }
 
     async listResumeOffice(arroffices, month) {
         try {

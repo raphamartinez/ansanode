@@ -217,6 +217,92 @@ class Hbs {
     //     }
     // }
 
+    listUnionReceivable() {
+        try {
+            const sql = `SELECT 'A' as DocType, 'Invoice' as Type, InvoiceType, Invoice.SerNr, '0' as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date,
+            Invoice.DueDate, Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan, 
+            Invoice.CurrencyRate, Invoice.BaseRate, Invoice.Total as Total, Saldo, Saldo as SaldoInv, IF(Invoice.TransDate < '2020-01-01' && Invoice.Office = "06", "13", Invoice.Office) AS Office, Invoice.FromRate
+            , Invoice.Comment, '' as BankName, IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName, Customer.GroupCode as CustGroup
+            FROM Invoice 
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
+            WHERE Invoice.Saldo != 0
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
+            AND Invoice.OpenFlag = 1
+            AND Invoice.Status = 1 
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
+            AND InvoiceType <> 1 
+            AND (Installments = 0 OR Installments IS NULL) 
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+            GROUP BY Invoice.SerNr          
+UNION ALL
+SELECT 'A' as DocType,'NC' as Type, InvoiceType, Invoice.SerNr, '0' as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS date, Invoice.DueDate
+            , Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, Invoice.OfficialSerNr, Invoice.Currency, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan
+            , Invoice.CurrencyRate, Invoice.BaseRate, -Invoice.Total as Total, Saldo, Saldo as SaldoInv, IF(Invoice.TransDate < '2020-01-01' && Invoice.Office = "06", "13", Invoice.Office) AS Office, Invoice.FromRate
+            , Invoice.Comment, '' as BankName, IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName, Customer.GroupCode as CustGroup
+            FROM Invoice 
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode 
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode 
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
+            WHERE Invoice.Saldo != 0
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL)
+            AND Invoice.OpenFlag = 1
+            AND Invoice.Status = 1 
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
+            AND InvoiceType = 1
+            AND (AppliesToInvoiceNr = 0 OR AppliesToInvoiceNr IS NULL)
+            AND (Installments = 0 OR Installments IS NULL) 
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+UNION ALL
+SELECT 'A' as DocType,"Installment" as Type, InvoiceType, Invoice.SerNr,MIN(InvoiceInstallRow.InstallNr) as InstallNr, CONCAT(Invoice.TransDate, " ", Invoice.TransTime) AS DATE, InvoiceInstallRow.DueDate,
+            Invoice.PayTerm, Invoice.CustCode, UPPER(Customer.Name) as CustName, OfficialSerNr, Invoice.Currency, IF(SalesOrder.SalesMan = "GERENTE13", "SANTIAGO", SalesOrder.SalesMan) AS SalesMan, 
+            Invoice.CurrencyRate, Invoice.BaseRate, InvoiceInstallRow.Amount as Total, InvoiceInstallRow.Saldo as Saldo,
+            InvoiceInstallRow.Saldo as SaldoInv, IF(Invoice.TransDate < '2020-01-01' && Invoice.Office = "06", "13", Invoice.Office) AS Office, Invoice.FromRate, Invoice.Comment, '' as BankName
+            ,IF(SalesOrder.SalesMan = "GERENTE13","SANTIAGO MARIANO ROQUE ALONSO",concat(per.Name,' ' ,LastName)) as SalesManName, '' as CustGroup
+            FROM InvoiceInstallRow 
+            INNER JOIN Invoice ON Invoice.internalId = InvoiceInstallRow.masterId
+            INNER JOIN InvoiceItemRow ON InvoiceItemRow.masterId = Invoice.internalId
+            INNER JOIN SalesOrder ON SalesOrder.SerNr = InvoiceItemRow.OriginSerNr
+            INNER JOIN Customer ON Customer.Code = Invoice.CustCode
+            LEFT JOIN PromissoryNote ON (PromissoryNote.InvoiceNr = Invoice.SerNr AND InvoiceInstallRow.InstallNr = PromissoryNote.InvoiceInstallNr and PromissoryNote.Status = 1 and (PromissoryNote.Invalid = 0 or PromissoryNote.Invalid IS NULL))
+            LEFT JOIN DeliveryAddress da ON da.CustCode = Invoice.CustCode and da.Code = Invoice.DelAddressCode
+            LEFT JOIN (SELECT npn.OriginNr, npnr.InstallNr, npnr.SupCode, npnr.SupName
+                FROM NegociatePromissoryNote npn inner join NegociatePromissoryNoteRow npnr on npn.internalId = npnr.masterId
+                WHERE npn.Status = 1 AND (npn.Invalid = 0 OR npn.Invalid IS NULL) AND OriginType = 1) npn
+                ON (Invoice.SerNr = npn.OriginNr AND InvoiceInstallRow.InstallNr = npn.InstallNr)
+            LEFT JOIN Person per ON per.Code = SalesOrder.SalesMan 
+            WHERE Invoice.Status = 1
+            AND InvoiceInstallRow.OpenFlag = 1
+            AND InvoiceInstallRow.Saldo != 0
+            AND (Invoice.Invalid <> 1 OR Invoice.Invalid IS NULL) 
+            AND (Invoice.DisputedFlag = 0 OR Invoice.DisputedFlag IS NULL) 
+            AND Invoice.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+            GROUP BY InvoiceInstallRow.internalId
+UNION ALL
+SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as InstallNr,  CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate as DueDate, 
+				'Cheque ' as PayTerm, Cheque.CustCode, Cheque.CustName, Cheque.ChequeNr as OfficialSerNr, Cheque.Currency, '' AS SalesMan, '' AS CurrencyRate, Cheque.OriginBaseRate as BaseRate, Cheque.Amount as Total, 0 as Saldo, 0 as SaldoInv,
+            IF(Cheque.TransDate < '2020-01-01' && Cheque.Office = "06", "13", Cheque.Office) AS Office, Cheque.OriginCurrencyRate as FromRate, if(Cheque.Reentered, 'Si', 'No') as Comment, Cheque.BankName, '' AS SalesManName, '' as CustGroup
+            FROM Cheque
+            INNER JOIN Customer ON Customer.Code = Cheque.CustCode
+            left JOIN ReceiptPayModeRow rpmr on  rpmr.ChequeNr = Cheque.SerNr 
+            left JOIN  Receipt ON  Receipt.internalId = rpmr.masterId and Receipt.Status = 1 
+            left  JOIN  PayMode ON rpmr.PayMode = PayMode.Code AND(PayMode.PayType = 2 or PayMode.PayType = 104) 
+            WHERE Cheque.Status in (1,7) 
+            AND Cheque.Type  in (0,1,2) 
+            AND Cheque.CustCode NOT IN (126911475, 283, 200430, 23591869, 23594956, 126922160, 126911475, 661, 716, 1, 128414, 717, 4)
+            group by Cheque.SerNr`
+
+            return queryhbs(sql)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar cheques')
+        }
+    }
+
     listCheque() {
         try {
             const sql = ` SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, '0' as InstallNr, Cheque.SerNr, CONCAT(Cheque.TransDate, " ", Cheque.TransTime) as date, Cheque.ExpDate DueDate, 'Cheque ' as PayTerm, Cheque.CustCode, Cheque.CustName,
@@ -259,7 +345,7 @@ class Hbs {
     //     }
     // }
 
-    listInvoice(month, group, code){
+    listInvoice(month, group, code) {
         try {
             let sql = `SELECT sa.internalId AS id, sa.TransDate AS date, sa.SalesMan as user, sa.CustName AS client, sr.ArtCode as artcode, sr.Name as name, sr.Qty as qty, 
             IF(sa.Currency = "GS", sr.RowNet / sa.BaseRate , IF(sa.Currency = "RE", sr.RowNet * sa.FromRate / sa.BaseRate, sr.RowNet)) AS price
@@ -270,11 +356,11 @@ class Hbs {
             WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?)
             AND ig.Name = ?`
 
-            if(code) sql += ` AND sa.SalesMan = '${code}' `
+            if (code) sql += ` AND sa.SalesMan = '${code}' `
 
             return queryhbs(sql, [`${month}-01`, `${month}-10`, group])
         } catch (error) {
-            
+
         }
     }
 
@@ -615,7 +701,7 @@ class Hbs {
             WHERE Sd.Office IN (${office}) AND St.ArtCode <> 5448
             GROUP BY St.ArtCode 
             ORDER BY St.ArtCode`
-            
+
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
@@ -732,7 +818,7 @@ class Hbs {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
-    
+
     insertPrice(item) {
         try {
             const sql = `INSERT INTO ansa.itemprice (code, price) values (?, ?)`

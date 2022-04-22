@@ -19,7 +19,7 @@ class Finance {
             }
             return status;
         } catch (error) {
-           return status;
+            return status;
         }
     }
 
@@ -38,7 +38,7 @@ class Finance {
             }
             return status;
         } catch (error) {
-           return status;
+            return status;
         }
     }
 
@@ -94,9 +94,47 @@ class Finance {
         }
     }
 
+    async amountOpen(office, typeAmountOpen) {
+        try {
+
+            switch (typeAmountOpen) {
+                case '1':
+                    typeAmountOpen = 30
+                    break
+                case '2':
+                    typeAmountOpen = 60
+                    break
+                case '3':
+                    typeAmountOpen = 90
+                    break
+                case '4':
+                    typeAmountOpen = 1000
+                    break
+                default:
+                    typeAmountOpen = 30
+                    break
+            }
+            const invoices = await Repositorie.amountOpen(office, typeAmountOpen)
+
+            return invoices
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las facturas.')
+        }
+    }
+
+    listOpenInvoices(period, arroffices) {
+        try {
+            return Repositorie.listOpenInvoices(period, arroffices)
+        } catch (error) {
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar las facturas.')
+        }
+    }
+
     resumeOffice(arroffices, month) {
         try {
-            if(!month){
+            if (!month) {
                 const date = new Date()
                 month = `${date.getFullYear()}-${date.getMonth() + 1}`
             }

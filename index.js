@@ -10,30 +10,18 @@ const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = requi
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
-const Queue = require('./api/infrastructure/redis/queue');
-const BullBoard = require('bull-board')
-const Hbs = require('./api/models/hbs')
 
-// const Web = require('./api/models/webscraping');
-// Web.listProsegurOffice()
+// const Hbs = require('./api/models/hbs')
+// Hbs.listReceivables()
 
 process.setMaxListeners(100)
 
 const app = customExpress()
-
-// const queues = Queue.queues.map(queue => queue.bull);
-
-// setQueues([queues]);
-
 app.locals = appLocals;
-
-// app.use('/admin/queues', BullBoard.router);
-
 app.listen(3000, () => {
 
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/tmp'));
-
   app.set('views', [path.join(__dirname, 'views'), path.join(__dirname, 'views/public'), path.join(__dirname, 'views/admin/pages'), path.join(__dirname, 'views/quiz')]);
   app.set('view engine', 'ejs');
 

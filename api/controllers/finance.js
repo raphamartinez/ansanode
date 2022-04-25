@@ -33,8 +33,8 @@ module.exports = app => {
 
             if (req.access.all.allowed) {
 
-                if (office && office == "TODOS") office = false
-                if (user && user == "TODOS") user = false
+                if (office && office == "ALL") office = false
+                if (user && user == "ALL") user = false
 
                 let { graphs, details } = await Finance.graphReceivable(user, office)
                 res.json({ graphs, details })
@@ -51,8 +51,8 @@ module.exports = app => {
                         return of.code
                     })
 
-                    if (office && office != "TODOS") offices = office
-                    if (user && user != "TODOS") id_login = user
+                    if (office && office != "ALL") offices = office
+                    if (user && user != "ALL") id_login = user
 
                 } else {
                     id_login = req.login.id_login

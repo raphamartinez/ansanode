@@ -477,7 +477,7 @@ const search = async (event) => {
                 `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-index="${index}" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-index="${index}" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-index="${index}" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-                obj.AmountOpen,
+                `<a data-toggle="popover" title="Ver facturas en abierto até 120 días" data-index="${index}" data-datetype="-10000" data-client="${obj.CustCode}">${obj.AmountOpen}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 obj.AmountBalance,
             ]
         });
@@ -972,7 +972,7 @@ const view = async (event) => {
         document.querySelector('[data-view-overdue]').innerHTML = odue.toLocaleString('us')
 
 
-        let dtview = data.map(obj => {
+        let dtview = data.map((obj, index) => {
             return [
                 `<a data-toggle="popover" title="Ver todas las facturas vencidas" data-index="${index}" data-datetype="*" data-client="${obj.CustCode}"><i class="fas fa-angle-double-down" style="color:#cbccce;"></i></a>`,
                 obj.CustCode,
@@ -983,7 +983,7 @@ const view = async (event) => {
                 `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-index="${index}" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-index="${index}" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-index="${index}" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-                obj.AmountOpen,
+                `<a data-toggle="popover" title="Ver facturas en abierto até 120 días" data-index="${index}" data-datetype="-10000" data-client="${obj.CustCode}">${obj.AmountOpen}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 obj.AmountBalance,
             ]
         });

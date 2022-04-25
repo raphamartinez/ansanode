@@ -196,14 +196,29 @@ class Finance {
                     day.setDate(day.getDate() - 16);
 
                     break;
+                case "-30":
+                    lastday.setDate(lastday.getDate());
+                    day.setDate(day.getDate() + 30);
+
+                    break;
                 case "60":
                     lastday.setDate(lastday.getDate() - 60);
                     day.setDate(day.getDate() - 31);
 
                     break;
+                case "-60":
+                    lastday.setDate(lastday.getDate());
+                    day.setDate(day.getDate() + 60);
+
+                    break;
                 case "90":
                     lastday.setDate(lastday.getDate() - 90);
                     day.setDate(day.getDate() - 61);
+
+                    break;
+                case "-90":
+                    lastday.setDate(lastday.getDate());
+                    day.setDate(day.getDate() + 90);
 
                     break;
                 case "120":
@@ -214,6 +229,11 @@ class Finance {
                 case "120+":
                     lastday.setDate(lastday.getDate() - 10000);
                     day.setDate(day.getDate() - 121);
+
+                    break;
+                case "-10000":
+                    lastday.setDate(lastday.getDate());
+                    day.setDate(day.getDate() + 10000);
 
                     break;
                 default:

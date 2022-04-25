@@ -1007,9 +1007,9 @@ const clickFat = async (event) => {
     try {
 
         let office;
-        if(event.target.nodeName == 'A'){
+        if (event.target.nodeName == 'A') {
             office = event.target.getAttribute('data-office')
-        }else{
+        } else {
             office = event.target.nodeName == 'svg' ? event.target.parentElement.getAttribute('data-office') : event.target.parentElement.parentElement.getAttribute('data-office')
         }
 
@@ -1034,6 +1034,22 @@ const clickFat = async (event) => {
         const odue = data.reduce((a, b) => a + b.AmountBalance, 0)
         document.querySelector('[data-view-overdue]').innerHTML = odue.toLocaleString('us')
 
+        let day
+        switch (typeAmountOpen) {
+            case '1':
+                day = '-30'
+                break
+            case '2':
+                day = '-60'
+                break
+            case '3':
+                day = '-90'
+                break
+            case '4':
+                day = '-10000'
+                break
+        }
+
 
         let dtview = data.map((obj, index) => {
             return [
@@ -1046,7 +1062,7 @@ const clickFat = async (event) => {
                 `<a data-toggle="popover" title="Ver facturas vencidas de 61 a 90 días" data-index="${index}" data-datetype="90" data-client="${obj.CustCode}">${obj.d90}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas de 91 a 120 días" data-index="${index}" data-datetype="120" data-client="${obj.CustCode}">${obj.d120}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 `<a data-toggle="popover" title="Ver facturas vencidas por más de 120 días" data-index="${index}" data-datetype="120+" data-client="${obj.CustCode}">${obj.d120more}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
-                `<a data-toggle="popover" title="Ver facturas en abierto até 120 días" data-index="${index}" data-datetype="120+" data-client="${obj.CustCode}">${obj.AmountOpen}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
+                `<a data-toggle="popover" title="Ver facturas en abierto até 120 días" data-index="${index}" data-datetype="${day}" data-client="${obj.CustCode}">${obj.AmountOpen}<i style="text-align: right; float: right; color: #cbccce;" class="fas fa-angle-down"></i></a>`,
                 obj.AmountBalance,
             ]
         });
@@ -1331,7 +1347,7 @@ const listResume = (dtview, dtEffective, offices, transfUsd, chequeUsd, transfGs
 }
 
 const officeResume = async (event) => {
-    if(event) event.preventDefault()
+    if (event) event.preventDefault()
 
     const month = document.querySelector('#sumonth').value
 

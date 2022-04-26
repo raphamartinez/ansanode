@@ -65,11 +65,11 @@ module.exports = app => {
 
     app.get('/itemsgroups', [Middleware.authenticatedMiddleware, Authorization('items', 'read')], async (req, res, next) => {
         try {
-            const cached = await cachelist.searchValue(`itemsgroups`)
+            // const cached = await cachelist.searchValue(`itemsgroups`)
 
-            if (cached) {
-                return res.json(JSON.parse(cached))
-            }
+            // if (cached) {
+            //     return res.json(JSON.parse(cached))
+            // }
 
             const itemsgroups = await Hbs.listItemsGroups()
             cachelist.addCache(`itemsgroups`, JSON.stringify(itemsgroups), 60 * 60 * 12)

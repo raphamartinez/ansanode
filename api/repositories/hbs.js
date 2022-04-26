@@ -715,7 +715,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             FROM ItemGroup ig
             INNER JOIN Item i ON ig.Code = i.ItemGroup
             INNER JOIN Stock st ON st.ArtCode = i.Code
-            WHERE st.Qty > 0
+            WHERE (st.Qty > 0 OR ig.Name = 'SERVICIOS')
             AND ig.Name NOT IN ('ACCESORIOS', 'ACCESORIOS AUTOS', 'KLL', 'BICICLETA', 'CAFETERIA', 'KART Y AVION', 'LENTES', 'LIVRE', 'LONAS', 'PNEUS MOTOS BRASIL', 'ROPA GOODYEAR', 'ROPAS Y ACCESORIOS', 'UNIFORME')
             GROUP BY ig.Name`
             return queryhbs(sql)

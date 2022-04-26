@@ -105,12 +105,13 @@ const search = async (event) => {
     if (search.group.length === 0) search.group = "ALL"
 
     const data = await Connection.noBody(`salesorder/${search.datestart}/${search.dateend}/${search.salesman}/${search.office}/${search.group}`, 'GET')
-    
+
     if (data.length === 0) {
 
+        document.querySelector('[data-qty]').innerHTML = "";
         document.querySelector('[data-subtotal]').innerHTML = "";
         document.querySelector('[data-total]').innerHTML = "";
-        
+
         if ($.fn.DataTable.isDataTable('#dataTable')) {
             $('#dataTable').dataTable().fnClearTable();
             $('#dataTable').dataTable().fnDestroy();
@@ -120,24 +121,29 @@ const search = async (event) => {
         return alert('No hay orden de ventas para listar');
     }
 
-    if (search.group.length === 0){
+    if (search.group.length === 0) {
+
+        document.querySelector('[data-qty]').innerHTML = `Cant: ${data[0].Qty > 0 ? data[0].Qty : 0}`
+
         let subAmountUsd = data[0].subAmountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
         document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${subAmountUsd}`
-    
+
         let amountUsd = data[0].amountUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })
         document.querySelector('[data-total]').innerHTML = `Total: ${amountUsd}`
-    
-    }else{
 
-        let amount = data.reduce((a,b) => {
-            a.itemTotalUsd += b.itemTotalUsd;
-            a.itemSubtotalUsd += b.itemSubtotalUsd;
+    } else {
+        const obj = {qtt: 0, sub: 0, total: 0}
+        let amount = data.reduce((previousValue, currentValue) => {
+            previousValue.qtt += currentValue.Qty;
+            previousValue.total += currentValue.itemTotalUsd;
+            previousValue.sub += currentValue.itemSubtotalUsd;
 
-            return a;
-        })
+            return previousValue
+        }, Object.create(obj))
 
-        document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${amount.itemSubtotalUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
-        document.querySelector('[data-total]').innerHTML = `Total: ${amount.itemTotalUsd.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+        document.querySelector('[data-qty]').innerHTML = `Cant: ${amount.qtt}`
+        document.querySelector('[data-subtotal]').innerHTML = `Subtotal: ${amount.sub.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
+        document.querySelector('[data-total]').innerHTML = `Total: ${amount.total.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}`
     }
 
     const sales = data.map(sale => {

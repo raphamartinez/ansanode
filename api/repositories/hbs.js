@@ -549,7 +549,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
                        INNER JOIN Item I ON P.ArtCode = I.Code
                        INNER JOIN ItemGroup IG ON I.ItemGroup = IG.Code
                        WHERE (I.Closed = 0 OR I.Closed IS NULL ) 
-                       AND PDr.PriceList = '${search.pricelist}' `
+                       AND PDr.PriceList = ? `
 
             if (search.code != "ALL") sql += `AND P.ArtCode LIKE '%${search.code}%' `
             if (search.itemgroup != "ALL" && search.itemgroup.length > 0) sql += `AND IG.Name IN (${search.itemgroup}) `
@@ -559,8 +559,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             GROUP BY I.Code
             ORDER BY I.Code DESC `
 
-            console.log(sql);
-            return queryhbs(sql)
+            return queryhbs(sql, search.pricelist)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar los precios')
         }
@@ -652,7 +651,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             INNER JOIN Item I ON Ig.Code = I.ItemGroup
             INNER JOIN Stock St ON St.ArtCode = I.Code
             WHERE St.StockDepo IN (?)
-            AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE', 'BLOCK')
             GROUP BY Ig.Name`
             return queryhbs(sql, stocks)
         } catch (error) {
@@ -664,15 +663,16 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
         try {
             const sql = `SELECT StockDepo, 
             sum(Qty) AS Qty, SUM(Reserved) AS Reserved
-            FROM Stock WHERE ArtCode = '${artcode}' AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
+            FROM Stock WHERE ArtCode = ? AND IF(Reserved IS NOT NULL, Qty - Reserved, Qty ) > 0
             group BY StockDepo`
-            return queryhbs(sql)
+
+            return queryhbs(sql, artcode)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
     }
 
-    listStockItems(items, stocks) {
+    listStockItems() {
         try {
             const sql = `SELECT I.Name as itemname, Ig.Name as itemgroup, St.ArtCode as itemcode, St.Qty, St.Reserved, I.Price, St.Qty * I.Price AS priceAmount
             FROM Item I
@@ -713,9 +713,9 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
         try {
             const sql = `SELECT distinct ig.Code, ig.Name
             FROM ItemGroup ig
-            INNER JOIN Item i ON ig.Code = i.ItemGroup
-            INNER JOIN Stock st ON st.ArtCode = i.Code
-            WHERE (st.Qty > 0 OR ig.Name = 'SERVICIOS')
+            LEFT JOIN Item i ON ig.Code = i.ItemGroup
+            LEFT JOIN Stock st ON st.ArtCode = i.Code
+            WHERE (st.Qty > 0 OR ig.Name IN ('SERVICIOS', 'BLOCK', 'XTIRE'))
             AND ig.Name NOT IN ('ACCESORIOS', 'ACCESORIOS AUTOS', 'KLL', 'BICICLETA', 'CAFETERIA', 'KART Y AVION', 'LENTES', 'LIVRE', 'LONAS', 'PNEUS MOTOS BRASIL', 'ROPA GOODYEAR', 'ROPAS Y ACCESORIOS', 'UNIFORME')
             GROUP BY ig.Name`
             return queryhbs(sql)
@@ -749,7 +749,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             FROM (SELECT * FROM Price ORDER BY Price ASC) AS pr
             INNER JOIN Item it ON pr.ArtCode = it.Code
             INNER JOIN ItemGroup ig ON it.ItemGroup = ig.Code
-            WHERE ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            WHERE ig.Name IN ('ACTIOL', 'BLOCK', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             GROUP BY ArtCode
             ORDER BY pr.ArtCode ASC`
 

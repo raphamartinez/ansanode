@@ -266,7 +266,6 @@ class Hbs {
     listItemsGroups() {
         try {
             return Repositorie.listItemsGroups()
-
         } catch (error) {
             throw new InternalServerError('Error')
         }

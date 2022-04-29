@@ -131,7 +131,7 @@ class Seller {
             CROSS JOIN ansa.goalline gl
             LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
             WHERE sa.id_salesman = ?
-            and gl.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            and gl.itemgroup IN ('ACTIOL', 'AGRICOLA', 'BLOCK', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             group by gl.itemgroup
             order by gl.date asc`
 
@@ -152,7 +152,7 @@ class Seller {
             INNER JOIN ansa.salesman SA ON GO.id_salesman = SA.id_salesman
             INNER JOIN ansa.itemprice PR ON GL.itemcode = PR.code
             WHERE GL.application <> "DESCONSIDERAR"
-            AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'BLOCK', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             AND SA.id_salesman = ?
             `
 
@@ -181,7 +181,7 @@ class Seller {
             if(date) sql+= ` AND GL.date = '${date}' `
             if(id_salesman) sql+= ` AND SA.id_salesman = ${id_salesman} `
 
-            sql+= ` AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            sql+= ` AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'BLOCK', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             group by GL.itemgroup
             order by GL.itemgroup `
 

@@ -32,7 +32,7 @@ class Label {
             FROM Item I
             INNER JOIN ItemGroup Ig ON I.ItemGroup = Ig.Code
             INNER JOIN Label La ON I.Labels = La.Code
-            WHERE Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
+            WHERE Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE', 'BLOCK')
             Group BY I.Code
             ORDER BY I.Code`
 

@@ -9,7 +9,7 @@ class Sales {
 
         try {
             let sql = `
-            SELECT ig.Name AS name, SUM(sr.Qty) AS qty, SUM(IF(sa.Currency = "GS", sr.Price/ sa.BaseRate, IF(sa.Currency = "RE", sr.Price * sa.FromRate / sa.BaseRate, sr.Price))) AS price
+            SELECT IF(ig.Code = 13 AND sa.TransDate < '2022-01-01', 'XTIRE', ig.Name) AS name, SUM(sr.Qty) AS qty, SUM(IF(sa.Currency = "GS", sr.Price/ sa.BaseRate, IF(sa.Currency = "RE", sr.Price * sa.FromRate / sa.BaseRate, sr.Price))) AS price
             FROM SalesOrder sa
             INNER JOIN SalesOrderItemRow sr ON sa.internalId = sr.masterId 
             LEFT JOIN Item it ON sr.ArtCode = it.Code 
@@ -18,13 +18,13 @@ class Sales {
             AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
             if (items && items.length > 0) sql += ` AND it.Code IN (${items})`
-            if (group) sql += ` AND ig.Name = '${group}' `
+            if (group) sql += ` AND IF(LAST_DAY(?) < '2022-01-01' AND '${group}' = 'XTIRE', ig.Code = 13, ig.Name = '${group}') `
 
             sql += `GROUP BY ig.Name
             ORDER BY ig.Name`
 
 
-            const result = await queryhbs(sql, [salesman, `${date}-01`, `${date}-10`])
+            const result = await queryhbs(sql, [salesman, `${date}-01`, `${date}-10`, `${date}-01`])
             return result
         } catch (error) {
             console.log(error);
@@ -35,7 +35,7 @@ class Sales {
         try {
 
             let sql = `
-            SELECT ig.Name AS name, SUM(sr.Qty) AS amount, 
+            SELECT IF(ig.Code = 13 AND sa.TransDate < '2022-01-01', 'XTIRE', ig.Name) AS name, SUM(sr.Qty) AS amount, 
             SUM(IF(sa.Currency = "GS", sr.RowNet/ sa.BaseRate, IF(sa.Currency = "RE", sr.RowNet * sa.FromRate / sa.BaseRate, sr.RowNet))) AS price
             FROM SalesOrderItemRow sr 
             INNER JOIN SalesOrder sa ON sr.masterId  = sa.internalId
@@ -87,7 +87,7 @@ class Sales {
             WHERE sa.SalesMan = ?
             AND sa.TransDate BETWEEN ? AND LAST_DAY(?) `
 
-            if (group) sql += ` AND ig.Name = '${group}' `
+            if (group) sql += ` AND IF(LAST_DAY(?) < '2022-01-01' AND '${group}' = 'XTIRE', ig.Code = 13, ig.Name = '${group}')`
             if (items && items.length > 0) sql += ` AND it.Code IN (${items}) `
 
             sql += ` GROUP BY sa.TransDate
@@ -111,7 +111,7 @@ class Sales {
         WHERE sa.TransDate BETWEEN ? AND LAST_DAY(?) `
         
             if (office) sql += `AND sa.Office = '${office}' `
-            if (group) sql += ` AND ig.Name = '${group}' `
+            if (group) sql += ` AND IF(LAST_DAY(?) < '2022-01-01' AND '${group}' = 'XTIRE', ig.Code = 13, ig.Name = '${group}')' `
             if (items && items.length > 0) sql += ` AND it.Code IN (${items}) `
 
             sql += `GROUP BY sa.TransDate

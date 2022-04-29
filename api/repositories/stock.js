@@ -16,8 +16,8 @@ class Stock {
 
     async delete(id_stock) {
         try {
-            const sql = `DELETE from stock WHERE id_stock = ${id_stock}`
-            const result = await query(sql)
+            const sql = `DELETE from stock WHERE id_stock = ?`
+            const result = await query(sql, id_stock)
             return result[0]
         } catch (error) {
             throw new InternalServerError('No se puede eliminar la sucursal en la base de datos')

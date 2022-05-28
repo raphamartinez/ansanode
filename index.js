@@ -19,7 +19,7 @@ const app = customExpress()
 app.locals = appLocals;
 app.listen(3000, () => {
 
-  Transfer.itemprice()
+  // Transfer.finishLater()
 
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/tmp'));

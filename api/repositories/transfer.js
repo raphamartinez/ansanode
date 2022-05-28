@@ -7,7 +7,7 @@ class Transfer {
     async itemprice() {
         //answeredinterview
         try {
-            let sql = `SELECT * FROM itemprice where id > 33390`
+            let sql = `SELECT * FROM itemprice where id > 33391`
 
             const data = await query(sql)
 
@@ -61,7 +61,7 @@ class Transfer {
     async finishLater() {
         //answeredinterview
         try {
-            let sql = `SELECT * FROM goalline where id_goalline > 60718`
+            let sql = `SELECT * FROM goalline where id_goalline > 69025`
 
             const data = await query(sql)
 

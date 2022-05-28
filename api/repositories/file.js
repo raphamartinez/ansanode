@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class File {
     async insert(file, details, id_login) {
         try {
-            const sql = 'INSERT INTO ansa.file (title, description, filename, mimetype, path, type, size, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO file (title, description, filename, mimetype, path, type, size, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
             const result = await query(sql, [details.title, details.description, file.filename, file.mimetype, file.path, details.type, file.size, id_login])
 
             return result.insertId;
@@ -15,7 +15,7 @@ class File {
 
     async insertoffice(data, id_login) {
         try {
-            const sql = 'INSERT INTO ansa.file (title, description, mimetype, path, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO file (title, description, mimetype, path, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
             const result = await query(sql, [data.title, data.description, data.mimetype, data.path, data.type, id_login])
 
             return result.insertId;
@@ -26,7 +26,7 @@ class File {
 
     delete(id_file) {
         try {
-            const sql = `DELETE from ansa.file WHERE id_file = ${id_file}`
+            const sql = `DELETE from file WHERE id_file = ${id_file}`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar el archivo en la base de datos')
@@ -35,7 +35,7 @@ class File {
 
     update(file, id_file) {
         try {
-            const sql = 'UPDATE ansa.file SET type = ? WHERE id_file = ?'
+            const sql = 'UPDATE file SET type = ? WHERE id_file = ?'
             return query(sql, [file, id_file])
         } catch (error) {
             throw new InvalidArgumentError('Error al actualizar los datos')

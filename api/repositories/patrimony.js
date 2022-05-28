@@ -5,7 +5,7 @@ class SurveyMonkey {
 
     async insert(asset, id_login) {
         try {
-            const sql = 'INSERT INTO ansa.patrimony (responseId, name, plate, office, title, type, description, note, id_login, datereg, status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, 1)'
+            const sql = 'INSERT INTO patrimony (responseId, name, plate, office, title, type, description, note, id_login, datereg, status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, 1)'
             const result = await query(sql, [asset.responseId, asset.name, asset.plate, asset.office, asset.title, asset.type, asset.description, asset.note, id_login])
 
             return result.insertId
@@ -16,7 +16,7 @@ class SurveyMonkey {
 
     async insertImage(url, id) {
         try {
-            const sql = 'INSERT INTO ansa.patrimonyimage (url, id_patrimony, datereg) values (?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO patrimonyimage (url, id_patrimony, datereg) values (?, ?, now() - interval 3 hour )'
             await query(sql, [url, id])
 
             return true
@@ -28,7 +28,7 @@ class SurveyMonkey {
 
     async insertDetails(description, title, id_patrimony) {
         try {
-            const sql = 'INSERT INTO ansa.patrimonydetails (description, title, id_patrimony, datereg) values (?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO patrimonydetails (description, title, id_patrimony, datereg) values (?, ?, ?, now() - interval 3 hour )'
             await query(sql, [description, title, id_patrimony])
 
             return true
@@ -41,7 +41,7 @@ class SurveyMonkey {
 
     async validateImage(url) {
         try {
-            const sql = 'SELECT id FROM ansa.patrimonyimage where url = ?'
+            const sql = 'SELECT id FROM patrimonyimage where url = ?'
             const result = await query(sql, url)
 
             return result[0]
@@ -52,7 +52,7 @@ class SurveyMonkey {
 
     async validatePatrimony(plate) {
         try {
-            const sql = 'SELECT id FROM ansa.patrimony where plate = ?'
+            const sql = 'SELECT id FROM patrimony where plate = ?'
             const result = await query(sql, plate)
 
             return result[0]
@@ -64,8 +64,8 @@ class SurveyMonkey {
     async validateDetails(plate, title) {
         try {
             const sql = `select co.id 
-            from ansa.patrimonyassets co
-            inner join ansa.patrimonydetails pa
+            from patrimonyassets co
+            inner join patrimonydetails pa
             where co.plate = ? and pa.title = ?`
 
             const result = await query(sql, [plate, title])
@@ -99,7 +99,7 @@ class SurveyMonkey {
         try {
             const sql = `
             SELECT pi.id, pi.url, DATE_FORMAT(pi.datereg, '%H:%i %d/%m/%Y') as datereg, pi.id_patrimony, replace(pi.url, 'https://ansarepositorie.s3.amazonaws.com/', '') as name
-            FROM ansa.patrimonyimage pi
+            FROM patrimonyimage pi
             WHERE pi.id_patrimony = ? 
             GROUP BY pi.url`
             return query(sql, id)
@@ -112,7 +112,7 @@ class SurveyMonkey {
         try {
             const sql = `
             SELECT pd.title, pd.description, DATE_FORMAT(pd.datereg, '%H:%i %d/%m/%Y') as datereg, pd.id
-            FROM ansa.patrimonydetails pd
+            FROM patrimonydetails pd
             WHERE pd.id_patrimony = ? 
             GROUP BY pd.title`
             return query(sql, id)
@@ -138,7 +138,7 @@ class SurveyMonkey {
 
     update(patrimony) {
         try {
-            const sql = ` UPDATE ansa.patrimony SET name = ?, plate = ?, description = ?, note = ?, office = ? WHERE id = ?`
+            const sql = ` UPDATE patrimony SET name = ?, plate = ?, description = ?, note = ?, office = ? WHERE id = ?`
 
             return query(sql, [patrimony.name, patrimony.plate, patrimony.description, patrimony.note, patrimony.office, patrimony.id])
         } catch (error) {
@@ -148,7 +148,7 @@ class SurveyMonkey {
 
     updateDetail(detail) {
         try {
-            const sql = ` UPDATE ansa.patrimonydetails SET description = ? WHERE id = ?`
+            const sql = ` UPDATE patrimonydetails SET description = ? WHERE id = ?`
 
             return query(sql, [detail.description, detail.id])
         } catch (error) {
@@ -158,7 +158,7 @@ class SurveyMonkey {
 
     delete(id) {
         try {
-            const sql = `UPDATE ansa.patrimony SET status = 0 WHERE id = ?`
+            const sql = `UPDATE patrimony SET status = 0 WHERE id = ?`
 
             return query(sql, id)
         } catch (error) {
@@ -168,7 +168,7 @@ class SurveyMonkey {
     
     deleteImage(id) {
         try {
-            const sql = `DELETE from ansa.patrimonyimage WHERE id = ?`
+            const sql = `DELETE from patrimonyimage WHERE id = ?`
 
             return query(sql, id)
         } catch (error) {

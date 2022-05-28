@@ -6,7 +6,7 @@ class Label {
 
     async insert(label) {
         try {
-            const sql = 'INSERT INTO ansa.label (code, provider, application) values (?, ?, ?)'
+            const sql = 'INSERT INTO label (code, provider, application) values (?, ?, ?)'
             const result = await query(sql, [label.code, label.provider, label.application])
 
             return result

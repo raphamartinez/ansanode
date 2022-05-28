@@ -5,7 +5,7 @@ class GoalLine {
 
     async insert(goal) {
         try {
-            const sql = 'INSERT INTO ansa.goalline (itemname, itemcode, itemgroup, labelname, labelcode, application, provider, date) values (?, ?, ?, ?, ?, ?, ?, ?)'
+            const sql = 'INSERT INTO goalline (itemname, itemcode, itemgroup, labelname, labelcode, application, provider, date) values (?, ?, ?, ?, ?, ?, ?, ?)'
             const result = await query(sql, [goal.itemname, goal.itemcode, goal.itemgroup, goal.labelname, goal.labelcode, goal.application, goal.provider, goal.date])
 
             return result
@@ -33,8 +33,8 @@ class GoalLine {
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 10 month)), GO.amount, 0)) as g11, (SELECT DATE_FORMAT(NOW() + interval 10 month, '%Y-%m')) as d11,
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 11 month)), GO.amount, 0)) as g12, (SELECT DATE_FORMAT(NOW() + interval 11 month, '%Y-%m')) as d12,
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 12 month)), GO.amount, 0)) as g13, (SELECT DATE_FORMAT(NOW() + interval 12 month, '%Y-%m')) as d13
-            FROM ansa.goalline GL
-            LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
+            FROM goalline GL
+            LEFT JOIN goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
             WHERE GL.application <> "DESCONSIDERAR"
             AND GL.itemgroup = ?
             GROUP BY GL.itemcode
@@ -51,7 +51,7 @@ class GoalLine {
     async listExcel(id_salesman, groups, stock) {
         try {
   
-            let sql = `SELECT (SELECT code from ansa.salesman where id_salesman = ?) as code,GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelcode, GL.labelname, GL.itemcode, GL.itemname, `
+            let sql = `SELECT (SELECT code from salesman where id_salesman = ?) as code,GL.id_goalline, GL.itemgroup, GL.provider, GL.application, GL.labelcode, GL.labelname, GL.itemcode, GL.itemname, `
 
             if(stock == 1) sql += ` '' as stockCity, '' as stockAnsa, `
             
@@ -68,8 +68,8 @@ class GoalLine {
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 10 month)), GO.amount, 0)) as g11, 
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 11 month)), GO.amount, 0)) as g12,
             SUM(IF(MONTH(GL.date) = (MONTH(NOW() + interval 12 month)), GO.amount, 0)) as g13
-            FROM ansa.goalline GL
-            LEFT JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
+            FROM goalline GL
+            LEFT JOIN goal GO ON GL.id_goalline = GO.id_goalline and GO.id_salesman = ?
             WHERE GL.application <> "DESCONSIDERAR"
             AND GL.itemgroup IN (${groups})
             GROUP BY GL.itemcode
@@ -98,7 +98,7 @@ class GoalLine {
     async countLineGoal(){
         try {
             let sql = `SELECT count(GL.id_goalline) as goalline, DATE_FORMAT(GL.date, '%m/%y') as date
-            FROM ansa.goalline GL
+            FROM goalline GL
             WHERE GL.application <> "DESCONSIDERAR"
             GROUP BY date
             ORDER BY date DESC`
@@ -113,9 +113,9 @@ class GoalLine {
     async countSellersGoal(){
         try {
             let sql = `SELECT SA.name, DATE_FORMAT(GL.date, '%m/%y') as date, COUNT(GO.amount) as amount
-            FROM ansa.salesman SA
-            LEFT JOIN ansa.goal GO ON SA.id_salesman = GO.id_salesman
-            LEFT JOIN ansa.goalline GL ON GO.id_goalline = GL.id_goalline 
+            FROM salesman SA
+            LEFT JOIN goal GO ON SA.id_salesman = GO.id_salesman
+            LEFT JOIN goalline GL ON GO.id_goalline = GL.id_goalline 
             WHERE GL.application <> "DESCONSIDERAR"
             group by SA.name
             ORDER BY SA.name`

@@ -5,7 +5,7 @@ class SurveyMonkey {
 
     async insert(asset) {
         try {
-            const sql = 'INSERT INTO ansa.companyassets (responseId, name, plate, url) values (?, ?, ?, ?)'
+            const sql = 'INSERT INTO companyassets (responseId, name, plate, url) values (?, ?, ?, ?)'
             const result = await query(sql, [asset.responseId, asset.name, asset.plate, asset.systemurl])
 
         } catch (error) {

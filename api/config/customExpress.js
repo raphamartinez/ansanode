@@ -32,6 +32,7 @@ module.exports = () => {
   app.use(cookieParser());
 
   app.use(session({
+    secret: process.env.KEY_JWT,
     resave: false,
     saveUninitialized: false,
     cookie: {

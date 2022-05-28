@@ -6,7 +6,7 @@ class Stock {
     async insert(obj, id_login) {
         try {
             console.log(obj, id_login);
-            const sql = 'INSERT INTO ansa.stock (name,id_login) values (?,?)'
+            const sql = 'INSERT INTO stock (name,id_login) values (?,?)'
             const result = await query(sql, [obj, id_login])
             return result[0]
         } catch (error) {
@@ -36,7 +36,7 @@ class Stock {
 
     list(id_login) {
         try {
-            const sql = `SELECT * FROM ansa.stock where id_login = ?`
+            const sql = `SELECT * FROM stock where id_login = ?`
 
             return query(sql, id_login)
         } catch (error) {

@@ -7,7 +7,7 @@ class Client {
     list(){
         try {
             let sql = `SELECT DISTINCT(re.CustCode), re.CustName
-            FROM ansa.receivable re
+            FROM receivable re
             GROUP BY CustCode 
             ORDER BY re.CustName ASC`
 

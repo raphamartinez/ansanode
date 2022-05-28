@@ -5,7 +5,7 @@ class ItemPrice {
 
     async insert(item) {
         try {
-            const sql = 'INSERT INTO ansa.itemprice (code, price) values (?, ?)'
+            const sql = 'INSERT INTO itemprice (code, price) values (?, ?)'
             const result = await query(sql, [item.code, item.price])
 
             return result.insertId;
@@ -16,7 +16,7 @@ class ItemPrice {
 
     async update(item) {
         try {
-            const sql = 'UPDATE ansa.itemprice SET price = ? WHERE code = ?'
+            const sql = 'UPDATE itemprice SET price = ? WHERE code = ?'
             const result = await query(sql, [item.price, item.code])
 
             return result
@@ -27,7 +27,7 @@ class ItemPrice {
 
     list(goal) {
         try {
-            const sql = `SELECT * FROM ansa.itemprice`
+            const sql = `SELECT * FROM itemprice`
 
             return query(sql, goal.date)
         } catch (error) {

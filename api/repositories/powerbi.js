@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class PowerBi {
     async insert(powerbi) {
         try {
-            const sql = 'INSERT INTO ansa.powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
             const result = await query(sql, [powerbi.url, powerbi.title, powerbi.type, powerbi.description])
 
             return result.insertId;
@@ -25,8 +25,8 @@ class PowerBi {
             END as typedesc,
             bi.type, bi.token, bi.idreport, DATE_FORMAT(bi.dateReg, '%H:%i %d/%m/%Y') as dateReg,
             count(vb.id_powerbi) as count 
-            FROM ansa.powerbi bi
-            LEFT JOIN ansa.viewpowerbi vb ON bi.id_powerbi = vb.id_powerbi 
+            FROM powerbi bi
+            LEFT JOIN viewpowerbi vb ON bi.id_powerbi = vb.id_powerbi 
             WHERE bi.type != 0 `
 
             if(id_login) sql += ` AND vb.id_login = ${id_login} `
@@ -43,7 +43,7 @@ class PowerBi {
 
     listLogin(id_login, type) {
         try {
-            const sql = `SELECT BI.id_powerbi, BI.title, BI.url, BI.type as typedesc, BI.type, BI.token, BI.idreport, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.powerbi BI, ansa.viewpowerbi VB WHERE VB.id_powerbi = BI.id_powerbi and VB.id_login = ${id_login}`
+            const sql = `SELECT BI.id_powerbi, BI.title, BI.url, BI.type as typedesc, BI.type, BI.token, BI.idreport, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM powerbi BI, viewpowerbi VB WHERE VB.id_powerbi = BI.id_powerbi and VB.id_login = ${id_login}`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('El powerbi no pudo aparecer en la lista')
@@ -54,8 +54,8 @@ class PowerBi {
         try {
             const sql = `SELECT BI.id_powerbi, BI.type, BI.type as typedesc, BI.title, BI.description, BI.url, DATE_FORMAT(BI.dateReg, '%H:%i %d/%m/%Y') as dateReg, 
             count(VB.id_powerbi) as count
-            FROM ansa.powerbi BI 
-            LEFT JOIN ansa.viewpowerbi VB ON VB.id_powerbi = BI.id_powerbi
+            FROM powerbi BI 
+            LEFT JOIN viewpowerbi VB ON VB.id_powerbi = BI.id_powerbi
             group by BI.id_powerbi 
             ORDER BY BI.dateReg DESC`
             return query(sql)
@@ -67,10 +67,10 @@ class PowerBi {
     async delete(id) {
         try {
 
-            const sqlView = `DELETE from ansa.viewpowerbi WHERE id_powerbi = ?`
+            const sqlView = `DELETE from viewpowerbi WHERE id_powerbi = ?`
             await query(sqlView, id)
 
-            const sql = `DELETE from ansa.powerbi WHERE id_powerbi = ?`
+            const sql = `DELETE from powerbi WHERE id_powerbi = ?`
             await query(sql, id)
 
             return true
@@ -82,7 +82,7 @@ class PowerBi {
     async count(id_login) {
         try {
 
-            const sql = `SELECT COUNT(id_viewpowerbi) as count FROM ansa.viewpowerbi WHERE id_login = ${id_login}`
+            const sql = `SELECT COUNT(id_viewpowerbi) as count FROM viewpowerbi WHERE id_login = ${id_login}`
             const result = await query(sql)
             return result[0]
         } catch (error) {
@@ -92,7 +92,7 @@ class PowerBi {
 
     async update(powerbi, id) {
         try {
-            const sql = 'UPDATE ansa.powerbi SET url = ?, type = ?, title = ?, token = ?, idreport = ? WHERE id_powerbi = ?'
+            const sql = 'UPDATE powerbi SET url = ?, type = ?, title = ?, token = ?, idreport = ? WHERE id_powerbi = ?'
             const result = await query(sql, [powerbi.url, powerbi.type, powerbi.title, powerbi.token, powerbi.idreport, id])
             return true
         } catch (error) {
@@ -102,7 +102,7 @@ class PowerBi {
 
     async view(id_powerbi) {
         try {
-            const sql = `SELECT id_powerbi, url, type, token, idreport, dateReg FROM ansa.powerbi WHERE id_powerbi = ${id_powerbi}`
+            const sql = `SELECT id_powerbi, url, type, token, idreport, dateReg FROM powerbi WHERE id_powerbi = ${id_powerbi}`
             const result = await query(sql)
             return result[0]
         } catch (error) {

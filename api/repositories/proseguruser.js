@@ -5,7 +5,7 @@ class ProsegurUser {
 
     async insert(user) {
         try {
-            const sql = "INSERT INTO ansa.prosegurusers (code, name, office, orden, phone, contract, datereg) values ( ?, ?, ?, ?, ?, ?, now() - interval 3 hour )"
+            const sql = "INSERT INTO prosegurusers (code, name, office, orden, phone, contract, datereg) values ( ?, ?, ?, ?, ?, ?, now() - interval 3 hour )"
             const result = await query(sql, [user.code, user.name, user.office, user.orden, user.phone, user.contract])
 
             return result.insertId
@@ -18,7 +18,7 @@ class ProsegurUser {
 
     async list(office) {
         try {
-            let sql = `SELECT * FROM ansa.prosegurusers `
+            let sql = `SELECT * FROM prosegurusers `
 
             if (office) sql += ` WHERE office = '${office}' `
             const result = await query(sql)
@@ -32,7 +32,7 @@ class ProsegurUser {
     async listProsegur(office, period, type) {
 
         try {
-            let sql = `SELECT * FROM ansa.proseguroffice 
+            let sql = `SELECT * FROM proseguroffice 
             WHERE id_proseguroffice > 0 `
 
             if (office && office.length > 0 && office != "ALL" && office[0] != "") sql += ` AND office IN (${office}) `
@@ -50,7 +50,7 @@ class ProsegurUser {
 
     async drop(id) {
         try {
-            const sql = `DELETE FROM ansa.prosegurusers WHERE id = ?`
+            const sql = `DELETE FROM prosegurusers WHERE id = ?`
             const result = await query(sql, id)
 
             return result

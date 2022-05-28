@@ -7,7 +7,7 @@ class Hbs {
 
     lastSalary() {
         try {
-            const sql = ` SELECT SerNr FROM ansa.SalaryPayment ORDER BY SerNr DESC LIMIT 1`
+            const sql = ` SELECT SerNr FROM SalaryPayment ORDER BY SerNr DESC LIMIT 1`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('La última lista de salario falló')
@@ -27,7 +27,7 @@ class Hbs {
     async insertSalary(salary, date) {
 
         try {
-            const sql = `INSERT INTO ansa.salary (serNr, dateTime, office, comment, reference, usd, name) values (?, ?, ?, ?, ?, ?, ?)`
+            const sql = `INSERT INTO salary (serNr, dateTime, office, comment, reference, usd, name) values (?, ?, ?, ?, ?, ?, ?)`
             await query(sql, [salary.serNr, date, salary.office, salary.comment, salary.reference, salary.usd, salary.name])
             return true
         } catch (error) {
@@ -50,7 +50,7 @@ class Hbs {
 
     async insertUser(user) {
         try {
-            const sql = `INSERT INTO ansa.userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
+            const sql = `INSERT INTO userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
             await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
 
             return true
@@ -61,7 +61,7 @@ class Hbs {
 
     dropUsers() {
         try {
-            const sql = `DELETE FROM ansa.userhbs`
+            const sql = `DELETE FROM userhbs`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la tabla userhbs')
@@ -72,7 +72,7 @@ class Hbs {
 
     dropReceivable() {
         try {
-            const sql = `DELETE FROM ansa.receivable`
+            const sql = `DELETE FROM receivable`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo borrar la tabla receivable')
@@ -92,7 +92,7 @@ class Hbs {
 
     createTableReceivable() {
         try {
-            const sql = `CREATE TABLE IF NOT EXISTS ansa.receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
+            const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
                 InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
                 SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (10), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
                 Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
@@ -429,7 +429,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     async insertReceivable(invoice) {
         try {
-            const sql = `INSERT INTO ansa.receivable set ?`
+            const sql = `INSERT INTO receivable set ?`
             await query(sql, invoice)
 
             return true
@@ -618,7 +618,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     async insertItems(item) {
         try {
-            const sql = `INSERT INTO ansa.items set ?`
+            const sql = `INSERT INTO items set ?`
             await query(sql, item)
 
             return true
@@ -629,7 +629,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     listStocks(id_login) {
         try {
-            const sql = `SELECT name as StockDepo FROM ansa.stock WHERE id_login = ${id_login}`
+            const sql = `SELECT name as StockDepo FROM stock WHERE id_login = ${id_login}`
             return query(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
@@ -812,7 +812,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     insertStock(item) {
         try {
-            const sql = `INSERT INTO ansa.itemstock (code, qty, reserved, deposit) values (?, ?, ?, ?)`
+            const sql = `INSERT INTO itemstock (code, qty, reserved, deposit) values (?, ?, ?, ?)`
 
             return query(sql, [item.code, item.qty, item.reserved])
         } catch (error) {
@@ -822,7 +822,7 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     insertPrice(item) {
         try {
-            const sql = `INSERT INTO ansa.itemprice (code, price) values (?, ?)`
+            const sql = `INSERT INTO itemprice (code, price) values (?, ?)`
 
             return query(sql, [item.code, item.price])
         } catch (error) {

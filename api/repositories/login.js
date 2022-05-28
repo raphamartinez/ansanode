@@ -5,7 +5,7 @@ class Login {
 
     async insert(login) {
         try {
-            const sql = 'INSERT INTO ansa.login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 3 hour )'
             const result = await query(sql, [login.mail, login.password, login.mailVerify, login.status])
 
             return result.insertId;
@@ -48,8 +48,8 @@ class Login {
     async view(id_login) {
         try {
             const sql = `SELECT us.name, us.perfil, us.mailenterprise, us.id_login 
-            FROM ansa.login lo
-            INNER JOIN ansa.user us ON lo.id_login = us.id_login
+            FROM login lo
+            INNER JOIN user us ON lo.id_login = us.id_login
             where lo.id_login = ? and lo.status = 1`
 
             const result = await query(sql, id_login)
@@ -112,7 +112,7 @@ class Login {
 
     async checkMail(mail) {
         try {
-            const sql = `SELECT mail FROM ansa.login WHERE mail = '${mail}'`
+            const sql = `SELECT mail FROM login WHERE mail = '${mail}'`
             const result = await query(sql, mail)
 
             if (!result[0]) {

@@ -52,12 +52,12 @@ class Office {
 
             if (id_login) {
                 sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
-            FROM ansa.office FF 
-            INNER JOIN ansa.officeuser OS ON OS.id_office = FF.id_office
+            FROM office FF 
+            INNER JOIN officeuser OS ON OS.id_office = FF.id_office
             WHERE FF.status = 1 and OS.id_login = '${id_login}'`
             } else {
                 sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
-            FROM ansa.office FF WHERE FF.status = 1`
+            FROM office FF WHERE FF.status = 1`
             }
             return query(sql)
         } catch (error) {
@@ -68,7 +68,7 @@ class Office {
     offices(offices) {
         try {
             let sql = `SELECT FF.id_office, FF.code, FF.name, DATE_FORMAT(FF.dateReg, '%H:%i %d/%m/%Y') as dateReg 
-            FROM ansa.office FF 
+            FROM office FF 
             WHERE FF.status = 1 and FF.id_office != 15 `
 
             if (offices != "ALL" && offices != null) sql += ` and FF.code IN (${offices})`

@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class User {
     async insert(user) {
         try {
-            const sql = `INSERT INTO ansa.user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )`
+            const sql = `INSERT INTO user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )`
             const result = await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login])
 
             return result.insertId;
@@ -15,7 +15,7 @@ class User {
 
     async delete(id_user) {
         try {
-            const sql = `DELETE from ansa.user WHERE id_user = ?`
+            const sql = `DELETE from user WHERE id_user = ?`
             await query(sql, id_user)
             return true
         } catch (error) {
@@ -25,7 +25,7 @@ class User {
 
     async deleteStatus(status, id_login) {
         try {
-            const sql = `UPDATE ansa.user set status = ? WHERE id_login = ?`
+            const sql = `UPDATE user set status = ? WHERE id_login = ?`
             await query(sql, [status, id_login])
 
             return true
@@ -36,7 +36,7 @@ class User {
 
     async update(user) {
         try {
-            const sql = 'UPDATE ansa.user SET name = ?, perfil = ?, dateBirthday = ?, mailenterprise = ? WHERE id_login = ?'
+            const sql = 'UPDATE user SET name = ?, perfil = ?, dateBirthday = ?, mailenterprise = ? WHERE id_login = ?'
             await query(sql, [user.name, user.perfil, user.dateBirthday, user.mailenterprise, user.id_login])
             return true
         } catch (error) {
@@ -46,7 +46,7 @@ class User {
 
     async view(id_user) {
         try {
-            const sql = `SELECT US.name, US.mailenterprise, US.perfil, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US WHERE 
+            const sql = `SELECT US.name, US.mailenterprise, US.perfil, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM login LO, user US WHERE 
             US.id_login = LO.id_login and LO.id_login = ?`
             const result = await query(sql, id_user)
             return result[0]
@@ -57,7 +57,7 @@ class User {
 
     async viewAdm(id_login) {
         try {
-            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthdayDesc, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM ansa.login LO, ansa.user US WHERE 
+            const sql = `SELECT US.id_user, US.id_login, US.name, US.mailenterprise, US.perfil, LO.mail, DATE_FORMAT(US.dateBirthday, '%d/%m/%Y') as dateBirthdayDesc, DATE_FORMAT(US.dateBirthday, '%Y-%m-%d') as dateBirthday, DATE_FORMAT(US.dateReg, '%H:%i %d/%m/%Y') as dateReg FROM login LO, user US WHERE 
             US.id_login = LO.id_login  and LO.id_login = ?`
             const result = await query(sql, id_login)
             return result[0]
@@ -80,8 +80,8 @@ class User {
                                     WHEN us.perfil = 8 THEN "Logistica"
                                     ELSE "Usuario"
                                 END as perfilDesc
-                        FROM ansa.user us
-                        INNER JOIN ansa.login lo ON us.id_login = lo.id_login 
+                        FROM user us
+                        INNER JOIN login lo ON us.id_login = lo.id_login 
                         WHERE lo.id_login = us.id_login 
                         and us.status = 1 and lo.status = 1 `
 
@@ -89,8 +89,8 @@ class User {
 
             if (id) sql += ` and lo.id_login = ${id} `
 
-            if (offices) sql += ` AND lo.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
-                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+            if (offices) sql += ` AND lo.id_login IN ( SELECT ou.id_login FROM officeuser ou
+                INNER JOIN office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${offices})) `
 
             sql += ` order by us.name ASC`
@@ -115,8 +115,8 @@ class User {
                                     WHEN us.perfil = 8 THEN "Logistica"
                                     ELSE "Usuario"
                                 END as perfilDesc
-                        FROM ansa.user us
-                        INNER JOIN ansa.login lo ON us.id_login = lo.id_login 
+                        FROM user us
+                        INNER JOIN login lo ON us.id_login = lo.id_login 
                         WHERE lo.id_login = us.id_login 
                         and us.status = 1 and lo.id_login = ?`
 

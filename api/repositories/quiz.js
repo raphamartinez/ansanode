@@ -41,7 +41,7 @@ class Quiz {
 
     async insertInterview(user, quiz, id_login) {
         try {
-            const sql = 'INSERT INTO ansa.interview (id_quiz, mail, name, status, id_login, datereg) values (?, ?, ?, ?, ?, now() - interval 3 hour)'
+            const sql = 'INSERT INTO interview (id_quiz, mail, name, status, id_login, datereg) values (?, ?, ?, ?, ?, now() - interval 3 hour)'
             const result = await query(sql, [quiz.id_quiz, user.mail, user.name, 1, id_login])
 
             return result.insertId;
@@ -66,7 +66,7 @@ class Quiz {
     async check(id_interview) {
         try {
             const sql = `SELECT id, name
-            FROM ansa.interview
+            FROM interview
             WHERE id = ? AND status = 1`
 
             const result = await query(sql, id_interview)
@@ -80,7 +80,7 @@ class Quiz {
     async view(id_interview) {
         try {
             const sql = `SELECT it.id_quiz, it.mail, it.name, it.status, it.datereg, it.id as id_interview
-            FROM ansa.interview it
+            FROM interview it
             WHERE it.id = ?`
 
             const result = await query(sql, id_interview)
@@ -94,8 +94,8 @@ class Quiz {
         try {
             const sql = `SELECT qu.id, qu.title, qu.status, DATE_FORMAT(qu.datereg, '%H:%i %d/%m/%Y') as datereg, 
             COUNT(iv.id) as interviews
-            FROM ansa.quiz qu
-            LEFT JOIN ansa.interview iv ON qu.id = iv.id_quiz
+            FROM quiz qu
+            LEFT JOIN interview iv ON qu.id = iv.id_quiz
             GROUP BY qu.id
             ORDER BY qu.id DESC`
             return query(sql)
@@ -107,8 +107,8 @@ class Quiz {
     listQuestions(id_quiz) {
         try {
             const sql = `SELECT qe.id, qe.title, qe.type 
-            FROM ansa.question qe
-            INNER JOIN ansa.quiz qu ON qe.id_quiz = qu.id
+            FROM question qe
+            INNER JOIN quiz qu ON qe.id_quiz = qu.id
             WHERE qu.id = ?`
 
             return query(sql, id_quiz)
@@ -120,8 +120,8 @@ class Quiz {
     listAnswers(id_question) {
         try {
             const sql = `SELECT an.id, an.title
-            FROM ansa.answer an
-            INNER JOIN ansa.question qu ON an.id_question = qu.id
+            FROM answer an
+            INNER JOIN question qu ON an.id_question = qu.id
             WHERE qu.id = ?`
 
             return query(sql, id_question)
@@ -132,7 +132,7 @@ class Quiz {
 
     listInterview() {
         try {
-            const sql = `SELECT * FROM ansa.interview WHERE status = 0`
+            const sql = `SELECT * FROM interview WHERE status = 0`
 
             return query(sql)
         } catch (error) {
@@ -142,7 +142,7 @@ class Quiz {
 
    async listFinish() {
         try {
-            const sql = `SELECT * FROM ansa.interview WHERE datereg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) and status = 1`
+            const sql = `SELECT * FROM interview WHERE datereg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) and status = 1`
 
             return query(sql)
         } catch (error) {
@@ -159,8 +159,8 @@ class Quiz {
                 case "7":
                     sql = `
                     SELECT TRUNCATE(AVG(ad.value),2) as average, qu.classification
-                    FROM ansa.question qu
-                    LEFT JOIN ansa.answeredinterview ad ON qu.id = ad.id_question
+                    FROM question qu
+                    LEFT JOIN answeredinterview ad ON qu.id = ad.id_question
                     WHERE qu.id_quiz = 7
                     AND ad.id_interview = ?
                     GROUP BY classification
@@ -171,9 +171,9 @@ class Quiz {
 
                     sql = `
                     SELECT TRUNCATE(AVG(ad.value),2) as average, an.classification
-                    FROM ansa.answer an
-                    INNER JOIN ansa.question qu ON an.id_question = qu.id
-                    LEFT JOIN ansa.answeredinterview ad ON an.id = ad.id_answer
+                    FROM answer an
+                    INNER JOIN question qu ON an.id_question = qu.id
+                    LEFT JOIN answeredinterview ad ON an.id = ad.id_answer
                     WHERE qu.id_quiz = 8
                     AND ad.id_interview = ?
                     GROUP BY classification

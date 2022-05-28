@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = r
 class History {
     async insert(history) {
         try {
-            const sql = 'INSERT INTO ansa.history (description, status, dateReg, id_login) values (?, 1, now() - interval 3 hour , ?)'
+            const sql = 'INSERT INTO history (description, status, dateReg, id_login) values (?, 1, now() - interval 3 hour , ?)'
             await query(sql, [history.description, history.id_login])
             return true
         } catch (error) {
@@ -15,7 +15,7 @@ class History {
     list(id_login) {
         try {
             let sql = `SELECT HI.id_history, HI.description, DATE_FORMAT(HI.dateReg, '%H:%i %d/%m/%Y') as dateReg, US.name 
-            FROM ansa.history HI, ansa.user US WHERE US.id_login = HI.id_login and 
+            FROM history HI, user US WHERE US.id_login = HI.id_login and 
             HI.status = 1 `
 
             if(id_login) sql+= `and HI.id_login = ${id_login} `
@@ -31,7 +31,7 @@ class History {
     async count(id_login) {
         try {
             let sql = `SELECT COUNT(id_history) as count 
-            FROM ansa.history 
+            FROM history 
             WHERE dateReg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) `
             
             if(id_login) sql += ` AND id_login = ${id_login} `
@@ -46,8 +46,8 @@ class History {
     async lastAccess(id_login) {
         try {
             let sql = `SELECT us.name, DATE_FORMAT(hi.dateReg, '%H:%i %d/%m/%Y') as time  
-            FROM ansa.user us
-            INNER JOIN ansa.history hi ON us.id_login = hi.id_login `
+            FROM user us
+            INNER JOIN history hi ON us.id_login = hi.id_login `
             
             if(id_login) sql += ` WHERE us.id_login = ${id_login} `
 

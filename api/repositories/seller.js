@@ -38,7 +38,7 @@ class Seller {
 
     async update(manager) {
         try {
-            const sql = `UPDATE ansa.salesman set id_login = ? WHERE id_salesman = ?`
+            const sql = `UPDATE salesman set id_login = ? WHERE id_salesman = ?`
             const result = await query(sql, [manager.id, manager.id_salesman])
             return result[0]
         } catch (error) {
@@ -49,9 +49,9 @@ class Seller {
     list(salesman, office) {
         try {
             let sql = `SELECT US.name as manager, SA.id_salesman, SA.code, UPPER(SA.name) as name, SA.office, DATE_FORMAT(SA.dateReg, '%H:%i %d/%m/%Y') as dateReg 
-            FROM ansa.salesman SA
-            LEFT JOIN ansa.login LO ON SA.id_login = LO.id_login 
-            LEFT JOIN ansa.user US ON LO.id_login = US.id_login 
+            FROM salesman SA
+            LEFT JOIN login LO ON SA.id_login = LO.id_login 
+            LEFT JOIN user US ON LO.id_login = US.id_login 
             WHERE SA.status = 1 `
 
             if (salesman) sql += ` AND SA.id_salesman = '${salesman}'`
@@ -72,9 +72,9 @@ class Seller {
 
             if (id_salesman) {
                 sql = `SELECT sa.name, DATE_FORMAT(gl.date, '%m/%Y') as date, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
-                FROM ansa.salesman sa
-                CROSS JOIN ansa.goalline gl
-                LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+                FROM salesman sa
+                CROSS JOIN goalline gl
+                LEFT JOIN goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
                 WHERE sa.id_salesman = ?
                 group by sa.code, gl.date
                 order by gl.date asc`
@@ -83,9 +83,9 @@ class Seller {
                 return data[0]
             } else {
                 sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
-                FROM ansa.salesman sa
-                CROSS JOIN ansa.goalline gl
-                LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+                FROM salesman sa
+                CROSS JOIN goalline gl
+                LEFT JOIN goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
                 WHERE sa.id_login = ?
                 group by sa.code
                 order by sa.code asc `
@@ -102,10 +102,10 @@ class Seller {
     goal(id_login, office, code) {
         try {
             let sql = `SELECT sa.name, sa.id_salesman, sa.code, sa.office, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines , sum(go.amount) * pr.price AS expected
-            FROM ansa.salesman sa
-            CROSS JOIN ansa.goalline gl
-            INNER JOIN ansa.itemprice pr ON gl.itemcode = pr.code
-            LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+            FROM salesman sa
+            CROSS JOIN goalline gl
+            INNER JOIN itemprice pr ON gl.itemcode = pr.code
+            LEFT JOIN goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
             WHERE sa.status = 1
          `
 
@@ -127,9 +127,9 @@ class Seller {
         try {
 
             let sql = `SELECT gl.itemgroup, COUNT(go.amount) as goals, SUM(go.amount) as goalssum, COUNT(gl.id_goalline) AS countlines 
-            FROM ansa.salesman sa
-            CROSS JOIN ansa.goalline gl
-            LEFT JOIN ansa.goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
+            FROM salesman sa
+            CROSS JOIN goalline gl
+            LEFT JOIN goal go ON go.id_salesman = sa.id_salesman and go.id_goalline = gl.id_goalline
             WHERE sa.id_salesman = ?
             and gl.itemgroup IN ('ACTIOL', 'AGRICOLA', 'BLOCK', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             group by gl.itemgroup
@@ -147,10 +147,10 @@ class Seller {
         try {
 
             let sql = `SELECT DATE_FORMAT(GL.date, '%m/%Y') as date, GL.date as datesql, GO.id_salesman, sum(GO.amount) as amount, sum(GO.amount) * PR.price AS expected
-            FROM ansa.goalline GL
-            INNER JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
-            INNER JOIN ansa.salesman SA ON GO.id_salesman = SA.id_salesman
-            INNER JOIN ansa.itemprice PR ON GL.itemcode = PR.code
+            FROM goalline GL
+            INNER JOIN goal GO ON GL.id_goalline = GO.id_goalline
+            INNER JOIN salesman SA ON GO.id_salesman = SA.id_salesman
+            INNER JOIN itemprice PR ON GL.itemcode = PR.code
             WHERE GL.application <> "DESCONSIDERAR"
             AND GL.itemgroup IN ('ACTIOL', 'AGRICOLA', 'BLOCK', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE')
             AND SA.id_salesman = ?
@@ -171,10 +171,10 @@ class Seller {
         try {
 
             let sql = `SELECT GL.itemgroup, GL.date as datesql, GO.id_salesman , sum(GO.amount) as amount, sum(GO.amount * PR.price) AS expected
-            FROM ansa.goalline GL
-            INNER JOIN ansa.goal GO ON GL.id_goalline = GO.id_goalline
-            INNER JOIN ansa.salesman SA ON GO.id_salesman = SA.id_salesman
-            INNER JOIN ansa.itemprice PR ON GL.itemcode = PR.code
+            FROM goalline GL
+            INNER JOIN goal GO ON GL.id_goalline = GO.id_goalline
+            INNER JOIN salesman SA ON GO.id_salesman = SA.id_salesman
+            INNER JOIN itemprice PR ON GL.itemcode = PR.code
             WHERE GL.application <> "DESCONSIDERAR" 
             `
 

@@ -5,7 +5,7 @@ class Crm {
 
     async insert(crm, id_login) {
         try {
-            const sql = `INSERT INTO ansa.crm (contactdate, client, name, phone, mail, description, status, id_login, datereg ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
+            const sql = `INSERT INTO crm (contactdate, client, name, phone, mail, description, status, id_login, datereg ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
             const result = await query(sql, [crm.contactdate, crm.client, crm.name, crm.phone, crm.mail, crm.description, crm.status, id_login])
 
             return result.insertId
@@ -16,7 +16,7 @@ class Crm {
 
     async insertProduct(product) {
         try {
-            const sql = `INSERT INTO ansa.crmproducts (code, name, type, classification, id_crm, dateReg) VALUES (?, ?, ?, ?, ?, NOW() - interval 3 hour)`
+            const sql = `INSERT INTO crmproducts (code, name, type, classification, id_crm, dateReg) VALUES (?, ?, ?, ?, ?, NOW() - interval 3 hour)`
             const result = await query(sql, [product.code, product.name, product.type, product.classification, product.id_crm])
 
             return result.insertId
@@ -27,7 +27,7 @@ class Crm {
 
     async delete(status, id) {
         try {
-            const sql = `UPDATE ansa.crm SET status = ? where id = ?`
+            const sql = `UPDATE crm SET status = ? where id = ?`
             const result = await query(sql, [status, id])
             return result[0]
         } catch (error) {
@@ -37,7 +37,7 @@ class Crm {
     
     async deleteProduct(id) {
         try {
-            const sql = `DELETE FROM ansa.crmproducts where id = ?`
+            const sql = `DELETE FROM crmproducts where id = ?`
             const result = await query(sql, id)
             return result[0]
         } catch (error) {
@@ -47,7 +47,7 @@ class Crm {
 
     async update(crm, id_crm) {  
         try {
-            const sql = 'UPDATE ansa.crm SET client = ?, phone = ?, mail = ?, description = ?, contactdate = ? where id = ?'
+            const sql = 'UPDATE crm SET client = ?, phone = ?, mail = ?, description = ?, contactdate = ? where id = ?'
             const result = await query(sql, [crm.client, crm.phone, crm.mail, crm.description, crm.contactdate, id_crm])
             return result[0]
         } catch (error) {
@@ -57,7 +57,7 @@ class Crm {
 
     async updateProduct(classification, id) {  
         try {
-            const sql = 'UPDATE ansa.crmproducts SET classification = ? WHERE id = ?'
+            const sql = 'UPDATE crmproducts SET classification = ? WHERE id = ?'
             const result = await query(sql, [classification, id])
             return result[0]
         } catch (error) {
@@ -75,7 +75,7 @@ class Crm {
                         WHEN classification = 4 THEN "100%"
                         ELSE "no clasificado"
             END as classificationdesc
-            FROM ansa.crmproducts 
+            FROM crmproducts 
             WHERE id_crm = ?`
 
             return query(sql, id)
@@ -89,12 +89,12 @@ class Crm {
     list(search) {
         try {
             let sql = `SELECT cr.id, cr.client, cr.name, cr.phone, cr.mail, cr.description, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as contactdate, DATE_FORMAT(cr.contactdate, '%Y-%m-%d') as contactdatereg, DATE_FORMAT(cr.datereg, '%H:%i %d/%m/%Y') as datereg, cr.status, us.name as user
-            FROM ansa.crm cr
-            INNER JOIN ansa.user us ON cr.id_login = us.id_login 
+            FROM crm cr
+            INNER JOIN user us ON cr.id_login = us.id_login 
             WHERE cr.status = 1 `
 
-            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN ( SELECT ou.id_login FROM ansa.officeuser ou
-                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN ( SELECT ou.id_login FROM officeuser ou
+                INNER JOIN office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${search.offices})) `
 
             if (search.sellers && search.sellers != "ALL") sql += ` cr.id_login IN (${search.sellers}) `
@@ -115,14 +115,14 @@ class Crm {
     listProductsDay(search) {
         try {
             let sql = `SELECT COUNT(cp.id) as products, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
-            FROM ansa.crm cr
-            LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
+            FROM crm cr
+            LEFT JOIN crmproducts cp ON cr.id = cp.id_crm
             WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 
-            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
-                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM officeuser ou
+                INNER JOIN office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${search.offices})) `
 
             sql += ` GROUP BY cr.contactdate; `
@@ -137,14 +137,14 @@ class Crm {
     listProductsType(search) {
         try {
             let sql = `SELECT COUNT(cp.id) as products, IF(cp.type != "",cp.type,"No Definido") as type
-            FROM ansa.crm cr
-            LEFT JOIN ansa.crmproducts cp ON cr.id = cp.id_crm
+            FROM crm cr
+            LEFT JOIN crmproducts cp ON cr.id = cp.id_crm
             WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 
-            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
-                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM officeuser ou
+                INNER JOIN office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${search.offices})) `
 
             sql += ` GROUP BY cp.type; `
@@ -159,13 +159,13 @@ class Crm {
     listProductsClient(search) {
         try {
             let sql = `SELECT COUNT(cr.client) as client, DATE_FORMAT(cr.contactdate, '%d/%m/%Y') as date  
-            FROM ansa.crm cr
+            FROM crm cr
             WHERE cr.status = 1 AND cr.contactdate BETWEEN ? and ? `
 
             if (search.id) sql += ` AND cr.id_login = ${search.id} `
 
-            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM ansa.officeuser ou
-                INNER JOIN ansa.office oi ON oi.id_office = ou.id_office
+            if (search.offices && search.offices != "ALL") sql += ` AND cr.id_login IN (SELECT ou.id_login FROM officeuser ou
+                INNER JOIN office oi ON oi.id_office = ou.id_office
                 WHERE oi.code IN (${search.offices})) `
 
             sql += ` GROUP BY cr.contactdate; `

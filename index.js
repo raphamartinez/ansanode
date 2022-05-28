@@ -10,7 +10,7 @@ const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = requi
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
-const Transfer = require('./api/repositories/transfer')
+// const Transfer = require('./api/repositories/transfer')
 // Hbs.listReceivables()
 
 process.setMaxListeners(100)

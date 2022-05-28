@@ -135,8 +135,8 @@ const search = async (event) => {
         const obj = {qtt: 0, sub: 0, total: 0}
         let amount = data.reduce((previousValue, currentValue) => {
             previousValue.qtt += currentValue.Qty;
-            currentValue.codeGroup != 14 ? previousValue.total += currentValue.itemTotalUsd : previousValue.total += currentValue.totalUsd
-            currentValue.codeGroup != 14 ? previousValue.sub += currentValue.itemSubtotalUsd : previousValue.sub += currentValue.subtotalUsd
+            previousValue.total += currentValue.itemTotalUsd 
+            previousValue.sub += currentValue.itemSubtotalUsd
             
             return previousValue
         }, Object.create(obj))

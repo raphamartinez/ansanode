@@ -369,8 +369,8 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             let sql = `SELECT SO.SerNr,CONCAT(DATE_FORMAT(SO.TransTime, '%H:%i'), " ", DATE_FORMAT(SO.TransDate, '%d/%m/%Y')) AS date,SO.CustCode,SO.CustName,TRUNCATE(SO.Total,2) as Total,TRUNCATE(SO.SubTotal,2) as SubTotal,SO.Invalid,SO.Closed,SO.Status,
             SOIr.ArtCode, SOIr.Name, SOIr.Labels, IG.Code as codeGroup, SOIr.Qty, TRUNCATE(SOIr.Price,2) as Price, TRUNCATE(SOIr.RowNet,2) as RowNet, TRUNCATE(SOIr.RowTotal,2) as RowTotal,
             SO.Currency, SO.CurrencyRate, SO.BaseRate,CONCAT(pe.Name,' ',pe.LastName) as SalesMan,
-            TRUNCATE(IF(SO.Currency = "GS", SOIr.RowNet / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowNet  * SO.FromRate / SO.BaseRate, SOIr.RowNet)),2) AS itemSubtotalUsd,
-            TRUNCATE(IF(SO.Currency = "GS", SOIr.RowTotal / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowTotal  * SO.FromRate / SO.BaseRate, SOIr.RowTotal)),2) AS itemTotalUsd,
+            IF(SO.Currency = "GS", SOIr.RowNet / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowNet  * SO.FromRate / SO.BaseRate, SOIr.RowNet)) AS itemSubtotalUsd,
+            IF(SO.Currency = "GS", SOIr.RowTotal / SO.BaseRate, IF(SO.Currency = "RE", SOIr.RowTotal  * SO.FromRate / SO.BaseRate, SOIr.RowTotal)) AS itemTotalUsd,
             TRUNCATE(IF(SO.Currency = "GS", SO.Total / SO.BaseRate, IF(SO.Currency = "RE", SO.Total  * SO.FromRate / SO.BaseRate, SO.Total)),2) AS totalUsd,
             TRUNCATE(IF(SO.Currency = "GS", SO.SubTotal / SO.BaseRate, IF(SO.Currency = "RE", SO.SubTotal  * SO.FromRate / SO.BaseRate, SO.SubTotal)),2) AS subtotalUsd,`
 

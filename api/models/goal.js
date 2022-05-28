@@ -3,7 +3,6 @@ const RepositorieSeller = require('../repositories/seller');
 const RepositorieSales = require('../repositories/sales');
 const RepositorieOffice = require('../repositories/office');
 const RepositorieHbs = require('../repositories/hbs');
-const Queue = require('../infrastructure/redis/queue');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error');
 const excelToJson = require('convert-excel-to-json');
 const fs = require('fs')

@@ -10,8 +10,7 @@ const { job, jobHbs, jobMail, jobGoalLine, jobReceivable, jobInterview } = requi
 const { InvalidArgumentError, NotFound, NotAuthorized, InternalServerError } = require('./api/models/error');
 const Middleware = require('./api/infrastructure/auth/middleware');
 const History = require('./api/models/history');
-
-// const Hbs = require('./api/models/hbs')
+const Transfer = require('./api/repositories/transfer')
 // Hbs.listReceivables()
 
 process.setMaxListeners(100)
@@ -19,6 +18,8 @@ process.setMaxListeners(100)
 const app = customExpress()
 app.locals = appLocals;
 app.listen(3000, () => {
+
+  Transfer.itemprice()
 
   app.use(express.static(__dirname + '/public'));
   app.use(express.static(__dirname + '/tmp'));

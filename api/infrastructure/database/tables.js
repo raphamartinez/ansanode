@@ -3,7 +3,6 @@ class Tables {
 
   init(connection) {
     this.connection = connection
-    this.createTableFinanceInvoice()
     this.createTableItemPrice()
     this.createTableGoal()
     this.createTableGoalLines()
@@ -37,18 +36,21 @@ class Tables {
     this.createTableAnswer()
     this.createTableInterview()
     this.createTableAnsweredInterview()
+    this.createTablePatrimony()
     this.createTablePatrimonyImage()
     this.createTablePatrimonyDetails()
     this.createTableCrm()
     this.createTableCrmProducts()
     this.createTableProsegurUser()
     this.createTableMailPeriod()
+    this.createTableFinanceExpected()
+    this.createTableFinanceInvoice()
     
     return true
   }
 
   createTableFinanceExpected() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeexpected (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.financeexpected (id int NOT NULL AUTO_INCREMENT, 
       client int, date DATE, datereg DATETIME, id_login int, office VARCHAR(5), transfUsd double, chequeUsd double, transfGs double, chequeGs double,
       PRIMARY KEY (id))`
 
@@ -61,8 +63,9 @@ class Tables {
   }
 
   createTableProsegurUser() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.prosegurusers (id int NOT NULL AUTO_INCREMENT, 
-      code int, name VARCHAR(250), office VARCHAR(5),
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.prosegurusers (id int NOT NULL AUTO_INCREMENT, 
+      code VARCHAR(5), name VARCHAR(250), office VARCHAR(5), datereg DATETIME, orden INT, phone VARCHAR(150),
+      contract VARCHAR(45),
       PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -74,8 +77,8 @@ class Tables {
   }
 
   createTableCrmProducts() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.crmproducts (id int NOT NULL AUTO_INCREMENT, 
-      code VARCHAR(20), name VARCHAR(250), type VARCHAR (10), classification int, id_crm int,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.crmproducts (id int NOT NULL AUTO_INCREMENT, 
+      code VARCHAR(20), name VARCHAR(250), type VARCHAR (10), classification int, id_crm int, dateReg DATETIME,
       FOREIGN KEY (id_crm) REFERENCES crm (id), 
       PRIMARY KEY (id))`
 
@@ -88,7 +91,7 @@ class Tables {
   }
 
   createTableCrm() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.crm (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.crm (id int NOT NULL AUTO_INCREMENT, 
       client VARCHAR(100), name VARCHAR (100), phone VARCHAR (20), mail VARCHAR (75), description VARCHAR (250),
       contactdate DATETIME, datereg DATETIME, status int, id_login int,
       FOREIGN KEY (id_login) REFERENCES login (id_login), 
@@ -102,8 +105,22 @@ class Tables {
     })
   }
 
+  createTablePatrimony() {
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.patrimony (id int NOT NULL AUTO_INCREMENT, plate VARCHAR (50), name VARCHAR (250), responseId int NOT NULL,
+    note VARCHAR (250), description VARCHAR (250), type VARCHAR (45), office VARCHAR (20), title VARCHAR (100), datereg DATETIME, status int, id_login int,
+    FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+
   createTablePatrimonyDetails() {
-    const sql = `CREATE TABLE IF NOT EXISTS patrimonydetails (id int NOT NULL AUTO_INCREMENT, title VARCHAR (50), description VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.patrimonydetails (id int NOT NULL AUTO_INCREMENT, title VARCHAR (50), description VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
     FOREIGN KEY (id_patrimony) REFERENCES companyassets (id_companyassets), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -115,7 +132,7 @@ class Tables {
   }
 
   createTablePatrimonyImage() {
-    const sql = `CREATE TABLE IF NOT EXISTS patrimonyimage (id int NOT NULL AUTO_INCREMENT, url VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.patrimonyimage (id int NOT NULL AUTO_INCREMENT, url VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
     FOREIGN KEY (id_patrimony) REFERENCES companyassets (id_companyassets), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -127,7 +144,7 @@ class Tables {
   }
 
   createTableAnsweredInterview() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.answeredinterview (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.answeredinterview (id int NOT NULL AUTO_INCREMENT, 
       id_answer int, id_question int, id_interview int, value int, 
       FOREIGN KEY (id_answer) REFERENCES answer (id), 
       FOREIGN KEY (id_question) REFERENCES question (id), 
@@ -144,7 +161,7 @@ class Tables {
   }
 
   createTableInterview() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.interview (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.interview (id int NOT NULL AUTO_INCREMENT, 
       id_quiz int, mail VARCHAR(100), name VARCHAR(50), comment VARCHAR(250), datereg DATETIME, status int, id_login int,
       FOREIGN KEY (id_login) REFERENCES login (id_login), 
       FOREIGN KEY (id_quiz) REFERENCES quiz (id), 
@@ -160,7 +177,7 @@ class Tables {
 
 
   createTableAnswer() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.answer (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.answer (id int NOT NULL AUTO_INCREMENT, 
       title VARCHAR (250), id_question int, classification int, FOREIGN KEY (id_question) REFERENCES question (id),  
       PRIMARY KEY (id))`
 
@@ -173,7 +190,7 @@ class Tables {
   }
 
   createTableQuestion() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.question (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.question (id int NOT NULL AUTO_INCREMENT, 
       title VARCHAR (150), classification int, type VARCHAR (20), id_quiz int, FOREIGN KEY (id_quiz) REFERENCES quiz (id),  
       PRIMARY KEY (id))`
 
@@ -186,7 +203,7 @@ class Tables {
   }
 
   createTableQuiz() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.quiz (id int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.quiz (id int NOT NULL AUTO_INCREMENT, 
       title VARCHAR(500), datereg DATETIME, status int, PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -198,11 +215,10 @@ class Tables {
   }
 
   createTableFinanceInvoice() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.financeinvoice (id_financeinvoice int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.financeinvoice (id_financeinvoice int NOT NULL AUTO_INCREMENT, 
       invoicenr int, comment VARCHAR(250), contact VARCHAR (150), responsible VARCHAR (150), status int, id_login int,
-      payday DATE, contactdate DATETIME, datereg DATETIME, 
-      FOREIGN KEY (id_login) REFERENCES login (id_login), 
-      PRIMARY KEY (id_financeinvoice))`
+      payday DATE, contactdate DATETIME, datereg DATETIME,  office VARCHAR (5), amount DOUBLE, client int, payterm int, typecoin int,
+      FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_financeinvoice))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -213,18 +229,7 @@ class Tables {
   }
 
   createTableItemPrice() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.itemprice (id int NOT NULL AUTO_INCREMENT, code VARCHAR (100), price DOUBLE, PRIMARY KEY (id))`
-
-    this.connection.query(sql, (error) => {
-      if (error) {
-        console.log(error)
-      } else {
-      }
-    })
-  }
-
-  createTableItemStock() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.itemstock (id int NOT NULL AUTO_INCREMENT, code VARCHAR (100), qty int, reserved int, deposit VARCHAR(20), PRIMARY KEY (id))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.itemprice (id int NOT NULL AUTO_INCREMENT, code VARCHAR (100), price DOUBLE, PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -235,7 +240,7 @@ class Tables {
   }
 
   createTableGoal() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.goal (id_goal int NOT NULL AUTO_INCREMENT,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.goal (id_goal int NOT NULL AUTO_INCREMENT,
       id_goalline int, amount int, id_salesman INT, FOREIGN KEY (id_salesman) REFERENCES salesman (id_salesman), 
       FOREIGN KEY (id_goalline) REFERENCES goalline (id_goalline), PRIMARY KEY (id_goal))`
 
@@ -248,8 +253,8 @@ class Tables {
   }
 
   createTableGoalLines() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.goalline (id_goalline int NOT NULL AUTO_INCREMENT, itemgroup VARCHAR(250), provider VARCHAR (250),
-    date DATE, application VARCHAR (250), labelname VARCHAR (250), labelcode VARCHAR (50), PRIMARY KEY (id_goalline))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.goalline (id_goalline int NOT NULL AUTO_INCREMENT, itemgroup VARCHAR(250), provider VARCHAR (250),
+    date DATE, application VARCHAR (250), labelname VARCHAR (250), labelcode VARCHAR (50), itemcode VARCHAR (50), itemname VARCHAR (250), PRIMARY KEY (id_goalline))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -260,8 +265,8 @@ class Tables {
   }
 
   createTableLabel() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.label (id_label int NOT NULL AUTO_INCREMENT, label VARCHAR(100), 
-    provider VARCHAR (250), product VARCHAR (250), PRIMARY KEY (id_label))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.label (id_label int NOT NULL AUTO_INCREMENT, code VARCHAR(100), 
+    provider VARCHAR (250), application VARCHAR (250), PRIMARY KEY (id_label))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -272,7 +277,7 @@ class Tables {
   }
 
   createTableSalesman() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.salesman (id_salesman int NOT NULL AUTO_INCREMENT, office int,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.salesman (id_salesman int NOT NULL AUTO_INCREMENT, office int, status int,
     name VARCHAR (250), code VARCHAR (100), dateReg DATETIME, id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login),
     PRIMARY KEY (id_salesman))`
 
@@ -286,7 +291,7 @@ class Tables {
 
 
   createTableCompanyAssets() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.companyassets (id_companyassets int NOT NULL AUTO_INCREMENT, plate VARCHAR(50), responseId int,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.companyassets (id_companyassets int NOT NULL AUTO_INCREMENT, plate VARCHAR(50), responseId int,
     name VARCHAR (250), description VARCHAR (250), type VARCHAR (45), note VARCHAR (250), title VARCHAR (250), office VARCHAR(10), PRIMARY KEY (id_companyassets))`
 
     this.connection.query(sql, (error) => {
@@ -299,7 +304,7 @@ class Tables {
 
 
   createTablemailattachment() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailattachment (id_mailattachment int NOT NULL AUTO_INCREMENT,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.mailattachment (id_mailattachment int NOT NULL AUTO_INCREMENT,
       url VARCHAR (250), id_mailpowerbi int,FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id_mailattachment))`
 
     this.connection.query(sql, (error) => {
@@ -311,7 +316,7 @@ class Tables {
   }
 
   createTableMailPeriod() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailperiod (id int NOT NULL AUTO_INCREMENT, datestart DATE,  dateend DATE, weekday int,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.mailperiod (id int NOT NULL AUTO_INCREMENT, datestart DATE,  dateend DATE, weekday int, hour int,
       id_mailpowerbi int, FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
@@ -323,7 +328,7 @@ class Tables {
   }
 
   createTableMailScheduling() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailscheduling (id_mailscheduling int NOT NULL AUTO_INCREMENT, date DATETIME
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.mailscheduling (id_mailscheduling int NOT NULL AUTO_INCREMENT, date DATETIME
       , id_mailpowerbi int,FOREIGN KEY (id_mailpowerbi) REFERENCES mailpowerbi (id_mailpowerbi), PRIMARY KEY (id_mailscheduling))`
 
     this.connection.query(sql, (error) => {
@@ -335,7 +340,7 @@ class Tables {
   }
 
   createTableMailUser() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.mailpowerbi (id_mailpowerbi int NOT NULL AUTO_INCREMENT, recipients VARCHAR(250), cc VARCHAR(250), cco VARCHAR(250), title VARCHAR (100), body VARCHAR (250),
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.mailpowerbi (id_mailpowerbi int NOT NULL AUTO_INCREMENT, recipients VARCHAR(250), cc VARCHAR(250), cco VARCHAR(250), title VARCHAR (100), body VARCHAR (250),
     type int, datereg DATETIME, id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_mailpowerbi))`
 
     this.connection.query(sql, (error) => {
@@ -347,7 +352,7 @@ class Tables {
   }
 
   createTableStock() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.stock (id_stock int NOT NULL AUTO_INCREMENT, name VARCHAR (100), id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_stock))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.stock (id_stock int NOT NULL AUTO_INCREMENT, name VARCHAR (100), id_login int, FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_stock))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -358,7 +363,7 @@ class Tables {
   }
 
   createTableType() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.type (id_type int NOT NULL AUTO_INCREMENT, name VARCHAR (100), PRIMARY KEY (id_type))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.type (id_type int NOT NULL AUTO_INCREMENT, name VARCHAR (100), PRIMARY KEY (id_type))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -369,9 +374,9 @@ class Tables {
   }
 
   createTableFile() {
-    const sql = `CREATE TABLE IF NOT EXISTS file (id_file int NOT NULL AUTO_INCREMENT, filename VARCHAR (250), mimetype VARCHAR (30) NOT NULL,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.file (id_file int NOT NULL AUTO_INCREMENT, filename VARCHAR (250), mimetype VARCHAR (35) NOT NULL,
     description VARCHAR (250), title VARCHAR (90) NOT NULL,
-    type int, path VARCHAR (250) NOT NULL, size int, id_login int, datereg DATETIME, 
+    type VARCHAR(5), path VARCHAR (500) NOT NULL, size FLOAT, id_login int, datereg DATETIME, 
     FOREIGN KEY (id_login) REFERENCES login (id_login), PRIMARY KEY (id_file))`
 
     this.connection.query(sql, (error) => {
@@ -396,7 +401,7 @@ class Tables {
 
 
   createTableUserHbs() {
-    const sql = `CREATE TABLE IF NOT EXISTS userhbs (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.userhbs (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
         modalidad VARCHAR (45), startCompany DATE, document VARCHAR (45), officecode INT, officename VARCHAR(45), endCompany DATE, sex VARCHAR(10),
         dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, id_office VARCHAR(10), PRIMARY KEY (id_user))`
 
@@ -409,7 +414,7 @@ class Tables {
   }
 
   createTableReceivable() {
-    const sql = `CREATE TABLE IF NOT EXISTS receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.receivable (id_receivable int NOT NULL AUTO_INCREMENT, SerNr double, date DATETIME, DueDate date,
      InstallNr VARCHAR (25), InvoiceType VARCHAR (5), Type VARCHAR (15), SaldoInv double, DocType VARCHAR (45), FromRate double,
      SalesMan VARCHAR (250), SalesManName VARCHAR (250), CustCode int, PayTerm VARCHAR (5), CustName VARCHAR (150), OfficialSerNr VARCHAR (100), 
      Currency VARCHAR (5),  CurrencyRate double, BaseRate double,  Total double, BankName varchar(25),
@@ -425,7 +430,7 @@ class Tables {
 
 
   createTableSalary() {
-    const sql = `CREATE TABLE IF NOT EXISTS salary (id_salary int NOT NULL AUTO_INCREMENT, serNr double, dateTime DATETIME, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.salary (id_salary int NOT NULL AUTO_INCREMENT, serNr double, dateTime DATETIME, 
      comment VARCHAR (250), reference VARCHAR (250), usd double, office VARCHAR (5), name VARCHAR (250), PRIMARY KEY (id_salary))`
 
     this.connection.query(sql, (error) => {
@@ -437,7 +442,7 @@ class Tables {
   }
 
   createTableWebscrapingHistory() {
-    const sql = `CREATE TABLE IF NOT EXISTS webscrapinghistory (id_webscraping int NOT NULL AUTO_INCREMENT, description VARCHAR(150) NOT NULL, dateReg DATETIME NOT NULL, PRIMARY KEY (id_webscraping))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.webscrapinghistory (id_webscraping int NOT NULL AUTO_INCREMENT, description VARCHAR(150) NOT NULL, dateReg DATETIME NOT NULL, PRIMARY KEY (id_webscraping))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -460,7 +465,7 @@ class Tables {
   }
 
   createTableViewPowerBI() {
-    const sql = `CREATE TABLE IF NOT EXISTS viewpowerbi (id_viewpowerbi int NOT NULL AUTO_INCREMENT, id_powerbi int NOT NULL, id_login int NOT NULL,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.viewpowerbi (id_viewpowerbi int NOT NULL AUTO_INCREMENT, id_powerbi int NOT NULL, id_login int NOT NULL,
      dateReg DATETIME NOT NULL, PRIMARY KEY (id_viewpowerbi),  FOREIGN KEY (id_powerbi) REFERENCES powerbi (id_powerbi), 
      FOREIGN KEY (id_login) REFERENCES login (id_login))`
 
@@ -473,7 +478,7 @@ class Tables {
   }
 
   createTablePowerBI() {
-    const sql = `CREATE TABLE IF NOT EXISTS powerbi (id_powerbi int NOT NULL AUTO_INCREMENT, url VARCHAR (1000) NOT NULL, title VARCHAR (50) NOT NULL,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.powerbi (id_powerbi int NOT NULL AUTO_INCREMENT, url VARCHAR (250) NOT NULL, title VARCHAR (100) NOT NULL,
     type int, token VARCHAR (250), description VARCHAR (250), idreport VARCHAR (100), dateReg DATETIME NOT NULL, PRIMARY KEY (id_powerbi))`
 
     this.connection.query(sql, (error) => {
@@ -485,7 +490,7 @@ class Tables {
   }
 
   createTableProsegurDistance() {
-    const sql = `CREATE TABLE IF NOT EXISTS prosegurdistance (id_prosegurdistance int NOT NULL AUTO_INCREMENT, plate VARCHAR (10) NOT NULL, km double NOT NULL, dateReg DATETIME,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.prosegurdistance (id_prosegurdistance int NOT NULL AUTO_INCREMENT, plate VARCHAR (10) NOT NULL, km double NOT NULL, dateReg DATETIME,
      PRIMARY KEY (id_prosegurdistance))`
 
     this.connection.query(sql, (error) => {
@@ -497,8 +502,8 @@ class Tables {
   }
 
   createTableProsegurOffice() {
-    const sql = `CREATE TABLE IF NOT EXISTS proseguroffice (id_proseguroffice int NOT NULL AUTO_INCREMENT, dateTime DATETIME, codconnection VARCHAR (20), contract VARCHAR (25),
-    description VARCHAR (250), PRIMARY KEY (id_proseguroffice))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.proseguroffice (id_proseguroffice int NOT NULL AUTO_INCREMENT, date DATETIME, office VARCHAR (25), contract VARCHAR (250), user VARCHAR (75),
+    type VARCHAR (100), PRIMARY KEY (id_proseguroffice))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -521,8 +526,8 @@ class Tables {
   }
 
   createTableProsegurPower() {
-    const sql = `CREATE TABLE IF NOT EXISTS prosegurpower (id_prosegurpower int NOT NULL AUTO_INCREMENT, dateStart DATETIME, dateEnd DATETIME, plate VARCHAR (10), alias VARCHAR (50),
-    stoppedTime VARCHAR(20), direction VARCHAR(250), detentionDistance double, coordinates VARCHAR (250), type VARCHAR(6), PRIMARY KEY (id_prosegurpower))`
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.prosegurpower (id_prosegurpower int NOT NULL AUTO_INCREMENT, dateStart DATETIME, dateEnd DATETIME, plate VARCHAR (10), alias VARCHAR (50),
+    stoppedTime VARCHAR(20), direction VARCHAR(250), detentionDistance double, coordinates VARCHAR (250), type VARCHAR(6), dateReg DATETIME, PRIMARY KEY (id_prosegurpower))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -533,7 +538,7 @@ class Tables {
   }
 
   createTableProsegurMaintenance() {
-    const sql = `CREATE TABLE IF NOT EXISTS prosegurmaintenance (id_prosegurmaintenance int NOT NULL AUTO_INCREMENT, car VARCHAR (25), brand VARCHAR (25), kmNow INT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.prosegurmaintenance (id_prosegurmaintenance int NOT NULL AUTO_INCREMENT, car VARCHAR (25), brand VARCHAR (25), kmNow INT, 
     currentLocation VARCHAR (100), maintenanceDate DATETIME, kmMaintenance INT, typeWarning VARCHAR (25), kmElapsed INT, remaining INT, work VARCHAR (100), state VARCHAR (100), 
         PRIMARY KEY (id_prosegurmaintenance))`
 
@@ -546,7 +551,7 @@ class Tables {
   }
 
   createTableAddressClient() {
-    const sql = `CREATE TABLE IF NOT EXISTS addressclient (id_addressclient int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.addressclient (id_addressclient int NOT NULL AUTO_INCREMENT, 
       id_address int, id_client int, dateReg DATETIME NOT NULL, PRIMARY KEY (id_addressclient),
       FOREIGN KEY (id_address) REFERENCES address (id_address), FOREIGN KEY (id_client) REFERENCES client (id_client))`
 
@@ -559,7 +564,7 @@ class Tables {
   }
 
   createTableContactClient() {
-    const sql = `CREATE TABLE IF NOT EXISTS contactclient (id_contactclient int NOT NULL AUTO_INCREMENT, 
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.contactclient (id_contactclient int NOT NULL AUTO_INCREMENT, 
       id_contact int, id_client int, dateReg DATETIME NOT NULL, PRIMARY KEY (id_contactclient),
       FOREIGN KEY (id_contact) REFERENCES contact (id_contact), FOREIGN KEY (id_client) REFERENCES client (id_client))`
 
@@ -596,7 +601,7 @@ class Tables {
   }
 
   createTableOffice() {
-    const sql = `CREATE TABLE IF NOT EXISTS office (id_office int NOT NULL AUTO_INCREMENT,code VARCHAR (05) NOT NULL, name VARCHAR (150) NOT NULL,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.office (id_office int NOT NULL AUTO_INCREMENT,code VARCHAR (05) NOT NULL, name VARCHAR (150) NOT NULL, address VARCHAR (150),
         status int NOT NULL, dateReg DATETIME NOT NULL, PRIMARY KEY (id_office))`
 
     this.connection.query(sql, (error) => {
@@ -620,7 +625,7 @@ class Tables {
   }
 
   createTableLogin() {
-    const sql = `CREATE TABLE IF NOT EXISTS login (id_login int NOT NULL AUTO_INCREMENT,mail VARCHAR (100) NOT NULL,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.login (id_login int NOT NULL AUTO_INCREMENT,mail VARCHAR (100) NOT NULL,
         password VARCHAR (250) NOT NULL, mailVerify int,  status int NOT NULL, dateReg DATETIME NOT NULL, PRIMARY KEY (id_login))`
 
     this.connection.query(sql, (error) => {
@@ -632,9 +637,9 @@ class Tables {
   }
 
   createTableUser() {
-    const sql = `CREATE TABLE IF NOT EXISTS user (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.user (id_user int NOT NULL AUTO_INCREMENT,name VARCHAR (100) NOT NULL, perfil int NOT NULL, phone VARCHAR (45), cod INT, responsibility VARCHAR (75),
         modalidad VARCHAR (45), startCompany DATE, document VARCHAR (45), officecode INT, officename VARCHAR(45), endCompany DATE, sex VARCHAR(10),
-        dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, id_office int, 
+        dateBirthday DATE, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, id_office int, mailenterprise VARCHAR(90),
         PRIMARY KEY (id_user), FOREIGN KEY (id_login) REFERENCES login(id_login), FOREIGN KEY (id_office) REFERENCES office(id_office))`
 
     this.connection.query(sql, (error) => {
@@ -646,8 +651,8 @@ class Tables {
   }
 
   createTableHistory() {
-    const sql = `CREATE TABLE IF NOT EXISTS history (id_history int NOT NULL AUTO_INCREMENT, 
-        description VARCHAR (50) NOT NULL, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, PRIMARY KEY (id_history),
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.history (id_history int NOT NULL AUTO_INCREMENT, 
+        description VARCHAR (100) NOT NULL, status int NOT NULL, dateReg DATETIME NOT NULL, id_login int NOT NULL, PRIMARY KEY (id_history),
         FOREIGN KEY (id_login) REFERENCES login(id_login))`
 
     this.connection.query(sql, (error) => {
@@ -659,23 +664,11 @@ class Tables {
   }
 
   createTableOfficeUser() {
-    const sql = `CREATE TABLE IF NOT EXISTS ansa.officeuser (id int NOT NULL AUTO_INCREMENT, id_login int, id_office int,
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.officeuser (id int NOT NULL AUTO_INCREMENT, id_login int, id_office int,
       FOREIGN KEY (id_login) REFERENCES login (id_login), 
       FOREIGN KEY (id_office) REFERENCES office (id_office), 
             PRIMARY KEY (id))
       `
-
-    this.connection.query(sql, (error) => {
-      if (error) {
-        console.log(error)
-      } else {
-      }
-    })
-  }
-
-  createTableLabel() {
-    const sql = `CREATE TABLE IF NOT EXISTS label (id_label int NOT NULL AUTO_INCREMENT, code VARCHAR (20) NOT NULL,
-      name VARCHAR (30) NOT NULL, type VARCHAR (10), jerarquia VARCHAR (20) NOT NULL, dateReg DATETIME NOT NULL, PRIMARY KEY (id_label))`
 
     this.connection.query(sql, (error) => {
       if (error) {

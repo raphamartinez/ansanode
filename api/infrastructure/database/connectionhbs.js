@@ -4,7 +4,7 @@ const connectionhbs = mysql.createConnection({
   user: process.env.DBHBS_USER,
   host: process.env.DBHBS_HOST,
   database: process.env.DBHBS_NAME,
-  password: process.env.PASS_HBS,
+  password: "Dblec#2020",
   port: process.env.DBHBS_PORT
 })
 

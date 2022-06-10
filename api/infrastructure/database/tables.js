@@ -121,7 +121,7 @@ class Tables {
 
   createTablePatrimonyDetails() {
     const sql = `CREATE TABLE IF NOT EXISTS ANSA.patrimonydetails (id int NOT NULL AUTO_INCREMENT, title VARCHAR (50), description VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
-    FOREIGN KEY (id_patrimony) REFERENCES companyassets (id_companyassets), PRIMARY KEY (id))`
+    FOREIGN KEY (id_patrimony) REFERENCES patrimony (id), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
       if (error) {
@@ -133,7 +133,7 @@ class Tables {
 
   createTablePatrimonyImage() {
     const sql = `CREATE TABLE IF NOT EXISTS ANSA.patrimonyimage (id int NOT NULL AUTO_INCREMENT, url VARCHAR (250), id_patrimony int NOT NULL, datereg DATETIME, 
-    FOREIGN KEY (id_patrimony) REFERENCES companyassets (id_companyassets), PRIMARY KEY (id))`
+    FOREIGN KEY (id_patrimony) REFERENCES patrimony (id), PRIMARY KEY (id))`
 
     this.connection.query(sql, (error) => {
       if (error) {

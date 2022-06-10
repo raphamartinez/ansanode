@@ -5,7 +5,6 @@ class Stock {
 
     async insert(obj, id_login) {
         try {
-            console.log(obj, id_login);
             const sql = 'INSERT INTO stock (name,id_login) values (?,?)'
             const result = await query(sql, [obj, id_login])
             return result[0]

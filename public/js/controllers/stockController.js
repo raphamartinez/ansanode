@@ -1,8 +1,4 @@
-import { ViewStock } from "../views/stockView.js"
 import { Connection } from '../services/connection.js'
-
-
-
 
 const list = (items) => {
 
@@ -76,28 +72,29 @@ const search = async (event) => {
 
 const stock = async () => {
 
-    const fields = await Connection.noBody('stockuser', 'GET')
+    // const fields = await Connection.noBody('stockuser', 'GET')
 
-    if (fields === false) {
-        return alert("No tiene acceso a ningún stock, solicite acceso a un administrador.")
-    }
+    // if (fields === false) {
+    //     return alert("No tiene acceso a ningún stock, solicite acceso a un administrador.")
+    // }
 
-    fields.stocks.forEach(stock => {
-        const option = document.createElement('option')
-        option.value = stock.StockDepo
-        option.innerHTML = stock.StockDepo
-        document.querySelector('#stock').appendChild(option)
-    });
+    // fields.stocks.forEach(stock => {
+    //     const option = document.createElement('option')
+    //     option.value = stock.StockDepo
+    //     option.innerHTML = stock.StockDepo
+    //     document.querySelector('#stock').appendChild(option)
+    // });
 
-    fields.groups.forEach(group => {
-        const option = document.createElement('option')
-        option.value = group.Name
-        option.innerHTML = group.Name
-        document.querySelector('#itemgroup').appendChild(option)
-    });
+    // fields.groups.forEach(group => {
+    //     const option = document.createElement('option')
+    //     option.value = group.Name
+    //     option.innerHTML = group.Name
+    //     document.querySelector('#itemgroup').appendChild(option)
+    // });
 
     $('#stock').selectpicker("refresh");
     $('#itemgroup').selectpicker("refresh");
+    $('#stockdote').selectpicker("refresh");
 
     document.querySelector("#stockartsi").checked = true;
 

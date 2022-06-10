@@ -7,7 +7,6 @@ class Stock {
         try {
             stock.forEach(obj => {
                 if(obj.length > 2){
-                    console.log(obj);
                     Repositorie.insert(obj, id_login)
                 }
             })

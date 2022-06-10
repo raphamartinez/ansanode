@@ -6,7 +6,9 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const flash = require('express-flash')
-// const flash = require('connect-flash');
+const redis = require('redis');
+const RedisStore = require('connect-redis')(session);
+const client = redis.createClient();
 
 module.exports = () => {
 
@@ -31,14 +33,17 @@ module.exports = () => {
   app.use(express.urlencoded({ extended: false }));
   app.use(cookieParser());
 
-  app.use(session({
+  let sess = {
+    store: new RedisStore({ client }),
     secret: process.env.KEY_JWT,
     resave: false,
     saveUninitialized: false,
     cookie: {
       maxAge: 30 * 60 * 1000
     }
-  }));
+  }
+
+  app.use(session(sess))
 
   app.use(passport.initialize());
   app.use(passport.session());

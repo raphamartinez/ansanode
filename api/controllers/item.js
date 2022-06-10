@@ -173,9 +173,10 @@ module.exports = app => {
 
     app.get('/stockuser', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
-            const id_login = req.login.id_login
+            const offices = req.login.offices
+            const perfil = req.login.perfil
 
-            const fields = await Hbs.listStockbyUser(id_login)
+            const fields = await Hbs.listStockbyUser(offices, perfil)
             res.json(fields)
         } catch (err) {
             next(err)

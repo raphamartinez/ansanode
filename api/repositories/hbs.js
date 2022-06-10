@@ -490,12 +490,14 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             FROM Price P
             INNER JOIN Item I ON P.ArtCode = I.CODE
             INNER JOIN Stock St ON St.ArtCode = I.Code
-             WHERE (I.Closed = 0 OR I.Closed IS NULL )
-             and St.StockDepo IN (?)
-             GROUP BY P.ArtCode
-             ORDER BY P.ArtCode DESC`
+            WHERE (I.Closed = 0 OR I.Closed IS NULL ) `
 
-            return queryhbs(sql, stocks)
+            if (stocks && stocks.length > 0) sql += ` and St.StockDepo IN (${stocks}) `
+
+            sql += `GROUP BY P.ArtCode
+            ORDER BY P.ArtCode DESC`
+
+            return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar articulos')
         }
@@ -629,8 +631,10 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
 
     listStocks(id_login) {
         try {
-            const sql = `SELECT name as StockDepo FROM stock WHERE id_login = ${id_login}`
-            return query(sql)
+            let sql = `SELECT name as StockDepo FROM stock `
+            if(id_login)sql+= ` WHERE id_login = ${id_login} `
+
+            return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
@@ -648,13 +652,17 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
     listItemGroup(stocks) {
 
         try {
-            const sql = `SELECT Ig.Name FROM ItemGroup Ig
+            let sql = `SELECT Ig.Name FROM ItemGroup Ig
             INNER JOIN Item I ON Ig.Code = I.ItemGroup
-            INNER JOIN Stock St ON St.ArtCode = I.Code
-            WHERE St.StockDepo IN (?)
-            AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE', 'BLOCK')
+            INNER JOIN Stock St ON St.ArtCode = I.Code 
+            WHERE Ig.Code > 0 ` 
+
+            if(stocks && stocks.length > 0) sql += ` AND St.StockDepo IN (${stocks}) `
+
+            sql += ` AND Ig.Name IN ('ACTIOL', 'AGRICOLA', 'CAMARAS', 'CAMION', 'DOTE', 'LLANTA', 'LUBRIFICANTE', 'MOTO', 'OTR', 'PASSEIO', 'PICO Y PLOMO', 'PROTECTOR', 'RECAPADO', 'UTILITARIO', 'XTIRE', 'BLOCK')
             GROUP BY Ig.Name`
-            return queryhbs(sql, stocks)
+
+            return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Grupo de Artículos')
         }
@@ -839,6 +847,28 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             INNER JOIN Invoice iv ON iv.internalId = ir.masterId 
             WHERE iv.SerNr = ?`
             return queryhbs(sql, invoice)
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    }
+
+    listDote(stock){
+        try {
+            const sql = `SELECT Item.Code as ArtCode,Item.ItemGroup ,SUM(Stock.Qty) as Qty, SUM(Stock.Reserved) as Reserved, Item.Unit as Unit, Item.Unit2 as Unit2,Item.Labels,Item.DefaultPos as ItemPos,Item.DefaultShelf ItemShelf,Item.SupCode, Stock.StockDepo,
+            Item.BarCode, Item.AlternativeCode, ItemGroup.Name as GroupDesc, Stock.StockDepo as StockDepo, Stock.StockPos as StockPos, Stock.SerialNr as SerialNr, StockDepo.Name as DepoName, Item.Name as ArtName
+            FROM Item
+            INNER JOIN Stock ON Item.Code = Stock.ArtCode
+            INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
+            INNER JOIN StockDepo ON Stock.StockDepo = StockDepo.Code
+            LEFT JOIN Supplier ON Item.SupCode = Supplier.CODE
+            WHERE (Item.Closed= 0 OR Item.Closed IS NULL)
+            AND Item.ItemType= 2
+            AND IF(Stock.Qty,Stock.Qty,0) + IF(Stock.Reserved,Stock.Reserved,0) > 0
+            AND StockDepo.Code = ?
+            GROUP BY ArtCode
+            ORDER BY ItemGroup, ArtName`
+            return queryhbs(sql, stock)
+
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

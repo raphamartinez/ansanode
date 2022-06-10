@@ -1,4 +1,5 @@
 const Stock = require('../models/stock')
+const Hbs = require('../models/hbs')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
@@ -27,6 +28,35 @@ module.exports = app => {
             next(err)
         }
     })
+
+    app.post('/report/dote', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
+        try {
+            const stock = req.body.stock
+            const name = req.login.name
+
+            const wb = await Hbs.listDote(stock, name)
+            wb.write('dote.xlsx', res)
+        } catch (err) {
+            next(err)
+        }
+    })
+
+    app.post('/report/xlsx/dote', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
+        try {
+            const stock = req.body.stock
+            const name = req.login.name
+
+            const workbook = await Hbs.listDoteXs(stock, name)
+            const buffer = await workbook.xlsx.writeBuffer();
+
+            res.contentType('application/vnd.ms-excel')
+            res.setHeader('Content-Disposition', 'attachment; filename=dote.xlsx');
+            return res.send(buffer)
+        } catch (err) {
+            next(err)
+        }
+    })
+
 
     app.get('/stocks/:id_login', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {

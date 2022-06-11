@@ -204,11 +204,11 @@ class Hbs {
                 },
                 headerFooter: {
                     firstHeader: '&L&G&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    firstFooter: '&L___________________________x000A_Firma Encargado de Estoque&C_____________________________x000A_Firma Encargado da Sucursal&R__________________x000A_Gerente de Sucursal',
+                    firstFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
                     evenHeader: '&L&G&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    evenFooter: '&L___________________________x000A_Firma Encargado de Estoque&C_____________________________x000A_Firma Encargado da Sucursal&R__________________x000A_Gerente de Sucursal',
+                    evenFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
                     oddHeader: '&L&G&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    oddFooter: '&L___________________________x000A_Firma Encargado de Estoque&C_____________________________x000A_Firma Encargado da Sucursal&R__________________x000A_Gerente de Sucursal',
+                    oddFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
                     alignWithMargins: true,
                     scaleWithDoc: true
                 },
@@ -327,8 +327,8 @@ class Hbs {
             })
 
             const secondTitles = [
-                'Artigo',
-                'Descrição',
+                'Cod. Articulo',
+                'Descripción',
                 '',
                 '________',
                 '________',
@@ -403,7 +403,8 @@ class Hbs {
                     paperSize: 5,
                     scale: 72,
                     horizontalCentered: true,
-                    verticalCentered: false
+                    verticalCentered: false,
+                    showGridLines: true
                 },
                 headerFooter: {
                     firstHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
@@ -414,8 +415,7 @@ class Hbs {
                     oddFooter: '&L___________________________x000A_Firma Encargado de Estoque&C_____________________________x000A_Firma Encargado da Sucursal&R__________________x000A_Gerente de Sucursal',
                     alignWithMargins: true,
                     scaleWithDoc: true
-                },
-
+                }
             })
 
             const date = new Date()
@@ -432,7 +432,6 @@ class Hbs {
             });
 
             const styleAlignment = { vertical: 'center', horizontal: 'center' }
-
             const styleFontHeader = { color: { argb: '000000' }, size: 11 }
             const styleFillHeader = {
                 type: 'pattern',
@@ -492,7 +491,7 @@ class Hbs {
             sheet.getRow(5).font = styleFontHeader
             sheet.getRow(5).fill = styleFillHeader
             sheet.getRow(5).getCell(1).font = { bold: true }
-            sheet.addRow()
+            sheet.addRow([''])
             sheet.getRow(6).font = styleFontHeader
             sheet.getRow(6).fill = styleFillHeader
             sheet.addRow([

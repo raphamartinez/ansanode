@@ -14,6 +14,14 @@ module.exports = app => {
         }
     })
 
+    app.get('/inventario', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
+        try {
+            res.render('inventario')
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.post('/stock', [Middleware.authenticatedMiddleware, Authorization('stock', 'create')], async (req, res, next) => {
         try {
             const id_login = req.body.id_login
@@ -50,7 +58,7 @@ module.exports = app => {
             const buffer = await workbook.xlsx.writeBuffer();
 
             res.contentType('application/vnd.ms-excel')
-            res.setHeader('Content-Disposition', 'attachment; filename=dote.xlsx');
+            res.setHeader('Content-Disposition', 'attachment; filename=Toma de Inventario.xlsx');
             return res.send(buffer)
         } catch (err) {
             next(err)

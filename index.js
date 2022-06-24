@@ -1,4 +1,3 @@
-require('dotenv').config({ path: __dirname + '\\.env', encoding: 'utf8' })
 require('events').EventEmitter.prototype._maxListeners = 100;
 
 const customExpress = require('./api/config/customExpress')

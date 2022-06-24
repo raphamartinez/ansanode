@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class PowerBi {
     async insert(powerbi) {
         try {
-            const sql = 'INSERT INTO powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO powerbi (url, title, type, description, dateReg) values (?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [powerbi.url, powerbi.title, powerbi.type, powerbi.description])
 
             return result.insertId;

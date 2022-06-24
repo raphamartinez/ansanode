@@ -5,7 +5,7 @@ class Login {
 
     async insert(login) {
         try {
-            const sql = 'INSERT INTO login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO login (mail, password, mailVerify, status, dateReg ) values (?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [login.mail, login.password, login.mailVerify, login.status])
 
             return result.insertId;

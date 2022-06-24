@@ -84,7 +84,7 @@ module.exports = app => {
             req.logout(function (err) {
                 if (err) { return next(err); }
                 res.redirect('/')
-            });
+            })
         } catch (err) {
             next(err)
         }

@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class Mail {
     async insertMail(mail, id_login) {
         try {
-            const sql = 'INSERT INTO mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO mailpowerbi (recipients, cc, cco, title, body, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [mail.for, mail.cc, mail.cco, mail.title, mail.body, mail.type, id_login])
 
             return result.insertId
@@ -125,8 +125,8 @@ class Mail {
             LEFT JOIN mailattachment mt ON ma.id_mailpowerbi = mt.id_mailpowerbi
             LEFT JOIN mailscheduling ms ON ma.id_mailpowerbi = ms.id_mailpowerbi
             LEFT JOIN mailperiod mp ON ma.id_mailpowerbi = mp.id_mailpowerbi
-            WHERE (ms.date between now() - interval 3 hour AND now() - interval 2 hour) 
-            OR ((date(now() - interval 3 hour) between date(mp.datestart) and date(mp.dateend)) AND WEEKDAY(now() - interval 3 hour) = mp.weekday AND hour(now() - interval 3 hour) = mp.hour)
+            WHERE (ms.date between now() - interval 4 hour AND now() - interval 2 hour) 
+            OR ((date(now() - interval 4 hour) between date(mp.datestart) and date(mp.dateend)) AND WEEKDAY(now() - interval 4 hour) = mp.weekday AND hour(now() - interval 4 hour) = mp.hour)
             GROUP BY ma.id_mailpowerbi`
             const result = await query(sql)
 

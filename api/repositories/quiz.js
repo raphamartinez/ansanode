@@ -5,7 +5,7 @@ class Quiz {
 
     async insertQuiz(obj) {
         try {
-            const sql = 'INSERT INTO quiz (title, status, datereg) values (?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO quiz (title, status, datereg) values (?, ?, now() - interval 4 hour )'
             const result = await query(sql, [obj.title, 1])
 
             return result.insertId;
@@ -41,7 +41,7 @@ class Quiz {
 
     async insertInterview(user, quiz, id_login) {
         try {
-            const sql = 'INSERT INTO interview (id_quiz, mail, name, status, id_login, datereg) values (?, ?, ?, ?, ?, now() - interval 3 hour)'
+            const sql = 'INSERT INTO interview (id_quiz, mail, name, status, id_login, datereg) values (?, ?, ?, ?, ?, now() - interval 4 hour)'
             const result = await query(sql, [quiz.id_quiz, user.mail, user.name, 1, id_login])
 
             return result.insertId;
@@ -142,7 +142,7 @@ class Quiz {
 
    async listFinish() {
         try {
-            const sql = `SELECT * FROM interview WHERE datereg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) and status = 1`
+            const sql = `SELECT * FROM interview WHERE datereg > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY) and status = 1`
 
             return query(sql)
         } catch (error) {

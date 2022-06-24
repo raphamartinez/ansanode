@@ -5,7 +5,7 @@ class SurveyMonkey {
 
     async insert(asset, id_login) {
         try {
-            const sql = 'INSERT INTO patrimony (responseId, name, plate, office, title, type, description, note, id_login, datereg, status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, 1)'
+            const sql = 'INSERT INTO patrimony (responseId, name, plate, office, title, type, description, note, id_login, datereg, status) values (?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour, 1)'
             const result = await query(sql, [asset.responseId, asset.name, asset.plate, asset.office, asset.title, asset.type, asset.description, asset.note, id_login])
 
             return result.insertId
@@ -16,7 +16,7 @@ class SurveyMonkey {
 
     async insertImage(url, id) {
         try {
-            const sql = 'INSERT INTO patrimonyimage (url, id_patrimony, datereg) values (?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO patrimonyimage (url, id_patrimony, datereg) values (?, ?, now() - interval 4 hour )'
             await query(sql, [url, id])
 
             return true
@@ -28,7 +28,7 @@ class SurveyMonkey {
 
     async insertDetails(description, title, id_patrimony) {
         try {
-            const sql = 'INSERT INTO patrimonydetails (description, title, id_patrimony, datereg) values (?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO patrimonydetails (description, title, id_patrimony, datereg) values (?, ?, ?, now() - interval 4 hour )'
             await query(sql, [description, title, id_patrimony])
 
             return true

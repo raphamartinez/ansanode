@@ -14,14 +14,6 @@ module.exports = app => {
         }
     })
 
-    app.get('/inventario', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
-        try {
-            res.render('inventario')
-        } catch (err) {
-            next(err)
-        }
-    })
-
     app.post('/stock', [Middleware.authenticatedMiddleware, Authorization('stock', 'create')], async (req, res, next) => {
         try {
             const id_login = req.body.id_login
@@ -36,35 +28,6 @@ module.exports = app => {
             next(err)
         }
     })
-
-    app.post('/report/dote', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
-        try {
-            const stock = req.body.stock
-            const name = req.login.name
-
-            const wb = await Hbs.listDote(stock, name)
-            wb.write('dote.xlsx', res)
-        } catch (err) {
-            next(err)
-        }
-    })
-
-    app.post('/report/xlsx/dote', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
-        try {
-            const stock = req.body.stock
-            const name = req.login.name
-
-            const workbook = await Hbs.listDoteXs(stock, name)
-            const buffer = await workbook.xlsx.writeBuffer();
-
-            res.contentType('application/vnd.ms-excel')
-            res.setHeader('Content-Disposition', 'attachment; filename=Toma de Inventario.xlsx');
-            return res.send(buffer)
-        } catch (err) {
-            next(err)
-        }
-    })
-
 
     app.get('/stocks/:id_login', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {

@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class File {
     async insert(file, details, id_login) {
         try {
-            const sql = 'INSERT INTO file (title, description, filename, mimetype, path, type, size, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO file (title, description, filename, mimetype, path, type, size, id_login, datereg) values (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [details.title, details.description, file.filename, file.mimetype, file.path, details.type, file.size, id_login])
 
             return result.insertId;
@@ -15,7 +15,7 @@ class File {
 
     async insertoffice(data, id_login) {
         try {
-            const sql = 'INSERT INTO file (title, description, mimetype, path, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO file (title, description, mimetype, path, type, id_login, datereg) values (?, ?, ?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [data.title, data.description, data.mimetype, data.path, data.type, id_login])
 
             return result.insertId;

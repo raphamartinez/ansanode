@@ -6,7 +6,7 @@ class Finance {
 
     async insert(finance, id_login) {
         try {
-            const sql = `INSERT INTO financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, office, amount, client, typecoin, payterm, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
+            const sql = `INSERT INTO financeinvoice (invoicenr, contactdate, responsible, contact, comment, payday, status, office, amount, client, typecoin, payterm, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour, ?)`
 
             const result = await query(sql, [finance.invoicenr, finance.contactdate, finance.responsible, finance.contact, finance.comment, finance.payday, finance.status, finance.office, finance.amount, finance.client, finance.typecoin, finance.payterm, id_login])
             return result[0]
@@ -19,7 +19,7 @@ class Finance {
 
     async insertExpected(finance, id_login) {
         try {
-            const sql = `INSERT INTO financeexpected (client, transfUsd, chequeUsd, transfGs, chequeGs, office, date, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour, ?)`
+            const sql = `INSERT INTO financeexpected (client, transfUsd, chequeUsd, transfGs, chequeGs, office, date, datereg, id_login) values (?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour, ?)`
 
             const result = await query(sql, [finance.client, finance.transfUsd, finance.chequeUsd, finance.transfGs, finance.chequeGs, finance.office, finance.date, id_login])
             return result[0]

@@ -5,7 +5,7 @@ class Seller {
 
     async insert(salesman) {
         try {
-            const sql = 'INSERT INTO salesman (code, name, office, status, dateReg) values (?, ?, ?, ?, now() - interval 3 hour )'
+            const sql = 'INSERT INTO salesman (code, name, office, status, dateReg) values (?, ?, ?, ?, now() - interval 4 hour )'
             const result = await query(sql, [salesman.code, salesman.name, salesman.office, 1])
 
             return result.insertId

@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound } = require('../mode
 class User {
     async insert(user) {
         try {
-            const sql = `INSERT INTO user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 3 hour )`
+            const sql = `INSERT INTO user (name, mailenterprise, perfil, dateBirthday, status, id_login, dateReg) values (?, ?, ?, ?, ?, ?, now() - interval 4 hour )`
             const result = await query(sql, [user.name, user.mailenterprise, user.perfil, user.dateBirthday, user.status, user.login.id_login])
 
             return result.insertId;

@@ -4,7 +4,7 @@ const { InvalidArgumentError, InternalServerError, NotFound, NotAuthorized } = r
 class History {
     async insert(history) {
         try {
-            const sql = 'INSERT INTO history (description, status, dateReg, id_login) values (?, 1, now() - interval 3 hour , ?)'
+            const sql = 'INSERT INTO history (description, status, dateReg, id_login) values (?, 1, now() - interval 4 hour , ?)'
             await query(sql, [history.description, history.id_login])
             return true
         } catch (error) {
@@ -32,7 +32,7 @@ class History {
         try {
             let sql = `SELECT COUNT(id_history) as count 
             FROM history 
-            WHERE dateReg > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY) `
+            WHERE dateReg > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY) `
             
             if(id_login) sql += ` AND id_login = ${id_login} `
 

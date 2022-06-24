@@ -5,7 +5,7 @@ class Crm {
 
     async insert(crm, id_login) {
         try {
-            const sql = `INSERT INTO crm (contactdate, client, name, phone, mail, description, status, id_login, datereg ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
+            const sql = `INSERT INTO crm (contactdate, client, name, phone, mail, description, status, id_login, datereg ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
             const result = await query(sql, [crm.contactdate, crm.client, crm.name, crm.phone, crm.mail, crm.description, crm.status, id_login])
 
             return result.insertId
@@ -16,7 +16,7 @@ class Crm {
 
     async insertProduct(product) {
         try {
-            const sql = `INSERT INTO crmproducts (code, name, type, classification, id_crm, dateReg) VALUES (?, ?, ?, ?, ?, NOW() - interval 3 hour)`
+            const sql = `INSERT INTO crmproducts (code, name, type, classification, id_crm, dateReg) VALUES (?, ?, ?, ?, ?, NOW() - interval 4 hour)`
             const result = await query(sql, [product.code, product.name, product.type, product.classification, product.id_crm])
 
             return result.insertId

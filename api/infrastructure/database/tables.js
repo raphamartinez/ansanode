@@ -45,8 +45,48 @@ class Tables {
     this.createTableMailPeriod()
     this.createTableFinanceExpected()
     this.createTableFinanceInvoice()
+    this.createTableInventoryFile()
+    this.createTableInventory()
     
     return true
+  }
+
+  createTableInventory() {
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.inventory (
+      id int NOT NULL AUTO_INCREMENT,
+      amount int,
+      item varchar(50) NOT NULL,
+      columnIndex int NOT NULL,
+      datereg datetime, 
+      id_inventoryfile int NOT NULL,
+      id_login int NOT NULL, 
+      FOREIGN KEY (id_login) REFERENCES login (id_login), 
+      FOREIGN KEY (id_inventoryfile) REFERENCES inventoryfile (id), 
+      PRIMARY KEY (id))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
+  }
+
+  createTableInventoryFile() {
+    const sql = `CREATE TABLE IF NOT EXISTS ANSA.inventoryfile (
+      id int NOT NULL AUTO_INCREMENT,
+      id_login int, 
+      status int,
+      datereg datetime, 
+      FOREIGN KEY (id_login) REFERENCES login (id_login), 
+      PRIMARY KEY (id))`
+
+    this.connection.query(sql, (error) => {
+      if (error) {
+        console.log(error)
+      } else {
+      }
+    })
   }
 
   createTableFinanceExpected() {

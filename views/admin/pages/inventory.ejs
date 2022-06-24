@@ -1,0 +1,180 @@
+<%- include(partials + 'header.ejs' ) %>
+    <link rel="stylesheet" href="../css/bootstrap-select.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" />
+
+    <div class="container-fluid">
+
+        <div class="row justify-content-md-center">
+            <div class="col-md-12 text-center">
+                <h1 class="h3 mb-4 font-weight-bold text-primary" data-title>Toma de Inventario</h1>
+            </div>
+        </div>
+            <div class="row justify-content-md-center">
+                <div class="col-md-10">
+                    <ul class="nav justify-content-center nav-tabs" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="report-tab" data-toggle="tab" href="#report" role="tab"
+                                aria-controls="report" aria-selected="true">Generar Informe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="online-tab" data-toggle="tab" href="#online" role="tab"
+                                aria-controls="online" aria-selected="false">On-line</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane fade show active" id="report" role="tabpanel" aria-labelledby="report-tab">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Generar informe de Toma de Inventario
+                                    </h6>
+                                </div>
+                                <div class="card-body">
+                                    <form method="POST" action="/report/inventory">
+                                        <div class="form-row text-center">
+                                            <div class="form-group offset-md-4 col-md-4">
+                                                <select title="Seleccione un stock" class="form-control selectpicker"
+                                                    multiple name="stock" id="stockreport">
+                                                    <option value="01AUTOPJC">01AUTOPJC</option>
+                                                    <option value="01CAFE">01CAFE</option>
+                                                    <option value="01IMPPJC">01IMPPJC</option>
+                                                    <option value="02AUTOCDE">02AUTOCDE</option>
+                                                    <option value="01DOSRUED">01DOSRUED</option>
+                                                    <option value="03AUTOBVIS">03AUTOBVIS</option>
+                                                    <option value="04AUTOENC">04AUTOENC</option>
+                                                    <option value="05AUTOSAL">05AUTOSAL</option>
+                                                    <option value="06AUTOFDO">06AUTOFDO</option>
+                                                    <option value="06AUTOSHCH">06AUTOSHCH</option>
+                                                    <option value="07AUTOBADO">07AUTOBADO</option>
+                                                    <option value="10TRUCK">10TRUCK</option>
+                                                    <option value="12AUTORITA">12AUTORITA</option>
+                                                    <option value="13AUTOMRA">13AUTOMRA</option>
+                                                    <option value="DCCDE">DCCDE</option>
+                                                    <option value="DEPTRANIMP">DEPTRANIMP</option>
+                                                    <option value="MATRIZ">MATRIZ</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-12 text-center">
+                                                <button type="submit" class="btn btn-info">Generar</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="online" role="tabpanel" aria-labelledby="online-tab">
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Archivos</h6>
+                                </div>
+                                
+                                <%- include('../partials/loading.ejs') %>
+
+                                <div class="card-body">
+                                    <div class="form-row text-center">
+                                        <div class="form-group col-md-12 text-center">
+                                            <div data-inventories class="form-row">
+                                                <% archives.forEach(archive=> { %>
+                                                    <div
+                                                        class="card border <% if(archive.edit === ''){%> border-success <% }else{ %> border-dark <% }%> rounded-3 col-md-3 text-success mb-2 mr-2 ml-2">
+                                                        <a data-inventory-view="<%= archive.id %>" data-stock="<%= archive.stock %>" data-date="<%= archive.date %>" data-edit="<%= archive.edit %>">
+                                                            <div class="card-body">
+                                                                <h5 class="card-title">Stock: <%= archive.stock %>
+                                                                </h5>
+                                                                <h6 class="card-subtitle mb-2">
+                                                                    <%= archive.name %>
+                                                                </h6>
+                                                                <h6 class="card-subtitle mb-2"><%= archive.porcent %>% Concluído</h6>
+                                                                <p class="card-text">Fecha de Registro: <%= archive.date
+                                                                        %>
+                                                                </p>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                    <% }) %>
+                                                    <h3 data-no-archives><% if(archives.length === 0) {%>No hay archivos para listar, tenes que generar un nuevo.<% }%> </h3>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Nuevo Archivo</h6>
+                                </div>
+                                <div class="card-body">
+                                    <form data-form-inventory-online>
+                                        <div class="form-row text-center">
+                                            <div class="form-group offset-md-4 col-md-4">
+                                                <select title="Seleccione un Stock"
+                                                    class="form-control selectpicker" multiple name="stock"
+                                                    id="stockonline" required>
+                                                    <option value="01AUTOPJC">01AUTOPJC</option>
+                                                    <option value="01CAFE">01CAFE</option>
+                                                    <option value="01IMPPJC">01IMPPJC</option>
+                                                    <option value="02AUTOCDE">02AUTOCDE</option>
+                                                    <option value="01DOSRUED">01DOSRUED</option>
+                                                    <option value="03AUTOBVIS">03AUTOBVIS</option>
+                                                    <option value="04AUTOENC">04AUTOENC</option>
+                                                    <option value="05AUTOSAL">05AUTOSAL</option>
+                                                    <option value="06AUTOFDO">06AUTOFDO</option>
+                                                    <option value="06AUTOSHCH">06AUTOSHCH</option>
+                                                    <option value="07AUTOBADO">07AUTOBADO</option>
+                                                    <option value="10TRUCK">10TRUCK</option>
+                                                    <option value="12AUTORITA">12AUTORITA</option>
+                                                    <option value="13AUTOMRA">13AUTOMRA</option>
+                                                    <option value="DCCDE">DCCDE</option>
+                                                    <option value="DEPTRANIMP">DEPTRANIMP</option>
+                                                    <option value="MATRIZ">MATRIZ</option>
+                                                </select>
+                                            </div>
+                                            <div class="form-group col-md-12 text-center">
+                                                <button type="submit" class="btn btn-info">Generar
+                                                    nuevo</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="card shadow mb-4">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">Tabla</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="form-row text-center">
+                                        <div class="col-md-12 text-center">
+                                            <h5 class="card-title" data-inventory></h5>
+                                        </div>
+                                        <div class="col-md-12 text-center">
+                                            <h6 class="card-subtitle mb-2 text-muted" data-inventory-subtitle></h6>
+                                        </div>
+                                        <div class="col-md-6 text-left">
+                                            <form data-generate-report-online method="POST"></form>
+                                        </div>
+                                        <div class="col-md-6 text-right">
+                                            <div data-inventory-delete></div>
+                                        </div>
+                                        <div class="form-group col-md-12 text-center">
+                                            <table
+                                                style="font-family: Calibri; font-size: 0.75em; letter-spacing: .1em;"
+                                                class="table table-bordered text-left" id="tableInventory" width="100%"
+                                                cellspacing="0">
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <%- include(partials + 'script.ejs' ) %>
+                <script type="module" src="../js/controllers/inventoryController.js"></script>
+                <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.bundle.min.js"></script>
+                <script
+                    src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+                <script src="https://cdn.datatables.net/rowgroup/1.2.0/js/dataTables.rowGroup.min.js"></script>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+                <%- include(partials + 'footer.ejs' ) %>

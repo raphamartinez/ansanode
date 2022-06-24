@@ -5,7 +5,7 @@ class Prosegur {
 
     async insertHistory(description) {
         try {
-            const sql = "INSERT INTO webscrapinghistory (description, dateReg) values ( ?, now() - interval 3 hour )"
+            const sql = "INSERT INTO webscrapinghistory (description, dateReg) values ( ?, now() - interval 4 hour )"
             const result = await query(sql, description)
             return result[0]
         } catch (error) {
@@ -31,7 +31,7 @@ class Prosegur {
 
     async insertDistance(plate, km) {
         try {
-            const sql = "INSERT INTO prosegurdistance (plate, km, dateReg) values ( ?, ?, now() - interval 3 hour )"
+            const sql = "INSERT INTO prosegurdistance (plate, km, dateReg) values ( ?, ?, now() - interval 4 hour )"
             const result = await query(sql, [plate, km])
             return result[0]
         } catch (error) {

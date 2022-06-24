@@ -17,7 +17,7 @@ class Hbs {
     listSalary() {
         try {
             const sql = ` SELECT sa.SerNr as serNr, DATE_FORMAT(sa.TransDate, '%Y-%m-%d') as date, sa.TransTime as time, sa.Office as office, sa.BaseRate as baserate, sa.CurrencyRate as currencyrate, sa.Comment as comment, 
-            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 3 hour , INTERVAL -1 DAY)`
+            sa.Reference as reference, sa.Base2CreditSum as usd, sa.EmployeeName as name FROM SalaryPayment sa WHERE sa.TransDate > DATE_ADD(now() - interval 4 hour , INTERVAL -1 DAY)`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('La lista de salarios falló')
@@ -50,7 +50,7 @@ class Hbs {
 
     async insertUser(user) {
         try {
-            const sql = `INSERT INTO userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 3 hour)`
+            const sql = `INSERT INTO userhbs (name, perfil, dateBirthday, phone, cod, responsibility, modalidad, startCompany, document, officecode, officename, endCompany, status, sex, dateReg) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
             await query(sql, [user.name, 'user hbs', user.dateBirthday, user.phone, user.cod, user.responsibility, user.modalidad, user.startCompany, user.document, user.officecode, user.officename, user.endCompany, user.status, user.sex])
 
             return true
@@ -847,28 +847,6 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
             INNER JOIN Invoice iv ON iv.internalId = ir.masterId 
             WHERE iv.SerNr = ?`
             return queryhbs(sql, invoice)
-        } catch (error) {
-            throw new InternalServerError('No se pudo enumerar Stock')
-        }
-    }
-
-    listDote(stock){
-        try {
-            const sql = `SELECT Item.Code as ArtCode,Item.ItemGroup ,SUM(Stock.Qty) as Qty, SUM(Stock.Reserved) as Reserved, Item.Unit as Unit, Item.Unit2 as Unit2,Item.Labels,Item.DefaultPos as ItemPos,Item.DefaultShelf ItemShelf,Item.SupCode, Stock.StockDepo,
-            Item.BarCode, Item.AlternativeCode, ItemGroup.Name as GroupDesc, Stock.StockDepo as StockDepo, Stock.StockPos as StockPos, Stock.SerialNr as SerialNr, StockDepo.Name as DepoName, Item.Name as ArtName
-            FROM Item
-            INNER JOIN Stock ON Item.Code = Stock.ArtCode
-            INNER JOIN ItemGroup ON ItemGroup.Code = Item.ItemGroup
-            INNER JOIN StockDepo ON Stock.StockDepo = StockDepo.Code
-            LEFT JOIN Supplier ON Item.SupCode = Supplier.CODE
-            WHERE (Item.Closed= 0 OR Item.Closed IS NULL)
-            AND Item.ItemType= 2
-            AND IF(Stock.Qty,Stock.Qty,0) + IF(Stock.Reserved,Stock.Reserved,0) > 0
-            AND StockDepo.Code = ?
-            GROUP BY ArtCode
-            ORDER BY ItemGroup, ArtName`
-            return queryhbs(sql, stock)
-
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

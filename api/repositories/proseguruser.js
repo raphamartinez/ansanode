@@ -5,7 +5,7 @@ class ProsegurUser {
 
     async insert(user) {
         try {
-            const sql = "INSERT INTO prosegurusers (code, name, office, orden, phone, contract, datereg) values ( ?, ?, ?, ?, ?, ?, now() - interval 3 hour )"
+            const sql = "INSERT INTO prosegurusers (code, name, office, orden, phone, contract, datereg) values ( ?, ?, ?, ?, ?, ?, now() - interval 4 hour )"
             const result = await query(sql, [user.code, user.name, user.office, user.orden, user.phone, user.contract])
 
             return result.insertId

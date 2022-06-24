@@ -34,12 +34,12 @@ class WebScraping {
 
     async init() {
         try {
-            await this.listProsegurPowerandStop()
-            await this.listProsegurMaintenance()
-            // await this.listProsegurOffice()
-            await this.listInviolavel()
-            await this.listProsegurDistance()
-            await Repositorie.insertHistory('Actualizado con éxito')
+            // await this.listProsegurPowerandStop()
+            // await this.listProsegurMaintenance()
+            // // await this.listProsegurOffice()
+            // await this.listInviolavel()
+            // await this.listProsegurDistance()
+            // await Repositorie.insertHistory('Actualizado con éxito')
             console.log('robot ok');
         } catch (error) {
             await Repositorie.insertHistory(`Error - ${error}`)

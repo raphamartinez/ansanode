@@ -61,10 +61,12 @@ class Inventory {
             const inventoryItems = await Repositorie.items(id)
             if (inventoryItems.length === 0) return itemsdt
             const items = itemsdt.map(stock => {
-                let obj = inventoryItems.find(obj => stock.ArtCode === obj.item)
-                if (obj) {
-                    stock[`v${obj.columnIndex}`] = obj.amount
-                    stock.edit = obj.edit
+                for (let index = 1; index <= 13; index++) {
+                    let obj = inventoryItems.find(obj => stock.ArtCode === obj.item && obj.columnIndex === index)
+                    if (obj) {
+                        stock[`v${obj.columnIndex}`] = obj.amount
+                        stock.edit = obj.edit
+                    }
                 }
 
                 return stock
@@ -210,13 +212,11 @@ class Inventory {
             const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
             let arr = [item.ArtCode, item.ArtName, item.Labels, qty]
             if (inventoryItems){
-                let obj = inventoryItems.find(obj => item.ArtCode === obj.item)
-                if (obj) {
-                    for (let index = 0; index < obj.columnIndex; index++) {
-                        index + 1 === obj.columnIndex ? arr.push(obj.amount) : arr.push('')
-                        
+                    for (let index = 1; index <= 13; index++) {
+                        let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index  === obj.columnIndex)
+                            obj ? arr.push(obj.amount) : arr.push('')     
                     }
-                }
+                
             }
     
             sheet.addRow(arr)
@@ -229,7 +229,7 @@ class Inventory {
             const workbook = new ExcelJS.Workbook()
             workbook.creator = 'America Neumáticos S.A'
             workbook.created = new Date()
-            const sheet = workbook.addWorksheet('Toma de Inventario', {
+            const sheet = workbook.addWorksheet('Oficio', {
                 views: [{ showGridLines: true, zoomScale: 84 }],
                 properties: {
                     defaultColWidth: 8,
@@ -279,6 +279,53 @@ class Inventory {
                 inventoryItems = await Repositorie.items(id)
             }
             this.copulateSheet(sheet, items, name, stock, inventoryItems)
+
+            const sheetA4 = workbook.addWorksheet('A4', {
+                views: [{ showGridLines: true, zoomScale: 75 }],
+                properties: {
+                    defaultColWidth: 8,
+                    defaultRowHeight: 19
+                },
+                pageSetup: {
+                    margins: {
+                        bottom: 1.18110236220472,
+                        footer: 0.511811023622047,
+                        header: 0.31496062992126,
+                        left: 0.511811023622047,
+                        right: 0.511811023622047,
+                        top: 0.78740157480315
+                    },
+                    printTitlesRow: '7:8',
+                    firstPageNumber: 1,
+                    orientation: 'landscape',
+                    pageOrder: 'downThenOver',
+                    paperSize: 9,
+                    scale: 65,
+                    horizontalCentered: true,
+                    verticalCentered: false,
+                    showGridLines: true
+                },
+                headerFooter: {
+                    firstHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                    firstFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                    evenHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                    evenFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                    oddHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                    oddFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                    alignWithMargins: true,
+                    scaleWithDoc: true
+                }
+            })
+            const imageA4 = workbook.addImage({
+                filename: './public/img/ansalogomin.png',
+                extension: 'png',
+            });
+            sheetA4.addImage(imageA4, {
+                tl: { col: 16, row: 1.5 },
+                br: { col: 18, row: 5.5 },
+            });
+            this.copulateSheet(sheetA4, items, name, stock, inventoryItems)
+
 
             return workbook
         } catch (error) {

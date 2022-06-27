@@ -86,7 +86,7 @@ class Inventory {
     async create(id_login, stock, status) {
         try {
             const sql = `INSERT INTO inventoryfile (id_login, stock, status, datereg) VALUES (?, ?, ?, now() - interval 4 hour)`
-            const result = query(sql, [id_login, stock, status])
+            const result = await query(sql, [id_login, stock, status])
             return result.insertId
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

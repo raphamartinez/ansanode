@@ -72,10 +72,10 @@
                                 <div class="card-body">
                                     <div class="form-row text-center">
                                         <div class="form-group col-md-12 text-center">
-                                            <div data-inventories class="form-row">
+                                            <div data-inventories class="form-row text-center justify-content-center">
                                                 <% archives.forEach(archive=> { %>
                                                     <div
-                                                        class="card border <% if(archive.edit === ''){%> border-success <% }else{ %> border-dark <% }%> rounded-3 col-md-3 text-success mb-2 mr-2 ml-2">
+                                                        class="card border <% if(archive.edit === ''){%> border-success <% }else{ %> border-dark <% }%> rounded-3 col-md-2 text-success mb-2 mr-2 ml-2">
                                                         <a data-inventory-view="<%= archive.id %>" data-stock="<%= archive.stock %>" data-date="<%= archive.date %>" data-edit="<%= archive.edit %>">
                                                             <div class="card-body">
                                                                 <h5 class="card-title">Stock: <%= archive.stock %>

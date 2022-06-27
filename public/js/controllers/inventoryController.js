@@ -41,7 +41,7 @@ const generateCard = (id, stock, date) => {
     document.querySelector('[data-no-archives]').innerHTML = ''
 
     const div = document.createElement('div')
-    div.classList.add('card', 'border', 'border-success', 'rounded-3', 'col-md-3', 'text-success', 'mb-2', 'mr-2', 'ml-2')
+    div.classList.add('card', 'border', 'border-success', 'rounded-3', 'col-md-2', 'text-success', 'mb-2', 'mr-2', 'ml-2')
     div.innerHTML = ` <a data-inventory-view="${id}" data-stock="${stock}" data-date="${date}" data-edit="">
     <div class="card-body">
         <h5 class="card-title">Stock: ${stock}

@@ -209,13 +209,16 @@ class Inventory {
             }
             const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
             let arr = [item.ArtCode, item.ArtName, item.Labels, qty]
-            let obj = inventoryItems.find(obj => item.ArtCode === obj.item)
-            if (obj) {
-                for (let index = 0; index < obj.columnIndex; index++) {
-                    index + 1 === obj.columnIndex ? arr.push(obj.amount) : arr.push('')
-                    
+            if (inventoryItems){
+                let obj = inventoryItems.find(obj => item.ArtCode === obj.item)
+                if (obj) {
+                    for (let index = 0; index < obj.columnIndex; index++) {
+                        index + 1 === obj.columnIndex ? arr.push(obj.amount) : arr.push('')
+                        
+                    }
                 }
             }
+    
             sheet.addRow(arr)
             rowIndex++
         })

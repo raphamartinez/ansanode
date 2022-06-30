@@ -83,7 +83,8 @@ const transformArr = (itemsdt) => {
             `<input ${item.lastEditV11 ? 'data-edit="1"' : 'data-edit="0"'} ${item.edit} data-content="${item.lastEditV11 ? `Última modificación: ${item.lastEditV11}` : ''}" tabindex="${ind + 11}" data-item="${item.ArtCode}"  data-stock="${qty}" data-column="${date.getFullYear() + 2}"   data-index="11" value="${item.v11}" type="number" class="form-control goal ${item.lastEditV11 ? 'modified' : ''} text-center">`,
             `<input ${item.lastEditV12 ? 'data-edit="1"' : 'data-edit="0"'} ${item.edit} data-content="${item.lastEditV12 ? `Última modificación: ${item.lastEditV12}` : ''}" tabindex="${ind + 12}" data-item="${item.ArtCode}"  data-stock="${qty}" data-column="${date.getFullYear() + 1}"   data-index="12" value="${item.v12}" type="number" class="form-control goal ${item.lastEditV12 ? 'modified' : ''} text-center">`,
             `<input ${item.lastEditV13 ? 'data-edit="1"' : 'data-edit="0"'} ${item.edit} data-content="${item.lastEditV13 ? `Última modificación: ${item.lastEditV13}` : ''}" tabindex="${ind + 13}" data-item="${item.ArtCode}"  data-stock="${qty}" data-column="${date.getFullYear()}"  data-index="13" value="${item.v13}" type="number" class="form-control goal ${item.lastEditV13 ? 'modified' : ''} text-center">`,
-            item.amount > 0 ? item.amount : ''
+            item.amount > 0 ? item.amount : '',
+            item.amount > 0 ? item.amount - qty : ''
         ]
         ind += 13
         return arr
@@ -121,12 +122,13 @@ const showTable = (items = []) => {
             { title: date.getFullYear() - 2 },
             { title: date.getFullYear() - 1 },
             { title: date.getFullYear() },
-            { title: 'Totale   ' }
+            { title: 'Totale   ' },
+            { title: 'Diferencia' }
         ],
         orderFixed: [[0, 'desc']],
         rowGroup: {
             startRender: function (rows, group) {
-                return $('<tr/>').append(`<td colspan="20" style="background-color:#4E73DF !important; color:#FFFFFF !important; font-size: 1em; !important">${group}</td>`)
+                return $('<tr/>').append(`<td colspan="21" style="background-color:#4E73DF !important; color:#FFFFFF !important; font-size: 1em; !important">${group}</td>`)
             },
             dataSrc: 0,
         },
@@ -142,7 +144,7 @@ const showTable = (items = []) => {
                 }
                 
             }
-            colorCell(data[19], row)
+           if(data[19]) colorCell(data[19] - data[4], row)
         },
         paging: true,
         ordering: false,

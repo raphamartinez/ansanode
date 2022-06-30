@@ -48,7 +48,7 @@ class Inventory {
         try {
             const sql = `SELECT iv.*, IF(iv.datereg BETWEEN NOW() - interval 7 day and NOW(), '', 'disabled') as edit, ivv.stock as lastStock
             FROM ANSA.inventory as iv
-            LEFT JOIN ANSA.inventory as ivv on iv.item = ivv.item and iv.id_inventoryfile = ivv.id_inventoryfile and ivv.datereg < iv.datereg
+            LEFT JOIN ANSA.inventory as ivv on iv.item = ivv.item and iv.stock = ivv.stock and ivv.datereg < iv.datereg
             WHERE iv.id_inventoryfile = ?
             GROUP BY id 
             HAVING iv.id_inventoryfile = ?`

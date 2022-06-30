@@ -82,6 +82,7 @@ class Inventory {
     }
 
     copulateSheet(sheet, items, name, stock, inventoryItems) {
+        const totalColumns = 20
         const date = new Date()
         const date2 = new Date(date.getTime() - 14400000)
         const now = `${date2.getHours()}:${date2.getMinutes()} ${date2.getDate()}/${date2.getMonth() + 1}/${date2.getFullYear()}`
@@ -127,13 +128,15 @@ class Inventory {
             bgColor: { argb: '002060' }
         }
 
-        sheet.mergeCells(1, 1, 1, 18)
+        sheet.mergeCells(1, 1, 1, totalColumns)
         sheet.addRow(['Suc.:', stock])
         sheet.addRow(['Fecha y Hora de emisión:', now])
         sheet.addRow(['Usuario:', name])
         sheet.addRow(['Fecha de impresion'])
         sheet.getColumn(1).width = 21
         sheet.getColumn(2).width = 54
+        sheet.getColumn(5).width = 9
+        sheet.getColumn(totalColumns).width = 10
         sheet.getRow(2).font = styleFontHeader
         sheet.getRow(2).fill = styleFillHeader
         sheet.getRow(2).getCell(1).font = { bold: true }
@@ -154,6 +157,7 @@ class Inventory {
             stock,
             '',
             'Stock',
+            'Ult. Stock',
             'Dote',
             'Dote',
             'Dote',
@@ -167,12 +171,14 @@ class Inventory {
             'Dote',
             'Dote',
             'Dote',
-            'Total'
+            'Total',
+            'Diferencia'
         ])
         sheet.addRow([
             'Cod. Articulo',
             'Descripción',
             'Etiqueta',
+            '',
             '',
             '________',
             '________',
@@ -189,8 +195,9 @@ class Inventory {
             date.getFullYear()
         ])
 
-        sheet.mergeCells(7, 18, 8, 18)
-        for (let index = 1; index <= 18; index++) {
+        sheet.mergeCells(7, 19, 8, 19)
+        sheet.mergeCells(7, 20, 8, 20)
+        for (let index = 1; index <= totalColumns; index++) {
             sheet.getRow(7).getCell(index).font = styleFontTitle
             sheet.getRow(7).getCell(index).fill = styleFillTitle
             sheet.getRow(7).getCell(index).alignment = styleAlignment
@@ -207,30 +214,69 @@ class Inventory {
                 lastGroup = item.ItemGroup
                 const rowNow = sheet.getRow(rowIndex)
                 rowNow.height = 19
-                for (let index = 1; index <= 18; index++) {
+                for (let index = 1; index <= totalColumns; index++) {
                     rowNow.getCell(index).font = styleFontGroup
                     rowNow.getCell(index).fill = styleFillGroup
                 }
                 rowIndex++
             }
             const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
-            let arr = [item.ArtCode, item.ArtName, item.Labels, qty]
+            let arr = [item.ArtCode, item.ArtName, item.Labels, qty, '']
             if (inventoryItems) {
                 item.amount = 0
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)
                     if (obj) {
                         item.amount += obj.amount
+                        item.lastStock = obj.lastStock
                         arr.push(obj.amount)
                     } else {
                         arr.push('')
                     }
                 }
                 arr.push(item.amount > 0 ? item.amount : '')
+                arr.push(item.amount > 0 ? item.amount - qty : '')
             }
             sheet.addRow(arr)
+            const rowTotal = sheet.getRow(rowIndex)
+            rowTotal.getCell(5).value = item.lastStock
+            if (item.amount > 0) {
+                this.colorCell(item.amount - qty, rowTotal)
+            }
             rowIndex++
         })
+    }
+
+    colorCell = (data, row) => {
+        let style = {}
+        if (data > 0) {
+            style = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F7B3B3' },
+                bgColor: { argb: '000000' }
+            }
+        }
+        if (data === 0) {
+            style = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'B7F7B3' },
+                bgColor: { argb: '000000' }
+            }
+        }
+
+        if (data < 0) {
+            style = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'F3F7B3' },
+                bgColor: { argb: '000000' }
+            }
+        }
+
+        row.getCell(19).font = style
+        row.getCell(19).fill = style
     }
 
     async generate(items, name, stock, id) {
@@ -309,7 +355,7 @@ class Inventory {
                     orientation: 'landscape',
                     pageOrder: 'downThenOver',
                     paperSize: 9,
-                    scale: 65,
+                    scale: 60,
                     horizontalCentered: true,
                     verticalCentered: false,
                     showGridLines: true

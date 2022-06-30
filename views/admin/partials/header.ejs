@@ -148,7 +148,9 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray small" data-username> <%= username %></span>
+                                <span class="mr-2 d-none d-lg-inline text-gray small" data-username>
+                                    <%= username %>
+                                </span>
                                 <div class="icon-circle ">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                                         class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -208,4 +210,7 @@
                                                                     <% break; case 8: %>
                                                                         <%- include(components + 'menu/logistic.ejs' )
                                                                             %>
-                                                                            <% break; }%>
+                                                                            <% break; case 9: %>
+                                                                                <%- include(components
+                                                                                    + 'menu/warehouseManager.ejs' ) %>
+                                                                                    <% break; }%>

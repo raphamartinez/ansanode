@@ -61,11 +61,15 @@ class Inventory {
             const inventoryItems = await Repositorie.items(id)
             if (inventoryItems.length === 0) return itemsdt
             const items = itemsdt.map(stock => {
+                stock.amount = 0
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => stock.ArtCode === obj.item && obj.columnIndex === index)
                     if (obj) {
                         stock[`v${obj.columnIndex}`] = obj.amount
+                        stock[`lastEditV${obj.columnIndex}`] = obj.lastEdit
+                        stock.amount += obj.amount
                         stock.edit = obj.edit
+                        stock.lastStock = obj.lastStock ? obj.lastStock : stock.lastStock
                     }
                 }
 
@@ -211,14 +215,19 @@ class Inventory {
             }
             const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
             let arr = [item.ArtCode, item.ArtName, item.Labels, qty]
-            if (inventoryItems){
-                    for (let index = 1; index <= 13; index++) {
-                        let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index  === obj.columnIndex)
-                            obj ? arr.push(obj.amount) : arr.push('')     
+            if (inventoryItems) {
+                item.amount = 0
+                for (let index = 1; index <= 13; index++) {
+                    let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)
+                    if (obj) {
+                        item.amount += obj.amount
+                        arr.push(obj.amount)
+                    } else {
+                        arr.push('')
                     }
-                
+                }
+                arr.push(item.amount > 0 ? item.amount : '')
             }
-    
             sheet.addRow(arr)
             rowIndex++
         })
@@ -337,9 +346,12 @@ class Inventory {
         let status = 3
         try {
             const exists = await Repositorie.validate(item)
-
             if (exists.length > 0) {
+                const lastDate = new Date(exists[0].datereg)
+                const now = new Date()
+                const difference = now.getTime() - lastDate.getTime()
                 item.id = exists[0].id
+                if (difference > (72000000 + 14400000)) item.lastEdit = exists[0].amount
                 if (exists[0].amount !== parseInt(item.amount)) {
                     await Repositorie.update(item)
                     status = 1

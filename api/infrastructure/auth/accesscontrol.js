@@ -10,6 +10,17 @@ const controll = new AccessControl()
 // 6 - Encarregado de Sucursal
 // 7 - Auditor
 // 8 - Logistica
+// 9 - Encarregado de Deposito
+
+controll
+    .grant('9')
+    .readOwn('inventory')
+    .createOwn('inventory')
+    .updateOwn('inventory')
+    .deleteOwn('inventory')
+    .readOwn('history') 
+    .readOwn('office')
+    .readOwn('powerbi')
 
 controll
     .grant('8')
@@ -29,7 +40,11 @@ controll
     .readOwn('history')
     .readOwn('user')
     .readOwn('office')
-
+    .readAny('inventory')
+    .createAny('inventory')
+    .updateAny('inventory')
+    .deleteAny('inventory')
+    
 controll
     .grant('6')
     .extend('7')
@@ -44,6 +59,10 @@ controll
     .readOwn('history')
     .readOwn('user')
     .readOwn('office')
+    .readOwn('inventory')
+    .createOwn('inventory')
+    .updateOwn('inventory')
+    .deleteOwn('inventory')
 
 controll
     .grant('5')
@@ -169,5 +188,9 @@ controll
     .createAny('crm')
     .deleteAny('crm')
     .updateAny('crm')
+    .readAny('inventory')
+    .createAny('inventory')
+    .updateAny('inventory')
+    .deleteAny('inventory')
 
 module.exports = controll

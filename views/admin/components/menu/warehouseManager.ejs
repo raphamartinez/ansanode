@@ -1,0 +1,39 @@
+<div class="d-none col-md-12 mb-4">
+    <div class="container-lg bg-gradient-primary fixed-menu responsive" data-modal-menu>
+        <div class="collapse p-4 responsive" id="navbarResponsive">
+            <div class="col-md-3 text-white features-menu" data-fast-btns>
+                <p class="h6"><i class="fas fa-star"></i> Favoritos</p>
+                <p class="small text-white-50" data-fav-help>Agregue favoritos haciendo clic en la
+                    estrella junto al nombre del servicio.</p>
+                <p class="small text-white-50 mb-1" data-favs-list></p>
+                <p class="h6 pt-2"><i class="fa fa-history"></i> Accedido recientemente</p>
+                <p class="small text-white-50 mb-1" data-recent></p>
+                <div class="col-md-2 text-white"><a data-close-menu><i
+                    class="fas fa-times text-light"></a></i></div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelector('[data-history]').remove()
+    document.querySelector('[data-topbar-search]').remove()
+    document.querySelector('[data-divider]').remove()
+
+    document.querySelector('[data-selector-menu]').remove()
+
+    document.querySelector('[data-menu-sec]').innerHTML = `
+    <ul class="navbar-nav mr-auto pl-5">
+    <li class="nav-item dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+            aria-expanded="false">
+            Menu
+        </a>
+        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="/inventario" >Toma de Inventario</a>
+        </div>
+    </li>
+</ul>
+`
+</script>

@@ -46,8 +46,13 @@ class Inventory {
 
     items(id) {
         try {
-            const sql = `SELECT *, IF(datereg BETWEEN NOW() - interval 7 day and NOW(), '', 'disabled') as edit FROM inventory WHERE id_inventoryfile = ?`
-            return query(sql, id)
+            const sql = `SELECT iv.*, IF(iv.datereg BETWEEN NOW() - interval 7 day and NOW(), '', 'disabled') as edit, ivv.stock as lastStock
+            FROM ANSA.inventory as iv
+            LEFT JOIN ANSA.inventory as ivv on iv.item = ivv.item and iv.id_inventoryfile = ivv.id_inventoryfile and ivv.datereg < iv.datereg
+            WHERE iv.id_inventoryfile = ?
+            GROUP BY id 
+            HAVING iv.id_inventoryfile = ?`
+            return query(sql, [id, id])
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }
@@ -55,7 +60,7 @@ class Inventory {
 
     validate(item) {
         try {
-            const sql = `SELECT id, amount FROM inventory WHERE item = ? and id_inventoryfile = ? and columnIndex = ?`
+            const sql = `SELECT id, amount, datereg FROM inventory WHERE item = ? and id_inventoryfile = ? and columnIndex = ?`
             return query(sql, [item.code, item.inventory, item.index])
 
         } catch (error) {
@@ -65,8 +70,8 @@ class Inventory {
 
     update(item) {
         try {
-            const sql = `UPDATE inventory SET amount = ? WHERE item = ? and id_inventoryfile = ? and columnIndex = ?`
-            return query(sql, [item.amount, item.code, item.inventory, item.index])
+            const sql = `UPDATE inventory SET lastEdit = ?, amount = ? WHERE item = ? and id_inventoryfile = ? and columnIndex = ?`
+            return query(sql, [item.lastEdit, item.amount, item.code, item.inventory, item.index])
 
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
@@ -75,8 +80,8 @@ class Inventory {
 
     insert(item, id_login) {
         try {
-            const sql = `INSERT INTO inventory (amount, item, columnIndex, id_inventoryfile, id_login, datereg) VALUES (?, ?, ?, ?, ?, now() - interval 4 hour)`
-            return query(sql, [item.amount, item.code, item.index, item.inventory, id_login])
+            const sql = `INSERT INTO inventory (stock, amount, item, columnIndex, id_inventoryfile, id_login, datereg) VALUES (?, ?, ?, ?, ?, ?, now() - interval 4 hour)`
+            return query(sql, [item.stock, item.amount, item.code, item.index, item.inventory, id_login])
 
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

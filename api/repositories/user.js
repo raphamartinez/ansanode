@@ -78,6 +78,7 @@ class User {
                                     WHEN us.perfil = 6 THEN "Encarregado de Sucursal"
                                     WHEN us.perfil = 7 THEN "Auditor"
                                     WHEN us.perfil = 8 THEN "Logistica"
+                                    WHEN us.perfil = 9 THEN "Encarregado de Deposito"
                                     ELSE "Usuario"
                                 END as perfilDesc
                         FROM user us
@@ -113,6 +114,7 @@ class User {
                                     WHEN us.perfil = 6 THEN "Encarregado de Sucursal"
                                     WHEN us.perfil = 7 THEN "Auditor"
                                     WHEN us.perfil = 8 THEN "Logistica"
+                                    WHEN us.perfil = 9 THEN "Encarregado de Deposito"
                                     ELSE "Usuario"
                                 END as perfilDesc
                         FROM user us

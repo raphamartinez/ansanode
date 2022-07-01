@@ -381,6 +381,8 @@ class Inventory {
             });
             this.copulateSheet(sheetA4, items, name, stock, inventoryItems)
 
+            await sheet.protect('@NsaPY@@n3umatic0s')
+            await sheetA4.protect('@NsaPY@@n3umatic0s')
 
             return workbook
         } catch (error) {

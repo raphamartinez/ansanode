@@ -2,6 +2,8 @@ const Inventory = require('../models/inventory')
 const Middleware = require('../infrastructure/auth/middleware')
 const Authorization = require('../infrastructure/auth/authorization')
 const cachelist = require('../infrastructure/redis/cache')
+const multer = require('multer')
+const multerConfig = require('../config/multerLocal')
 
 module.exports = app => {
 
@@ -64,12 +66,26 @@ module.exports = app => {
         }
     })
 
+    
+    app.post('/inventory/excel', [Middleware.authenticatedMiddleware, Authorization('goal', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
+        try {
+            const file = req.file;
+            const id_login = req.login.id_login
+            const result = await Inventory.upload(file, id_login)
+            const msg = result ? "Toma de Inventario agregado con éxito." : "Toma de Inventario no se ha agregado."
+            res.json({ msg })
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.post('/report/inventory', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const stock = req.body.stock
             const name = req.login.name
+            const blocked = false
             const items = await Inventory.list(stock)
-            const workbook = await Inventory.generate(items, name, stock)
+            const workbook = await Inventory.generate(blocked, items, name, stock)
             const buffer = await workbook.xlsx.writeBuffer()
 
             res.contentType('application/vnd.ms-excel')
@@ -85,8 +101,9 @@ module.exports = app => {
             const id = req.params.id
             const stock = req.body.stock
             const name = req.login.name
+            const blocked = true
             const items = await Inventory.list(stock)
-            const workbook = await Inventory.generate(items, name, stock, id)
+            const workbook = await Inventory.generate(blocked, items, name, stock, id)
             const buffer = await workbook.xlsx.writeBuffer()
 
             res.contentType('application/vnd.ms-excel')

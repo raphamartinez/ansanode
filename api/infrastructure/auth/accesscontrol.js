@@ -44,6 +44,10 @@ controll
     .createAny('inventory')
     .updateAny('inventory')
     .deleteAny('inventory')
+    .readAny('stock')
+    .createAny('stock')
+    .updateAny('stock')
+    .deleteAny('stock')
     
 controll
     .grant('6')

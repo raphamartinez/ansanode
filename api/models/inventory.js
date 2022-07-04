@@ -1,6 +1,8 @@
 const Repositorie = require('../repositories/inventory')
 const ExcelJS = require('exceljs');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
+const xlsx = require('read-excel-file/node')
+const fs = require('fs')
 
 class Inventory {
 
@@ -68,7 +70,7 @@ class Inventory {
                         stock[`v${obj.columnIndex}`] = obj.amount
                         stock[`lastEditV${obj.columnIndex}`] = obj.lastEdit
                         stock.amount += obj.amount
-                        stock.edit = obj.edit
+                        if(obj.edit !== '') stock.edit = obj.edit
                         stock.lastStock = obj.lastStock ? obj.lastStock : stock.lastStock
                     }
                 }
@@ -279,7 +281,7 @@ class Inventory {
         row.getCell(19).fill = style
     }
 
-    async generate(items, name, stock, id) {
+    async generate(blocked, items, name, stock, id) {
         try {
             const workbook = new ExcelJS.Workbook()
             workbook.creator = 'America Neumáticos S.A'
@@ -335,54 +337,57 @@ class Inventory {
             }
             this.copulateSheet(sheet, items, name, stock, inventoryItems)
 
-            const sheetA4 = workbook.addWorksheet('A4', {
-                views: [{ showGridLines: true, zoomScale: 75 }],
-                properties: {
-                    defaultColWidth: 8,
-                    defaultRowHeight: 19
-                },
-                pageSetup: {
-                    margins: {
-                        bottom: 1.18110236220472,
-                        footer: 0.511811023622047,
-                        header: 0.31496062992126,
-                        left: 0.511811023622047,
-                        right: 0.511811023622047,
-                        top: 0.78740157480315
+            if (blocked) {
+                const sheetA4 = workbook.addWorksheet('A4', {
+                    views: [{ showGridLines: true, zoomScale: 75 }],
+                    properties: {
+                        defaultColWidth: 8,
+                        defaultRowHeight: 19
                     },
-                    printTitlesRow: '7:8',
-                    firstPageNumber: 1,
-                    orientation: 'landscape',
-                    pageOrder: 'downThenOver',
-                    paperSize: 9,
-                    scale: 60,
-                    horizontalCentered: true,
-                    verticalCentered: false,
-                    showGridLines: true
-                },
-                headerFooter: {
-                    firstHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    firstFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
-                    evenHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    evenFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
-                    oddHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
-                    oddFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
-                    alignWithMargins: true,
-                    scaleWithDoc: true
-                }
-            })
-            const imageA4 = workbook.addImage({
-                filename: './public/img/ansalogomin.png',
-                extension: 'png',
-            });
-            sheetA4.addImage(imageA4, {
-                tl: { col: 16, row: 1.5 },
-                br: { col: 18, row: 5.5 },
-            });
-            this.copulateSheet(sheetA4, items, name, stock, inventoryItems)
+                    pageSetup: {
+                        margins: {
+                            bottom: 1.18110236220472,
+                            footer: 0.511811023622047,
+                            header: 0.31496062992126,
+                            left: 0.511811023622047,
+                            right: 0.511811023622047,
+                            top: 0.78740157480315
+                        },
+                        printTitlesRow: '7:8',
+                        firstPageNumber: 1,
+                        orientation: 'landscape',
+                        pageOrder: 'downThenOver',
+                        paperSize: 9,
+                        scale: 60,
+                        horizontalCentered: true,
+                        verticalCentered: false,
+                        showGridLines: true
+                    },
+                    headerFooter: {
+                        firstHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                        firstFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                        evenHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                        evenFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                        oddHeader: '&L&CAMÉRICA NEUMÁTICOS S.A._x000A_Avda. Dr. José Gaspar Rodriguez de Francia 374&RPagina &P de &N',
+                        oddFooter: '&L___________________________x000A_Firma Encargado de Deposito&C_____________________________x000A_Firma Encargado de Sucursal&R__________________x000A_Gerente de Sucursal',
+                        alignWithMargins: true,
+                        scaleWithDoc: true
+                    }
+                })
 
-            await sheet.protect('@NsaPY@@n3umatic0s')
-            await sheetA4.protect('@NsaPY@@n3umatic0s')
+                const imageA4 = workbook.addImage({
+                    filename: './public/img/ansalogomin.png',
+                    extension: 'png',
+                });
+                sheetA4.addImage(imageA4, {
+                    tl: { col: 16, row: 1.5 },
+                    br: { col: 18, row: 5.5 },
+                });
+                this.copulateSheet(sheetA4, items, name, stock, inventoryItems)
+
+                await sheet.protect('@NsaPY@@n3umatic0s')
+                await sheetA4.protect('@NsaPY@@n3umatic0s')
+            }
 
             return workbook
         } catch (error) {
@@ -418,6 +423,45 @@ class Inventory {
             return status
         } catch (error) {
             return status
+        }
+    }
+
+    async upload(file, id_login) {
+        try {
+            const worksheets = await xlsx(`tmp/uploads/${file.key}`).then((rows) => {
+                return rows
+            })
+
+            const stock = worksheets[1][1]
+            const id = await this.create(id_login, stock)
+            const columns = worksheets[7]
+            for (let index = 9; index < worksheets.length; index++) {
+                const row = worksheets[index]
+                let item_index = 1
+                for (let i = 5; i < row.length; i++) {
+                    const cell = row[i];
+                    if (Number.isInteger(cell)) {
+                        const item = {
+                            inventory: id,
+                            code: row[0],
+                            column: columns[i],
+                            index: item_index,
+                            stock: stock,
+                            amount: cell
+                        }
+
+                        await this.insert(item, id_login)
+                    }
+                    item_index++
+                }
+            }
+
+            fs.unlinkSync(`tmp/uploads/${file.filename}`);
+            return true
+        } catch (error) {
+            fs.unlinkSync(`tmp/uploads/${file.filename}`);
+            console.log(error);
+            throw new InternalServerError('No se pudieron enumerar los goals.')
         }
     }
 }

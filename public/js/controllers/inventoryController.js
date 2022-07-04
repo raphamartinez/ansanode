@@ -271,3 +271,38 @@ const viewInventory = async (event) => {
 document.querySelector('[data-inventories]').addEventListener('click', viewInventory)
 
 formInventoryOnline.addEventListener('submit', createInventory)
+
+
+const uploadFile = async (event) => {
+    event.preventDefault();
+
+    try {
+        const file = event.currentTarget.file.files[0]
+
+        const formData = new FormData()
+
+        formData.append('file', file)
+
+        document.querySelector('[data-btn-upload]').innerHTML = ""
+
+        const div = document.createElement('div')
+        div.classList.add('spinner-border', 'spinner-border')
+
+        document.querySelector('[data-btn-upload]').appendChild(div);
+        document.querySelector('[data-btn-upload]').disabled = true;
+
+        document.querySelector('[data-form-upload]').reset()
+
+        const obj = await Connection.bodyMultipart('inventory/excel', formData, 'POST')
+
+        document.querySelector('[data-btn-upload]').innerHTML = `<i class="fas fa-file-excel"> Subir Excel</i></button>`;
+        document.querySelector('[data-btn-upload]').disabled = false;
+
+        alert(obj.msg)
+
+    } catch (error) {
+        alert('El servicio seguira rodando en el servidor!')
+    }
+}
+
+document.querySelector('[data-form-upload]').addEventListener('submit', uploadFile, false)

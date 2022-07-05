@@ -70,7 +70,7 @@ class Inventory {
                         stock[`v${obj.columnIndex}`] = obj.amount
                         stock[`lastEditV${obj.columnIndex}`] = obj.lastEdit
                         stock.amount += obj.amount
-                        if(obj.edit !== '') stock.edit = obj.edit
+                        if (obj.edit !== '') stock.edit = obj.edit
                         stock.lastStock = obj.lastStock ? obj.lastStock : stock.lastStock
                     }
                 }
@@ -83,7 +83,7 @@ class Inventory {
         }
     }
 
-    copulateSheet(sheet, items, name, stock, inventoryItems) {
+    copulateSheet(blocked, sheet, items, name, stock, inventoryItems) {
         const totalColumns = 20
         const date = new Date()
         const date2 = new Date(date.getTime() - 14400000)
@@ -209,6 +209,7 @@ class Inventory {
         }
 
         let rowIndex = 9
+        let formRowIndex = 9
         let lastGroup = ''
         items.forEach(item => {
             if (lastGroup != item.ItemGroup) {
@@ -240,7 +241,28 @@ class Inventory {
                 arr.push(item.amount > 0 ? item.amount - qty : '')
             }
             sheet.addRow(arr)
+
+            for (let index = 10; index < rowIndex; index++) {
+                sheet.getCell(`S${index}`).value = { formula: `IF(SUM(F${index}:R${index}) > 0,SUM(F${index}:R${index}), "")`, date1904: false };
+                sheet.getCell(`T${index}`).value = { formula: `IF(S${index} = "", "", S${index} - D${index})`, date1904: false };    
+            }
+
             const rowTotal = sheet.getRow(rowIndex)
+            if (!blocked) {
+                for (let index = 1; index < 19; index++) {
+                    if (index < 6) {
+                        rowTotal.getCell(index).protection = {
+                            locked: true,
+                        }
+                    } else {
+                        rowTotal.getCell(index).protection = {
+                            locked: false,
+                        }
+                    }
+
+                }
+            }
+
             rowTotal.getCell(5).value = item.lastStock
             if (item.amount > 0) {
                 this.colorCell(item.amount - qty, rowTotal)
@@ -335,7 +357,7 @@ class Inventory {
             if (id) {
                 inventoryItems = await Repositorie.items(id)
             }
-            this.copulateSheet(sheet, items, name, stock, inventoryItems)
+            this.copulateSheet(blocked, sheet, items, name, stock, inventoryItems)
 
             if (blocked) {
                 const sheetA4 = workbook.addWorksheet('A4', {
@@ -383,10 +405,14 @@ class Inventory {
                     tl: { col: 16, row: 1.5 },
                     br: { col: 18, row: 5.5 },
                 });
-                this.copulateSheet(sheetA4, items, name, stock, inventoryItems)
+                this.copulateSheet(blocked, sheetA4, items, name, stock, inventoryItems)
 
                 await sheet.protect('@NsaPY@@n3umatic0s')
                 await sheetA4.protect('@NsaPY@@n3umatic0s')
+            } else {
+                await sheet.protect('@NsaPY@@n3umatic0s', {
+                    selectLockedCells: false
+                })
             }
 
             return workbook

@@ -300,6 +300,8 @@ const uploadFile = async (event) => {
 
         alert(obj.msg)
 
+        generateCard(obj.id, obj.archive.stock, obj.archive.date)
+        generateHtml(obj.id, obj.archive.stock, obj.archive.date)
     } catch (error) {
         alert('El servicio seguira rodando en el servidor!')
     }

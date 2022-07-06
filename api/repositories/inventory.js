@@ -35,7 +35,7 @@ class Inventory {
         WHERE (Item.Closed= 0 OR Item.Closed IS NULL)
         AND Item.ItemType= 2
         AND IF(Stock.Qty,Stock.Qty,0) + IF(Stock.Reserved,Stock.Reserved,0) > 0
-        AND StockDepo.Code = '01IMPPJC'`
+        AND StockDepo.Code = ?`
             return queryhbs(sql, stock)
 
         } catch (error) {
@@ -100,7 +100,7 @@ class Inventory {
 
     inventory(id) {
         try {
-            const sql = `SELECT * FROM inventoryfile WHERE id = ?`
+            const sql = `SELECT *, DATE_FORMAT(datereg, '%h:%m %d/%m/%Y') as date FROM inventoryfile WHERE id = ?`
             return query(sql, id)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
@@ -118,7 +118,7 @@ class Inventory {
 
     archives() {
         try {
-            const sql = `SELECT il.id, il.stock, il.status, us.name, DATE_FORMAT(il.datereg, '%h:%m %d/%m/%Y') as date, count(iv.amount) as total,
+            const sql = `SELECT il.id, il.stock, il.status, us.name, DATE_FORMAT(il.datereg, '%h:%m %d/%m/%Y') as date, count(DISTINCT(iv.item)) as total,
             IF(il.datereg BETWEEN NOW() - interval 7 day and NOW(), '', 'disabled') as edit
             FROM ANSA.inventoryfile as il
             INNER JOIN ANSA.user as us on il.id_login = us.id_login

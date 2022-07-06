@@ -24,7 +24,7 @@ class Inventory {
                 let qty = 0
                 let count = await Repositorie.countStock(archive.stock)
                 if (count.length > 0) qty = count[0].qty
-                archive.porcent = (archive.total * 100 / qty).toFixed(2)
+                archive.porcent = ((archive.total * 100) / qty).toFixed(2)
                 archives.push(archive)
             }
             return archives
@@ -483,7 +483,7 @@ class Inventory {
             }
 
             fs.unlinkSync(`tmp/uploads/${file.filename}`);
-            return true
+            return id
         } catch (error) {
             fs.unlinkSync(`tmp/uploads/${file.filename}`);
             console.log(error);

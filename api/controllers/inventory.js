@@ -67,13 +67,14 @@ module.exports = app => {
     })
 
     
-    app.post('/inventory/excel', [Middleware.authenticatedMiddleware, Authorization('goal', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
+    app.post('/inventory/excel', [Middleware.authenticatedMiddleware, Authorization('stock', 'create')], multer(multerConfig).single('file'), async (req, res, next) => {
         try {
             const file = req.file;
             const id_login = req.login.id_login
-            const result = await Inventory.upload(file, id_login)
-            const msg = result ? "Toma de Inventario agregado con éxito." : "Toma de Inventario no se ha agregado."
-            res.json({ msg })
+            const id = await Inventory.upload(file, id_login)
+            const archive = await Inventory.inventory(id)
+            const msg = id ? "Toma de Inventario agregado con éxito." : "Toma de Inventario no se ha agregado."
+            res.json({ msg, id, archive: archive[0] })
         } catch (err) {
             next(err)
         }

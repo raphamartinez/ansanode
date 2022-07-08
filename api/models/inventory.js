@@ -229,11 +229,14 @@ class Inventory {
                 }
                 rowIndex++
             }
-            const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
+            let qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
             let arr = [item.ArtCode, item.ArtName, item.Labels, qty, '']
             if (inventoryItems) {
                 let objStock = inventoryItems.find(obj => item.ArtCode === obj.item)
-                if (objStock) arr = [item.ArtCode, item.ArtName, item.Labels, objStock.stock, '']
+                if (objStock) {
+                    qty = objStock.stock
+                    arr = [item.ArtCode, item.ArtName, item.Labels, qty, '']
+                }
                 item.amount = 0
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)

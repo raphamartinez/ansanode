@@ -232,11 +232,12 @@ class Inventory {
             const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
             let arr = [item.ArtCode, item.ArtName, item.Labels, qty, '']
             if (inventoryItems) {
+                let objStock = inventoryItems.find(obj => item.ArtCode === obj.item)
+                if (objStock) arr = [item.ArtCode, item.ArtName, item.Labels, objStock.stock, '']
                 item.amount = 0
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)
                     if (obj) {
-                        item.stock = obj.stock
                         item.amount += obj.amount
                         item.lastStock = obj.lastStock
                         arr.push(obj.amount)
@@ -244,7 +245,6 @@ class Inventory {
                         arr.push('')
                     }
                 }
-                arr = [item.ArtCode, item.ArtName, item.Labels, item.stock, '']
                 arr.push(item.amount > 0 ? item.amount : '')
                 arr.push(item.amount > 0 ? item.amount - qty : '')
             }

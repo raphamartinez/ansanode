@@ -62,7 +62,8 @@ const transformArr = (itemsdt) => {
     const date = new Date()
     let ind = 0
     let items = itemsdt.map((item, i) => {
-        const qty = item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
+        const qty = item.stock ? item.stock : item.Qty ? item.Qty : 0 + item.Reserved ? item.Reserved : 0
+
         const arr = [
             item.GroupDesc,
             item.ArtCode,
@@ -297,6 +298,7 @@ const uploadFile = async (event) => {
 
         document.querySelector('[data-btn-upload]').innerHTML = `<i class="fas fa-file-excel"> Subir Excel</i></button>`;
         document.querySelector('[data-btn-upload]').disabled = false;
+        if(!obj.id) return alert(obj.msg)
 
         alert(obj.msg)
 

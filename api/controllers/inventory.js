@@ -34,7 +34,8 @@ module.exports = app => {
             const stock = req.params.stock
             const id_login = req.login.id_login
             const itemsdt = await Inventory.list(stock)
-            const id = await Inventory.create(id_login, stock)
+            const token = Inventory.gerenerateToken()
+            const id = await Inventory.create(id_login, stock, token, 1)
             const items = await Inventory.items(itemsdt, id)
             return res.json({ items, id })
         } catch (err) {
@@ -72,9 +73,9 @@ module.exports = app => {
             const file = req.file;
             const id_login = req.login.id_login
             const id = await Inventory.upload(file, id_login)
+            if(!id) return res.json({ msg: 'El archivo no fue validado, no se guardaron archivos en la base de datos.', archive: false, id })
             const archive = await Inventory.inventory(id)
-            const msg = id ? "Toma de Inventario agregado con éxito." : "Toma de Inventario no se ha agregado."
-            res.json({ msg, id, archive: archive[0] })
+            res.json({ msg: 'Toma de Inventario agregado con éxito', id, archive: archive[0] })
         } catch (err) {
             next(err)
         }
@@ -84,9 +85,10 @@ module.exports = app => {
         try {
             const stock = req.body.stock
             const name = req.login.name
+            const id_login = req.params.id_login
             const blocked = false
             const items = await Inventory.list(stock)
-            const workbook = await Inventory.generate(blocked, items, name, stock)
+            const workbook = await Inventory.generate(id_login, blocked, items, name, stock)
             const buffer = await workbook.xlsx.writeBuffer()
 
             res.contentType('application/vnd.ms-excel')
@@ -102,9 +104,10 @@ module.exports = app => {
             const id = req.params.id
             const stock = req.body.stock
             const name = req.login.name
+            const id_login = req.params.id_login
             const blocked = true
             const items = await Inventory.list(stock)
-            const workbook = await Inventory.generate(blocked, items, name, stock, id)
+            const workbook = await Inventory.generate(id_login, blocked, items, name, stock, id)
             const buffer = await workbook.xlsx.writeBuffer()
 
             res.contentType('application/vnd.ms-excel')

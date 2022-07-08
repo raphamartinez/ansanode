@@ -21,6 +21,7 @@ controll
     .readOwn('history') 
     .readOwn('office')
     .readOwn('powerbi')
+    .createAny('stock')
 
 controll
     .grant('8')
@@ -63,6 +64,7 @@ controll
     .readOwn('history')
     .readOwn('user')
     .readOwn('office')
+    .createAny('stock')
     .readOwn('inventory')
     .createOwn('inventory')
     .updateOwn('inventory')
@@ -196,5 +198,6 @@ controll
     .createAny('inventory')
     .updateAny('inventory')
     .deleteAny('inventory')
+    .createAny('stock')
 
 module.exports = controll

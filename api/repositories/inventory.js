@@ -88,10 +88,10 @@ class Inventory {
         }
     }
 
-    async create(id_login, stock, status) {
+    async create(id_login, stock, token, status) {
         try {
-            const sql = `INSERT INTO inventoryfile (id_login, stock, status, datereg) VALUES (?, ?, ?, now() - interval 4 hour)`
-            const result = await query(sql, [id_login, stock, status])
+            const sql = `INSERT INTO inventoryfile (id_login, token, stock, status, datereg) VALUES (?, ?, ?, ?, now() - interval 4 hour)`
+            const result = await query(sql, [id_login, token, stock, status])
             return result.insertId
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
@@ -111,6 +111,15 @@ class Inventory {
         try {
             const sql = `UPDATE inventoryfile set status = ? where id = ?`
             return query(sql, [status, id])
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    } 
+
+    verifyToken(token) {
+        try {
+            const sql = `SELECT id FROM ANSA.inventoryfile where token = ? `
+            return query(sql, token)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')
         }

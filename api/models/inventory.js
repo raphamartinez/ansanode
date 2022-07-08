@@ -3,13 +3,18 @@ const ExcelJS = require('exceljs');
 const { InvalidArgumentError, InternalServerError, NotFound } = require('./error')
 const xlsx = require('read-excel-file/node')
 const fs = require('fs')
+const crypto = require('crypto')
 
 class Inventory {
 
-    async create(id_login, stock) {
+    gerenerateToken() {
+        const token = crypto.randomBytes(8).toString('hex')
+        return token
+    }
+
+    async create(id_login, stock, token, status) {
         try {
-            const status = 1
-            const id = await Repositorie.create(id_login, stock, status)
+            const id = await Repositorie.create(id_login, stock, token, status)
             return id
         } catch (error) {
             throw new InternalServerError(error)
@@ -70,6 +75,7 @@ class Inventory {
                         stock[`v${obj.columnIndex}`] = obj.amount
                         stock[`lastEditV${obj.columnIndex}`] = obj.lastEdit
                         stock.amount += obj.amount
+                        stock.stock = obj.stock
                         if (obj.edit !== '') stock.edit = obj.edit
                         stock.lastStock = obj.lastStock ? obj.lastStock : stock.lastStock
                     }
@@ -244,7 +250,7 @@ class Inventory {
 
             for (let index = 10; index < rowIndex; index++) {
                 sheet.getCell(`S${index}`).value = { formula: `IF(SUM(F${index}:R${index}) > 0,SUM(F${index}:R${index}), "")`, date1904: false };
-                sheet.getCell(`T${index}`).value = { formula: `IF(S${index} = "", "", S${index} - D${index})`, date1904: false };    
+                sheet.getCell(`T${index}`).value = { formula: `IF(S${index} = "", "", S${index} - D${index})`, date1904: false };
             }
 
             const rowTotal = sheet.getRow(rowIndex)
@@ -303,7 +309,7 @@ class Inventory {
         row.getCell(19).fill = style
     }
 
-    async generate(blocked, items, name, stock, id) {
+    async generate(id_login, blocked, items, name, stock, id) {
         try {
             const workbook = new ExcelJS.Workbook()
             workbook.creator = 'America Neumáticos S.A'
@@ -413,6 +419,16 @@ class Inventory {
                 await sheet.protect('@NsaPY@@n3umatic0s', {
                     selectLockedCells: false
                 })
+                const token = this.gerenerateToken()
+                this.create(id_login, stock, token, 2)
+                sheet.getRow(6).getCell(1).value = token
+                sheet.getRow(6).getCell(1).protection = {
+                    locked: true,
+                    hidden: true,
+                }
+                sheet.getRow(6).getCell(1).font = {
+                    color: { argb: 'FFFFFF' },
+                }
             }
 
             return workbook
@@ -452,14 +468,21 @@ class Inventory {
         }
     }
 
+    async verifyToken(token) {
+        const result = await Repositorie.verifyToken(token)
+        const id = result.length > 0 ? result[0].id : false
+        return id
+    }
+
     async upload(file, id_login) {
         try {
             const worksheets = await xlsx(`tmp/uploads/${file.key}`).then((rows) => {
                 return rows
             })
-
-            const stock = worksheets[1][1]
-            const id = await this.create(id_login, stock)
+            const token = worksheets[5][0] ? worksheets[5][0] : 'x'
+            const id = await this.verifyToken(token)
+            if(!id) return false
+            await Repositorie.delete(1, id)
             const columns = worksheets[7]
             for (let index = 9; index < worksheets.length; index++) {
                 const row = worksheets[index]
@@ -472,7 +495,7 @@ class Inventory {
                             code: row[0],
                             column: columns[i],
                             index: item_index,
-                            stock: stock,
+                            stock: row[3],
                             amount: cell
                         }
 

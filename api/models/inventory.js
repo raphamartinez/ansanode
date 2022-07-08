@@ -236,7 +236,7 @@ class Inventory {
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)
                     if (obj) {
-                        item.stock += obj.stock
+                        item.stock = obj.stock
                         item.amount += obj.amount
                         item.lastStock = obj.lastStock
                         arr.push(obj.amount)

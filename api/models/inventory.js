@@ -236,6 +236,7 @@ class Inventory {
                 for (let index = 1; index <= 13; index++) {
                     let obj = inventoryItems.find(obj => item.ArtCode === obj.item && index === obj.columnIndex)
                     if (obj) {
+                        item.stock += obj.stock
                         item.amount += obj.amount
                         item.lastStock = obj.lastStock
                         arr.push(obj.amount)
@@ -243,6 +244,7 @@ class Inventory {
                         arr.push('')
                     }
                 }
+                arr = [item.ArtCode, item.ArtName, item.Labels, item.stock, '']
                 arr.push(item.amount > 0 ? item.amount : '')
                 arr.push(item.amount > 0 ? item.amount - qty : '')
             }
@@ -481,7 +483,7 @@ class Inventory {
             })
             const token = worksheets[5][0] ? worksheets[5][0] : 'x'
             const id = await this.verifyToken(token)
-            if(!id) return false
+            if (!id) return false
             await Repositorie.delete(1, id)
             const columns = worksheets[7]
             for (let index = 9; index < worksheets.length; index++) {

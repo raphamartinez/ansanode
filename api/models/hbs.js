@@ -300,10 +300,19 @@ class Hbs {
         }
     }
 
+    async listStocksHbs(){
+        const data = await Repositorie.listStocksHbs()
+        return data
+    }
+
+    async listAllStocksHbs(){
+        const data = await Repositorie.listAllStocksHbs()
+        return data
+    }
 
     async listStockandGroup() {
         try {
-            const data = await Repositorie.listStocksHbs()
+            const data = await this.listStocksHbs()
 
             var resultArray = data.map(v => Object.assign({}, v));
 

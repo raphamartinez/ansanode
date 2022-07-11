@@ -31,9 +31,11 @@ const generateHtml = (id, stock, date, edit = '') => {
     document.querySelector('[data-inventory]').innerHTML = `Stock: ${stock}`
     document.querySelector('[data-inventory-subtitle]').innerHTML = `Fecha: ${date.toLocaleString()}`
     if (edit == '') {
-        document.querySelector('[data-inventory-delete]').innerHTML = `<form action='/inventory/delete/${id}' method='POST'><button type="submit" class="btn btn-danger">Borrar Archivo</button></form><br>`
+        document.querySelector('[data-inventory-delete]').innerHTML = `<button type="button" class="btn btn-danger" data-toggle="modal" data-target="#dropArchive" >Borrar Archivo</button><br><br>`
+        document.querySelector('[data-form-drop-archive]').setAttribute('action', `/inventory/delete/${id}`)
     } else {
         document.querySelector('[data-inventory-delete]').innerHTML = ''
+        document.querySelector('[data-form-drop-archive]').setAttribute('action', '')
     }
 }
 

@@ -640,9 +640,9 @@ SELECT 'B' as DocType,Cheque.Status as Type,4 InvoiceType, Cheque.SerNr, '0' as 
         }
     }
 
-    listStocksHbs() {
+    listAllStocksHbs() {
         try {
-            const sql = `SELECT StockDepo FROM Stock WHERE (Qty - Reserved) > 0 AND Qty IS NOT null  group BY StockDepo`
+            const sql = `SELECT StockDepo FROM Stock`
             return queryhbs(sql)
         } catch (error) {
             throw new InternalServerError('No se pudo enumerar Stock')

@@ -85,7 +85,7 @@ module.exports = app => {
         try {
             const stock = req.body.stock
             const name = req.login.name
-            const id_login = req.params.id_login
+            const id_login = req.login.id_login
             const blocked = false
             const items = await Inventory.list(stock)
             const workbook = await Inventory.generate(id_login, blocked, items, name, stock)
@@ -104,7 +104,7 @@ module.exports = app => {
             const id = req.params.id
             const stock = req.body.stock
             const name = req.login.name
-            const id_login = req.params.id_login
+            const id_login = req.login.id_login
             const blocked = true
             const items = await Inventory.list(stock)
             const workbook = await Inventory.generate(id_login, blocked, items, name, stock, id)

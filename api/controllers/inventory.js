@@ -29,6 +29,17 @@ module.exports = app => {
         }
     })
 
+    app.post('/inventory/end/:id', [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
+        try {
+            const id = req.params.id
+            await Inventory.end(id)
+
+            res.redirect('/inventario')
+        } catch (err) {
+            next(err)
+        }
+    })
+
     app.get(`/inventory/new/:stock`, [Middleware.authenticatedMiddleware, Authorization('stock', 'read')], async (req, res, next) => {
         try {
             const stock = req.params.stock

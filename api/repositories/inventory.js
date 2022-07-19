@@ -116,6 +116,15 @@ class Inventory {
         }
     } 
 
+    end(id, date) {
+        try {
+            const sql = `UPDATE inventoryfile set datefinished = ? where id = ?`
+            return query(sql, [date, id])
+        } catch (error) {
+            throw new InternalServerError('No se pudo enumerar Stock')
+        }
+    } 
+
     verifyToken(token) {
         try {
             const sql = `SELECT id FROM ANSA.inventoryfile where token = ? `
@@ -127,8 +136,8 @@ class Inventory {
 
     archives() {
         try {
-            const sql = `SELECT il.id, il.stock, il.status, us.name, DATE_FORMAT(il.datereg, '%h:%m %d/%m/%Y') as date, count(DISTINCT(iv.item)) as total,
-            IF(il.datereg BETWEEN NOW() - interval 7 day and NOW(), '', 'disabled') as edit
+            const sql = `SELECT il.id, il.stock, il.status, DATE_FORMAT(il.datefinished, '%h:%m %d/%m/%Y') as datefinished, us.name, DATE_FORMAT(il.datereg, '%h:%m %d/%m/%Y') as date, count(DISTINCT(iv.item)) as total,
+            IF(il.datereg BETWEEN NOW() - interval 7 day and NOW() AND il.datefinished IS NULL, '', 'disabled') as edit
             FROM ANSA.inventoryfile as il
             INNER JOIN ANSA.user as us on il.id_login = us.id_login
             LEFT JOIN ANSA.inventory as iv on il.id = iv.id_inventoryfile

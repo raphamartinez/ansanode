@@ -55,6 +55,15 @@ class Inventory {
         }
     }
 
+    end(id) {
+        try {
+            const date = new Date()
+            return Repositorie.end(id, date)
+        } catch (error) {
+            throw new InternalServerError(error)
+        }
+    }
+
     list(stock) {
         try {
             return Repositorie.list(stock)
